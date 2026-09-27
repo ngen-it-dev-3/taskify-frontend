@@ -889,7 +889,7 @@ export const SUB_ITEMS = {
   crmSalesDashboard: createSubNavItem(
     "crm-sales-dashboard",
     "Sales Dashboard",
-    "/crm/sales",
+    "/crm",
     LayoutDashboard,
     "CRM",
     [
