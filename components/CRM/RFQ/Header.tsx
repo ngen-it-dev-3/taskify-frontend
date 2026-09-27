@@ -26,7 +26,7 @@ export default function Header({ onAddRfq }: HeaderProps) {
         className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#A06126] text-white text-xs font-semibold shadow-2xs hover:bg-[#88501E] transition"
       >
         <Plus className="w-3.5 h-3.5" />
-        <span>+ Add RFQ</span>
+        <span>Add RFQ</span>
       </button>
     </div>
   );

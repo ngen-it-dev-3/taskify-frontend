@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';           // 👈 ADD
 import type { RFQItem, RFQProduct, FilterState, RFQStage } from './types';
 import toast from 'react-hot-toast';
 
@@ -23,6 +24,8 @@ const MONTHS = [
 ];
 
 export default function RFQDashboardPage() {
+  const router = useRouter();                            // 👈 ADD
+
   const [filters, setFilters] = useState<FilterState>({
     countryFilter: '0',
     salesmanFilter: '0',
@@ -54,7 +57,7 @@ export default function RFQDashboardPage() {
       dateTo = new Date(year, 11, 31, 23, 59, 59).toISOString();
     }
 
-    // ⭐ Explicit typing so TS accepts the narrow 'lost' literal
+    // Explicit typing so TS accepts the narrow 'lost' literal
     const stage: RFQStage | undefined = isLost ? 'lost' : undefined;
 
     return {
@@ -109,8 +112,9 @@ export default function RFQDashboardPage() {
     setShowAssignModal(true);
   };
 
+  // ⭐ Navigate to Quotation Builder with the RFQ id
   const handleQuote = (rfq: RFQItem) => {
-    toast(`Opening Quotation Builder for ${rfq.rfqNumber}`, { icon: '📝' });
+    router.push(`/crm/quotation-builder/${rfq.id}`);
   };
 
   const handleClientDetails = () => setShowClientInfoModal(true);
@@ -258,7 +262,7 @@ export default function RFQDashboardPage() {
           <div className="lg:col-span-7 bg-white rounded-xl p-8 border border-[#EBE6DF] shadow-2xs text-center text-xs text-slate-500">
             No RFQs found. Click "+ Add RFQ" to create one.
           </div>
-        )}  
+        )}
       </div>
 
       {/* Modals */}
