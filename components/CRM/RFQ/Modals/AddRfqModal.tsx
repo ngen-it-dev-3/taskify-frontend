@@ -15,13 +15,14 @@ import {
   Check,
 } from 'lucide-react';
 import ProductEditorModal, { type ProductDraft } from './ProductEditorModal';
+import type { CreateRFQPayload } from '@/services/rfq.service';
 
 interface Props {
   onClose: () => void;
-  onSubmit: (data: FormData) => void;
+  onSubmit: (data: CreateRFQPayload) => void;
 }
 
-// ---- Form data shape ----
+// ---- Local form types ----
 interface LineItem {
   id: string;
   product: string;
@@ -34,7 +35,8 @@ interface LineItem {
   files?: File[];
 }
 
-interface FormData {
+// ⭐ Renamed from `FormData` → `RFQFormData` to avoid shadowing global FormData
+interface RFQFormData {
   // Company Info
   companyName: string;
   isReseller: boolean;
@@ -83,7 +85,7 @@ interface FormData {
   items: LineItem[];
 }
 
-const INITIAL_FORM: FormData = {
+const INITIAL_FORM: RFQFormData = {
   companyName: '',
   isReseller: false,
   contactName: '',
@@ -144,7 +146,7 @@ type Step = 0 | 1 | 2 | 3;
 export default function AddRfqModal({ onClose, onSubmit }: Props) {
   const [tab, setTab] = useState<Tab>('sync');
   const [step, setStep] = useState<Step>(0);
-  const [form, setForm] = useState<FormData>(INITIAL_FORM);
+  const [form, setForm] = useState<RFQFormData>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [toast, setToast] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);
@@ -153,7 +155,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
 
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // ---- ESC to close (skip when product editor is open) ----
+  // ---- ESC to close ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !editingProductId) onClose();
@@ -175,7 +177,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
   };
 
   // ---- Field helpers ----
-  const setField = <K extends keyof FormData>(key: K, value: FormData[K]) => {
+  const setField = <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => {
       const next = { ...prev };
@@ -278,6 +280,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
     }, 1400);
   };
 
+  // ---- Submit ----
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     for (const s of [0, 1, 2, 3] as Step[]) {
@@ -288,9 +291,9 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
     }
     setSubmitting(true);
 
-    // ---- Map internal form → backend payload ----
-    const payload = {
-      source: 'manual' as const,
+    // ⭐ Build payload typed against the backend's CreateRFQPayload
+    const payload: CreateRFQPayload = {
+      source: 'manual',
       company: form.companyName,
       country: form.country || form.shippingCountry || 'Unknown',
       contactName: form.contactName,
@@ -302,7 +305,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
       zipCode: form.zipCode,
       isReseller: form.isReseller,
       receivedVia: 'Email',
-      priority: 'normal' as const,
+      priority: 'normal',
       products: form.items.map((it, i) => ({
         sl: i + 1,
         name: it.product || `Item ${i + 1}`,
@@ -312,44 +315,16 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
         brand: it.brand,
         description: it.description,
         additionalInfo: it.additionalInfo,
-        files: [], // will be filled after upload — see note below
+        files: [],
       })),
       projectName: form.projectName,
       tentativeBudget: form.tentativeBudget,
       currentProjectStatus: form.currentProjectStatus,
       tentativePurchaseDate: form.tentativePurchaseDate,
       comment: form.comment,
-      // Optionally include shipping / endUser if your backend supports it:
-      shipping: form.deliverySameAsCompany
-        ? undefined
-        : {
-          companyName: form.shippingCompanyName,
-          contactName: form.shippingContactName,
-          designation: form.shippingDesignation,
-          email: form.shippingEmail,
-          phone: form.shippingPhone,
-          address: form.shippingAddress,
-          country: form.shippingCountry,
-          city: form.shippingCity,
-          zipCode: form.shippingZipCode,
-        },
-      endUser: form.endUserSameAsCompany
-        ? undefined
-        : {
-          companyName: form.endUserCompanyName,
-          contactName: form.endUserContactName,
-          designation: form.endUserDesignation,
-          email: form.endUserEmail,
-          phone: form.endUserPhone,
-          address: form.endUserAddress,
-          country: form.endUserCountry,
-          city: form.endUserCity,
-          zipCode: form.endUserZipCode,
-        },
     };
 
     onSubmit(payload);
-    // Parent controls closing. If parent throws, it will re-throw.
     setTimeout(() => setSubmitting(false), 600);
   };
 
@@ -360,7 +335,6 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
     { n: 3, label: 'Additional Details' },
   ];
 
-  // ---- Get currently-edited product (for pre-filling ProductEditorModal) ----
   const editingItem = editingProductId
     ? form.items.find((i) => i.id === editingProductId)
     : null;
@@ -556,9 +530,9 @@ function ManualPanel({
   step: Step;
   setStep: (s: Step) => void;
   steps: { n: number; label: string }[];
-  form: FormData;
+  form: RFQFormData;
   errors: Record<string, string>;
-  setField: <K extends keyof FormData>(key: K, value: FormData[K]) => void;
+  setField: <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => void;
   updateItem: (id: string, patch: Partial<LineItem>) => void;
   addItem: () => void;
   removeItem: (id: string) => void;
@@ -645,7 +619,6 @@ function ManualPanel({
         </button>
       </div>
 
-      {/* Divider */}
       <div className="border-t border-slate-100" />
 
       {/* ============ STEP TABS ============ */}
@@ -659,10 +632,10 @@ function ManualPanel({
               type="button"
               onClick={() => setStep(s.n as Step)}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition border-b-2 ${active
-                ? 'text-rose-700 border-rose-700 bg-rose-50/40'
-                : done
-                  ? 'text-slate-700 border-transparent hover:bg-slate-50'
-                  : 'text-slate-500 border-transparent hover:bg-slate-50'
+                  ? 'text-rose-700 border-rose-700 bg-rose-50/40'
+                  : done
+                    ? 'text-slate-700 border-transparent hover:bg-slate-50'
+                    : 'text-slate-500 border-transparent hover:bg-slate-50'
                 }`}
             >
               {done && <Check className="w-3.5 h-3.5 text-slate-700" />}
@@ -732,9 +705,9 @@ function CompanyInfoStep({
   errors,
   setField,
 }: {
-  form: FormData;
+  form: RFQFormData;
   errors: Record<string, string>;
-  setField: <K extends keyof FormData>(key: K, value: FormData[K]) => void;
+  setField: <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => void;
 }) {
   return (
     <div className="space-y-4">
@@ -845,9 +818,9 @@ function ShippingStep({
   errors,
   setField,
 }: {
-  form: FormData;
+  form: RFQFormData;
   errors: Record<string, string>;
-  setField: <K extends keyof FormData>(key: K, value: FormData[K]) => void;
+  setField: <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => void;
 }) {
   const disabled = form.deliverySameAsCompany;
   return (
@@ -947,9 +920,9 @@ function EndUserStep({
   errors,
   setField,
 }: {
-  form: FormData;
+  form: RFQFormData;
   errors: Record<string, string>;
-  setField: <K extends keyof FormData>(key: K, value: FormData[K]) => void;
+  setField: <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => void;
 }) {
   const disabled = form.endUserSameAsCompany;
   return (
@@ -1048,8 +1021,8 @@ function AdditionalStep({
   form,
   setField,
 }: {
-  form: FormData;
-  setField: <K extends keyof FormData>(key: K, value: FormData[K]) => void;
+  form: RFQFormData;
+  setField: <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => void;
 }) {
   const disabled = form.skipAdditional;
   return (
@@ -1144,7 +1117,9 @@ function InputField({
         className={`w-full bg-slate-100 border rounded-lg px-3 py-2.5 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-[#A06126] disabled:opacity-60 ${error ? 'border-rose-400' : 'border-transparent'
           }`}
       />
-      {error && <p className="text-[11px] text-rose-600 mt-1 font-medium">{error}</p>}
+      {error && (
+        <p className="text-[11px] text-rose-600 mt-1 font-medium">{error}</p>
+      )}
     </div>
   );
 }
