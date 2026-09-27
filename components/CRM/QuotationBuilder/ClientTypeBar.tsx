@@ -12,8 +12,24 @@ interface Props {
 
 export default function ClientTypeBar({ meta, onChange }: Props) {
   const currentCurrency =
-    CURRENCIES.find((c) => c.code === meta.currency.split(' ')[0]) ||
-    CURRENCIES[0];
+    CURRENCIES.find((c) => c.code === meta.currency) || CURRENCIES[0];
+
+  const handleCurrencyChange = (code: string) => {
+    const c = CURRENCIES.find((x) => x.code === code)!;
+    onChange({
+      ...meta,
+      currency: c.code,
+      currencySymbol: c.symbol,
+      exchangeRate: c.rateToBDT || 1,
+    });
+  };
+
+  const handleRateChange = (rate: number) => {
+    onChange({
+      ...meta,
+      exchangeRate: rate > 0 ? rate : 1,
+    });
+  };
 
   return (
     <div className="bg-white rounded-xl p-4 border border-[#EBE6DF] shadow-2xs mt-4 flex flex-wrap items-center gap-3">
@@ -49,10 +65,7 @@ export default function ClientTypeBar({ meta, onChange }: Props) {
       {/* Currency */}
       <SelectBox
         value={currentCurrency.code}
-        onChange={(v) => {
-          const c = CURRENCIES.find((x) => x.code === v)!;
-          onChange({ ...meta, currency: `${c.code} (base)`, currencySymbol: c.symbol });
-        }}
+        onChange={handleCurrencyChange}
         options={CURRENCIES.map((c) => c.code)}
       />
 
@@ -61,12 +74,15 @@ export default function ClientTypeBar({ meta, onChange }: Props) {
         <span className="text-slate-500">Exchange Rate</span>
         <input
           type="number"
+          step="0.01"
+          min="0.01"
           value={meta.exchangeRate}
-          onChange={(e) =>
-            onChange({ ...meta, exchangeRate: Number(e.target.value) || 1 })
-          }
-          className="w-16 bg-[#FDFBF7] border border-[#E2DBD1] text-xs rounded-lg px-2 py-1.5 text-slate-700 font-mono"
+          onChange={(e) => handleRateChange(Number(e.target.value) || 1)}
+          className="w-24 bg-[#FDFBF7] border border-[#E2DBD1] text-xs rounded-lg px-3 py-1.5 text-slate-700 font-mono focus:outline-none focus:ring-1 focus:ring-[#A06126]"
         />
+        <span className="text-slate-400 text-[11px]">
+          1 {meta.currency} = {meta.exchangeRate} {meta.baseCurrency}
+        </span>
       </div>
 
       {/* Tax / Discount toggles */}
@@ -84,7 +100,9 @@ export default function ClientTypeBar({ meta, onChange }: Props) {
           <input
             type="checkbox"
             checked={meta.discountEnabled}
-            onChange={(e) => onChange({ ...meta, discountEnabled: e.target.checked })}
+            onChange={(e) =>
+              onChange({ ...meta, discountEnabled: e.target.checked })
+            }
             className="accent-[#A06126]"
           />
           Special Discount

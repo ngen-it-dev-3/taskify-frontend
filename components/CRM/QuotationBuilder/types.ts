@@ -37,14 +37,17 @@ export interface QuotationMeta {
   territory: string;
   crmManager: string;
   stage: string;
+  // ⭐ Currency
   currency: string;
   currencySymbol: string;
+  baseCurrency: string;
+  baseCurrencySymbol: string;
+  exchangeRate: number;
+  // Other
   clientType: 'existing' | 'new';
   country: string;
-  exchangeRate: number;
   vatEnabled: boolean;
   discountEnabled: boolean;
-  // ⭐ Dynamic fields
   client: QuotationClientInfo;
   pqNumber: string;
   pqrNumber: string;
@@ -58,15 +61,15 @@ export interface LogisticsInfo {
 }
 
 export interface CostBreakdown {
-    costOfGoods: number;
-    remittanceOfficeExp: number;
-    customsFreight: number;
-    commissionOthers: number;
-    netProfit: number;
-    taxVatGst: number;
-    subTotal: number;
-    customerPrice: number;
-    totalWeight: number;
+  costOfGoods: number;
+  remittanceOfficeExp: number;
+  customsFreight: number;
+  commissionOthers: number;
+  netProfit: number;
+  taxVatGst: number;
+  subTotal: number;
+  customerPrice: number;
+  totalWeight: number;
 }
 
 export type QuotationTabKey = 'quotation' | 'cog' | 'source';

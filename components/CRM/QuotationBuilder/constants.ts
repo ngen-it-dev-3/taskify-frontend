@@ -12,18 +12,21 @@ export const DEFAULT_RATES: QuotationRates = {
     taxPct: 0,
 };
 
-// ⚠️ These are FALLBACKS only — real data comes from RFQ
 export const DEFAULT_META: QuotationMeta = {
     rfqNumber: '',
     title: '',
     territory: '',
     crmManager: '',
     stage: 'Negotiation',
-    currency: 'BDT (base)',
+    // ⭐ Currency fields
+    currency: 'BDT',
     currencySymbol: '৳',
+    baseCurrency: 'BDT',
+    baseCurrencySymbol: '৳',
+    exchangeRate: 1,
+    // Other fields
     clientType: 'new',
     country: '',
-    exchangeRate: 1,
     vatEnabled: true,
     discountEnabled: true,
     client: {
@@ -126,9 +129,10 @@ export const AUTHORIZED_BRANDS = [
 export const COUNTRIES = ['Bangladesh', 'Singapore', 'Europe', 'Middle East', 'UK'];
 
 export const CURRENCIES = [
-    { code: 'BDT', symbol: '৳', label: 'Taka (৳)' },
-    { code: 'USD', symbol: '$', label: 'USD ($)' },
-    { code: 'EUR', symbol: '€', label: 'EUR (€)' },
-    { code: 'GBP', symbol: '£', label: 'GBP (£)' },
-    { code: 'AED', symbol: 'AED', label: 'AED' },
+    { code: 'BDT', symbol: '৳', label: 'Taka (৳)', rateToBDT: 1 },
+    { code: 'USD', symbol: '$', label: 'USD ($)', rateToBDT: 110 },
+    { code: 'EUR', symbol: '€', label: 'EUR (€)', rateToBDT: 120 },
+    { code: 'GBP', symbol: '£', label: 'GBP (£)', rateToBDT: 140 },
+    { code: 'AED', symbol: 'AED', label: 'AED', rateToBDT: 30 },
+    { code: 'SGD', symbol: 'S$', label: 'Singapore (S$)', rateToBDT: 82 },
 ];
