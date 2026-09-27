@@ -439,7 +439,7 @@ export default function AllUsersPage() {
   };
 
   const filteredUsers = useMemo(() => {
-    let filtered = users.filter((u) => {
+    const filtered = users.filter((u) => {
       const matchesSearch =
         u.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||

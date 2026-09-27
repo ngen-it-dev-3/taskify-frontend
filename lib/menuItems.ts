@@ -207,7 +207,7 @@ export const SECTIONS: Record<SectionId, SectionConfig> = {
   },
   crm: {
     id: "crm",
-    title: "CRM",
+    title: "CRM Dashboard",
     icon: HandHelping,
     priority: 6,
   },
@@ -886,10 +886,10 @@ export const SUB_ITEMS = {
 
 
   // CRM Sub-items
-  crmDashboard: createSubNavItem(
-    "crm-dashboard",
-    "CRM Overview",
-    "/crm",
+  crmSalesDashboard: createSubNavItem(
+    "crm-sales-dashboard",
+    "Sales Dashboard",
+    "/crm/sales",
     LayoutDashboard,
     "CRM",
     [
@@ -903,11 +903,11 @@ export const SUB_ITEMS = {
     ],
     { description: "Overview of contacts, deals, and pipeline" },
   ),
-  crmContacts: createSubNavItem(
-    "crm-contacts",
-    "Contacts",
-    "/crm/contacts",
-    Users,
+  crmRfqDashboard: createSubNavItem(
+    "crm-rfq-dashboard",
+    "RFQ Dashboard",
+    "/crm/rfq",
+    FileText,
     "CRM",
     [
       ROLES.SUPER_ADMIN,
@@ -920,11 +920,11 @@ export const SUB_ITEMS = {
     ],
     { description: "Directory of contacts with owner, tag, and source" },
   ),
-  crmPipeline: createSubNavItem(
-    "crm-pipeline",
-    "Sales Pipeline",
-    "/crm/pipeline",
-    Kanban,
+  crmOnline: createSubNavItem(
+    "crm-online",
+    "Online",
+    "/crm/online",
+    Globe,
     "CRM",
     [
       ROLES.SUPER_ADMIN,
@@ -937,45 +937,45 @@ export const SUB_ITEMS = {
     ],
     { description: "Kanban board for deals across pipeline stages" },
   ),
+  crmDirectMarketing: createSubNavItem(
+    "crm-direct-marketing",
+    "Direct Marketing",
+    "/crm/direct-marketing",
+    Building2,
+    "CRM",
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.DEPT_MANAGER,
+      ROLES.PROJECT_MANAGER,
+      ROLES.LINE_MANAGER,
+      ROLES.EMPLOYEE,
+    ],
+    { description: "Client directory with visit history and RFQs" },
+  ),
+  crmQuotationBuilder: createSubNavItem(
+    "crm-quotation-builder",
+    "Quotation Builder",
+    "/crm/quotation-builder",
+    FileText,
+    "CRM",
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.DEPT_MANAGER,
+      ROLES.PROJECT_MANAGER,
+      ROLES.LINE_MANAGER,
+      ROLES.EMPLOYEE,
+    ],
+    { description: "Client directory with visit history and RFQs" },
+  ),
   crmClients: createSubNavItem(
     "crm-clients",
     "Clients",
     "/crm/clients",
-    Building2,
-    "CRM",
-    [
-      ROLES.SUPER_ADMIN,
-      ROLES.ADMIN,
-      ROLES.HR_MANAGER,
-      ROLES.DEPT_MANAGER,
-      ROLES.PROJECT_MANAGER,
-      ROLES.LINE_MANAGER,
-      ROLES.EMPLOYEE,
-    ],
-    { description: "Client directory with visit history and RFQs" },
-  ),
-  crmDeals: createSubNavItem(
-    "crm-deals",
-    "Deals",
-    "/crm/deals",
-    Building2,
-    "CRM",
-    [
-      ROLES.SUPER_ADMIN,
-      ROLES.ADMIN,
-      ROLES.HR_MANAGER,
-      ROLES.DEPT_MANAGER,
-      ROLES.PROJECT_MANAGER,
-      ROLES.LINE_MANAGER,
-      ROLES.EMPLOYEE,
-    ],
-    { description: "Client directory with visit history and RFQs" },
-  ),
-  crmForecast: createSubNavItem(
-    "crm-forecast",
-    "Sales Forecast",
-    "/crm/forecast",
-    TrendingUp,
+    Users,
     "CRM",
     [
       ROLES.SUPER_ADMIN,
@@ -988,7 +988,7 @@ export const SUB_ITEMS = {
     ],
     { description: "Weighted monthly revenue forecast" },
   ),
-  crmLeaderboard: createSubNavItem(
+  crmSalesOrder: createSubNavItem(
     "crm-leaderboard",
     "Sales Leaderboard",
     "/crm/leaderboard",
