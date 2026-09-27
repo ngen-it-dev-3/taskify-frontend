@@ -560,6 +560,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 onTabChange={setTopTab}
                 quoteCount={quoteCount}
                 draftCount={draftCount}
+                onSaveDraft={handleSaveDraft}
+                onGenerateQuote={handleGenerateQuote}
             />
 
             {topTab === 'builder' && (
