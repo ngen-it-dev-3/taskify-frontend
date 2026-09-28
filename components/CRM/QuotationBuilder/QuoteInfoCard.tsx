@@ -3,6 +3,7 @@
 import React from 'react';
 import { Settings, MessageCircle } from 'lucide-react';
 import type { QuotationMeta } from './types';
+import Link from 'next/link';
 
 interface Props {
   meta: QuotationMeta;
@@ -47,14 +48,15 @@ export default function QuoteInfoCard({
 
         {/* Right block — action buttons */}
         <div className="flex items-center gap-2 shrink-0 self-center">
-          <button
+          <Link
+            href="/team-chat"
             type="button"
-            onClick={onDiscuss}
+            // onClick={onDiscuss}
             className="inline-flex items-center gap-1.5 px-2.5 py-2 text-slate-700 text-xs font-semibold hover:bg-slate-50 rounded-lg transition"
           >
             <MessageCircle className="w-3.5 h-3.5 text-[#A06126]" />
             Discuss
-          </button>
+          </Link>
 
           <button
             type="button"
