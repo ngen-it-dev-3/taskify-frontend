@@ -59,7 +59,7 @@ export function TenderOverviewPerformance({
           {/* Pipeline Mix Donut */}
           <div className="flex flex-col items-center">
             <div className="relative h-28 w-28">
-              <svg viewBox="0 0 36 36" className="h-full w-full -rotate-90">
+              <svg viewBox="0 -2 36 40" className="h-full w-full -rotate-90">
                 <circle
                   cx="18"
                   cy="18"
@@ -100,7 +100,7 @@ export function TenderOverviewPerformance({
           {/* Win Rate Donut */}
           <div className="flex flex-col items-center">
             <div className="relative h-28 w-28">
-              <svg viewBox="0 0 36 36" className="h-full w-full -rotate-90">
+              <svg viewBox="0 -2 36 40" className="h-full w-full -rotate-90">
                 <circle
                   cx="18"
                   cy="18"

@@ -566,7 +566,7 @@ export function useTenderAlerts() {
         const upcomingDeadlines = [...potential, ...active]
           .filter((t) => t.lastDateOfSubmission)
           .map((t) => ({ t, days: daysUntil(t.lastDateOfSubmission) }))
-          .filter((x) => x.days >= 0 && x.days <= 30)
+          .filter((x) => x.days >= 0 && x.days <= 60)
           .sort((a, b) => a.days - b.days)
           .slice(0, 4);
 

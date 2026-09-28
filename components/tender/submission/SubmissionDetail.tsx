@@ -836,7 +836,7 @@ export function SubmissionDetail({
               <textarea
                 readOnly
                 value={data.info.eligibility ?? ""}
-                rows={4}
+                rows={3}
                 className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50/40 px-3 py-2 text-[11px] leading-relaxed text-slate-700"
               />
             </div>
