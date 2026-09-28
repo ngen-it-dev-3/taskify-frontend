@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   X,
   Globe,
@@ -22,7 +22,6 @@ interface Props {
   onSubmit: (data: CreateRFQPayload) => void;
 }
 
-// ---- Local form types ----
 interface LineItem {
   id: string;
   product: string;
@@ -35,9 +34,7 @@ interface LineItem {
   files?: File[];
 }
 
-// ⭐ Renamed from `FormData` → `RFQFormData` to avoid shadowing global FormData
 interface RFQFormData {
-  // Company Info
   companyName: string;
   isReseller: boolean;
   contactName: string;
@@ -51,7 +48,6 @@ interface RFQFormData {
   deliverySameAsCompany: boolean;
   endUserSameAsCompany: boolean;
 
-  // Shipping
   shippingCompanyName: string;
   shippingContactName: string;
   shippingDesignation: string;
@@ -62,7 +58,6 @@ interface RFQFormData {
   shippingCity: string;
   shippingZipCode: string;
 
-  // End User
   endUserCompanyName: string;
   endUserContactName: string;
   endUserDesignation: string;
@@ -73,7 +68,6 @@ interface RFQFormData {
   endUserCity: string;
   endUserZipCode: string;
 
-  // Additional
   projectName: string;
   tentativeBudget: string;
   currentProjectStatus: string;
@@ -81,7 +75,6 @@ interface RFQFormData {
   comment: string;
   skipAdditional: boolean;
 
-  // Products
   items: LineItem[];
 }
 
@@ -143,6 +136,8 @@ const COUNTRIES = [
 type Tab = 'sync' | 'manual';
 type Step = 0 | 1 | 2 | 3;
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function AddRfqModal({ onClose, onSubmit }: Props) {
   const [tab, setTab] = useState<Tab>('sync');
   const [step, setStep] = useState<Step>(0);
@@ -171,14 +166,99 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
     return () => clearTimeout(t);
   }, [toast]);
 
-  // ---- Click outside ----
-  const onBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (panelRef.current && !panelRef.current.contains(e.target as Node)) onClose();
-  };
+  // ⭐ Backdrop click intentionally does nothing
+  const onBackdropClick = (_e: React.MouseEvent<HTMLDivElement>) => { };
+
+  // ============================================================
+  // ⭐ FIX — Auto-copy company → shipping when "same" toggled
+  // ============================================================
+  const copyCompanyToShipping = (src: RFQFormData): Partial<RFQFormData> => ({
+    shippingCompanyName: src.companyName,
+    shippingContactName: src.contactName,
+    shippingDesignation: src.designation,
+    shippingEmail: src.email,
+    shippingPhone: src.phone,
+    shippingAddress: src.address,
+    shippingCountry: src.country,
+    shippingCity: src.city,
+    shippingZipCode: src.zipCode,
+  });
+
+  // ============================================================
+  // ⭐ FIX — Auto-copy company → end user when "same" toggled
+  // ============================================================
+  const copyCompanyToEndUser = (src: RFQFormData): Partial<RFQFormData> => ({
+    endUserCompanyName: src.companyName,
+    endUserContactName: src.contactName,
+    endUserDesignation: src.designation,
+    endUserEmail: src.email,
+    endUserPhone: src.phone,
+    endUserAddress: src.address,
+    endUserCountry: src.country,
+    endUserCity: src.city,
+    endUserZipCode: src.zipCode,
+  });
 
   // ---- Field helpers ----
   const setField = <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    setForm((prev) => {
+      const next = { ...prev, [key]: value };
+
+      // ⭐ Reseller turns off "end user same as company"
+      if (key === 'isReseller' && value === true) {
+        next.endUserSameAsCompany = false;
+
+        // Also clear the end user fields (they were auto-filled before)
+        next.endUserCompanyName = '';
+        next.endUserContactName = '';
+        next.endUserDesignation = '';
+        next.endUserEmail = '';
+        next.endUserPhone = '';
+        next.endUserAddress = '';
+        next.endUserCountry = '';
+        next.endUserCity = '';
+        next.endUserZipCode = '';
+      }
+
+      // ⭐ When "delivery same as company" toggles ON → copy company into shipping
+      if (key === 'deliverySameAsCompany' && value === true) {
+        Object.assign(next, copyCompanyToShipping(next));
+      }
+
+      // ⭐ When "delivery same as company" toggles OFF → clear shipping fields
+      if (key === 'deliverySameAsCompany' && value === false) {
+        next.shippingCompanyName = '';
+        next.shippingContactName = '';
+        next.shippingDesignation = '';
+        next.shippingEmail = '';
+        next.shippingPhone = '';
+        next.shippingAddress = '';
+        next.shippingCountry = '';
+        next.shippingCity = '';
+        next.shippingZipCode = '';
+      }
+
+      // ⭐ When "end user same as company" toggles ON → copy company into end user
+      if (key === 'endUserSameAsCompany' && value === true) {
+        Object.assign(next, copyCompanyToEndUser(next));
+      }
+
+      // ⭐ When "end user same as company" toggles OFF → clear end user fields
+      if (key === 'endUserSameAsCompany' && value === false) {
+        next.endUserCompanyName = '';
+        next.endUserContactName = '';
+        next.endUserDesignation = '';
+        next.endUserEmail = '';
+        next.endUserPhone = '';
+        next.endUserAddress = '';
+        next.endUserCountry = '';
+        next.endUserCity = '';
+        next.endUserZipCode = '';
+      }
+
+      return next;
+    });
+
     setErrors((prev) => {
       const next = { ...prev };
       delete next[key as string];
@@ -218,7 +298,6 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
     }));
   };
 
-  // ---- Save from Product Editor ----
   const handleProductSave = (draft: ProductDraft) => {
     if (!editingProductId) return;
     setForm((prev) => ({
@@ -243,33 +322,83 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
     setToast('Product details updated.');
   };
 
-  // ---- Validation per step ----
-  const validateStep = (s: Step): boolean => {
+  // ============================================================
+  // Per-step validation
+  // ============================================================
+  const validateStep = (s: Step, silent = false): boolean => {
     const errs: Record<string, string> = {};
+
     if (s === 0) {
-      if (!form.companyName.trim()) errs.companyName = 'This field is required.';
-      if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-        errs.email = 'The email must be a valid email address.';
-        setToast('The email must be a valid email address.');
+      if (!form.companyName.trim()) errs.companyName = 'Company name is required.';
+      if (!form.country.trim()) errs.country = 'Country is required.';
+      if (!form.email.trim()) errs.email = 'Email is required.';
+      else if (!EMAIL_RE.test(form.email)) errs.email = 'Please enter a valid email.';
+      if (!form.contactName.trim()) errs.contactName = 'Contact name is required.';
+    }
+
+    if (s === 1) {
+      if (!form.deliverySameAsCompany) {
+        if (!form.shippingCompanyName.trim()) errs.shippingCompanyName = 'Shipping company is required.';
+        if (!form.shippingCountry.trim()) errs.shippingCountry = 'Shipping country is required.';
+        if (!form.shippingAddress.trim()) errs.shippingAddress = 'Shipping address is required.';
+        if (!form.shippingCity.trim()) errs.shippingCity = 'Shipping city is required.';
       }
     }
-    if (s === 1 && !form.deliverySameAsCompany) {
-      if (!form.shippingCity.trim()) errs.shippingCity = 'This field is required.';
+
+    if (s === 2) {
+      if (!form.endUserSameAsCompany) {
+        if (!form.endUserCompanyName.trim()) errs.endUserCompanyName = 'End user company is required.';
+        if (!form.endUserCountry.trim()) errs.endUserCountry = 'End user country is required.';
+        if (!form.endUserAddress.trim()) errs.endUserAddress = 'End user address is required.';
+        if (!form.endUserCity.trim()) errs.endUserCity = 'End user city is required.';
+      }
     }
-    if (s === 2 && !form.endUserSameAsCompany) {
-      if (!form.endUserAddress.trim()) errs.endUserAddress = 'This field is required.';
+
+    if (s === 3) {
+      if (!form.skipAdditional) {
+        if (!form.projectName.trim()) errs.projectName = 'Project name is required.';
+        if (!form.tentativeBudget.trim()) errs.tentativeBudget = 'Tentative budget is required.';
+        if (!form.currentProjectStatus.trim()) errs.currentProjectStatus = 'Current project status is required.';
+      }
     }
-    setErrors(errs);
+
+    if (!silent) setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
+  const stepValidity = useMemo<boolean[]>(() => {
+    return [0, 1, 2, 3].map((s) => validateStep(s as Step, true));
+  }, [form]);
+
+  const currentStepValid = stepValidity[step];
+  const allStepsValid = stepValidity.every(Boolean);
+
   const goNext = () => {
-    if (!validateStep(step)) return;
+    if (!currentStepValid) {
+      validateStep(step);
+      return;
+    }
     if (step < 3) setStep((s) => (s + 1) as Step);
   };
 
   const goPrev = () => {
     if (step > 0) setStep((s) => (s - 1) as Step);
+  };
+
+  const tryJumpToStep = (target: Step) => {
+    if (target === step) return;
+    if (target < step) {
+      setStep(target);
+      return;
+    }
+    for (let s = 0 as Step; s < target; s = (s + 1) as Step) {
+      if (!stepValidity[s]) {
+        setStep(s);
+        validateStep(s);
+        return;
+      }
+    }
+    setStep(target);
   };
 
   const handleSync = () => {
@@ -280,18 +409,21 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
     }, 1400);
   };
 
-  // ---- Submit ----
+  // ============================================================
+  // Submit
+  // ============================================================
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     for (const s of [0, 1, 2, 3] as Step[]) {
       if (!validateStep(s)) {
         setStep(s);
         return;
       }
     }
+
     setSubmitting(true);
 
-    // ⭐ Build payload typed against the backend's CreateRFQPayload
     const payload: CreateRFQPayload = {
       source: 'manual',
       company: form.companyName,
@@ -352,7 +484,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
           ref={panelRef}
           className="bg-white rounded-2xl max-w-3xl w-full shadow-2xl relative max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200"
         >
-          {/* =============== HEADER =============== */}
+          {/* HEADER */}
           <div className="sticky top-0 bg-white z-10 flex items-start justify-between px-8 pt-6 pb-4 border-b border-slate-100 rounded-t-2xl">
             <div>
               <h2 id="add-rfq-title" className="text-xl font-bold text-slate-900">
@@ -372,7 +504,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
             </button>
           </div>
 
-          {/* =============== TAB SWITCHER =============== */}
+          {/* TAB SWITCHER */}
           <div className="px-8 pt-5">
             <div className="flex items-center gap-6 border-b border-slate-100">
               <TabButton
@@ -390,15 +522,18 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
             </div>
           </div>
 
-          {/* =============== BODY =============== */}
+          {/* BODY */}
           <div className="px-8 py-6">
             {tab === 'sync' ? (
               <SyncPanel syncing={syncing} onSync={handleSync} />
             ) : (
               <ManualPanel
                 step={step}
-                setStep={setStep}
+                setStep={tryJumpToStep}
                 steps={steps}
+                stepValidity={stepValidity}
+                currentStepValid={currentStepValid}
+                allStepsValid={allStepsValid}
                 form={form}
                 errors={errors}
                 setField={setField}
@@ -415,7 +550,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
             )}
           </div>
 
-          {/* =============== TOAST =============== */}
+          {/* TOAST */}
           {toast && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs rounded-lg px-4 py-2.5 shadow-xl flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
               <span className="w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center font-bold text-[10px]">
@@ -430,7 +565,7 @@ export default function AddRfqModal({ onClose, onSubmit }: Props) {
         </div>
       </div>
 
-      {/* =============== NESTED PRODUCT EDITOR MODAL =============== */}
+      {/* PRODUCT EDITOR MODAL */}
       {editingItem && (
         <ProductEditorModal
           initial={{
@@ -514,6 +649,9 @@ function ManualPanel({
   step,
   setStep,
   steps,
+  stepValidity,
+  currentStepValid,
+  allStepsValid,
   form,
   errors,
   setField,
@@ -530,6 +668,9 @@ function ManualPanel({
   step: Step;
   setStep: (s: Step) => void;
   steps: { n: number; label: string }[];
+  stepValidity: boolean[];
+  currentStepValid: boolean;
+  allStepsValid: boolean;
   form: RFQFormData;
   errors: Record<string, string>;
   setField: <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => void;
@@ -545,7 +686,7 @@ function ManualPanel({
 }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* ============ PRODUCT ROWS ============ */}
+      {/* PRODUCT ROWS */}
       <div className="space-y-2">
         {form.items.map((it, idx) => (
           <div key={it.id} className="flex items-center gap-2">
@@ -621,21 +762,29 @@ function ManualPanel({
 
       <div className="border-t border-slate-100" />
 
-      {/* ============ STEP TABS ============ */}
+      {/* STEP TABS */}
       <div className="flex items-center gap-0 border-b border-slate-100">
         {steps.map((s) => {
-          const done = s.n < step;
-          const active = s.n === step;
+          const stepIndex = s.n as Step;
+          const done = stepIndex < step;
+          const active = stepIndex === step;
+          const canJump =
+            stepIndex <= step ||
+            stepValidity.slice(0, stepIndex).every(Boolean);
+
           return (
             <button
               key={s.n}
               type="button"
-              onClick={() => setStep(s.n as Step)}
+              disabled={!canJump}
+              onClick={() => setStep(stepIndex)}
               className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition border-b-2 ${active
-                  ? 'text-rose-700 border-rose-700 bg-rose-50/40'
-                  : done
-                    ? 'text-slate-700 border-transparent hover:bg-slate-50'
-                    : 'text-slate-500 border-transparent hover:bg-slate-50'
+                ? 'text-rose-700 border-rose-700 bg-rose-50/40'
+                : done
+                  ? 'text-slate-700 border-transparent hover:bg-slate-50'
+                  : canJump
+                    ? 'text-slate-500 border-transparent hover:bg-slate-50'
+                    : 'text-slate-300 border-transparent cursor-not-allowed'
                 }`}
             >
               {done && <Check className="w-3.5 h-3.5 text-slate-700" />}
@@ -645,7 +794,7 @@ function ManualPanel({
         })}
       </div>
 
-      {/* ============ STEP CONTENT ============ */}
+      {/* STEP CONTENT */}
       <div className="pt-1">
         {step === 0 && (
           <CompanyInfoStep form={form} errors={errors} setField={setField} />
@@ -656,10 +805,10 @@ function ManualPanel({
         {step === 2 && (
           <EndUserStep form={form} errors={errors} setField={setField} />
         )}
-        {step === 3 && <AdditionalStep form={form} setField={setField} />}
+        {step === 3 && <AdditionalStep form={form} errors={errors} setField={setField} />}
       </div>
 
-      {/* ============ FOOTER ============ */}
+      {/* FOOTER */}
       <div className="flex items-center justify-between pt-3">
         {step > 0 ? (
           <button
@@ -678,7 +827,11 @@ function ManualPanel({
           <button
             type="button"
             onClick={goNext}
-            className="inline-flex items-center gap-1.5 px-5 py-2 rounded bg-rose-200 text-white text-xs font-semibold hover:bg-rose-300 transition"
+            disabled={!currentStepValid}
+            className={`inline-flex items-center gap-1.5 px-5 py-2 rounded text-white text-xs font-semibold transition ${currentStepValid
+              ? 'bg-rose-700 hover:bg-rose-800'
+              : 'bg-rose-200 cursor-not-allowed'
+              }`}
           >
             Next
             <ArrowRight className="w-3.5 h-3.5" />
@@ -686,8 +839,11 @@ function ManualPanel({
         ) : (
           <button
             type="submit"
-            disabled={submitting}
-            className="inline-flex items-center gap-1.5 px-5 py-2 rounded bg-rose-700 text-white text-xs font-semibold hover:bg-rose-800 transition disabled:opacity-70"
+            disabled={submitting || !allStepsValid}
+            className={`inline-flex items-center gap-1.5 px-5 py-2 rounded text-white text-xs font-semibold transition ${submitting || !allStepsValid
+              ? 'bg-rose-200 cursor-not-allowed'
+              : 'bg-rose-700 hover:bg-rose-800'
+              }`}
           >
             {submitting ? 'Submitting…' : 'Submit'}
           </button>
@@ -729,18 +885,30 @@ function CompanyInfoStep({
             className="mt-3"
           />
         </div>
-        <div className="pt-7" />
+        <div className="pt-7">
+          <SelectField
+            label="Country"
+            placeholder="Select Country"
+            value={form.country}
+            onChange={(v) => setField('country', v)}
+            options={COUNTRIES}
+            error={errors.country}
+            required
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Contact Name"
           placeholder="Contact Name (e.g: Jhone Doe)"
           value={form.contactName}
           onChange={(v) => setField('contactName', v)}
+          error={errors.contactName}
+          required
         />
         <InputField
-          label=""
+          label="Address"
           placeholder="Address (e.g: House No, Road, Block)"
           value={form.address}
           onChange={(v) => setField('address', v)}
@@ -749,30 +917,13 @@ function CompanyInfoStep({
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Designation"
           placeholder="Designation (e.g: Sales Manager)"
           value={form.designation}
           onChange={(v) => setField('designation', v)}
         />
-        <SelectField
-          label=""
-          placeholder="Select Country"
-          value={form.country}
-          onChange={(v) => setField('country', v)}
-          options={COUNTRIES}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
-          placeholder="Email Address (e.g: jhone@mail.com)"
-          value={form.email}
-          onChange={(v) => setField('email', v)}
-          error={errors.email}
-        />
-        <InputField
-          label=""
+          label="City"
           placeholder="Enter your City Name"
           value={form.city}
           onChange={(v) => setField('city', v)}
@@ -781,13 +932,24 @@ function CompanyInfoStep({
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Email Address"
+          placeholder="Email Address (e.g: jhone@mail.com)"
+          value={form.email}
+          onChange={(v) => setField('email', v)}
+          error={errors.email}
+          required
+        />
+        <InputField
+          label="Phone Number"
           placeholder="Phone Number (e.g: 018687955852)"
           value={form.phone}
           onChange={(v) => setField('phone', v)}
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="ZIP Code"
           placeholder="ZIP Code (e.g: 1207)"
           value={form.zipCode}
           onChange={(v) => setField('zipCode', v)}
@@ -804,6 +966,7 @@ function CompanyInfoStep({
           checked={form.endUserSameAsCompany}
           onChange={(v) => setField('endUserSameAsCompany', v)}
           label="I am the end user and my information is the same as the company address"
+          disabled={form.isReseller}
         />
       </div>
     </div>
@@ -832,76 +995,83 @@ function ShippingStep({
       />
 
       <InputField
-        label=""
+        label="Shipping Company Name"
         placeholder="Shipping Company Name (e.g: NGen It)"
         value={form.shippingCompanyName}
         onChange={(v) => setField('shippingCompanyName', v)}
+        error={errors.shippingCompanyName}
         disabled={disabled}
+        required={!disabled}
       />
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Contact Name"
           placeholder="Contact Name (e.g: Jhone Doe)"
           value={form.shippingContactName}
           onChange={(v) => setField('shippingContactName', v)}
           disabled={disabled}
         />
         <InputField
-          label=""
+          label="Address"
           placeholder="Address (e.g: House No, Road, Block)"
           value={form.shippingAddress}
           onChange={(v) => setField('shippingAddress', v)}
+          error={errors.shippingAddress}
           disabled={disabled}
+          required={!disabled}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Designation"
           placeholder="Designation (e.g: Sales Manager)"
           value={form.shippingDesignation}
           onChange={(v) => setField('shippingDesignation', v)}
           disabled={disabled}
         />
         <SelectField
-          label=""
+          label="Country"
           placeholder="Select Country"
           value={form.shippingCountry}
           onChange={(v) => setField('shippingCountry', v)}
           options={COUNTRIES}
+          error={errors.shippingCountry}
           disabled={disabled}
+          required={!disabled}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Email Address"
           placeholder="Email Address (e.g: jhone@mail.com)"
           value={form.shippingEmail}
           onChange={(v) => setField('shippingEmail', v)}
           disabled={disabled}
         />
         <InputField
-          label=""
+          label="City"
           placeholder="Enter your City Name"
           value={form.shippingCity}
           onChange={(v) => setField('shippingCity', v)}
           error={errors.shippingCity}
           disabled={disabled}
+          required={!disabled}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Phone Number"
           placeholder="Phone Number (e.g: 018687955852)"
           value={form.shippingPhone}
           onChange={(v) => setField('shippingPhone', v)}
           disabled={disabled}
         />
         <InputField
-          label=""
+          label="ZIP Code"
           placeholder="ZIP Code (e.g: 1207)"
           value={form.shippingZipCode}
           onChange={(v) => setField('shippingZipCode', v)}
@@ -934,76 +1104,83 @@ function EndUserStep({
       />
 
       <InputField
-        label=""
+        label="End User Company"
         placeholder="Destination/Company Name (e.g: NGen It)"
         value={form.endUserCompanyName}
         onChange={(v) => setField('endUserCompanyName', v)}
+        error={errors.endUserCompanyName}
         disabled={disabled}
+        required={!disabled}
       />
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Contact Name"
           placeholder="Contact Name (e.g: Jhone Doe)"
           value={form.endUserContactName}
           onChange={(v) => setField('endUserContactName', v)}
           disabled={disabled}
         />
         <InputField
-          label=""
+          label="Address"
           placeholder="Address (e.g: House No, Road, Block)"
           value={form.endUserAddress}
           onChange={(v) => setField('endUserAddress', v)}
           error={errors.endUserAddress}
           disabled={disabled}
+          required={!disabled}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Designation"
           placeholder="Designation (e.g: Sales Manager)"
           value={form.endUserDesignation}
           onChange={(v) => setField('endUserDesignation', v)}
           disabled={disabled}
         />
         <SelectField
-          label=""
+          label="Country"
           placeholder="Select Country"
           value={form.endUserCountry}
           onChange={(v) => setField('endUserCountry', v)}
           options={COUNTRIES}
+          error={errors.endUserCountry}
           disabled={disabled}
+          required={!disabled}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Email Address"
           placeholder="Email Address (e.g: jhone@mail.com)"
           value={form.endUserEmail}
           onChange={(v) => setField('endUserEmail', v)}
           disabled={disabled}
         />
         <InputField
-          label=""
+          label="City"
           placeholder="Enter your City Name"
           value={form.endUserCity}
           onChange={(v) => setField('endUserCity', v)}
+          error={errors.endUserCity}
           disabled={disabled}
+          required={!disabled}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Phone Number"
           placeholder="Phone Number (e.g: 018687955852)"
           value={form.endUserPhone}
           onChange={(v) => setField('endUserPhone', v)}
           disabled={disabled}
         />
         <InputField
-          label=""
+          label="ZIP Code"
           placeholder="ZIP Code (e.g: 1207)"
           value={form.endUserZipCode}
           onChange={(v) => setField('endUserZipCode', v)}
@@ -1019,9 +1196,11 @@ function EndUserStep({
    ========================================================= */
 function AdditionalStep({
   form,
+  errors,
   setField,
 }: {
   form: RFQFormData;
+  errors: Record<string, string>;
   setField: <K extends keyof RFQFormData>(key: K, value: RFQFormData[K]) => void;
 }) {
   const disabled = form.skipAdditional;
@@ -1029,32 +1208,38 @@ function AdditionalStep({
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <InputField
-          label=""
+          label="Project Name"
           placeholder="Project Name"
           value={form.projectName}
           onChange={(v) => setField('projectName', v)}
+          error={errors.projectName}
           disabled={disabled}
+          required={!disabled}
         />
         <InputField
-          label=""
+          label="Tentative Budget"
           placeholder="Tentative Budget…"
           value={form.tentativeBudget}
           onChange={(v) => setField('tentativeBudget', v)}
+          error={errors.tentativeBudget}
           disabled={disabled}
+          required={!disabled}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <SelectField
-          label=""
+          label="Current Project Status"
           placeholder="Current project status"
           value={form.currentProjectStatus}
           onChange={(v) => setField('currentProjectStatus', v)}
           options={['Planning', 'Budgeting', 'Approved', 'In Progress', 'On Hold']}
+          error={errors.currentProjectStatus}
           disabled={disabled}
+          required={!disabled}
         />
         <SelectField
-          label=""
+          label="Tentative Purchase Date"
           placeholder="Tentative Purchase Date"
           value={form.tentativePurchaseDate}
           onChange={(v) => setField('tentativePurchaseDate', v)}
@@ -1131,6 +1316,8 @@ function SelectField({
   onChange,
   options,
   disabled,
+  error,
+  required,
 }: {
   label?: string;
   placeholder: string;
@@ -1138,12 +1325,14 @@ function SelectField({
   onChange: (v: string) => void;
   options: string[];
   disabled?: boolean;
+  error?: string;
+  required?: boolean;
 }) {
   return (
     <div>
       {label && (
         <label className="block text-[10.5px] font-semibold tracking-[0.06em] text-slate-500 uppercase mb-1.5">
-          {label}
+          {label} {required && <span className="text-rose-500">*</span>}
         </label>
       )}
       <div className="relative">
@@ -1151,7 +1340,8 @@ function SelectField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
-          className="w-full appearance-none bg-slate-100 border-0 rounded-lg px-3 py-2.5 pr-8 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#A06126] disabled:opacity-60"
+          className={`w-full appearance-none bg-slate-100 border rounded-lg px-3 py-2.5 pr-8 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#A06126] disabled:opacity-60 ${error ? 'border-rose-400' : 'border-transparent'
+            }`}
         >
           <option value="">{placeholder}</option>
           {options.map((o) => (
@@ -1162,6 +1352,9 @@ function SelectField({
         </select>
         <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
       </div>
+      {error && (
+        <p className="text-[11px] text-rose-600 mt-1 font-medium">{error}</p>
+      )}
     </div>
   );
 }
@@ -1172,20 +1365,26 @@ function CheckboxRow({
   label,
   hint,
   className = '',
+  disabled = false,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
   label: string;
   hint?: string;
   className?: string;
+  disabled?: boolean;
 }) {
   return (
-    <label className={`flex items-center gap-2 cursor-pointer text-xs ${className}`}>
+    <label
+      className={`flex items-center gap-2 cursor-pointer text-xs ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
+    >
       <input
         type="checkbox"
         checked={checked}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
-        className="w-3.5 h-3.5 rounded border-slate-300 text-rose-700 focus:ring-rose-500"
+        className="w-3.5 h-3.5 rounded border-slate-300 text-rose-700 focus:ring-rose-500 disabled:cursor-not-allowed"
       />
       <span className="text-slate-700 font-medium">
         {label}

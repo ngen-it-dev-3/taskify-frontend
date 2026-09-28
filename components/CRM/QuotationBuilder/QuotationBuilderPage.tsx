@@ -57,11 +57,15 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         productType: 'DG',
     });
 
+    const [autoEditLineId, setAutoEditLineId] = useState<string | null>(null);
+
+    // ⭐ Track unsaved line edits so hydration doesn't overwrite them
+    const [linesDirty, setLinesDirty] = useState(false);
+
     // ============================================================
     // LOADING & SENDING STATE
     // ============================================================
     const [loading, setLoading] = useState<boolean>(!!rfqId);
-    // ⭐ FIX #1 — sending state was missing
     const [sending, setSending] = useState(false);
 
     // ============================================================
@@ -73,7 +77,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         saving,
         create,
         update,
-        send,          // send(id, withAttachment)
+        send,
         approve,
         markOutcome,
     } = useQuotation(rfqId);
@@ -88,6 +92,10 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         lost: 0,
         awaiting: 0,
     });
+
+    // ⭐ Track whether user is allowed to remove a line
+    const removableCount = lines.filter((l) => l.type !== 'fixed').length;
+    const canRemoveLine = removableCount > 1;
 
     // ============================================================
     // LOAD RFQ DATA
@@ -150,7 +158,14 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     spec: p.spec || '',
                 }));
 
-                setLines([...productLines, ...FIXED_LINES]);
+                setLines((prev) => {
+                    // ⭐ Only seed from RFQ products if we don't already have real lines
+                    const hasRealLines = prev.some(
+                        (l) => l.type !== 'fixed' && l.name && l.name !== 'New Item'
+                    );
+                    if (hasRealLines) return prev;
+                    return [...productLines, ...FIXED_LINES];
+                });
             } catch (e: any) {
                 console.error('[QuotationBuilder] Failed to load RFQ:', e);
                 if (mounted) toast.error(e.message || 'Failed to load RFQ data');
@@ -166,9 +181,11 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
     // ============================================================
     // HYDRATE FROM EXISTING QUOTATION
+    // ⭐ Skips `setLines` when user has unsaved local edits
     // ============================================================
     useEffect(() => {
         if (!quotation) return;
+
         setMeta((prev) => ({
             ...prev,
             pqNumber: quotation.pqNumber,
@@ -183,12 +200,17 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             discountEnabled: quotation.discountEnabled,
             pqrNumber: quotation.pqrNumber || prev.pqrNumber,
         }));
-        setLines(quotation.lines?.length ? quotation.lines : [...FIXED_LINES]);
+
+        // ⭐ Only hydrate lines if there are no unsaved local changes
+        if (!linesDirty) {
+            setLines(quotation.lines?.length ? quotation.lines : [...FIXED_LINES]);
+        }
+
         if (quotation.rates) setRates(quotation.rates);
         if (quotation.terms?.length) setTerms(quotation.terms);
         if (quotation.logistics)
             setLogistics((prev) => ({ ...prev, ...quotation.logistics }));
-    }, [quotation]);
+    }, [quotation, linesDirty]);
 
     // ============================================================
     // FETCH STATS — refreshes on tab change + after mutations
@@ -209,7 +231,15 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     }, [topTab, quotation?.id]);
 
     // ============================================================
-    // LIVE CALC  —  Convention A: tax on post-discount price
+    // LIVE CALC
+    //
+    // Business rules:
+    //   1. Principal Discount % reduces the COST (supplier-side)
+    //   2. Office / Profit / Others margins apply to discounted cost
+    //   3. Per-line Disc % applies to the price (client-side)
+    //      — gated by meta.discountEnabled (Special Discount checkbox)
+    //   4. Tax is applied to the post-discount amount (Convention A)
+    //      — gated by meta.vatEnabled (VAT / GST checkbox)
     // ============================================================
     const calc = useMemo(() => {
         let costOfGoods = 0;
@@ -217,20 +247,30 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         let profitTotal = 0;
         let othersTotal = 0;
 
-        let subTotal = 0;             // pre-discount, pre-tax
-        let discountTotal = 0;        // Σ discounts
-        let customerPrice = 0;        // net after discount, pre-tax
+        let subTotal = 0;
+        let discountTotal = 0;
+        let customerPrice = 0;
         let totalWeight = 0;
 
+        const principalRate = 1 - (rates.principalDiscountPct || 0) / 100;
+
+        const discountOn = meta.discountEnabled !== false;
+        const taxOn = meta.vatEnabled !== false;
+        const taxPct = rates.taxPct || 0;
+
         for (const l of lines) {
-            const lineTotal = (l.qty || 0) * (l.principalCost || 0);
+            const effectiveCost = (l.principalCost || 0) * principalRate;
+            const lineTotal = (l.qty || 0) * effectiveCost;
             const weight = (l.qty || 0) * (l.weightKg || 0);
+
             const office = (lineTotal * (rates.officePct || 0)) / 100;
             const profit = (lineTotal * (rates.profitPct || 0)) / 100;
             const others = (lineTotal * (rates.othersPct || 0)) / 100;
 
             const sub = lineTotal + office + profit + others;
-            const discountAmt = sub * ((l.discountPct || 0) / 100);
+
+            const appliedPct = discountOn ? (l.discountPct || 0) : 0;
+            const discountAmt = sub * (appliedPct / 100);
             const discounted = sub - discountAmt;
 
             costOfGoods += lineTotal;
@@ -243,11 +283,10 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             totalWeight += weight;
         }
 
-        // ⭐ Tax on the net (post-discount) subtotal
         const taxVatGst =
-            (rates.taxPct || 0) === 0
+            !taxOn || taxPct === 0
                 ? 0
-                : (customerPrice * rates.taxPct) / 100;
+                : (customerPrice * taxPct) / 100;
 
         const grandTotal = customerPrice + taxVatGst;
 
@@ -258,28 +297,39 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             commissionOthers: othersTotal,
             netProfit: profitTotal,
 
-            subTotal,         // pre-discount
-            discountTotal,    // Σ discount
-            customerPrice,    // net after discount, pre-tax
-            taxVatGst,        // tax on customerPrice
-            grandTotal,       // customerPrice + tax
+            subTotal,
+            discountTotal,
+            customerPrice,
+            taxVatGst,
+            grandTotal,
 
             totalWeight,
         };
-    }, [lines, rates]);
+    }, [
+        lines,
+        rates,
+        meta.vatEnabled,
+        meta.discountEnabled,
+    ]);
 
     // ============================================================
     // LINE HANDLERS
     // ============================================================
     const updateLine = (id: string, patch: Partial<QuotationLineItem>) => {
+        setLinesDirty(true);   // ⭐ Mark unsaved changes
         setLines((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
     };
 
     const addLine = () => {
+        setLinesDirty(true);   // ⭐ Mark unsaved changes
+        let newId = '';
+
         setLines((prev) => {
             const itemCount = prev.filter((l) => l.type !== 'fixed').length;
+            newId = `new-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
             const newLine: QuotationLineItem = {
-                id: `new-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                id: newId,
                 sl: itemCount + 1,
                 name: 'New Item',
                 qty: 1,
@@ -287,7 +337,11 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 weightKg: 0,
                 discountPct: 0,
                 type: 'item',
+                source1: { name: '', price: '' },
+                source2: { name: '', price: '' },
+                source3: { name: '', price: '' },
             };
+
             const firstFixedIdx = prev.findIndex((l) => l.type === 'fixed');
             if (firstFixedIdx === -1) return [...prev, newLine];
             return [
@@ -296,9 +350,19 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 ...prev.slice(firstFixedIdx),
             ];
         });
+
+        setAutoEditLineId(newId);
     };
 
     const removeLine = (id: string) => {
+        const removableLines = lines.filter((l) => l.type !== 'fixed');
+        if (removableLines.length <= 1) {
+            toast.error('A quotation needs at least one line item.');
+            return;
+        }
+
+        setLinesDirty(true);   // ⭐ Mark unsaved changes
+
         setLines((prev) => {
             const filtered = prev.filter((l) => l.id !== id);
             let counter = 1;
@@ -324,7 +388,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             prev.map((t, i) => (i === index ? { ...t, ...patch } : t))
         );
     };
-    // ⭐ NEW — remove a term by index
+
     const removeTerm = (index: number) => {
         setTerms((prev) => prev.filter((_, i) => i !== index));
     };
@@ -332,7 +396,14 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     // ============================================================
     // VALIDATION HELPERS
     // ============================================================
-    const discountTooHigh = lines.some((l) => l.discountPct > 15);
+    const DISCOUNT_THRESHOLD = 15;
+
+    const maxDiscountPct = lines.reduce((max, l) => {
+        if (l.type === 'fixed') return max;
+        return Math.max(max, l.discountPct || 0);
+    }, 0);
+
+    const discountTooHigh = maxDiscountPct > DISCOUNT_THRESHOLD;
     const hasRealCosts = lines.some(
         (l) => l.type !== 'fixed' && l.principalCost > 0
     );
@@ -350,7 +421,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             if (quotation?.id) {
                 if (
                     quotation.status !== 'draft' &&
-                    quotation.status !== 'awaiting_approval'
+                    quotation.status !== 'awaiting_approval' &&
+                    quotation.status !== 'sent'   // ⭐ now editable
                 ) {
                     toast.error(
                         `Cannot edit — quotation is "${quotation.status}". Create a new version to continue.`
@@ -369,6 +441,10 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     vatEnabled: meta.vatEnabled,
                     discountEnabled: meta.discountEnabled,
                 });
+
+                // ⭐ Clear dirty flag after successful save
+                setLinesDirty(false);
+
                 toast.success('Draft updated');
             } else {
                 await create({
@@ -385,6 +461,10 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     discountEnabled: meta.discountEnabled,
                     pqrNumber: meta.pqrNumber,
                 });
+
+                // ⭐ Clear dirty flag after successful save
+                setLinesDirty(false);
+
                 toast.success('Draft created');
             }
         } catch (e: any) {
@@ -433,11 +513,18 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     rates,
                     terms,
                     logistics,
+                    vatEnabled: meta.vatEnabled,
+                    discountEnabled: meta.discountEnabled,
                 });
             }
 
+            // ⭐ Clear dirty flag
+            setLinesDirty(false);
+
             if (discountTooHigh) {
-                toast.error('Discount exceeds 15% — routed for approval');
+                toast.error(
+                    `Discount ${maxDiscountPct}% exceeds ${DISCOUNT_THRESHOLD}% — routed for approval`
+                );
                 setTopTab('drafts');
                 return;
             }
@@ -459,9 +546,15 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             return;
         }
 
+        if (discountTooHigh) {
+            toast.error(
+                `Discount ${maxDiscountPct}% exceeds ${DISCOUNT_THRESHOLD}% — routed for approval`
+            );
+            return;
+        }
+
         setSending(true);
         try {
-            // Ensure quotation exists
             let qid = quotation?.id;
 
             if (!qid) {
@@ -484,14 +577,15 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 qid = created.id;
             }
 
-            // Guard status
             if (quotation?.status === 'sent') {
                 toast.error('Already sent');
                 return;
             }
 
-            // ⭐ FIX #2 — use `send`, not `sendWithAttachment`
             const result = await send(qid, withAttachment);
+
+            // ⭐ Clear dirty flag
+            setLinesDirty(false);
 
             toast.success(
                 withAttachment
@@ -507,21 +601,23 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // WHATSAPP / SHARE LINK
+    // ⭐ SHAREABLE LINK — single source of truth
+    //    Always uses rfqId so both buttons produce the SAME URL
     // ============================================================
-    const handleWhatsApp = () => {
-        // ⭐ Always use the production URL — never localhost
+    const buildShareableLink = (): string => {
         const baseUrl =
             process.env.NEXT_PUBLIC_APP_URL ||
             'https://taskify-frontend-alpha.vercel.app';
 
-        const link = rfqId
+        return rfqId
             ? `${baseUrl}/crm/quotation-builder/${rfqId}`
             : `${baseUrl}/crm/quotation-builder`;
+    };
 
+    const handleWhatsApp = () => {
+        const link = buildShareableLink();
         const message = `Hello! Here's your quotation ${meta.pqNumber || meta.rfqNumber
             }:\n${link}`;
-
         const text = encodeURIComponent(message);
 
         if (typeof window !== 'undefined') {
@@ -530,9 +626,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     const handleGenerateLink = async () => {
-        const url = quotation?.id
-            ? `https://taskify-frontend-alpha.vercel.app/crm/quotation-builder/${quotation.id}`
-            : `https://taskify-frontend-alpha.vercel.app/crm/quotation-builder/${meta.rfqNumber}`;
+        const url = buildShareableLink();
         try {
             if (typeof navigator !== 'undefined' && navigator.clipboard) {
                 await navigator.clipboard.writeText(url);
@@ -542,6 +636,46 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             }
         } catch {
             toast.success(`Link: ${url}`);
+        }
+    };
+
+    // ============================================================
+    // ⭐ UPDATE + SAVE (used by SourceTab ✓ button)
+    //    Marks dirty + persists immediately
+    // ============================================================
+    const updateLineAndSave = async (id: string, patch: Partial<QuotationLineItem>) => {
+        // Update local state first
+        const nextLines = lines.map((l) =>
+            l.id === id ? { ...l, ...patch } : l
+        );
+        setLines(nextLines);
+
+        // ⭐ Then persist to backend
+        if (!rfqId) return;
+
+        try {
+            if (quotation?.id) {
+                await update(quotation.id, { lines: nextLines });
+            } else {
+                await create({
+                    rfqId,
+                    client: meta.client,
+                    clientType: meta.clientType,
+                    lines: nextLines,
+                    rates,
+                    terms,
+                    logistics,
+                    crmManager: meta.crmManager,
+                    territory: meta.territory,
+                    vatEnabled: meta.vatEnabled,
+                    discountEnabled: meta.discountEnabled,
+                    pqrNumber: meta.pqrNumber,
+                });
+            }
+            // ⭐ No need to mark dirty — we just saved
+            setLinesDirty(false);
+        } catch (e: any) {
+            toast.error(e.message || 'Failed to save source');
         }
     };
 
@@ -616,7 +750,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                                 meta={meta}
                                 lines={lines}
                                 calc={calc}
+                                rates={rates}
                                 terms={terms}
+                                canRemoveLine={canRemoveLine}
                                 onUpdateLine={updateLine}
                                 onRemoveLine={removeLine}
                                 onAddLine={addLine}
@@ -632,7 +768,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
                         {tab === 'cog' && (
                             <CostOfGoodTab
-                                meta={meta}                  
+                                meta={meta}
                                 lines={lines}
                                 calc={calc}
                                 rates={rates}
@@ -648,12 +784,20 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         {tab === 'source' && (
                             <SourceTab
                                 lines={lines}
+                                autoEditLineId={autoEditLineId}
+                                onAutoEditConsumed={() => setAutoEditLineId(null)}
+                                onUpdateLine={updateLineAndSave}
                                 onRemoveLine={removeLine}
                                 onAddLine={addLine}
                             />
                         )}
 
-                        {discountTooHigh && tab !== 'quotation' && <ThresholdBanner />}
+                        {discountTooHigh && (
+                            <ThresholdBanner
+                                discountPct={maxDiscountPct}
+                                threshold={DISCOUNT_THRESHOLD}
+                            />
+                        )}
                     </div>
                 </>
             )}

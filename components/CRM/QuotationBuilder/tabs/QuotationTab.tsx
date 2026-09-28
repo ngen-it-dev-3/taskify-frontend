@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Pencil, X, Trash2, Pen } from 'lucide-react';   // ⭐ added Trash2
-import type { QuotationLineItem, QuotationMeta } from '../types';
+import { Pencil, X, Trash2, Pen } from 'lucide-react';
+import type {
+    QuotationLineItem,
+    QuotationMeta,
+    QuotationRates,
+} from '../types';
 import { AUTHORIZED_BRANDS } from '../constants';
 import { convertToDisplay, convertToBase } from '../utils';
 
@@ -10,37 +14,41 @@ interface Props {
     meta: QuotationMeta;
     lines: QuotationLineItem[];
     calc: any;
+    rates: QuotationRates;               // ⭐ NEW
     terms?: { label: string; value: string }[];
     onUpdateLine?: (id: string, patch: Partial<QuotationLineItem>) => void;
     onRemoveLine?: (id: string) => void;
     onAddLine?: () => void;
     onAddTerm?: () => void;
     onUpdateTerm?: (index: number, patch: { label?: string; value?: string }) => void;
-    onRemoveTerm?: (index: number) => void;   // ⭐ NEW
+    onRemoveTerm?: (index: number) => void;
     onSend?: (withAttachment: boolean) => void;
     onWhatsApp?: () => void;
     onGenerateLink?: () => void;
     sending?: boolean;
+    canRemoveLine?: boolean;
 }
 
 interface EditState {
     id: string;
     name: string;
     qty: number;
-    price: number;
+    price: number;   // client-facing unit price in display currency
 }
 
 export default function QuotationTab({
     meta,
     lines,
     calc,
+    rates,
     terms = [],
+    canRemoveLine = true,
     onUpdateLine,
     onRemoveLine,
     onAddLine,
     onAddTerm,
     onUpdateTerm,
-    onRemoveTerm,   // ⭐ NEW
+    onRemoveTerm,
     onSend,
     onWhatsApp,
     onGenerateLink,
@@ -51,13 +59,17 @@ export default function QuotationTab({
     const autoEditedIds = useRef<Set<string>>(new Set());
     const prevLineCount = useRef<number | null>(null);
 
-    // ---- Base amounts (BDT) ----
-    const subtotal = calc.subTotal;
-    const gst = meta.vatEnabled ? (subtotal * 15) / 100 : 0;
-    const grand = subtotal + gst;
+    // ---- Base amounts (BDT) — pulled from calc (already checkbox-aware) ----
+    const subtotal = calc?.subTotal || 0;
+    const discountAmt = calc?.discountTotal || 0;
+    const netSub = calc?.customerPrice || subtotal;
+    const gst = calc?.taxVatGst || 0;
+    const grand = calc?.grandTotal || netSub + gst;
 
-    // ---- Display amounts ----
+    // ---- Display amounts (converted to selected currency) ----
     const displaySubtotal = convertToDisplay(subtotal, meta);
+    const displayDiscount = convertToDisplay(discountAmt, meta);
+    const displayNetSub = convertToDisplay(netSub, meta);
     const displayGst = convertToDisplay(gst, meta);
     const displayGrand = convertToDisplay(grand, meta);
 
@@ -65,6 +77,71 @@ export default function QuotationTab({
 
     const productLines = lines.filter((l) => l.type !== 'fixed');
     const displayLines = productLines.filter((l) => l.name.trim() !== '');
+
+    const discountOn = meta.discountEnabled !== false;
+    const taxOn = meta.vatEnabled !== false;
+
+    // ============================================================
+    // ⭐ CLIENT PRICE HELPERS — mirror the calc logic exactly
+    // ============================================================
+    /**
+     * Compute the client-facing unit price (in BASE currency) for a line.
+     * Order of operations:
+     *   1. principalCost × (1 − principalDiscountPct/100)
+     *   2. × (1 + officePct/100 + profitPct/100 + othersPct/100)
+     *   3. × (1 − discountPct/100)          [only if discount enabled]
+     *   4. × (1 + taxPct/100)               [only if VAT enabled]
+     */
+    const computeClientUnitPrice = (l: QuotationLineItem): number => {
+        const principalRate = 1 - (rates?.principalDiscountPct || 0) / 100;
+        const effectiveCost = (l.principalCost || 0) * principalRate;
+
+        const marginRate =
+            1 +
+            (rates?.officePct || 0) / 100 +
+            (rates?.profitPct || 0) / 100 +
+            (rates?.othersPct || 0) / 100;
+
+        const sub = effectiveCost * marginRate;
+
+        const discountPct =
+            meta.discountEnabled !== false ? l.discountPct || 0 : 0;
+        const discountRate = 1 - discountPct / 100;
+
+        const taxPct = meta.vatEnabled !== false ? rates?.taxPct || 0 : 0;
+        const taxRate = 1 + taxPct / 100;
+
+        return sub * discountRate * taxRate;
+    };
+
+    /**
+     * Reverse of the above: given a client-facing unit price (in BASE),
+     * derive the principalCost the line needs to produce that price.
+     */
+    const derivePrincipalCost = (
+        baseClientPrice: number,
+        discountPct: number
+    ): number => {
+        const principalRate = 1 - (rates?.principalDiscountPct || 0) / 100;
+
+        const marginRate =
+            1 +
+            (rates?.officePct || 0) / 100 +
+            (rates?.profitPct || 0) / 100 +
+            (rates?.othersPct || 0) / 100;
+
+        const appliedDiscountPct =
+            meta.discountEnabled !== false ? discountPct : 0;
+        const discountRate = 1 - appliedDiscountPct / 100;
+
+        const taxPct = meta.vatEnabled !== false ? rates?.taxPct || 0 : 0;
+        const taxRate = 1 + taxPct / 100;
+
+        const divisor = principalRate * marginRate * discountRate * taxRate;
+        if (divisor === 0) return 0;
+
+        return baseClientPrice / divisor;
+    };
 
     // ============================================================
     // AUTO-EDIT on new line
@@ -81,14 +158,15 @@ export default function QuotationTab({
             const newest = productLines[productLines.length - 1];
             if (newest && !autoEditedIds.current.has(newest.id)) {
                 autoEditedIds.current.add(newest.id);
-                const baseUnitPrice = (newest.principalCost || 0) * 1.085;
+
+                const baseUnitPrice = computeClientUnitPrice(newest);
                 const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
 
                 setEditing({
                     id: newest.id,
                     name: '',
                     qty: newest.qty || 1,
-                    price: displayUnitPrice,
+                    price: Number(displayUnitPrice.toFixed(2)),
                 });
             }
         }
@@ -100,23 +178,35 @@ export default function QuotationTab({
     // EDIT HANDLERS
     // ============================================================
     const startEdit = (l: QuotationLineItem) => {
-        const baseUnitPrice = l.principalCost * 1.085;
+        const baseUnitPrice = computeClientUnitPrice(l);
         const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
 
         setEditing({
             id: l.id,
             name: l.name === 'New Item' ? '' : l.name,
             qty: l.qty,
-            price: displayUnitPrice,
+            price: Number(displayUnitPrice.toFixed(2)),
         });
     };
 
     const saveEdit = () => {
         if (!editing) return;
 
-        const displayUnitPrice = editing.price;
-        const baseUnitPrice = convertToBase(displayUnitPrice, meta);
-        const principalCost = baseUnitPrice / 1.085;
+        const original = lines.find((x) => x.id === editing.id);
+        if (!original) {
+            setEditing(null);
+            return;
+        }
+
+        // Display → base (undo currency conversion)
+        const displayClientPrice = editing.price;
+        const baseClientPrice = convertToBase(displayClientPrice, meta);
+
+        // Base client price → principalCost (undo margins / discount / tax)
+        const principalCost = derivePrincipalCost(
+            baseClientPrice,
+            original.discountPct || 0
+        );
 
         const finalName = editing.name.trim() || 'New Item';
         onUpdateLine?.(editing.id, {
@@ -252,7 +342,8 @@ export default function QuotationTab({
                                 {displayLines.map((l, i) => {
                                     const isEditing = editing?.id === l.id;
 
-                                    const baseUnitPrice = l.principalCost * 1.085;
+                                    // ⭐ Client-facing unit price (base + display)
+                                    const baseUnitPrice = computeClientUnitPrice(l);
                                     const baseTotal = baseUnitPrice * l.qty;
 
                                     const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
@@ -373,8 +464,12 @@ export default function QuotationTab({
                                                     <button
                                                         type="button"
                                                         onClick={() => onRemoveLine?.(l.id)}
-                                                        className="w-7 h-7 rounded border border-[#E2DBD1] hover:bg-rose-50 inline-flex items-center justify-center text-rose-600 transition"
-                                                        title="Remove"
+                                                        disabled={!canRemoveLine}
+                                                        className={`w-7 h-7 rounded border inline-flex items-center justify-center transition ${canRemoveLine
+                                                            ? 'border-[#E2DBD1] hover:bg-rose-50 text-rose-600'
+                                                            : 'border-[#E2DBD1] text-slate-300 cursor-not-allowed opacity-50'
+                                                            }`}
+                                                        title={canRemoveLine ? 'Remove' : 'At least one line item is required'}
                                                     >
                                                         <X className="w-3.5 h-3.5" />
                                                     </button>
@@ -409,7 +504,9 @@ export default function QuotationTab({
 
                     {/* ---------- TOTALS ---------- */}
                     <div className="mt-10 flex justify-end">
-                        <div className="w-full max-w-[320px] space-y-3 text-[12.5px]">
+                        <div className="w-full max-w-[360px] space-y-3 text-[12.5px]">
+
+                            {/* Sub Total */}
                             <div className="flex justify-between items-center">
                                 <span className="text-slate-600">Sub Total</span>
                                 <span className="font-mono text-slate-900">
@@ -419,20 +516,69 @@ export default function QuotationTab({
                                     })}
                                 </span>
                             </div>
-                            {meta.vatEnabled && (
+
+                            {/* Discount — only if enabled AND applied */}
+                            {discountOn && displayDiscount > 0 && (
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">
-                                        GST / VAT (15%){' '}
-                                        <span className="text-emerald-600 font-medium">(added)</span>
+                                        Discount{' '}
+                                        <span className="text-rose-500 font-medium">(applied)</span>
                                     </span>
-                                    <span className="font-mono text-slate-900">
-                                        {sym}
-                                        {displayGst.toLocaleString(undefined, {
+                                    <span className="font-mono text-rose-600">
+                                        −{sym}
+                                        {displayDiscount.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
                                         })}
                                     </span>
                                 </div>
                             )}
+
+                            {/* Net Sub Total — only if discount present */}
+                            {discountOn && displayDiscount > 0 && (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-600">Net Sub Total</span>
+                                    <span className="font-mono text-slate-900">
+                                        {sym}
+                                        {displayNetSub.toLocaleString(undefined, {
+                                            maximumFractionDigits: 2,
+                                        })}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Tax — different design based on checkbox */}
+                            {taxOn ? (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-600">
+                                        GST / VAT{' '}
+                                        <span className="text-slate-400">
+                                            ({rates?.taxPct ?? 15}%)
+                                        </span>{' '}
+                                        <span className="text-emerald-600 font-medium">(added)</span>
+                                    </span>
+                                    <span className="font-mono text-emerald-700 font-semibold">
+                                        +{sym}
+                                        {displayGst.toLocaleString(undefined, {
+                                            maximumFractionDigits: 2,
+                                        })}
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-slate-500 ">
+                                        GST / VAT{' '}
+                                        <span className="text-slate-400">
+                                            ({rates?.taxPct ?? 15}%)
+                                        </span>{' '}
+                                        <small className="text-slate-400">(not included — may apply)</small>
+                                    </span>
+                                    <span className="font-mono text-slate-400">
+                                        <strong>{sym}</strong>0.00 <small>(not included)</small>
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Grand Total */}
                             <div className="flex justify-between items-baseline pt-3 border-t-2 border-[#0F2D4A]">
                                 <span className="font-bold text-[#0F2D4A] text-[14px]">
                                     Grand Total
@@ -450,7 +596,7 @@ export default function QuotationTab({
 
                 {/* ================= TERMS ================= */}
                 {terms.length > 0 && (
-                    <div className="px-10 py-8 border-t border-[#F0EBE3]">
+                    <div className="px-10 py-8 border-t border-[#F0EBE3] bg-[#FBFAF7]">
                         <div className="text-[10px] font-bold text-[#A06126] uppercase mb-5">
                             Terms &amp; Conditions
                         </div>
@@ -461,7 +607,7 @@ export default function QuotationTab({
                                     label={t.label}
                                     value={t.value}
                                     onChange={(patch) => onUpdateTerm?.(i, patch)}
-                                    onRemove={() => onRemoveTerm?.(i)}   /* ⭐ NEW */
+                                    onRemove={() => onRemoveTerm?.(i)}
                                 />
                             ))}
                         </div>
@@ -630,12 +776,12 @@ function TermRow({
     label,
     value,
     onChange,
-    onRemove,      // ⭐ NEW
+    onRemove,
 }: {
     label: string;
     value: string;
     onChange?: (patch: { label?: string; value?: string }) => void;
-    onRemove?: () => void;   // ⭐ NEW
+    onRemove?: () => void;
 }) {
     const [editing, setEditing] = React.useState(false);
     const [draftLabel, setDraftLabel] = React.useState(label);
@@ -695,14 +841,14 @@ function TermRow({
                     {value}
                 </span>
 
-                {/* ⭐ Action buttons — appear on hover */}
                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition shrink-0">
                     <button
                         type="button"
                         onClick={() => setEditing(true)}
-                        className="text-[10.5px] text-slate-400 hover:text-[#A06126] transition font-medium"
+                        className="text-slate-400 hover:text-[#A06126] transition"
+                        title="Edit term"
                     >
-                        <Pen className="w-3.5 h-3.5"/>
+                        <Pen className="w-3.5 h-3.5" />
                     </button>
                     <button
                         type="button"

@@ -36,16 +36,17 @@ export default function CostOfGoodTab({
 }: Props) {
   const sym = meta.currencySymbol || '৳';
 
-  // ---- Convert a base-currency (BDT) value to the display currency ----
   const disp = (base: number) => convertToDisplay(base || 0, meta);
 
-  // ---- Format a base value for display (already converted) ----
   const fmt = (base: number) =>
     sym +
     disp(base).toLocaleString(undefined, { maximumFractionDigits: 2 });
 
-  // ---- Reverse: display value → base value (BDT) ----
   const toBase = (displayVal: number) => convertToBase(displayVal || 0, meta);
+
+  // ⭐ Effective rates honoring the checkboxes
+  const effectiveTaxPct   = meta.vatEnabled ? (rates.taxPct || 0) : 0;
+  const discountEnabled   = meta.discountEnabled !== false;   // default: on
 
   return (
     <div className="space-y-4">
@@ -104,20 +105,27 @@ export default function CostOfGoodTab({
           </thead>
           <tbody className="divide-y divide-[#F0EBE3]">
             {lines.map((l, i) => {
-              // ⭐ Per-line math — all in BASE (BDT)
-              const lineTotal = (l.qty || 0) * (l.principalCost || 0);
+              // ⭐ Principal discount reduces cost basis
+              const effectiveCost =
+                (l.principalCost || 0) *
+                (1 - (rates.principalDiscountPct || 0) / 100);
+
+              const lineTotal = (l.qty || 0) * effectiveCost;
               const office = (lineTotal * (rates.officePct || 0)) / 100;
               const profit = (lineTotal * (rates.profitPct || 0)) / 100;
               const others = (lineTotal * (rates.othersPct || 0)) / 100;
               const sub = lineTotal + office + profit + others;
 
-              const discountAmt = sub * ((l.discountPct || 0) / 100);
+              // ⭐ Per-line client discount — only if Special Discount is ON
+              const appliedDiscPct = discountEnabled ? (l.discountPct || 0) : 0;
+              const discountAmt = sub * (appliedDiscPct / 100);
               const netSub = sub - discountAmt;
 
+              // ⭐ Tax — only if VAT/GST checkbox is ON
               const lineTax =
-                (rates.taxPct || 0) === 0
+                effectiveTaxPct === 0
                   ? 0
-                  : (netSub * (rates.taxPct || 0)) / 100;
+                  : (netSub * effectiveTaxPct) / 100;
 
               const clientPrice = netSub + lineTax;
 
@@ -134,7 +142,9 @@ export default function CostOfGoodTab({
                     ) : (
                       <input
                         value={l.name}
-                        onChange={(e) => onChangeLine(l.id, { name: e.target.value })}
+                        onChange={(e) =>
+                          onChangeLine(l.id, { name: e.target.value })
+                        }
                         className="w-full bg-transparent border-0 focus:outline-none text-slate-800 font-medium"
                       />
                     )}
@@ -150,7 +160,6 @@ export default function CostOfGoodTab({
                     />
                   </td>
 
-                  {/* ⭐ Principal Cost INPUT — shown in DISPLAY currency, stored in BASE */}
                   <td className="px-3 py-2 text-right">
                     <input
                       type="number"
@@ -179,7 +188,6 @@ export default function CostOfGoodTab({
                     />
                   </td>
 
-                  {/* ⭐ All computed columns — convert for display */}
                   <td className="px-3 py-2 font-mono text-right">
                     {fmt(lineTotal)}
                   </td>
@@ -206,12 +214,15 @@ export default function CostOfGoodTab({
                     <input
                       type="number"
                       value={l.discountPct}
+                      disabled={!discountEnabled}
                       onChange={(e) =>
                         onChangeLine(l.id, {
                           discountPct: Number(e.target.value) || 0,
                         })
                       }
-                      className="w-12 bg-transparent border-0 focus:outline-none text-center font-mono"
+                      className={`w-12 bg-transparent border-0 focus:outline-none text-center font-mono ${
+                        !discountEnabled ? 'opacity-40 cursor-not-allowed' : ''
+                      }`}
                     />
                   </td>
 
@@ -258,13 +269,13 @@ export default function CostOfGoodTab({
                 {fmt(calc.subTotal)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(calc.taxVatGst)}
+                {fmt(meta.vatEnabled ? calc.taxVatGst : 0)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
                 {fmt(calc.subTotal)}
               </td>
               <td className="px-3 py-3 font-mono text-right text-rose-600">
-                −{fmt(calc.discountTotal)}
+                −{fmt(discountEnabled ? calc.discountTotal : 0)}
               </td>
               <td className="px-3 py-3 font-mono text-right text-[#A06126]">
                 {fmt(calc.grandTotal)}
@@ -284,7 +295,6 @@ export default function CostOfGoodTab({
 
       {/* ---------- LOGISTICS + COST CALC ---------- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* Logistics */}
         <div className="bg-white rounded-xl border border-[#EBE6DF] shadow-2xs p-5">
           <h3 className="text-[11px] font-bold tracking-wider text-slate-600 uppercase mb-4">
             Logistics Information
@@ -299,7 +309,10 @@ export default function CostOfGoodTab({
               <input
                 value={logistics.totalDimension}
                 onChange={(e) =>
-                  onChangeLogistics({ ...logistics, totalDimension: e.target.value })
+                  onChangeLogistics({
+                    ...logistics,
+                    totalDimension: e.target.value,
+                  })
                 }
                 className="w-32 bg-[#FDFBF7] border border-[#E2DBD1] rounded-lg px-3 py-1.5 text-xs text-right"
               />
@@ -308,7 +321,10 @@ export default function CostOfGoodTab({
               <select
                 value={logistics.clientAskedFor}
                 onChange={(e) =>
-                  onChangeLogistics({ ...logistics, clientAskedFor: e.target.value })
+                  onChangeLogistics({
+                    ...logistics,
+                    clientAskedFor: e.target.value,
+                  })
                 }
                 className="w-32 bg-[#FDFBF7] border border-[#E2DBD1] rounded-lg px-3 py-1.5 text-xs"
               >
@@ -331,7 +347,7 @@ export default function CostOfGoodTab({
           </div>
         </div>
 
-        {/* ---------- COST CALCULATION (dark card) ---------- */}
+        {/* ---------- COST CALCULATION ---------- */}
         <div className="bg-[#0F2D4A] rounded-xl p-5 text-white shadow-2xs">
           <h3 className="text-[11px] font-bold tracking-wider uppercase mb-4 text-[#F0B85A]">
             Cost Calculation ({meta.currency})
@@ -360,7 +376,7 @@ export default function CostOfGoodTab({
               <span className="font-mono">{fmt(calc.subTotal)}</span>
             </div>
 
-            {calc.discountTotal > 0 && (
+            {discountEnabled && calc.discountTotal > 0 && (
               <div className="py-2.5 flex items-center justify-between">
                 <span className="text-rose-300">Discount (applied)</span>
                 <span className="font-mono text-rose-300">
@@ -376,9 +392,11 @@ export default function CostOfGoodTab({
 
             <div className="py-2.5 flex items-center justify-between">
               <span className="text-white/70">
-                TAX / VAT / GST ({rates.taxPct || 0}%)
+                TAX / VAT / GST ({meta.vatEnabled ? `${rates.taxPct || 0}%` : 'disabled'})
               </span>
-              <span className="font-mono">{fmt(calc.taxVatGst)}</span>
+              <span className="font-mono">
+                {fmt(meta.vatEnabled ? calc.taxVatGst : 0)}
+              </span>
             </div>
 
             <div className="py-3 flex items-center justify-between border-t border-white/30">
