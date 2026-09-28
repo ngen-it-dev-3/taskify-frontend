@@ -1,7 +1,7 @@
 // components/Assistant/EnableNotificationsPage.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -13,6 +13,9 @@ interface EnableNotificationsPageProps {
     onSkip?: () => void;
 }
 
+const AUTO_CLOSE_MS = 5000; // 5 seconds
+const GRANTED_KEY = "ngen:notifications:granted";
+
 export default function EnableNotificationsPage({
     isOpen,
     onClose,
@@ -22,30 +25,97 @@ export default function EnableNotificationsPage({
     const [isLoading, setIsLoading] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
+    // Refs so the auto-close timer always sees the latest handlers
+    const onCloseRef = useRef(onClose);
+    const onSkipRef = useRef(onSkip);
+    const onEnableRef = useRef(onEnable);
+
     useEffect(() => {
-        if (isOpen) {
-            const timer = setTimeout(() => setIsVisible(true), 100);
-            return () => clearTimeout(timer);
-        } else {
+        onCloseRef.current = onClose;
+        onSkipRef.current = onSkip;
+        onEnableRef.current = onEnable;
+    }, [onClose, onSkip, onEnable]);
+
+    // ============================================================
+    // Visibility + 5s auto-close
+    // ============================================================
+    useEffect(() => {
+        if (!isOpen) {
             setIsVisible(false);
+            return;
         }
+
+        const showTimer = setTimeout(() => setIsVisible(true), 100);
+
+        // ⭐ Auto-close after 5s — does NOT remember anything (will show again)
+        const closeTimer = setTimeout(() => {
+            onSkipRef.current?.();
+            onCloseRef.current?.();
+        }, AUTO_CLOSE_MS);
+
+        return () => {
+            clearTimeout(showTimer);
+            clearTimeout(closeTimer);
+        };
     }, [isOpen]);
 
+    // ============================================================
+    // Escape key closes (treated as skip — no permanent memory)
+    // ============================================================
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                onSkipRef.current?.();
+                onCloseRef.current?.();
+            }
+        };
+
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+    }, [isOpen]);
+
+    // ============================================================
+    // ⭐ Outside click closes (treated as skip — no permanent memory)
+    // ============================================================
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            onSkipRef.current?.();
+            onCloseRef.current?.();
+        }
+    };
+
+    // ============================================================
+    // Grant
+    // ============================================================
     const handleEnable = async () => {
         setIsLoading(true);
         try {
             if ("Notification" in window) {
                 const permission = await Notification.requestPermission();
+
                 if (permission === "granted") {
                     toast.success("🔔 Notifications enabled successfully!");
+
+                    // ⭐ Remember ONLY the granted state — modal won't show on
+                    //    refresh in this tab
+                    try {
+                        sessionStorage.setItem(GRANTED_KEY, "1");
+                    } catch { }
+
                     onEnable?.();
                     onClose();
                 } else {
-                    toast.error("Notifications disabled. You can enable them later from settings.");
+                    // Denied or dismissed — show again on refresh
+                    toast.error(
+                        "Notifications disabled. You can enable them later from settings."
+                    );
                     onSkip?.();
                     onClose();
                 }
             } else {
+                // Browser doesn't support notifications — show again on refresh
                 toast.error("Notifications are not supported in this browser.");
                 onEnable?.();
                 onClose();
@@ -59,6 +129,9 @@ export default function EnableNotificationsPage({
         }
     };
 
+    // ============================================================
+    // Skip (X, "Skip for now" button) — NOT persisted
+    // ============================================================
     const handleSkip = () => {
         onSkip?.();
         onClose();
@@ -69,24 +142,18 @@ export default function EnableNotificationsPage({
     return (
         <AnimatePresence>
             {isVisible && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1528]/80 backdrop-blur-sm pointer-events-auto">
+                <div
+                    onClick={handleBackdropClick}
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0B1528]/80 backdrop-blur-sm pointer-events-auto"
+                >
                     <motion.div
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
                         className="w-full max-w-[500px]"
+                        onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Step Bar Header */}
-                        <div className="mb-4 bg-[#0F1D32] border border-gray-800 rounded-xl p-4 shadow-lg">
-                            <div className="text-xs text-gray-400 font-medium mb-2">
-                                Almost done! — Step 3 of 3
-                            </div>
-                            <div className="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
-                                <div className="bg-emerald-500 h-full w-full rounded-full"></div>
-                            </div>
-                        </div>
-
                         {/* Main Card */}
                         <div className="relative bg-white rounded-3xl p-8 sm:p-10 shadow-2xl text-center">
                             {/* Close Button */}
