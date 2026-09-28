@@ -2,9 +2,11 @@
 
 import React from 'react';
 import { Trash2 } from 'lucide-react';
-import type { QuotationLineItem, QuotationRates } from '../types';
+import type { QuotationLineItem, QuotationRates, QuotationMeta } from '../types';
+import { convertToDisplay, convertToBase } from '../utils';
 
 interface Props {
+  meta: QuotationMeta;
   lines: QuotationLineItem[];
   calc: any;
   rates: QuotationRates;
@@ -16,11 +18,12 @@ interface Props {
   onChangeRates: (r: QuotationRates) => void;
   onChangeLine: (id: string, patch: Partial<QuotationLineItem>) => void;
   onAddLine: () => void;
-  onRemoveLine?: (id: string) => void;   // 👈 NEW
+  onRemoveLine?: (id: string) => void;
   onChangeLogistics: (l: any) => void;
 }
 
 export default function CostOfGoodTab({
+  meta,
   lines,
   calc,
   rates,
@@ -28,9 +31,22 @@ export default function CostOfGoodTab({
   onChangeRates,
   onChangeLine,
   onAddLine,
-  onRemoveLine,   // 👈 NEW
+  onRemoveLine,
   onChangeLogistics,
 }: Props) {
+  const sym = meta.currencySymbol || '৳';
+
+  // ---- Convert a base-currency (BDT) value to the display currency ----
+  const disp = (base: number) => convertToDisplay(base || 0, meta);
+
+  // ---- Format a base value for display (already converted) ----
+  const fmt = (base: number) =>
+    sym +
+    disp(base).toLocaleString(undefined, { maximumFractionDigits: 2 });
+
+  // ---- Reverse: display value → base value (BDT) ----
+  const toBase = (displayVal: number) => convertToBase(displayVal || 0, meta);
+
   return (
     <div className="space-y-4">
       {/* ---------- RATE INPUTS ---------- */}
@@ -70,7 +86,9 @@ export default function CostOfGoodTab({
               <th className="px-3 py-3 text-left w-12">SI</th>
               <th className="px-3 py-3 text-left min-w-[220px]">Item</th>
               <th className="px-3 py-3 text-center w-16">Qty</th>
-              <th className="px-3 py-3 text-right w-28">Principal Cost</th>
+              <th className="px-3 py-3 text-right w-28">
+                Principal Cost ({sym})
+              </th>
               <th className="px-3 py-3 text-right w-24">Weight (KG)</th>
               <th className="px-3 py-3 text-right w-24">Total</th>
               <th className="px-3 py-3 text-right w-24">Office</th>
@@ -86,12 +104,22 @@ export default function CostOfGoodTab({
           </thead>
           <tbody className="divide-y divide-[#F0EBE3]">
             {lines.map((l, i) => {
-              const total = l.qty * l.principalCost;
-              const office = (total * rates.officePct) / 100;
-              const profit = (total * rates.profitPct) / 100;
-              const others = (total * rates.othersPct) / 100;
-              const sub = total + office + profit + others;
-              const clientPrice = sub * (1 - l.discountPct / 100);
+              // ⭐ Per-line math — all in BASE (BDT)
+              const lineTotal = (l.qty || 0) * (l.principalCost || 0);
+              const office = (lineTotal * (rates.officePct || 0)) / 100;
+              const profit = (lineTotal * (rates.profitPct || 0)) / 100;
+              const others = (lineTotal * (rates.othersPct || 0)) / 100;
+              const sub = lineTotal + office + profit + others;
+
+              const discountAmt = sub * ((l.discountPct || 0) / 100);
+              const netSub = sub - discountAmt;
+
+              const lineTax =
+                (rates.taxPct || 0) === 0
+                  ? 0
+                  : (netSub * (rates.taxPct || 0)) / 100;
+
+              const clientPrice = netSub + lineTax;
 
               const isFixed = l.type === 'fixed';
 
@@ -121,18 +149,22 @@ export default function CostOfGoodTab({
                       className="w-14 bg-transparent border-0 focus:outline-none text-center font-mono"
                     />
                   </td>
+
+                  {/* ⭐ Principal Cost INPUT — shown in DISPLAY currency, stored in BASE */}
                   <td className="px-3 py-2 text-right">
                     <input
                       type="number"
-                      value={l.principalCost}
+                      step="0.01"
+                      value={Number(disp(l.principalCost).toFixed(2))}
                       onChange={(e) =>
                         onChangeLine(l.id, {
-                          principalCost: Number(e.target.value) || 0,
+                          principalCost: toBase(Number(e.target.value) || 0),
                         })
                       }
                       className="w-24 bg-transparent border-0 focus:outline-none font-mono text-right"
                     />
                   </td>
+
                   <td className="px-3 py-2 text-right">
                     <input
                       type="number"
@@ -146,25 +178,30 @@ export default function CostOfGoodTab({
                       className="w-20 bg-transparent border-0 focus:outline-none font-mono text-right"
                     />
                   </td>
+
+                  {/* ⭐ All computed columns — convert for display */}
                   <td className="px-3 py-2 font-mono text-right">
-                    ৳{total.toLocaleString()}
+                    {fmt(lineTotal)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    ৳{office.toFixed(2)}
+                    {fmt(office)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    ৳{profit.toFixed(2)}
+                    {fmt(profit)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    ৳{others.toFixed(2)}
+                    {fmt(others)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    ৳{sub.toFixed(2)}
+                    {fmt(sub)}
                   </td>
-                  <td className="px-3 py-2 font-mono text-right">৳0</td>
                   <td className="px-3 py-2 font-mono text-right">
-                    ৳{sub.toFixed(2)}
+                    {fmt(lineTax)}
                   </td>
+                  <td className="px-3 py-2 font-mono text-right">
+                    {fmt(sub)}
+                  </td>
+
                   <td className="px-3 py-2 text-center">
                     <input
                       type="number"
@@ -177,11 +214,11 @@ export default function CostOfGoodTab({
                       className="w-12 bg-transparent border-0 focus:outline-none text-center font-mono"
                     />
                   </td>
+
                   <td className="px-3 py-2 text-right font-mono font-bold text-[#A06126]">
-                    ৳{clientPrice.toFixed(2)}
+                    {fmt(clientPrice)}
                   </td>
 
-                  {/* ⭐ DELETE BUTTON */}
                   <td className="px-3 py-2 text-center">
                     {!isFixed ? (
                       <button
@@ -200,33 +237,37 @@ export default function CostOfGoodTab({
               );
             })}
 
-            {/* Totals row */}
+            {/* ---------- TOTALS ROW ---------- */}
             <tr className="bg-[#FAF8F5] font-bold">
               <td colSpan={5} className="px-3 py-3 text-right">
                 Total:
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                ৳{calc.costOfGoods.toLocaleString()}
+                {fmt(calc.costOfGoods)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                ৳{calc.remittanceOfficeExp.toFixed(2)}
+                {fmt(calc.remittanceOfficeExp)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                ৳{calc.netProfit.toFixed(2)}
+                {fmt(calc.netProfit)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                ৳{calc.commissionOthers.toFixed(2)}
+                {fmt(calc.commissionOthers)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                ৳{calc.subTotal.toFixed(2)}
+                {fmt(calc.subTotal)}
               </td>
-              <td className="px-3 py-3 font-mono text-right">৳0</td>
               <td className="px-3 py-3 font-mono text-right">
-                ৳{calc.subTotal.toFixed(2)}
+                {fmt(calc.taxVatGst)}
               </td>
-              <td></td>
+              <td className="px-3 py-3 font-mono text-right">
+                {fmt(calc.subTotal)}
+              </td>
+              <td className="px-3 py-3 font-mono text-right text-rose-600">
+                −{fmt(calc.discountTotal)}
+              </td>
               <td className="px-3 py-3 font-mono text-right text-[#A06126]">
-                ৳{calc.customerPrice.toFixed(2)}
+                {fmt(calc.grandTotal)}
               </td>
               <td></td>
             </tr>
@@ -251,7 +292,7 @@ export default function CostOfGoodTab({
           <div className="divide-y divide-[#F0EBE3] text-xs">
             <Row label="Total Weight">
               <span className="font-mono font-semibold text-slate-800">
-                {calc.totalWeight.toFixed(1)} Kg
+                {(calc.totalWeight || 0).toFixed(1)} Kg
               </span>
             </Row>
             <Row label="Total Dimension">
@@ -290,36 +331,67 @@ export default function CostOfGoodTab({
           </div>
         </div>
 
-        {/* Cost Calculation */}
+        {/* ---------- COST CALCULATION (dark card) ---------- */}
         <div className="bg-[#0F2D4A] rounded-xl p-5 text-white shadow-2xs">
           <h3 className="text-[11px] font-bold tracking-wider uppercase mb-4 text-[#F0B85A]">
-            Cost Calculation
+            Cost Calculation ({meta.currency})
           </h3>
           <div className="divide-y divide-white/10 text-xs">
-            <CalcRow label="Cost of Goods" value={calc.costOfGoods} />
+            <CalcRow label="Cost of Goods" value={calc.costOfGoods} meta={meta} />
             <CalcRow
               label="Remittance + Office Expenses"
               value={calc.remittanceOfficeExp}
+              meta={meta}
             />
             <CalcRow
               label="Customs / C&F + Freight / Logistics"
               value={calc.customsFreight}
+              meta={meta}
             />
-            <CalcRow label="Commission / Others" value={calc.commissionOthers} />
-            <CalcRow label="Net Profit" value={calc.netProfit} />
-            <CalcRow label="Tax/VAT/GST" value={calc.taxVatGst} />
+            <CalcRow
+              label="Commission / Others"
+              value={calc.commissionOthers}
+              meta={meta}
+            />
+            <CalcRow label="Net Profit" value={calc.netProfit} meta={meta} />
+
+            <div className="py-2.5 flex items-center justify-between">
+              <span className="text-white/70">Sub Total</span>
+              <span className="font-mono">{fmt(calc.subTotal)}</span>
+            </div>
+
+            {calc.discountTotal > 0 && (
+              <div className="py-2.5 flex items-center justify-between">
+                <span className="text-rose-300">Discount (applied)</span>
+                <span className="font-mono text-rose-300">
+                  −{fmt(calc.discountTotal)}
+                </span>
+              </div>
+            )}
+
+            <div className="py-2.5 flex items-center justify-between">
+              <span className="text-white/70">Net Sub Total</span>
+              <span className="font-mono">{fmt(calc.customerPrice)}</span>
+            </div>
+
+            <div className="py-2.5 flex items-center justify-between">
+              <span className="text-white/70">
+                TAX / VAT / GST ({rates.taxPct || 0}%)
+              </span>
+              <span className="font-mono">{fmt(calc.taxVatGst)}</span>
+            </div>
+
             <div className="py-3 flex items-center justify-between border-t border-white/30">
               <span className="font-bold">Total</span>
               <span className="font-mono font-bold text-base">
-                ৳{calc.subTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                {fmt(calc.grandTotal)}
               </span>
             </div>
+
             <div className="pt-3 flex items-center justify-between">
               <span className="text-[#F0B85A] font-bold">Customer Price</span>
               <span className="font-mono font-bold text-lg text-[#F0B85A]">
-                ৳{calc.customerPrice.toLocaleString(undefined, {
-                  maximumFractionDigits: 2,
-                })}
+                {fmt(calc.grandTotal)}
               </span>
             </div>
           </div>
@@ -367,12 +439,23 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-function CalcRow({ label, value }: { label: string; value: number }) {
+function CalcRow({
+  label,
+  value,
+  meta,
+}: {
+  label: string;
+  value: number;
+  meta: QuotationMeta;
+}) {
+  const sym = meta.currencySymbol || '৳';
+  const converted = convertToDisplay(value || 0, meta);
   return (
     <div className="py-2.5 flex items-center justify-between">
       <span className="text-white/70">{label}</span>
       <span className="font-mono">
-        ৳{value.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+        {sym}
+        {converted.toLocaleString(undefined, { maximumFractionDigits: 2 })}
       </span>
     </div>
   );

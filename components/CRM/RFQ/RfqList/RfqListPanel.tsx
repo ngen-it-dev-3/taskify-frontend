@@ -21,7 +21,6 @@ export default function RfqListPanel({
   onAssign,
   onQuote,
 }: Props) {
-  // ---- Filter out invalid entries defensively ----
   const safeRfqs = (rfqs ?? []).filter(
     (r): r is RFQItem => !!r && typeof r === 'object' && !!r.id
   );
@@ -44,16 +43,23 @@ export default function RfqListPanel({
             No RFQs match your filters.
           </div>
         ) : (
-          safeRfqs.map((rfq) => (
-            <RfqListItem
-              key={rfq.id}
-              rfq={rfq}
-              isSelected={rfq.id === selectedRFQId}
-              onSelect={() => onSelect(rfq.id)}
-              onAssign={() => onAssign(rfq.id)}
-              onQuote={() => onQuote(rfq)}
-            />
-          ))
+          safeRfqs.map((rfq) => {
+            // ⭐ NEW: hide action buttons for lost/archived RFQs
+            const actionsLocked =
+              rfq.stage === 'lost' || rfq.stage === 'archived';
+
+            return (
+              <RfqListItem
+                key={rfq.id}
+                rfq={rfq}
+                isSelected={rfq.id === selectedRFQId}
+                onSelect={() => onSelect(rfq.id)}
+                onAssign={() => onAssign(rfq.id)}
+                onQuote={() => onQuote(rfq)}
+                hideActions={actionsLocked}   // ⭐ pass the flag
+              />
+            );
+          })
         )}
       </div>
     </div>

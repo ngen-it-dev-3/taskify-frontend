@@ -142,6 +142,10 @@ export interface RFQStats {
   quoted: number;
   archived: number;
   lost: number;
+  // ⭐ NEW — month-over-month tracking
+  thisMonth: number;
+  lastMonth: number;
+  momDelta: number;
   quoteRate: number;
   byCountry: { country: string; count: number; pct: number }[];
   bySalesman: { salesman: string; count: number }[];

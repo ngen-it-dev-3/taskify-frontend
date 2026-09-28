@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Pencil, X } from 'lucide-react';
+import { Pencil, X, Trash2, Pen } from 'lucide-react';   // ⭐ added Trash2
 import type { QuotationLineItem, QuotationMeta } from '../types';
 import { AUTHORIZED_BRANDS } from '../constants';
 import { convertToDisplay, convertToBase } from '../utils';
@@ -16,6 +16,7 @@ interface Props {
     onAddLine?: () => void;
     onAddTerm?: () => void;
     onUpdateTerm?: (index: number, patch: { label?: string; value?: string }) => void;
+    onRemoveTerm?: (index: number) => void;   // ⭐ NEW
     onSend?: (withAttachment: boolean) => void;
     onWhatsApp?: () => void;
     onGenerateLink?: () => void;
@@ -26,7 +27,7 @@ interface EditState {
     id: string;
     name: string;
     qty: number;
-    price: number;   // ⭐ stored in DISPLAY currency
+    price: number;
 }
 
 export default function QuotationTab({
@@ -39,6 +40,7 @@ export default function QuotationTab({
     onAddLine,
     onAddTerm,
     onUpdateTerm,
+    onRemoveTerm,   // ⭐ NEW
     onSend,
     onWhatsApp,
     onGenerateLink,
@@ -54,7 +56,7 @@ export default function QuotationTab({
     const gst = meta.vatEnabled ? (subtotal * 15) / 100 : 0;
     const grand = subtotal + gst;
 
-    // ---- Display amounts (converted to selected currency) ----
+    // ---- Display amounts ----
     const displaySubtotal = convertToDisplay(subtotal, meta);
     const displayGst = convertToDisplay(gst, meta);
     const displayGrand = convertToDisplay(grand, meta);
@@ -65,7 +67,7 @@ export default function QuotationTab({
     const displayLines = productLines.filter((l) => l.name.trim() !== '');
 
     // ============================================================
-    // AUTO-EDIT on new line (skip initial mount)
+    // AUTO-EDIT on new line
     // ============================================================
     useEffect(() => {
         const currentCount = productLines.length;
@@ -86,7 +88,7 @@ export default function QuotationTab({
                     id: newest.id,
                     name: '',
                     qty: newest.qty || 1,
-                    price: displayUnitPrice,   // ⭐ display currency
+                    price: displayUnitPrice,
                 });
             }
         }
@@ -105,14 +107,13 @@ export default function QuotationTab({
             id: l.id,
             name: l.name === 'New Item' ? '' : l.name,
             qty: l.qty,
-            price: displayUnitPrice,   // ⭐ display currency
+            price: displayUnitPrice,
         });
     };
 
     const saveEdit = () => {
         if (!editing) return;
 
-        // ⭐ Convert display price back to base currency
         const displayUnitPrice = editing.price;
         const baseUnitPrice = convertToBase(displayUnitPrice, meta);
         const principalCost = baseUnitPrice / 1.085;
@@ -121,7 +122,7 @@ export default function QuotationTab({
         onUpdateLine?.(editing.id, {
             name: finalName,
             qty: editing.qty,
-            principalCost,       // ⭐ base currency stored
+            principalCost,
         });
         setEditing(null);
     };
@@ -251,15 +252,12 @@ export default function QuotationTab({
                                 {displayLines.map((l, i) => {
                                     const isEditing = editing?.id === l.id;
 
-                                    // Base amounts
                                     const baseUnitPrice = l.principalCost * 1.085;
                                     const baseTotal = baseUnitPrice * l.qty;
 
-                                    // Display amounts
                                     const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
                                     const displayTotal = convertToDisplay(baseTotal, meta);
 
-                                    // ============ EDIT MODE ROW ============
                                     if (isEditing && editing) {
                                         return (
                                             <tr key={l.id} className="bg-[#FAF6EE]/70">
@@ -341,7 +339,6 @@ export default function QuotationTab({
                                         );
                                     }
 
-                                    // ============ VIEW MODE ROW ============
                                     return (
                                         <tr key={l.id} className="hover:bg-[#FDFBF7]">
                                             <td className="py-2 font-mono text-slate-500">{i + 1}</td>
@@ -401,7 +398,6 @@ export default function QuotationTab({
                         </table>
                     </div>
 
-                    {/* + Add Item */}
                     <button
                         type="button"
                         onClick={onAddLine}
@@ -465,6 +461,7 @@ export default function QuotationTab({
                                     label={t.label}
                                     value={t.value}
                                     onChange={(patch) => onUpdateTerm?.(i, patch)}
+                                    onRemove={() => onRemoveTerm?.(i)}   /* ⭐ NEW */
                                 />
                             ))}
                         </div>
@@ -633,10 +630,12 @@ function TermRow({
     label,
     value,
     onChange,
+    onRemove,      // ⭐ NEW
 }: {
     label: string;
     value: string;
     onChange?: (patch: { label?: string; value?: string }) => void;
+    onRemove?: () => void;   // ⭐ NEW
 }) {
     const [editing, setEditing] = React.useState(false);
     const [draftLabel, setDraftLabel] = React.useState(label);
@@ -695,13 +694,25 @@ function TermRow({
                 <span className="text-slate-600 leading-relaxed flex-1 text-[12.5px]">
                     {value}
                 </span>
-                <button
-                    type="button"
-                    onClick={() => setEditing(true)}
-                    className="opacity-0 group-hover:opacity-100 text-[10.5px] text-slate-400 hover:text-[#A06126] transition font-medium"
-                >
-                    Edit
-                </button>
+
+                {/* ⭐ Action buttons — appear on hover */}
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition shrink-0">
+                    <button
+                        type="button"
+                        onClick={() => setEditing(true)}
+                        className="text-[10.5px] text-slate-400 hover:text-[#A06126] transition font-medium"
+                    >
+                        <Pen className="w-3.5 h-3.5"/>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={onRemove}
+                        className="text-slate-400 hover:text-rose-600 transition"
+                        title="Remove term"
+                    >
+                        <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                </div>
             </div>
         </div>
     );

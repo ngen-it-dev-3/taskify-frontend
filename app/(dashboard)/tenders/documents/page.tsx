@@ -20,6 +20,7 @@ import {
   ImportBar,
   type ImportTarget,
 } from "@/components/tender/documents/ImportBar";
+import { ExpiryWarningBanner } from "@/components/tender/documents/ExpiryWarningBanner"; // ⭐ NEW
 import {
   companyDocApi,
   type CompanyDocCategory,
@@ -35,9 +36,16 @@ import {
 } from "@/hooks/tender/useCompanyDocBundle";
 
 /* ---------- Config ---------- */
-const SECTORS = ["Power & Energy", "Financial", "Government"];
+const SECTORS = [
+  "Power & Energy",
+  "Financial",
+  "Government",
+  "Telecom",
+  "Education",
+  "Helthcare",
+];
 
-/* ---------- Import-target cache (module-level, 60s TTL) ---------- */
+/* ---------- Import-target cache ---------- */
 let TARGET_CACHE: { data: ImportTarget[]; ts: number } | null = null;
 let TARGET_IN_FLIGHT: Promise<ImportTarget[]> | null = null;
 const TARGET_TTL_MS = 60_000;
@@ -85,7 +93,6 @@ export default function CompanyDocsPage() {
     volume: "all",
   });
 
-  /* DocsTab and CompanyDocCategory now have identical ids — pass directly */
   const { rows, counts, loading, refetch } = useCompanyDocBundle({
     category: tab,
     sector: tab === "experience" ? filters.sector : undefined,
@@ -93,15 +100,31 @@ export default function CompanyDocsPage() {
     volume: tab === "experience" ? filters.volume : undefined,
   });
 
-  /* ✅ Safe map — hook guarantees array, but double-guard is cheap */
+  /* ✅ Safe map */
   const docs: CompanyDocUI[] = useMemo(() => {
     if (!Array.isArray(rows)) return [];
     return rows.map(toCompanyDocUI);
   }, [rows]);
 
+  /* ⭐ Expired certificates (only relevant on certificates tab) */
+  const expiredDocs = useMemo(() => {
+    if (tab !== "certificates") return [];
+    return docs.filter((d) => d.status === "Expired");
+  }, [docs, tab]);
+
+  /* ⭐ Optional: map expired doc to the tender it's blocking */
+  const linkedTenderName = useMemo(() => {
+    if (expiredDocs.length === 0) return undefined;
+    const first = expiredDocs[0];
+    if (first.title.toLowerCase().includes("acronis")) {
+      return "BPDB Acronis Backup";
+    }
+    return undefined;
+  }, [expiredDocs]);
+
   /* ---------- Import targets ---------- */
   const [targets, setTargets] = useState<ImportTarget[]>(
-    TARGET_CACHE?.data ?? [],
+    TARGET_CACHE?.data ?? ""
   );
   const [importTargetId, setImportTargetId] = useState<string | null>(null);
 
@@ -139,7 +162,7 @@ export default function CompanyDocsPage() {
       });
       const target = targets.find((t) => t.id === importTargetId);
       toast.success(
-        `${selectedIds.size} document${selectedIds.size === 1 ? "" : "s"} imported to ${target?.label ?? "tender"}`,
+        `${selectedIds.size} document${selectedIds.size === 1 ? "" : "s"} imported to ${target?.label ?? "tender"}`
       );
       setSelectedIds(new Set());
       setImportTargetId(null);
@@ -274,7 +297,11 @@ export default function CompanyDocsPage() {
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#a97400] px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-[#8f6100]"
           >
             <Plus className="h-3.5 w-3.5" />
-            {tab === "experience" ? "Add Work Experience" : "Add Document"}
+            {tab === "experience"
+              ? "Add Work Experience"
+              : tab === "certificates"
+                ? "Add Partnership Certificate"
+                : "Add Document"}
           </button>
         </div>
 
@@ -315,6 +342,16 @@ export default function CompanyDocsPage() {
             onDelete={handleDelete}
           />
         )}
+
+        {/* ⭐ Expiry warning banner — auto-hides when no expired certs */}
+        <ExpiryWarningBanner
+          expiredDocs={expiredDocs}
+          linkedTenderName={linkedTenderName}
+          onRenew={(doc) => {
+            setRenewDoc(doc);
+            setAddOpen(true);
+          }}
+        />
       </div>
 
       <ImportBar

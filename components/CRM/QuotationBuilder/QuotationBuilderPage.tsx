@@ -209,36 +209,47 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     }, [topTab, quotation?.id]);
 
     // ============================================================
-    // LIVE CALC
+    // LIVE CALC  —  Convention A: tax on post-discount price
     // ============================================================
     const calc = useMemo(() => {
-        let costOfGoods = 0,
-            officeTotal = 0,
-            profitTotal = 0,
-            othersTotal = 0;
-        let subTotal = 0,
-            customerPrice = 0,
-            totalWeight = 0;
+        let costOfGoods = 0;
+        let officeTotal = 0;
+        let profitTotal = 0;
+        let othersTotal = 0;
+
+        let subTotal = 0;             // pre-discount, pre-tax
+        let discountTotal = 0;        // Σ discounts
+        let customerPrice = 0;        // net after discount, pre-tax
+        let totalWeight = 0;
 
         for (const l of lines) {
-            const total = l.qty * l.principalCost;
-            const weight = l.qty * l.weightKg;
-            const office = (total * rates.officePct) / 100;
-            const profit = (total * rates.profitPct) / 100;
-            const others = (total * rates.othersPct) / 100;
-            const sub = total + office + profit + others;
-            const discounted = sub * (1 - l.discountPct / 100);
+            const lineTotal = (l.qty || 0) * (l.principalCost || 0);
+            const weight = (l.qty || 0) * (l.weightKg || 0);
+            const office = (lineTotal * (rates.officePct || 0)) / 100;
+            const profit = (lineTotal * (rates.profitPct || 0)) / 100;
+            const others = (lineTotal * (rates.othersPct || 0)) / 100;
 
-            costOfGoods += total;
+            const sub = lineTotal + office + profit + others;
+            const discountAmt = sub * ((l.discountPct || 0) / 100);
+            const discounted = sub - discountAmt;
+
+            costOfGoods += lineTotal;
             officeTotal += office;
             profitTotal += profit;
             othersTotal += others;
             subTotal += sub;
+            discountTotal += discountAmt;
             customerPrice += discounted;
             totalWeight += weight;
         }
 
-        const taxVatGst = rates.taxPct === 0 ? 0 : (subTotal * rates.taxPct) / 100;
+        // ⭐ Tax on the net (post-discount) subtotal
+        const taxVatGst =
+            (rates.taxPct || 0) === 0
+                ? 0
+                : (customerPrice * rates.taxPct) / 100;
+
+        const grandTotal = customerPrice + taxVatGst;
 
         return {
             costOfGoods,
@@ -246,9 +257,13 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             customsFreight: 0,
             commissionOthers: othersTotal,
             netProfit: profitTotal,
-            taxVatGst,
-            subTotal,
-            customerPrice,
+
+            subTotal,         // pre-discount
+            discountTotal,    // Σ discount
+            customerPrice,    // net after discount, pre-tax
+            taxVatGst,        // tax on customerPrice
+            grandTotal,       // customerPrice + tax
+
             totalWeight,
         };
     }, [lines, rates]);
@@ -308,6 +323,10 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         setTerms((prev) =>
             prev.map((t, i) => (i === index ? { ...t, ...patch } : t))
         );
+    };
+    // ⭐ NEW — remove a term by index
+    const removeTerm = (index: number) => {
+        setTerms((prev) => prev.filter((_, i) => i !== index));
     };
 
     // ============================================================
@@ -603,6 +622,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                                 onAddLine={addLine}
                                 onAddTerm={addTerm}
                                 onUpdateTerm={updateTerm}
+                                onRemoveTerm={removeTerm}
                                 onSend={handleSendQuote}
                                 onWhatsApp={handleWhatsApp}
                                 onGenerateLink={handleGenerateLink}
@@ -612,6 +632,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
                         {tab === 'cog' && (
                             <CostOfGoodTab
+                                meta={meta}                  
                                 lines={lines}
                                 calc={calc}
                                 rates={rates}
