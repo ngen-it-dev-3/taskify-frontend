@@ -7,6 +7,7 @@ import type { CompanyDocUI } from '@/lib/api/mappers';
 interface Props {
   expiredDocs: CompanyDocUI[];
   linkedTenderName?: string;
+  onRenew?: (doc: CompanyDocUI) => void;  
 }
 
 export function ExpiryWarningBanner({

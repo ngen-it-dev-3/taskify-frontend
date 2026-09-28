@@ -124,7 +124,7 @@ export default function CompanyDocsPage() {
 
   /* ---------- Import targets ---------- */
   const [targets, setTargets] = useState<ImportTarget[]>(
-    TARGET_CACHE?.data ?? ""
+    TARGET_CACHE?.data ?? []
   );
   const [importTargetId, setImportTargetId] = useState<string | null>(null);
 
@@ -343,7 +343,6 @@ export default function CompanyDocsPage() {
           />
         )}
 
-        {/* ⭐ Expiry warning banner — auto-hides when no expired certs */}
         <ExpiryWarningBanner
           expiredDocs={expiredDocs}
           linkedTenderName={linkedTenderName}
