@@ -18,7 +18,7 @@ import { KpiRow } from '@/components/CRM/online-crm/KpiCards';
 import { MonthlyVolumeChart } from '@/components/CRM/online-crm/MonthlyVolumeChart';
 import { ByCountryPanel } from '@/components/CRM/online-crm/ByCountryPanel';
 import { TopProductsPanel } from '@/components/CRM/online-crm/TopProductsPanel';
-import { FilterBar } from '@/components/CRM/online-crm/FilterBar';
+import { FilterBar, QueryFilters } from '@/components/CRM/online-crm/FilterBar';
 import { QueryLogTable } from '@/components/CRM/online-crm/QueryLogTable';
 import { LogQueryModal } from '@/components/CRM/online-crm/LogQueryModal';
 import { QueryDetailModal } from '@/components/CRM/online-crm/QueryDetailModal';
