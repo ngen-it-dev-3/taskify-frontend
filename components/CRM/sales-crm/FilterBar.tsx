@@ -1,13 +1,12 @@
-// app/(dashboard)/sales-crm/components/FilterBar.tsx
+// components/CRM/sales-crm/FilterBar.tsx
 'use client';
 
 import React from 'react';
 import { MapPin, User } from 'lucide-react';
-import { REGIONS } from './constants';
 
 export interface SalesFilters {
-  region: string;   // 'All Regions' | one of REGIONS
-  owner: string;    // '' = all, else salesperson name
+  region: string;
+  owner: string;
 }
 
 interface Props {
@@ -15,10 +14,20 @@ interface Props {
   onChange: (v: SalesFilters) => void;
 }
 
+export const REGIONS = [
+  'All Regions',
+  'Bangladesh',
+  'Singapore',
+  'India',
+  'Pakistan',
+  'Hungary',
+  'Nigeria',
+  'United Kingdom',
+];
+
 export function FilterBar({ value, onChange }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#EBE6DF] bg-white px-4 py-3">
-      {/* Region */}
       <div className="flex items-center gap-2">
         <MapPin className="w-3.5 h-3.5 text-slate-400" />
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
@@ -27,7 +36,7 @@ export function FilterBar({ value, onChange }: Props) {
         <select
           value={value.region}
           onChange={(e) => onChange({ ...value, region: e.target.value })}
-          className="rounded-lg border border-[#E2DBD1] bg-[#FDFBF7] px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#A06126]"
+          className="rounded-lg border border-[#E2DBD1] bg-[#FDFBF7] px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#A06126] cursor-pointer"
         >
           {REGIONS.map((r) => (
             <option key={r} value={r}>
@@ -37,7 +46,6 @@ export function FilterBar({ value, onChange }: Props) {
         </select>
       </div>
 
-      {/* Owner */}
       <div className="flex items-center gap-2">
         <User className="w-3.5 h-3.5 text-slate-400" />
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
@@ -51,7 +59,6 @@ export function FilterBar({ value, onChange }: Props) {
         />
       </div>
 
-      {/* Clear */}
       {(value.region !== 'All Regions' || value.owner) && (
         <button
           onClick={() => onChange({ region: 'All Regions', owner: '' })}

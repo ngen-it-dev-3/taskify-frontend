@@ -937,10 +937,27 @@ export const SUB_ITEMS = {
     ],
     { description: "Client directory with visit history and RFQs" },
   ),
-  crmOnline: createSubNavItem(
-    "crm-online",
+  crmSales: createSubNavItem(
+    "crm-sales",
     "Sales CRM",
     "/crm/sales-crm",
+    Globe,
+    "CRM",
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.DEPT_MANAGER,
+      ROLES.PROJECT_MANAGER,
+      ROLES.LINE_MANAGER,
+      ROLES.EMPLOYEE,
+    ],
+    { description: "Kanban board for deals across pipeline stages" },
+  ),
+  crmOnline: createSubNavItem(
+    "crm-online",
+    "Online CRM",
+    "/crm/online-crm",
     Globe,
     "CRM",
     [
