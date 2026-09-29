@@ -939,8 +939,8 @@ export const SUB_ITEMS = {
   ),
   crmOnline: createSubNavItem(
     "crm-online",
-    "Online",
-    "/crm/online",
+    "Sales CRM",
+    "/crm/sales-crm",
     Globe,
     "CRM",
     [
