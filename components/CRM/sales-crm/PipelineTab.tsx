@@ -28,6 +28,7 @@ export function PipelineTab({ filters }: Props) {
       setLoading(true);
       const params: Record<string, string> = {};
       if (filters.region !== 'All Regions') params.country = filters.region;
+      if (filters.territory !== 'All Territories') params.territory = filters.territory;
       if (filters.owner) params.owner = filters.owner;
       const res = await SalesCrmApi.pipeline(params);
       setData(res);
@@ -72,6 +73,8 @@ export function PipelineTab({ filters }: Props) {
                     key={c.id}
                     entry={c}
                     stage={key}
+                    currency={filters.currency}
+                    rate={filters.rate}
                     onClick={() => setSelected(c)}
                   />
                 ))}
@@ -90,6 +93,8 @@ export function PipelineTab({ filters }: Props) {
         <EntryDrawer
           key={selected.id}
           entry={selected}
+          currency={filters.currency}
+          rate={filters.rate}
           onClose={() => setSelected(null)}
           onChanged={async () => {
             setSelected(null);

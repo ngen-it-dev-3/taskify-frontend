@@ -9,7 +9,7 @@ import {
     type SalesReportData,
     type SalesReportEntry,
 } from '@/services/salesCrm.service';
-import { fmtFull } from './constants';
+import { formatMoney } from './constants';
 import type { SalesFilters } from './FilterBar';
 
 interface Props {
@@ -28,6 +28,7 @@ export function SalesReportTab({ filters }: Props) {
                 setLoading(true);
                 const params: Record<string, string> = {};
                 if (filters.region !== 'All Regions') params.country = filters.region;
+                if (filters.territory !== 'All Territories') params.territory = filters.territory;
                 if (filters.owner) params.owner = filters.owner;
                 const res = await SalesCrmApi.salesReport(params);
                 setData(res);
@@ -37,7 +38,7 @@ export function SalesReportTab({ filters }: Props) {
                 setLoading(false);
             }
         })();
-    }, [filters.region, filters.owner]);
+    }, [filters.region, filters.territory, filters.owner]);
 
     if (loading || !data) {
         return (
@@ -55,24 +56,10 @@ export function SalesReportTab({ filters }: Props) {
     return (
         <>
             <div className="overflow-hidden rounded-2xl border border-[#EBE6DF] bg-white shadow-sm">
-                <div className="border-b border-[#F0EBE3] px-6 py-4 flex items-center justify-between">
+                <div className="border-b border-[#F0EBE3] px-6 py-4">
                     <h3 className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1e3a8a]">
                         {data.fiscalYear} — MONTHLY TARGET VS ACHIEVED
                     </h3>
-                    {(filters.region !== 'All Regions' || filters.owner) && (
-                        <div className="flex items-center gap-2 text-[10px]">
-                            {filters.region !== 'All Regions' && (
-                                <span className="rounded-full bg-[#EEF4FB] text-[#1F3864] px-2.5 py-1 font-semibold">
-                                    📍 {filters.region}
-                                </span>
-                            )}
-                            {filters.owner && (
-                                <span className="rounded-full bg-[#EEF4FB] text-[#1F3864] px-2.5 py-1 font-semibold">
-                                    👤 {filters.owner}
-                                </span>
-                            )}
-                        </div>
-                    )}
                 </div>
 
                 <table className="w-full text-xs">
@@ -125,9 +112,7 @@ export function SalesReportTab({ filters }: Props) {
                                                         <Plus className="h-3 w-3 stroke-[2.5]" />
                                                     )}
                                                 </span>
-                                                <span className="font-bold text-[#1f3a5f]">
-                                                    {m.month}
-                                                </span>
+                                                <span className="font-bold text-[#1f3a5f]">{m.month}</span>
                                             </div>
                                         </td>
                                         <td colSpan={3} className="px-6 py-3.5">
@@ -136,12 +121,12 @@ export function SalesReportTab({ filters }: Props) {
                                                     Total Sales Value
                                                 </span>
                                                 <span className="font-mono text-[13px] font-bold text-[#0F2D4A]">
-                                                    {fmtFull(m.achieved)}
+                                                    {formatMoney(m.achieved, filters.currency, { rate: filters.rate })}
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-3.5 text-right font-mono text-[11px] text-slate-500">
-                                            Target {fmtFull(m.target)} · {m.entries.length} sale
+                                            Target {formatMoney(m.target, filters.currency, { rate: filters.rate })} · {m.entries.length} sale
                                             {m.entries.length === 1 ? '' : 's'}
                                         </td>
                                         <td className="px-6 py-3.5 text-right">
@@ -195,7 +180,7 @@ export function SalesReportTab({ filters }: Props) {
                                                     </td>
                                                     <td className="px-6 py-3 text-slate-600">{e.item}</td>
                                                     <td className="px-6 py-3 text-right font-mono font-semibold text-slate-800">
-                                                        {fmtFull(e.value)}
+                                                        {formatMoney(e.value, filters.currency, { rate: filters.rate })}
                                                     </td>
                                                     <td className="px-6 py-3 text-right">
                                                         <span
@@ -232,6 +217,8 @@ export function SalesReportTab({ filters }: Props) {
                         data.months.find((m) => m.entries.some((x) => x.id === selected.id))
                             ?.month || ''
                     }
+                    currency={filters.currency}
+                    rate={filters.rate}
                     onClose={() => setSelected(null)}
                 />
             )}
@@ -243,10 +230,14 @@ export function SalesReportTab({ filters }: Props) {
 function SalesDetailModal({
     entry,
     month,
+    currency,
+    rate,
     onClose,
 }: {
     entry: SalesReportEntry;
     month: string;
+    currency: string;
+    rate: number;
     onClose: () => void;
 }) {
     useEffect(() => {
@@ -302,9 +293,13 @@ function SalesDetailModal({
                     <div className="overflow-hidden rounded-lg border border-[#F0EBE3]">
                         <DetailRow label="Salesman" value={entry.owner || 'Unassigned'} />
                         <DetailRow label="Product" value={entry.item || '—'} />
-                        <DetailRow label="Order Value" value={fmtFull(entry.value)} mono />
+                        <DetailRow
+                            label="Order Value"
+                            value={formatMoney(entry.value, currency, { rate })}
+                            mono
+                        />
                         <DetailRow label="Status" value={statusLabel} />
-                        <DetailRow label="Mr No." value={mrNumber} mono />
+                        <DetailRow label="MR No." value={mrNumber} mono />
                         <DetailRow label="Comments" value={comments} />
                     </div>
                 </div>

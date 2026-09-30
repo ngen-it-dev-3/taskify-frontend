@@ -1,17 +1,19 @@
-// app/(dashboard)/sales-crm/components/PipelineCard.tsx
+// components/CRM/sales-crm/PipelineCard.tsx
 'use client';
 
 import React from 'react';
 import type { ForecastEntry, ForecastStage } from '@/services/salesCrm.service';
-import { STAGES, fmtMoney } from './constants';
+import { STAGES, formatMoney } from './constants';
 
 interface Props {
   entry: ForecastEntry;
   stage: ForecastStage;
+  currency: string;
+  rate: number;
   onClick?: () => void;
 }
 
-export function PipelineCard({ entry, stage, onClick }: Props) {
+export function PipelineCard({ entry, stage, currency, rate, onClick }: Props) {
   const stageStyle =
     STAGES.find((s) => s.key === stage)?.color ?? 'border-slate-200 bg-white';
 
@@ -27,6 +29,7 @@ export function PipelineCard({ entry, stage, onClick }: Props) {
       <div className="text-[12px] font-semibold text-[#0F2D4A] leading-tight mb-1">
         {entry.client}
       </div>
+
       {entry.item && (
         <div className="text-[10.5px] text-slate-500 leading-snug mb-2 line-clamp-2">
           {entry.item}
@@ -35,7 +38,7 @@ export function PipelineCard({ entry, stage, onClick }: Props) {
 
       <div className="flex items-end justify-between mt-2.5">
         <span className="font-mono text-[13px] font-bold text-[#0F2D4A]">
-          {fmtMoney(entry.value)}
+          {formatMoney(entry.value, currency, { compact: true, rate })}
         </span>
         <span
           className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${

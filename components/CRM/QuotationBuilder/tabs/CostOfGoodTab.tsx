@@ -45,8 +45,8 @@ export default function CostOfGoodTab({
   const toBase = (displayVal: number) => convertToBase(displayVal || 0, meta);
 
   // ⭐ Effective rates honoring the checkboxes
-  const effectiveTaxPct   = meta.vatEnabled ? (rates.taxPct || 0) : 0;
-  const discountEnabled   = meta.discountEnabled !== false;   // default: on
+  const effectiveTaxPct = meta.vatEnabled ? (rates.taxPct || 0) : 0;
+  const discountEnabled = meta.discountEnabled !== false;   // default: on
 
   return (
     <div className="space-y-4">
@@ -220,9 +220,8 @@ export default function CostOfGoodTab({
                           discountPct: Number(e.target.value) || 0,
                         })
                       }
-                      className={`w-12 bg-transparent border-0 focus:outline-none text-center font-mono ${
-                        !discountEnabled ? 'opacity-40 cursor-not-allowed' : ''
-                      }`}
+                      className={`w-12 bg-transparent border-0 focus:outline-none text-center font-mono ${!discountEnabled ? 'opacity-40 cursor-not-allowed' : ''
+                        }`}
                     />
                   </td>
 
@@ -432,6 +431,32 @@ function RateInput({
   value: number;
   onChange: (v: number) => void;
 }) {
+  const [local, setLocal] = React.useState<string>(String(value ?? ''));
+
+  React.useEffect(() => {
+    const numericLocal = local === '' ? 0 : Number(local);
+    if (numericLocal !== value) {
+      setLocal(value === 0 ? '0' : String(value));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+
+    if (raw === '') {
+      setLocal('');
+      onChange(0);
+      return;
+    }
+
+    const cleaned = raw.replace(/^0+(?=\d)/, '');
+    setLocal(cleaned);
+
+    const num = Number(cleaned);
+    if (!Number.isNaN(num)) onChange(num);
+  };
+
   return (
     <div>
       <div className="text-[10px] font-bold tracking-wider text-slate-500 uppercase mb-1.5">
@@ -440,8 +465,12 @@ function RateInput({
       <input
         type="number"
         step="0.1"
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value) || 0)}
+        value={local}
+        onChange={handleChange}
+        onFocus={(e) => e.target.select()}
+        onBlur={() => {
+          if (local === '' || local === '-') setLocal('0');
+        }}
         className="w-full bg-[#FDFBF7] border border-[#E2DBD1] text-xs rounded-lg px-3 py-2 text-slate-700 font-mono focus:outline-none focus:ring-1 focus:ring-[#A06126]"
       />
     </div>
