@@ -67,6 +67,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     // ============================================================
     const [loading, setLoading] = useState<boolean>(!!rfqId);
     const [sending, setSending] = useState(false);
+    const [generating, setGenerating] = useState(false);   // ⭐ NEW
 
     // ============================================================
     // QUOTATION PERSISTENCE HOOK
@@ -159,7 +160,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 }));
 
                 setLines((prev) => {
-                    // ⭐ Only seed from RFQ products if we don't already have real lines
                     const hasRealLines = prev.some(
                         (l) => l.type !== 'fixed' && l.name && l.name !== 'New Item'
                     );
@@ -181,7 +181,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
     // ============================================================
     // HYDRATE FROM EXISTING QUOTATION
-    // ⭐ Skips `setLines` when user has unsaved local edits
     // ============================================================
     useEffect(() => {
         if (!quotation) return;
@@ -201,7 +200,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             pqrNumber: quotation.pqrNumber || prev.pqrNumber,
         }));
 
-        // ⭐ Only hydrate lines if there are no unsaved local changes
         if (!linesDirty) {
             setLines(quotation.lines?.length ? quotation.lines : [...FIXED_LINES]);
         }
@@ -213,7 +211,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     }, [quotation, linesDirty]);
 
     // ============================================================
-    // FETCH STATS — refreshes on tab change + after mutations
+    // FETCH STATS
     // ============================================================
     useEffect(() => {
         let mounted = true;
@@ -221,9 +219,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             try {
                 const stats = await QuotationApi.stats();
                 if (mounted) setQuoteStats(stats);
-            } catch {
-                // silent
-            }
+            } catch { /* silent */ }
         })();
         return () => {
             mounted = false;
@@ -232,14 +228,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
     // ============================================================
     // LIVE CALC
-    //
-    // Business rules:
-    //   1. Principal Discount % reduces the COST (supplier-side)
-    //   2. Office / Profit / Others margins apply to discounted cost
-    //   3. Per-line Disc % applies to the price (client-side)
-    //      — gated by meta.discountEnabled (Special Discount checkbox)
-    //   4. Tax is applied to the post-discount amount (Convention A)
-    //      — gated by meta.vatEnabled (VAT / GST checkbox)
     // ============================================================
     const calc = useMemo(() => {
         let costOfGoods = 0;
@@ -296,32 +284,25 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             customsFreight: 0,
             commissionOthers: othersTotal,
             netProfit: profitTotal,
-
             subTotal,
             discountTotal,
             customerPrice,
             taxVatGst,
             grandTotal,
-
             totalWeight,
         };
-    }, [
-        lines,
-        rates,
-        meta.vatEnabled,
-        meta.discountEnabled,
-    ]);
+    }, [lines, rates, meta.vatEnabled, meta.discountEnabled]);
 
     // ============================================================
     // LINE HANDLERS
     // ============================================================
     const updateLine = (id: string, patch: Partial<QuotationLineItem>) => {
-        setLinesDirty(true);   // ⭐ Mark unsaved changes
+        setLinesDirty(true);
         setLines((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
     };
 
     const addLine = () => {
-        setLinesDirty(true);   // ⭐ Mark unsaved changes
+        setLinesDirty(true);
         let newId = '';
 
         setLines((prev) => {
@@ -361,8 +342,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             return;
         }
 
-        setLinesDirty(true);   // ⭐ Mark unsaved changes
-
+        setLinesDirty(true);
         setLines((prev) => {
             const filtered = prev.filter((l) => l.id !== id);
             let counter = 1;
@@ -380,13 +360,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         setTerms((prev) => [...prev, { label: 'New Term', value: 'Description…' }]);
     };
 
-    const updateTerm = (
-        index: number,
-        patch: { label?: string; value?: string }
-    ) => {
-        setTerms((prev) =>
-            prev.map((t, i) => (i === index ? { ...t, ...patch } : t))
-        );
+    const updateTerm = (index: number, patch: { label?: string; value?: string }) => {
+        setTerms((prev) => prev.map((t, i) => (i === index ? { ...t, ...patch } : t)));
     };
 
     const removeTerm = (index: number) => {
@@ -404,9 +379,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     }, 0);
 
     const discountTooHigh = maxDiscountPct > DISCOUNT_THRESHOLD;
-    const hasRealCosts = lines.some(
-        (l) => l.type !== 'fixed' && l.principalCost > 0
-    );
+    const hasRealCosts = lines.some((l) => l.type !== 'fixed' && l.principalCost > 0);
 
     // ============================================================
     // SAVE DRAFT
@@ -422,7 +395,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 if (
                     quotation.status !== 'draft' &&
                     quotation.status !== 'awaiting_approval' &&
-                    quotation.status !== 'sent'   // ⭐ now editable
+                    quotation.status !== 'sent'
                 ) {
                     toast.error(
                         `Cannot edit — quotation is "${quotation.status}". Create a new version to continue.`
@@ -442,9 +415,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     discountEnabled: meta.discountEnabled,
                 });
 
-                // ⭐ Clear dirty flag after successful save
                 setLinesDirty(false);
-
                 toast.success('Draft updated');
             } else {
                 await create({
@@ -462,9 +433,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     pqrNumber: meta.pqrNumber,
                 });
 
-                // ⭐ Clear dirty flag after successful save
                 setLinesDirty(false);
-
                 toast.success('Draft created');
             }
         } catch (e: any) {
@@ -473,9 +442,12 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // GENERATE QUOTE
+    // GENERATE QUOTE — with loading guard
     // ============================================================
     const handleGenerateQuote = async () => {
+        // ⭐ Prevent double-click while in-flight
+        if (generating) return;
+
         if (!rfqId) {
             toast.error('No RFQ linked');
             return;
@@ -485,6 +457,15 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             toast.error('Please enter principal cost for at least one product');
             return;
         }
+
+        // ⭐ If quotation is already sent, just jump to Quotes tab
+        if (quotation?.status === 'sent') {
+            toast('Already sent — showing Quotes tab', { icon: 'ℹ️' });
+            setTopTab('quotes');
+            return;
+        }
+
+        setGenerating(true);   // ⭐ Start loading
 
         try {
             let qid = quotation?.id;
@@ -518,7 +499,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 });
             }
 
-            // ⭐ Clear dirty flag
             setLinesDirty(false);
 
             if (discountTooHigh) {
@@ -534,6 +514,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             setTopTab('quotes');
         } catch (e: any) {
             toast.error(e.message || 'Failed to generate quote');
+        } finally {
+            setGenerating(false);   // ⭐ Always release the lock
         }
     };
 
@@ -584,7 +566,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
             const result = await send(qid, withAttachment);
 
-            // ⭐ Clear dirty flag
             setLinesDirty(false);
 
             toast.success(
@@ -601,8 +582,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // ⭐ SHAREABLE LINK — single source of truth
-    //    Always uses rfqId so both buttons produce the SAME URL
+    // SHAREABLE LINK
     // ============================================================
     const buildShareableLink = (): string => {
         const baseUrl =
@@ -640,17 +620,12 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // ⭐ UPDATE + SAVE (used by SourceTab ✓ button)
-    //    Marks dirty + persists immediately
+    // UPDATE + SAVE (used by SourceTab ✓ button)
     // ============================================================
     const updateLineAndSave = async (id: string, patch: Partial<QuotationLineItem>) => {
-        // Update local state first
-        const nextLines = lines.map((l) =>
-            l.id === id ? { ...l, ...patch } : l
-        );
+        const nextLines = lines.map((l) => (l.id === id ? { ...l, ...patch } : l));
         setLines(nextLines);
 
-        // ⭐ Then persist to backend
         if (!rfqId) return;
 
         try {
@@ -672,7 +647,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     pqrNumber: meta.pqrNumber,
                 });
             }
-            // ⭐ No need to mark dirty — we just saved
             setLinesDirty(false);
         } catch (e: any) {
             toast.error(e.message || 'Failed to save source');
@@ -715,6 +689,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 draftCount={draftCount}
                 onSaveDraft={handleSaveDraft}
                 onGenerateQuote={handleGenerateQuote}
+                generating={generating}            // ⭐ pass down
+                savingDraft={saving || sending}    // ⭐ optional
             />
 
             {topTab === 'builder' && (
@@ -725,6 +701,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         onSaveDraft={handleSaveDraft}
                         onGenerateQuote={handleGenerateQuote}
                         onDiscuss={() => { }}
+                        generating={generating}             // ⭐ pass down
+                        savingDraft={saving || sending}     // ⭐ optional
                     />
 
                     <ClientTypeBar meta={meta} onChange={setMeta} />
