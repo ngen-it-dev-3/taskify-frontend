@@ -358,3 +358,28 @@ body {
   will-change: transform, opacity;
   transform-origin: center;
 }
+
+/* Ultra-thin scrollbar for pipeline columns */
+.pipeline-scroll::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.pipeline-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pipeline-scroll::-webkit-scrollbar-thumb {
+  background: #c9bfae;
+  border-radius: 2px;
+}
+
+.pipeline-scroll::-webkit-scrollbar-thumb:hover {
+  background: #a89a85;
+}
+
+/* Firefox */
+.pipeline-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #c9bfae transparent;
+}

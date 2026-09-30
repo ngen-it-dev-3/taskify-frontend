@@ -40,10 +40,9 @@ export function PipelineTab({ filters }: Props) {
 
   const load = useCallback(async () => {
     try {
-      if (!data) setLoading(true); // skeleton only on first load
+      if (!data) setLoading(true);
       const res = await SalesCrmApi.unifiedPipeline(params);
 
-      // Filter by source badges (empty = show all)
       const activeSources = filters.sources || [];
       if (activeSources.length === 0) {
         setData(res);
@@ -78,22 +77,11 @@ export function PipelineTab({ filters }: Props) {
 
   /**
    * ⭐ Click routing — source-aware AND stage-aware.
-   *
-   * Rules:
-   *  1. FORECAST source cards → open the EntryDrawer modal (safe)
-   *  2. WON / LOST stage cards → navigate to the source page
-   *  3. Everything else → do nothing (or navigate — see below)
-   *
-   * Why: EntryDrawer expects a ForecastEntry. Passing an RFQ / Quotation /
-   *      Tender object crashes React ("Objects are not valid as a React child")
-   *      because those have nested `client` / `products` objects.
    */
   const handleCardClick = (card: UnifiedCard) => {
-    // ---- Source-specific navigation ----
     const goToSource = () => {
       if (card.source === 'rfq') {
         const rfq = card.raw as RFQItem;
-        // ⭐ Include stage so the RFQ Dashboard knows which view to open
         router.push(`/crm/rfq?selected=${rfq.id}&stage=${rfq.stage}`);
         return true;
       }
@@ -107,27 +95,22 @@ export function PipelineTab({ filters }: Props) {
       }
       if (card.source === 'tender') {
         const t = card.raw as Tender;
-        // ⭐ Correct route: /tenders/manage (not /crm/tender)
         router.push(`/tenders/manage?tenderId=${t._id}&stage=${t.stage}`);
         return true;
       }
       return false;
     };
 
-    // ---- FORECAST source → always open the drawer (safe to render) ----
     if (card.source === 'forecast') {
       setSelectedForecast(card.raw as ForecastEntry);
       return;
     }
 
-    // ---- WON / LOST → go to source page ----
     if (card.stage === 'won' || card.stage === 'lost') {
       goToSource();
       return;
     }
 
-    // ---- Other stages (Query / RFQ / Quotation / Negotiation) ----
-    // Non-forecast cards: navigate to source (no drawer, avoids the crash)
     goToSource();
   };
 
@@ -135,12 +118,24 @@ export function PipelineTab({ filters }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
+      {/* ⭐ Board — 6 columns, each scrolls independently */}
+      <div
+        className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6"
+        style={{
+          height: 'calc(100vh - 300px)',
+          minHeight: 400,
+          maxHeight: 'calc(100vh - 300px)',
+        }}
+      >
         {STAGES.map(({ key, label }) => {
           const cards = data.columns[key] || [];
           return (
-            <div key={key} className="min-w-[220px]">
-              <div className="mb-3 flex items-center justify-between">
+            <div
+              key={key}
+              className="min-w-[220px] flex flex-col h-full overflow-hidden"
+            >
+              {/* Column header — sticky, never scrolls */}
+              <div className="mb-3 flex items-center justify-between shrink-0">
                 <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-700">
                   {label}
                 </span>
@@ -149,7 +144,8 @@ export function PipelineTab({ filters }: Props) {
                 </span>
               </div>
 
-              <div className="space-y-2.5">
+              {/* ⭐ Cards area — its own scroll */}
+              <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2.5 pipeline-scroll">
                 {cards.map((c) => (
                   <PipelineCard
                     key={c.id}
@@ -187,4 +183,3 @@ export function PipelineTab({ filters }: Props) {
     </>
   );
 }
-
