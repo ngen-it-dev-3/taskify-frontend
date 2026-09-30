@@ -1,5 +1,8 @@
 // services/salesCrm.service.ts
 import api from '@/lib/axios';
+import { RfqApi, type RFQItem } from './rfq.service';
+import { QuotationApi, type Quotation } from './quotation.service';
+import { tenderApi, type Tender } from '@/lib/api/tender.api';
 
 const API_BASE = '/sales-crm';
 
@@ -63,6 +66,7 @@ export interface ForecastListParams {
     owner?: string;
     country?: string;
     region?: string;
+    territory?: string;
     search?: string;
     dateFrom?: string;
     dateTo?: string;
@@ -81,6 +85,7 @@ export interface CreateForecastPayload {
     note?: string;
     country?: string;
     region?: string;
+    territory?: string;
     owner?: string;
     monthlyTarget?: number;
 }
@@ -101,6 +106,8 @@ export interface ForecastKpis {
 }
 
 export interface ForecastTrendPoint {
+    key: string;
+    label: string;
     month: ForecastMonth;
     closed: number;
     open: number;
@@ -168,10 +175,201 @@ export interface SalesReportData {
 }
 
 // ============================================================
+// ⭐ UNIFIED PIPELINE TYPES
+// ============================================================
+export type UnifiedSource = 'rfq' | 'quotation' | 'forecast' | 'tender';
+
+export interface UnifiedCard {
+    id: string;
+    source: UnifiedSource;
+    stage: ForecastStage;
+
+    client: string;
+    item: string;
+    value: number;
+    probability: number;
+    country: string;
+    owner: string;
+
+    rfqNumber: string;
+    rfqId: string | null;
+    pqNumber: string;
+    quotationId: string | null;
+
+    raw: RFQItem | Quotation | ForecastEntry | Tender;
+}
+
+export interface UnifiedPipelineData {
+    stages: ForecastStage[];
+    columns: Record<ForecastStage, UnifiedCard[]>;
+    totals: Record<ForecastStage, number>;
+    counts: Record<ForecastStage, number>;
+}
+
+// ============================================================
+// NORMALIZERS
+// ============================================================
+
+/**
+ * RFQ → Card
+ * ⭐ BOTH `pending` and `quoted` RFQs go to the "query" column.
+ */
+function rfqToCard(r: RFQItem): UnifiedCard {
+    const stage: ForecastStage =
+        r.stage === 'lost' ? 'lost' : 'query';
+
+    const firstProduct = r.products?.[0];
+    const productCount = r.products?.length ?? 0;
+
+    const probability =
+        r.stage === 'lost' ? 0 :
+            r.stage === 'quoted' ? 40 : 20;
+
+    return {
+        id: `rfq-${r.id}`,
+        source: 'rfq',
+        stage,
+        client: r.company || '—',
+        item: firstProduct?.name
+            ? productCount > 1
+                ? `${firstProduct.name} + ${productCount - 1} more`
+                : firstProduct.name
+            : '—',
+        value: 0,
+        probability,
+        country: r.country || '—',
+        owner:
+            r.assignedTo && r.assignedTo !== 'Unassigned'
+                ? r.assignedTo
+                : r.salesman || '',
+        rfqNumber: r.rfqNumber,
+        rfqId: r.id,
+        pqNumber: '',
+        quotationId: null,
+        raw: r,
+    };
+}
+
+/**
+ * Quotation → Card
+ */
+function quotationToCard(q: Quotation): UnifiedCard {
+    const stage: ForecastStage =
+        q.status === 'draft' ? 'quotation' :
+            q.status === 'awaiting_approval' ? 'quotation' :
+                q.status === 'sent' ? 'negotiation' :
+                    q.status === 'won' ? 'won' :
+                        q.status === 'lost' ? 'lost' :
+                            q.status === 'expired' ? 'lost' :
+                                'quotation';
+
+    const probability =
+        stage === 'quotation' ? 60 :
+            stage === 'negotiation' ? 75 :
+                stage === 'won' ? 100 :
+                    stage === 'lost' ? 0 : 50;
+
+    const firstLine = q.lines?.[0];
+    const lineCount = q.lines?.length ?? 0;
+
+    return {
+        id: `quo-${q.id}`,
+        source: 'quotation',
+        stage,
+        client: q.client?.company || '—',
+        item: firstLine?.name
+            ? lineCount > 1
+                ? `${firstLine.name} + ${lineCount - 1} more`
+                : firstLine.name
+            : '—',
+        value: q.totals?.grandTotal || 0,
+        probability,
+        country: q.client?.country || q.territory || '—',
+        owner: q.crmManager || '',
+        rfqNumber: q.rfqNumber || '',
+        rfqId: q.rfqId || null,
+        pqNumber: q.pqNumber || '',
+        quotationId: q.id,
+        raw: q,
+    };
+}
+
+/**
+ * ForecastEntry → Card
+ */
+function forecastToCard(f: ForecastEntry): UnifiedCard {
+    return {
+        id: `fc-${f.id}`,
+        source: 'forecast',
+        stage: f.stage,
+        client: f.client || '—',
+        item: f.item || '—',
+        value: f.value || 0,
+        probability: f.probability || 50,
+        country: f.country || '—',
+        owner: f.owner || '',
+        rfqNumber: f.rfqNumber || '',
+        rfqId: f.rfqId || null,
+        pqNumber: f.pqNumber || '',
+        quotationId: f.quotationId || null,
+        raw: f,
+    };
+}
+
+/**
+ * Tender → Card
+ * ⭐ Only `won`, `lost`, and `submitted` tenders flow into the pipeline.
+ *    - won       → Won column
+ *    - lost      → Lost column
+ *    - submitted → Negotiation column (awaiting result)
+ *
+ * Value = bidValue if present, else tentativeBudget.
+ * Client = tenderer (the issuing company/authority).
+ * Item   = tender title.
+ */
+function tenderToCard(t: Tender): UnifiedCard {
+    const stage: ForecastStage =
+        t.stage === 'won' ? 'won' :
+            t.stage === 'lost' ? 'lost' :
+                t.stage === 'submitted' ? 'negotiation' :
+                    'query';   // fallback (shouldn't be called for others)
+
+    const probability =
+        stage === 'won' ? 100 :
+            stage === 'lost' ? 0 :
+                stage === 'negotiation' ? 60 :
+                    50;
+
+    const value = Number(t.bidValue || t.tentativeBudget || 0);
+
+    // Owner may be an object or a string depending on populate state
+    const ownerName =
+        typeof t.owner === 'string'
+            ? t.owner
+            : t.owner?.fullName || t.owner?.name || t.responsiblePerson || t.recordedBy || '';
+
+    return {
+        id: `tender-${t._id}`,
+        source: 'tender',
+        stage,
+        client: t.tenderer || '—',
+        item: t.title || t.description || '—',
+        value,
+        probability,
+        country: '',                     // tenders don't carry a country field
+        owner: ownerName,
+        rfqNumber: '',                   // tenders use their own numbering
+        rfqId: null,
+        pqNumber: '',
+        quotationId: null,
+        raw: t,
+    };
+}
+
+// ============================================================
 // API
 // ============================================================
 export const SalesCrmApi = {
-    // ---- Entries CRUD ----
     async list(params: ForecastListParams = {}) {
         const res = await api.get(`${API_BASE}/entries`, { params });
         return {
@@ -211,7 +409,6 @@ export const SalesCrmApi = {
         return res.data.data as { deletedCount: number };
     },
 
-    // ---- Aggregations ----
     async pipeline(params: ForecastListParams = {}): Promise<PipelineData> {
         const res = await api.get(`${API_BASE}/pipeline`, { params });
         return res.data.data as PipelineData;
@@ -230,7 +427,9 @@ export const SalesCrmApi = {
     },
 
     async breakdown(
-        params: ForecastListParams & { by?: 'country' | 'stage' | 'source' | 'owner' } = {}
+        params: ForecastListParams & {
+            by?: 'country' | 'stage' | 'source' | 'owner' | 'territory';
+        } = {}
     ): Promise<BreakdownData> {
         const res = await api.get(`${API_BASE}/forecast/breakdown`, { params });
         return res.data.data as BreakdownData;
@@ -248,25 +447,157 @@ export const SalesCrmApi = {
         return res.data.data as SalesReportData;
     },
 
-    // ---- NEW: update stage only (for drag or quick actions) ----
     async updateStage(id: string, stage: ForecastStage): Promise<ForecastEntry> {
         const res = await api.patch(`${API_BASE}/entries/${id}`, { stage });
         return res.data.data as ForecastEntry;
     },
 
-    // ---- NEW: distinct list of owners present in the DB ----
     async owners(): Promise<string[]> {
-        const res = await api.get(`${API_BASE}/entries`, {
-            params: { limit: 500 },
-        });
-        const items = (res.data?.data || []) as ForecastEntry[];
-        const set = new Set<string>();
-        items.forEach((e) => {
-            if (e.owner && e.owner.trim()) set.add(e.owner.trim());
-        });
-        return Array.from(set).sort();
+        try {
+            const res = await api.get(`${API_BASE}/owners`);
+            if (Array.isArray(res.data?.data)) {
+                return (res.data.data as string[]).sort();
+            }
+        } catch { /* fall through */ }
+        try {
+            const res = await api.get(`${API_BASE}/entries`, { params: { limit: 500 } });
+            const items = (res.data?.data || []) as ForecastEntry[];
+            const set = new Set<string>();
+            items.forEach((e) => {
+                if (e.owner && e.owner.trim()) set.add(e.owner.trim());
+            });
+            return Array.from(set).sort();
+        } catch {
+            return [];
+        }
     },
 
+    // ============================================================
+    // ⭐ UNIFIED PIPELINE
+    // Merges RFQs + Quotations + ForecastEntries + Tenders
+    // ============================================================
+    async unifiedPipeline(
+        params: ForecastListParams = {}
+    ): Promise<UnifiedPipelineData> {
+        const [
+            forecastRes,
+            rfqRes,
+            quoteRes,
+            lostRfqRes,
+            wonTendersRes,
+            lostTendersRes,
+            submittedTendersRes,
+        ] = await Promise.all([
+            this.pipeline(params),
 
+            RfqApi.list({
+                limit: 200,
+                country: params.country || undefined,
+                salesman: params.owner || undefined,
+                search: params.search || undefined,
+            }).catch(() => ({ items: [] as RFQItem[], total: 0, page: 1, limit: 0, totalPages: 0 })),
+
+            QuotationApi.list({
+                limit: 200,
+                search: params.search || undefined,
+            }).catch(() => ({ items: [] as Quotation[], total: 0, page: 1, limit: 0, totalPages: 0 })),
+
+            RfqApi.list({
+                limit: 200,
+                stage: 'lost',
+                country: params.country || undefined,
+                salesman: params.owner || undefined,
+            }).catch(() => ({ items: [] as RFQItem[], total: 0, page: 1, limit: 0, totalPages: 0 })),
+
+            // ⭐ Tenders — fetched separately by stage
+            tenderApi.list({ stage: 'won', limit: 200 })
+                .then((r) => ({ data: r.data ?? [] }))
+                .catch(() => ({ data: [] as Tender[] })),
+
+            tenderApi.list({ stage: 'lost', limit: 200 })
+                .then((r) => ({ data: r.data ?? [] }))
+                .catch(() => ({ data: [] as Tender[] })),
+
+            tenderApi.list({ stage: 'submitted', limit: 200 })
+                .then((r) => ({ data: r.data ?? [] }))
+                .catch(() => ({ data: [] as Tender[] })),
+        ]);
+
+        const activeRfqs = rfqRes.items ?? [];
+        const lostRfqs = lostRfqRes.items ?? [];
+        const quotations = quoteRes.items ?? [];
+        const wonTenders = wonTendersRes.data ?? [];
+        const lostTenders = lostTendersRes.data ?? [];
+        const submittedTenders = submittedTendersRes.data ?? [];
+
+        const allRfqs = [...activeRfqs, ...lostRfqs];
+        const allTenders = [...wonTenders, ...lostTenders, ...submittedTenders];
+
+        // ---- RFQs ----
+        const rfqCards: UnifiedCard[] = allRfqs
+            .filter((r) => r.stage !== 'archived')
+            .map(rfqToCard);
+
+        // ---- Quotations ----
+        const quotationCards: UnifiedCard[] = quotations
+            .filter((q) => q.status !== 'expired')
+            .map(quotationToCard);
+
+        // ---- Tenders (won / lost / submitted) ----
+        const tenderCards: UnifiedCard[] = allTenders.map(tenderToCard);
+
+        // ---- Standalone forecast entries ----
+        const standaloneForecast: UnifiedCard[] = [];
+        Object.values(forecastRes.columns).forEach((col) => {
+            col.forEach((f) => {
+                const hasRfq = f.rfqId && allRfqs.some((r) => r.id === f.rfqId);
+                const hasQuote = !!f.quotationId;
+                if (!hasRfq && !hasQuote) {
+                    standaloneForecast.push(forecastToCard(f));
+                }
+            });
+        });
+
+        // ---- Merge everything ----
+        const allCards = [
+            ...rfqCards,
+            ...quotationCards,
+            ...tenderCards,
+            ...standaloneForecast,
+        ];
+
+        const STAGES: ForecastStage[] = [
+            'query', 'rfq', 'quotation', 'negotiation', 'won', 'lost',
+        ];
+
+        const columns: Record<ForecastStage, UnifiedCard[]> = {
+            query: [], rfq: [], quotation: [], negotiation: [], won: [], lost: [],
+        };
+
+        allCards.forEach((c) => {
+            if (!columns[c.stage]) columns[c.stage] = [];
+            columns[c.stage].push(c);
+        });
+
+        for (const stage of STAGES) {
+            columns[stage].sort((a, b) => {
+                const aDate = (a.raw as any).createdAt || '';
+                const bDate = (b.raw as any).createdAt || '';
+                return bDate.localeCompare(aDate);
+            });
+        }
+
+        const totals: Record<ForecastStage, number> = {
+            query: 0, rfq: 0, quotation: 0, negotiation: 0, won: 0, lost: 0,
+        };
+        const counts: Record<ForecastStage, number> = {
+            query: 0, rfq: 0, quotation: 0, negotiation: 0, won: 0, lost: 0,
+        };
+        for (const stage of STAGES) {
+            totals[stage] = columns[stage].reduce((s, c) => s + (c.value || 0), 0);
+            counts[stage] = columns[stage].length;
+        }
+
+        return { stages: STAGES, columns, totals, counts };
+    },
 };
-

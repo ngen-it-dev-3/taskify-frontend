@@ -1,4 +1,4 @@
-// app/(dashboard)/sales-crm/components/AddForecastModal.tsx
+// components/CRM/sales-crm/AddForecastModal.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -8,6 +8,7 @@ import {
   SalesCrmApi,
   type ForecastMonth,
   type ForecastStage,
+  type ForecastSource,
   type CreateForecastPayload,
 } from '@/services/salesCrm.service';
 import { MONTHS, inputCls, selectCls } from './constants';
@@ -15,9 +16,28 @@ import { MONTHS, inputCls, selectCls } from './constants';
 interface Props {
   onClose: () => void;
   onSaved: () => void;
+  /** Optional pre-selected owner (from the current filter) */
+  defaultOwner?: string;
 }
 
-export function AddForecastModal({ onClose, onSaved }: Props) {
+const STAGE_OPTIONS: { key: ForecastStage; label: string }[] = [
+  { key: 'query',       label: 'Query' },
+  { key: 'rfq',         label: 'RFQ' },
+  { key: 'quotation',   label: 'Quotation' },
+  { key: 'negotiation', label: 'Negotiation' },
+  { key: 'won',         label: 'Won' },
+  { key: 'lost',        label: 'Lost' },
+];
+
+const SOURCE_OPTIONS: { key: ForecastSource; label: string }[] = [
+  { key: 'online',            label: '🌐 Online — web RFQ / tender portal' },
+  { key: 'offline',           label: '📧 Offline — email / phone' },
+  { key: 'tender',            label: '📑 Tender' },
+  { key: 'referral',          label: '🤝 Referral' },
+  { key: 'quotation-builder', label: '📄 Quotation Builder' },
+];
+
+export function AddForecastModal({ onClose, onSaved, defaultOwner }: Props) {
   const [form, setForm] = useState<CreateForecastPayload>({
     client: '',
     item: '',
@@ -26,6 +46,7 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
     month: MONTHS[new Date().getMonth()],
     stage: 'negotiation',
     source: 'online',
+    owner: defaultOwner || '',
     note: '',
   });
   const [saving, setSaving] = useState(false);
@@ -40,6 +61,7 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
       toast.error('Client is required');
       return;
     }
+
     try {
       setSaving(true);
       await SalesCrmApi.create(form);
@@ -53,23 +75,35 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-[640px] rounded-2xl bg-white p-8 shadow-2xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-[640px] rounded-2xl bg-white p-7 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="mb-6 flex items-start justify-between">
-          <h2 className="font-serif text-xl font-bold text-[#0F2D4A]">
-            Add Forecast Entry
-          </h2>
+        <div className="mb-5 flex items-start justify-between">
+          <div>
+            <h2 className="font-serif text-xl font-bold text-[#0F2D4A]">
+              Add Forecast Entry
+            </h2>
+            <p className="mt-1 text-[11px] text-slate-500">
+              Log a new pipeline entry with value, stage, and owner.
+            </p>
+          </div>
           <button
             onClick={onClose}
             className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        {/* Form grid */}
+        {/* Form */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* Client */}
           <Field label="Client" required>
             <input
               value={form.client}
@@ -79,7 +113,19 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
               autoFocus
             />
           </Field>
-          <Field label="Item">
+
+          {/* ⭐ Owner */}
+          <Field label="Salesperson / Owner" required>
+            <input
+              value={form.owner || ''}
+              onChange={(e) => set('owner', e.target.value)}
+              placeholder="e.g. Nahid Hasan"
+              className={inputCls}
+            />
+          </Field>
+
+          {/* Item */}
+          <Field label="Item" full>
             <input
               value={form.item}
               onChange={(e) => set('item', e.target.value)}
@@ -88,15 +134,20 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
             />
           </Field>
 
-          <Field label="Value (৳)">
+          {/* Value */}
+          <Field label="Value (BDT base)">
             <input
               type="number"
+              step="0.01"
               value={form.value || ''}
               onChange={(e) => set('value', Number(e.target.value) || 0)}
-              placeholder="e.g. 3,50,000"
+              onFocus={(e) => e.target.select()}
+              placeholder="e.g. 350000"
               className={inputCls}
             />
           </Field>
+
+          {/* Probability */}
           <Field label="Probability">
             <select
               value={form.probability}
@@ -111,6 +162,7 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
             </select>
           </Field>
 
+          {/* Month */}
           <Field label="Month">
             <select
               value={form.month}
@@ -124,37 +176,40 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
               ))}
             </select>
           </Field>
+
+          {/* Stage */}
           <Field label="Stage">
             <select
               value={form.stage}
               onChange={(e) => set('stage', e.target.value as ForecastStage)}
               className={selectCls}
             >
-              <option value="query">Query</option>
-              <option value="rfq">RFQ</option>
-              <option value="quotation">Quotation</option>
-              <option value="negotiation">Negotiation</option>
-              <option value="won">Won</option>
-              <option value="lost">Lost</option>
+              {STAGE_OPTIONS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
             </select>
           </Field>
 
+          {/* Source */}
           <Field label="Source" full>
             <select
               value={form.source}
               onChange={(e) =>
-                set('source', e.target.value as CreateForecastPayload['source'])
+                set('source', e.target.value as ForecastSource)
               }
               className={selectCls}
             >
-              <option value="online">🌐 Online — web RFQ / tender portal</option>
-              <option value="offline">📧 Offline — email / phone</option>
-              <option value="tender">📑 Tender</option>
-              <option value="referral">🤝 Referral</option>
-              <option value="quotation-builder">📄 Quotation Builder</option>
+              {SOURCE_OPTIONS.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
+                </option>
+              ))}
             </select>
           </Field>
 
+          {/* Note */}
           <Field label="Note" full>
             <input
               value={form.note}
@@ -165,12 +220,18 @@ export function AddForecastModal({ onClose, onSaved }: Props) {
           </Field>
         </div>
 
-        {/* Actions */}
-        <div className="mt-6">
+        {/* Footer */}
+        <div className="mt-6 flex items-center justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="rounded-lg border border-[#E2DBD1] bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+          >
+            Cancel
+          </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className="rounded-lg bg-[#A06126] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60"
+            className="rounded-lg bg-[#A06126] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60 transition"
           >
             {saving ? 'Saving…' : 'Save Entry'}
           </button>

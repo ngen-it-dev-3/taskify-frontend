@@ -2,12 +2,17 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import {
   SalesCrmApi,
+  type UnifiedCard,
+  type UnifiedPipelineData,
   type ForecastEntry,
-  type PipelineData,
 } from '@/services/salesCrm.service';
+import type { RFQItem } from '@/services/rfq.service';
+import type { Quotation } from '@/services/quotation.service';
+import type { Tender } from '@/lib/api/tender.api';
 import { STAGES } from './constants';
 import { PipelineCard } from './PipelineCard';
 import { PipelineSkeleton } from './PipelineSkeleton';
@@ -19,9 +24,10 @@ interface Props {
 }
 
 export function PipelineTab({ filters }: Props) {
-  const [data, setData] = useState<PipelineData | null>(null);
+  const router = useRouter();
+  const [data, setData] = useState<UnifiedPipelineData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<ForecastEntry | null>(null);
+  const [selectedForecast, setSelectedForecast] = useState<ForecastEntry | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -30,8 +36,30 @@ export function PipelineTab({ filters }: Props) {
       if (filters.region !== 'All Regions') params.country = filters.region;
       if (filters.territory !== 'All Territories') params.territory = filters.territory;
       if (filters.owner) params.owner = filters.owner;
-      const res = await SalesCrmApi.pipeline(params);
-      setData(res);
+      const res = await SalesCrmApi.unifiedPipeline(params);
+
+      // ⭐ Filter columns by the selected source badges (empty = all)
+      const activeSources = filters.sources || [];
+      if (activeSources.length === 0) {
+        setData(res);
+      } else {
+        const filteredColumns = Object.fromEntries(
+          Object.entries(res.columns).map(([stage, cards]) => [
+            stage,
+            cards.filter((c) => activeSources.includes(c.source)),
+          ])
+        ) as typeof res.columns;
+
+        // Recompute counts for the filtered view
+        const filteredCounts = { ...res.counts };
+        (Object.keys(filteredColumns) as (keyof typeof filteredColumns)[]).forEach(
+          (k) => {
+            filteredCounts[k] = filteredColumns[k].length;
+          }
+        );
+
+        setData({ ...res, columns: filteredColumns, counts: filteredCounts });
+      }
     } catch (e: any) {
       toast.error(e.message || 'Failed to load pipeline');
     } finally {
@@ -48,6 +76,39 @@ export function PipelineTab({ filters }: Props) {
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, [load]);
+
+  /**
+   * Route the click based on the card's source:
+   *   - RFQ       → /crm/rfq?selected=<id>
+   *   - Quotation → /crm/quotation-builder/<rfqId>
+   *   - Tender    → /crm/tender?selected=<id>       ⭐ NEW
+   *   - Forecast  → open EntryDrawer modal
+   */
+  const handleCardClick = (card: UnifiedCard) => {
+    if (card.source === 'rfq') {
+      const rfq = card.raw as RFQItem;
+      router.push(`/crm/rfq?selected=${rfq.id}`);
+      return;
+    }
+
+    if (card.source === 'quotation') {
+      const quote = card.raw as Quotation;
+      if (quote.rfqId) {
+        router.push(`/crm/quotation-builder/${quote.rfqId}`);
+      }
+      return;
+    }
+
+    // ⭐ Tender → navigate to Tender Management dashboard
+    if (card.source === 'tender') {
+      const t = card.raw as Tender;
+      router.push(`/crm/tender?selected=${t._id}`);
+      return;
+    }
+
+    // Forecast entry → open the drawer
+    setSelectedForecast(card.raw as ForecastEntry);
+  };
 
   if (loading || !data) return <PipelineSkeleton />;
 
@@ -71,11 +132,10 @@ export function PipelineTab({ filters }: Props) {
                 {cards.map((c) => (
                   <PipelineCard
                     key={c.id}
-                    entry={c}
-                    stage={key}
+                    card={c}
                     currency={filters.currency}
                     rate={filters.rate}
-                    onClick={() => setSelected(c)}
+                    onClick={() => handleCardClick(c)}
                   />
                 ))}
                 {cards.length === 0 && (
@@ -89,15 +149,16 @@ export function PipelineTab({ filters }: Props) {
         })}
       </div>
 
-      {selected && (
+      {/* Forecast entry modal (only for forecast-sourced cards) */}
+      {selectedForecast && (
         <EntryDrawer
-          key={selected.id}
-          entry={selected}
+          key={selectedForecast.id}
+          entry={selectedForecast}
           currency={filters.currency}
           rate={filters.rate}
-          onClose={() => setSelected(null)}
+          onClose={() => setSelectedForecast(null)}
           onChanged={async () => {
-            setSelected(null);
+            setSelectedForecast(null);
             await load();
           }}
         />

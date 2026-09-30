@@ -3,15 +3,18 @@
 
 import React, { useState } from 'react';
 import { FilterBar, type SalesFilters } from '@/components/CRM/sales-crm/FilterBar';
+import { ForecastSummary } from '@/components/CRM/sales-crm/ForecastSummary';
 import { ForecastTab } from '@/components/CRM/sales-crm/ForecastTab';
 import { PipelineTab } from '@/components/CRM/sales-crm/PipelineTab';
 import { SalesReportTab } from '@/components/CRM/sales-crm/SalesReportTab';
 import { TopTabButton } from '@/components/CRM/sales-crm/TopTabButton';
+import type { ForecastMonth } from '@/services/salesCrm.service';
 
 type TopTab = 'pipeline' | 'forecast' | 'sales-report';
 
 export default function SalesCrmPage() {
   const [tab, setTab] = useState<TopTab>('pipeline');
+  const [activeMonth, setActiveMonth] = useState<ForecastMonth | 'all'>('all');
 
   const [filters, setFilters] = useState<SalesFilters>({
     region: 'All Regions',
@@ -19,6 +22,7 @@ export default function SalesCrmPage() {
     owner: '',
     currency: 'BDT',
     rate: 1,
+    sources: [],
   });
 
   return (
@@ -39,6 +43,7 @@ export default function SalesCrmPage() {
 
         <FilterBar value={filters} onChange={setFilters} />
 
+        {/* Main Tabs */}
         <div className="border-b border-[#EBE6DF] flex items-center gap-6 text-xs">
           <TopTabButton active={tab === 'pipeline'} onClick={() => setTab('pipeline')}>
             Pipeline
@@ -51,8 +56,22 @@ export default function SalesCrmPage() {
           </TopTabButton>
         </div>
 
+        {/* ⭐ Forecast tab content — Summary (panels + KPIs) THEN Month Tabs + Entries */}
+        {tab === 'forecast' && (
+          <>
+            <ForecastSummary
+              filters={filters}
+              activeMonth={activeMonth}
+            />
+            <ForecastTab
+              filters={filters}
+              activeMonth={activeMonth}
+              onChangeMonth={setActiveMonth}
+            />
+          </>
+        )}
+
         {tab === 'pipeline' && <PipelineTab filters={filters} />}
-        {tab === 'forecast' && <ForecastTab filters={filters} />}
         {tab === 'sales-report' && <SalesReportTab filters={filters} />}
       </div>
     </main>
