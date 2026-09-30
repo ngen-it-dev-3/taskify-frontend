@@ -302,7 +302,7 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                 </div>
 
                 {/* By Salesperson */}
-                <div className="rounded-xl border border-[#EBE6DF] bg-white p-5 shadow-xs overflow-auto h-87.5`">
+                <div className="rounded-xl border border-[#EBE6DF] bg-white p-5 shadow-xs overflow-auto h-87.5">
                     <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-700">
                         By Salesperson
                     </h3>
