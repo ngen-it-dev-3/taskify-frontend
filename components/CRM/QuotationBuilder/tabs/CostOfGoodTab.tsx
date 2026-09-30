@@ -149,42 +149,36 @@ export default function CostOfGoodTab({
                       />
                     )}
                   </td>
+
+                  {/* ⭐ Qty */}
                   <td className="px-3 py-2 text-center">
-                    <input
-                      type="number"
+                    <CellInput
                       value={l.qty}
-                      onChange={(e) =>
-                        onChangeLine(l.id, { qty: Number(e.target.value) || 0 })
-                      }
-                      className="w-14 bg-transparent border-0 focus:outline-none text-center font-mono"
+                      onChange={(v) => onChangeLine(l.id, { qty: v })}
+                      className="w-14 text-center"
+                      integer
                     />
                   </td>
 
+                  {/* ⭐ Principal Cost */}
                   <td className="px-3 py-2 text-right">
-                    <input
-                      type="number"
-                      step="0.01"
+                    <CellInput
                       value={Number(disp(l.principalCost).toFixed(2))}
-                      onChange={(e) =>
-                        onChangeLine(l.id, {
-                          principalCost: toBase(Number(e.target.value) || 0),
-                        })
+                      onChange={(v) =>
+                        onChangeLine(l.id, { principalCost: toBase(v) })
                       }
-                      className="w-24 bg-transparent border-0 focus:outline-none font-mono text-right"
+                      className="w-24 text-right"
+                      step="0.01"
                     />
                   </td>
 
+                  {/* ⭐ Weight */}
                   <td className="px-3 py-2 text-right">
-                    <input
-                      type="number"
-                      step="0.1"
+                    <CellInput
                       value={l.weightKg}
-                      onChange={(e) =>
-                        onChangeLine(l.id, {
-                          weightKg: Number(e.target.value) || 0,
-                        })
-                      }
-                      className="w-20 bg-transparent border-0 focus:outline-none font-mono text-right"
+                      onChange={(v) => onChangeLine(l.id, { weightKg: v })}
+                      className="w-20 text-right"
+                      step="0.1"
                     />
                   </td>
 
@@ -210,18 +204,14 @@ export default function CostOfGoodTab({
                     {fmt(sub)}
                   </td>
 
+                  {/* ⭐ Discount % */}
                   <td className="px-3 py-2 text-center">
-                    <input
-                      type="number"
+                    <CellInput
                       value={l.discountPct}
+                      onChange={(v) => onChangeLine(l.id, { discountPct: v })}
+                      className="w-12 text-center"
                       disabled={!discountEnabled}
-                      onChange={(e) =>
-                        onChangeLine(l.id, {
-                          discountPct: Number(e.target.value) || 0,
-                        })
-                      }
-                      className={`w-12 bg-transparent border-0 focus:outline-none text-center font-mono ${!discountEnabled ? 'opacity-40 cursor-not-allowed' : ''
-                        }`}
+                      integer
                     />
                   </td>
 
@@ -377,8 +367,8 @@ export default function CostOfGoodTab({
 
             {discountEnabled && calc.discountTotal > 0 && (
               <div className="py-2.5 flex items-center justify-between">
-                <span className="text-rose-300">Discount (applied)</span>
-                <span className="font-mono text-rose-300">
+                <span className="text-black">Discount (applied)</span>
+                <span className="font-mono text-black">
                   −{fmt(calc.discountTotal)}
                 </span>
               </div>
@@ -474,6 +464,77 @@ function RateInput({
         className="w-full bg-[#FDFBF7] border border-[#E2DBD1] text-xs rounded-lg px-3 py-2 text-slate-700 font-mono focus:outline-none focus:ring-1 focus:ring-[#A06126]"
       />
     </div>
+  );
+}
+
+/**
+ * ⭐ CellInput
+ * Allows the field to be **empty** while typing.
+ * Shows '' when value is 0. Sends 0 when cleared.
+ * Parent state keeps 0, but display stays blank.
+ */
+function CellInput({
+  value,
+  onChange,
+  className = '',
+  step = '1',
+  integer = false,
+  disabled = false,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  className?: string;
+  step?: string;
+  integer?: boolean;
+  disabled?: boolean;
+}) {
+  // Local string state — '' when value is 0
+  const [local, setLocal] = React.useState<string>(
+    value === 0 || value === null || value === undefined ? '' : String(value)
+  );
+
+  // Sync when parent value changes externally
+  React.useEffect(() => {
+    const numericLocal = local === '' ? 0 : Number(local);
+    if (numericLocal !== value) {
+      setLocal(value === 0 ? '' : String(value));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+
+    // Allow empty
+    if (raw === '') {
+      setLocal('');
+      onChange(0);
+      return;
+    }
+
+    // Strip leading zeros
+    const cleaned = raw.replace(/^0+(?=\d)/, '');
+    setLocal(cleaned);
+
+    const num = integer ? parseInt(cleaned, 10) : Number(cleaned);
+    if (!Number.isNaN(num)) onChange(num);
+  };
+
+  return (
+    <input
+      type="number"
+      step={step}
+      value={local}
+      onChange={handleChange}
+      onFocus={(e) => e.target.select()}
+      onBlur={() => {
+        // If left empty, keep it visually empty (0 in state)
+        if (local === '' || local === '-') setLocal('');
+      }}
+      disabled={disabled}
+      className={`bg-transparent border-0 focus:outline-none font-mono ${className} ${disabled ? 'opacity-40 cursor-not-allowed' : ''
+        }`}
+    />
   );
 }
 

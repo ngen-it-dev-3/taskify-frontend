@@ -155,7 +155,7 @@ export default function PreviewTab({ meta, lines, calc, onSend }: Props) {
               <div className="flex justify-between items-center py-1">
                 <span className="text-slate-500">
                   GST / VAT (15%){' '}
-                  <span className="text-emerald-600">(added)</span>
+                  <span className="text-slate-800">(added)</span>
                 </span>
                 <span className="font-mono text-slate-800">
                   ৳

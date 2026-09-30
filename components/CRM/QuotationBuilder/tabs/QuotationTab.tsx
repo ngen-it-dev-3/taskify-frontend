@@ -522,9 +522,9 @@ export default function QuotationTab({
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">
                                         Discount{' '}
-                                        <span className="text-rose-500 font-medium">(applied)</span>
+                                        <span className="text-black font-medium">(applied)</span>
                                     </span>
-                                    <span className="font-mono text-rose-600">
+                                    <span className="font-mono text-black">
                                         −{sym}
                                         {displayDiscount.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
@@ -554,9 +554,9 @@ export default function QuotationTab({
                                         <span className="text-slate-400">
                                             ({rates?.taxPct ?? 15}%)
                                         </span>{' '}
-                                        <span className="text-emerald-600 font-medium">(added)</span>
+                                        <span className="text-slate-800 font-medium">(added)</span>
                                     </span>
-                                    <span className="font-mono text-emerald-700 font-semibold">
+                                    <span className="font-mono text-slate-800 font-semibold">
                                         +{sym}
                                         {displayGst.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
