@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';           // 👈 ADD
+import React, { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import type { RFQItem, RFQProduct, FilterState, RFQStage } from './types';
 import toast from 'react-hot-toast';
 
@@ -24,13 +24,26 @@ const MONTHS = [
 ];
 
 export default function RFQDashboardPage() {
-  const router = useRouter();                            // 👈 ADD
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // ⭐ URL params sent by Pipeline click
+  const selectedFromUrl = searchParams.get('selected');
+  const stageFromUrl = searchParams.get('stage');
+
+  // ⭐ Compute initial viewMode from URL stage
+  //    This avoids a two-render cycle where the first render uses 'active'
+  const initialViewMode: FilterState['viewMode'] =
+    stageFromUrl === 'lost' ? 'lost' :
+      stageFromUrl === 'archived' ? 'archived' :
+        'active';
 
   const [filters, setFilters] = useState<FilterState>({
     countryFilter: '0',
     salesmanFilter: '0',
     companySearch: '',
-    viewMode: 'active',
+    viewMode: initialViewMode,   // ⭐ seeded from URL on first render
     year: '',
     month: '',
   });
@@ -57,7 +70,6 @@ export default function RFQDashboardPage() {
       dateTo = new Date(year, 11, 31, 23, 59, 59).toISOString();
     }
 
-    // Explicit typing so TS accepts the narrow 'lost' literal
     const stage: RFQStage | undefined = isLost ? 'lost' : undefined;
 
     return {
@@ -90,6 +102,30 @@ export default function RFQDashboardPage() {
 
   // ---- Selection ----
   const [selectedRFQId, setSelectedRFQId] = useState<string | null>(null);
+
+  // ⭐ Effect 1 — If URL requests 'lost' or 'archived' but we're not on that
+  //             view yet (e.g. user navigates within SPA), switch it.
+  useEffect(() => {
+    if (stageFromUrl === 'lost' && filters.viewMode !== 'lost') {
+      setFilters((prev) => ({ ...prev, viewMode: 'lost' }));
+    } else if (stageFromUrl === 'archived' && filters.viewMode !== 'archived') {
+      setFilters((prev) => ({ ...prev, viewMode: 'archived' }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stageFromUrl]);
+
+  // ⭐ Effect 2 — Auto-select the RFQ from ?selected=<id> once the list loads
+  useEffect(() => {
+    if (!selectedFromUrl) return;
+    if (selectedRFQId === selectedFromUrl) return;
+    if (!rfqs || rfqs.length === 0) return;
+
+    const match = rfqs.find((r) => r.id === selectedFromUrl);
+    if (match) {
+      setSelectedRFQId(match.id);
+    }
+  }, [selectedFromUrl, rfqs, selectedRFQId]);
+
   const selectedRFQ: RFQItem | undefined = useMemo(
     () => rfqs.find((r) => r.id === selectedRFQId) ?? rfqs[0],
     [rfqs, selectedRFQId]
@@ -112,7 +148,15 @@ export default function RFQDashboardPage() {
     setShowAssignModal(true);
   };
 
-  // ⭐ Navigate to Quotation Builder with the RFQ id
+  const handleSelect = (id: string) => {
+    setSelectedRFQId(id);
+    if (id) {
+      router.replace(`${pathname}?selected=${id}`, { scroll: false });
+    } else {
+      router.replace(pathname, { scroll: false });
+    }
+  };
+
   const handleQuote = (rfq: RFQItem) => {
     router.push(`/crm/quotation-builder/${rfq.id}`);
   };
@@ -139,7 +183,6 @@ export default function RFQDashboardPage() {
     }
   };
 
-  // ---- Actions dropdown handlers ----
   const handleArchive = async () => {
     if (!selectedRFQ) return;
     try {
@@ -166,6 +209,7 @@ export default function RFQDashboardPage() {
       await remove(selectedRFQ.id);
       toast.success(`RFQ ${selectedRFQ.rfqNumber} deleted`);
       setSelectedRFQId(null);
+      router.replace(pathname, { scroll: false });
     } catch (e: any) {
       toast.error(e.message || 'Failed to delete RFQ');
     }
@@ -242,7 +286,7 @@ export default function RFQDashboardPage() {
           rfqs={rfqs}
           selectedRFQId={selectedRFQ?.id ?? ''}
           showArchived={filters.viewMode === 'archived'}
-          onSelect={setSelectedRFQId}
+          onSelect={handleSelect}
           onAssign={handleAssign}
           onQuote={handleQuote}
         />
@@ -260,12 +304,11 @@ export default function RFQDashboardPage() {
           />
         ) : (
           <div className="lg:col-span-7 bg-white rounded-xl p-8 border border-[#EBE6DF] shadow-2xs text-center text-xs text-slate-500">
-            No RFQs found. Click "+ Add RFQ" to create one.
+            No RFQs found. Click &quot;+ Add RFQ&quot; to create one.
           </div>
         )}
       </div>
 
-      {/* Modals */}
       {selectedProductModal && (
         <ProductDetailsModal
           product={selectedProductModal}

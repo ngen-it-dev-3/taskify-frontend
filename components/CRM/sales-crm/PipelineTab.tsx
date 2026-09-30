@@ -1,7 +1,7 @@
 // components/CRM/sales-crm/PipelineTab.tsx
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import {
@@ -29,16 +29,21 @@ export function PipelineTab({ filters }: Props) {
   const [loading, setLoading] = useState(true);
   const [selectedForecast, setSelectedForecast] = useState<ForecastEntry | null>(null);
 
+  // ⭐ Stable params — prevents re-fetches on parent re-renders
+  const params = useMemo(() => {
+    const p: Record<string, string> = {};
+    if (filters.region !== 'All Regions') p.country = filters.region;
+    if (filters.territory !== 'All Territories') p.territory = filters.territory;
+    if (filters.owner) p.owner = filters.owner;
+    return p;
+  }, [filters.region, filters.territory, filters.owner]);
+
   const load = useCallback(async () => {
     try {
-      setLoading(true);
-      const params: Record<string, string> = {};
-      if (filters.region !== 'All Regions') params.country = filters.region;
-      if (filters.territory !== 'All Territories') params.territory = filters.territory;
-      if (filters.owner) params.owner = filters.owner;
+      if (!data) setLoading(true); // skeleton only on first load
       const res = await SalesCrmApi.unifiedPipeline(params);
 
-      // ⭐ Filter columns by the selected source badges (empty = all)
+      // Filter by source badges (empty = show all)
       const activeSources = filters.sources || [];
       if (activeSources.length === 0) {
         setData(res);
@@ -50,7 +55,6 @@ export function PipelineTab({ filters }: Props) {
           ])
         ) as typeof res.columns;
 
-        // Recompute counts for the filtered view
         const filteredCounts = { ...res.counts };
         (Object.keys(filteredColumns) as (keyof typeof filteredColumns)[]).forEach(
           (k) => {
@@ -65,49 +69,66 @@ export function PipelineTab({ filters }: Props) {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params, filters.sources]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  useEffect(() => {
-    const onFocus = () => load();
-    window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
-  }, [load]);
-
   /**
-   * Route the click based on the card's source:
-   *   - RFQ       → /crm/rfq?selected=<id>
-   *   - Quotation → /crm/quotation-builder/<rfqId>
-   *   - Tender    → /crm/tender?selected=<id>       ⭐ NEW
-   *   - Forecast  → open EntryDrawer modal
+   * ⭐ Click routing — source-aware AND stage-aware.
+   *
+   * Rules:
+   *  1. FORECAST source cards → open the EntryDrawer modal (safe)
+   *  2. WON / LOST stage cards → navigate to the source page
+   *  3. Everything else → do nothing (or navigate — see below)
+   *
+   * Why: EntryDrawer expects a ForecastEntry. Passing an RFQ / Quotation /
+   *      Tender object crashes React ("Objects are not valid as a React child")
+   *      because those have nested `client` / `products` objects.
    */
   const handleCardClick = (card: UnifiedCard) => {
-    if (card.source === 'rfq') {
-      const rfq = card.raw as RFQItem;
-      router.push(`/crm/rfq?selected=${rfq.id}`);
-      return;
-    }
-
-    if (card.source === 'quotation') {
-      const quote = card.raw as Quotation;
-      if (quote.rfqId) {
-        router.push(`/crm/quotation-builder/${quote.rfqId}`);
+    // ---- Source-specific navigation ----
+    const goToSource = () => {
+      if (card.source === 'rfq') {
+        const rfq = card.raw as RFQItem;
+        // ⭐ Include stage so the RFQ Dashboard knows which view to open
+        router.push(`/crm/rfq?selected=${rfq.id}&stage=${rfq.stage}`);
+        return true;
       }
+      if (card.source === 'quotation') {
+        const quote = card.raw as Quotation;
+        if (quote.rfqId) {
+          router.push(`/crm/quotation-builder/${quote.rfqId}`);
+          return true;
+        }
+        return false;
+      }
+      if (card.source === 'tender') {
+        const t = card.raw as Tender;
+        // ⭐ Correct route: /tenders/manage (not /crm/tender)
+        router.push(`/tenders/manage?tenderId=${t._id}&stage=${t.stage}`);
+        return true;
+      }
+      return false;
+    };
+
+    // ---- FORECAST source → always open the drawer (safe to render) ----
+    if (card.source === 'forecast') {
+      setSelectedForecast(card.raw as ForecastEntry);
       return;
     }
 
-    // ⭐ Tender → navigate to Tender Management dashboard
-    if (card.source === 'tender') {
-      const t = card.raw as Tender;
-      router.push(`/crm/tender?selected=${t._id}`);
+    // ---- WON / LOST → go to source page ----
+    if (card.stage === 'won' || card.stage === 'lost') {
+      goToSource();
       return;
     }
 
-    // Forecast entry → open the drawer
-    setSelectedForecast(card.raw as ForecastEntry);
+    // ---- Other stages (Query / RFQ / Quotation / Negotiation) ----
+    // Non-forecast cards: navigate to source (no drawer, avoids the crash)
+    goToSource();
   };
 
   if (loading || !data) return <PipelineSkeleton />;
@@ -149,7 +170,7 @@ export function PipelineTab({ filters }: Props) {
         })}
       </div>
 
-      {/* Forecast entry modal (only for forecast-sourced cards) */}
+      {/* EntryDrawer — only for forecast-sourced cards */}
       {selectedForecast && (
         <EntryDrawer
           key={selectedForecast.id}
@@ -166,3 +187,4 @@ export function PipelineTab({ filters }: Props) {
     </>
   );
 }
+

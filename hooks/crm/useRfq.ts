@@ -5,7 +5,6 @@ import { RfqApi } from '@/services/rfq.service';
 import type { RFQItem, RFQListParams, RFQStats } from '@/services/rfq.service';
 
 // Serialize params to a stable string so we can detect real changes
-// (object identity is not reliable with useMemo + nested props)
 function serializeParams(p: RFQListParams): string {
   return JSON.stringify({
     page: p.page ?? 1,
@@ -27,8 +26,11 @@ export function useRfq(externalParams: RFQListParams = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Stable key derived from externalParams — changes only when a real value changes
-  const paramsKey = useMemo(() => serializeParams(externalParams), [externalParams]);
+  // ⭐ paramsKey changes whenever a meaningful param changes
+  const paramsKey = useMemo(
+    () => serializeParams(externalParams),
+    [externalParams]
+  );
 
   // Keep a ref to the latest params so refresh() always uses fresh values
   const latestParamsRef = useRef<RFQListParams>(externalParams);
@@ -57,11 +59,11 @@ export function useRfq(externalParams: RFQListParams = {}) {
       const s = await RfqApi.stats();
       setStats(s);
     } catch {
-      // silent — stats are non-critical
+      // silent
     }
   }, []);
 
-  // ---- REFRESH (uses latest params via ref) ----
+  // ---- REFRESH ----
   const refresh = useCallback(async () => {
     await Promise.all([
       fetchList(latestParamsRef.current),
@@ -69,9 +71,10 @@ export function useRfq(externalParams: RFQListParams = {}) {
     ]);
   }, [fetchList, fetchStats]);
 
-  // ⭐ KEY FIX: refetch whenever the serialized params key changes
+  // ⭐ Refetch whenever the serialized params key changes
+  //    This is what makes `viewMode` switches work
   useEffect(() => {
-    fetchList(externalParams);
+    fetchList(latestParamsRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey]);
 
@@ -87,7 +90,7 @@ export function useRfq(externalParams: RFQListParams = {}) {
     error,
     refresh,
 
-    // ---- Mutations (all auto-refresh with LATEST params) ----
+    // Mutations
     create: async (payload: Parameters<typeof RfqApi.create>[0]) => {
       const created = await RfqApi.create(payload);
       await refresh();
