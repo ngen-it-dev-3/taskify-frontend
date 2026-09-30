@@ -10,19 +10,10 @@ const API_BASE = '/sales-crm';
 // TYPES
 // ============================================================
 export type ForecastStage =
-    | 'query'
-    | 'rfq'
-    | 'quotation'
-    | 'negotiation'
-    | 'won'
-    | 'lost';
+    | 'query' | 'rfq' | 'quotation' | 'negotiation' | 'won' | 'lost';
 
 export type ForecastSource =
-    | 'online'
-    | 'offline'
-    | 'quotation-builder'
-    | 'tender'
-    | 'referral';
+    | 'online' | 'offline' | 'quotation-builder' | 'tender' | 'referral';
 
 export type ForecastMonth =
     | 'Jan' | 'Feb' | 'Mar' | 'Apr' | 'May' | 'Jun'
@@ -39,22 +30,18 @@ export interface ForecastEntry {
     stage: ForecastStage;
     source: ForecastSource;
     note: string;
-
     country: string;
     region: string;
     owner: string;
-
     quotationId: string | null;
     rfqId: string | null;
     rfqNumber: string;
     pqNumber: string;
-
     deliveredAt: string | null;
     invoicedAt: string | null;
     executedAt: string | null;
     closedAt: string | null;
     monthlyTarget: number;
-
     createdAt: string;
     updatedAt: string;
 }
@@ -183,19 +170,16 @@ export interface UnifiedCard {
     id: string;
     source: UnifiedSource;
     stage: ForecastStage;
-
     client: string;
     item: string;
     value: number;
     probability: number;
     country: string;
     owner: string;
-
     rfqNumber: string;
     rfqId: string | null;
     pqNumber: string;
     quotationId: string | null;
-
     raw: RFQItem | Quotation | ForecastEntry | Tender;
 }
 
@@ -207,17 +191,66 @@ export interface UnifiedPipelineData {
 }
 
 // ============================================================
-// NORMALIZERS
+// ⭐ OWNER HELPERS
 // ============================================================
 
 /**
- * RFQ → Card
- * ⭐ BOTH `pending` and `quoted` RFQs go to the "query" column.
+ * Extract a displayable owner name from any of these shapes:
+ *   - "John Doe"            (plain string)
+ *   - { fullName: "John" }  (user object)
+ *   - { name: "John" }      (user object, alternate)
+ *   - null / undefined / ""
  */
-function rfqToCard(r: RFQItem): UnifiedCard {
-    const stage: ForecastStage =
-        r.stage === 'lost' ? 'lost' : 'query';
+function extractOwnerName(v: any): string {
+    if (!v) return '';
+    if (typeof v === 'string') return v.trim();
+    if (typeof v === 'object') {
+        return String(
+            v.fullName || v.name || v.email || ''
+        ).trim();
+    }
+    return '';
+}
 
+/**
+ * Best-effort owner for a Quotation. Tries multiple paths.
+ */
+function bestQuotationOwner(q: any): string {
+    return (
+        extractOwnerName(q?.crmManager) ||
+        extractOwnerName(q?.createdBy) ||
+        extractOwnerName(q?.salesman) ||
+        extractOwnerName(q?.assignedTo) ||
+        ''
+    );
+}
+
+/**
+ * Best-effort owner for a ForecastEntry.
+ */
+function bestForecastOwner(f: any): string {
+    return (
+        extractOwnerName(f?.owner) ||
+        extractOwnerName(f?.createdBy) ||
+        ''
+    );
+}
+
+/**
+ * Best-effort owner for an RFQ.
+ */
+function bestRfqOwner(r: any): string {
+    const assigned = extractOwnerName(r?.assignedTo);
+    if (assigned && assigned !== 'Unassigned') return assigned;
+    return extractOwnerName(r?.salesman) || '';
+}
+
+// ============================================================
+// NORMALIZERS
+// ============================================================
+
+function rfqToCard(r: RFQItem): UnifiedCard {
+    const stage: ForecastStage = r.stage === 'lost' ? 'lost' : 'query';
     const firstProduct = r.products?.[0];
     const productCount = r.products?.length ?? 0;
 
@@ -238,10 +271,7 @@ function rfqToCard(r: RFQItem): UnifiedCard {
         value: 0,
         probability,
         country: r.country || '—',
-        owner:
-            r.assignedTo && r.assignedTo !== 'Unassigned'
-                ? r.assignedTo
-                : r.salesman || '',
+        owner: bestRfqOwner(r),   // ⭐ improved
         rfqNumber: r.rfqNumber,
         rfqId: r.id,
         pqNumber: '',
@@ -250,9 +280,6 @@ function rfqToCard(r: RFQItem): UnifiedCard {
     };
 }
 
-/**
- * Quotation → Card
- */
 function quotationToCard(q: Quotation): UnifiedCard {
     const stage: ForecastStage =
         q.status === 'draft' ? 'quotation' :
@@ -285,7 +312,7 @@ function quotationToCard(q: Quotation): UnifiedCard {
         value: q.totals?.grandTotal || 0,
         probability,
         country: q.client?.country || q.territory || '—',
-        owner: q.crmManager || '',
+        owner: bestQuotationOwner(q),   // ⭐ improved
         rfqNumber: q.rfqNumber || '',
         rfqId: q.rfqId || null,
         pqNumber: q.pqNumber || '',
@@ -294,9 +321,6 @@ function quotationToCard(q: Quotation): UnifiedCard {
     };
 }
 
-/**
- * ForecastEntry → Card
- */
 function forecastToCard(f: ForecastEntry): UnifiedCard {
     return {
         id: `fc-${f.id}`,
@@ -307,7 +331,7 @@ function forecastToCard(f: ForecastEntry): UnifiedCard {
         value: f.value || 0,
         probability: f.probability || 50,
         country: f.country || '—',
-        owner: f.owner || '',
+        owner: bestForecastOwner(f),   // ⭐ improved
         rfqNumber: f.rfqNumber || '',
         rfqId: f.rfqId || null,
         pqNumber: f.pqNumber || '',
@@ -316,37 +340,25 @@ function forecastToCard(f: ForecastEntry): UnifiedCard {
     };
 }
 
-/**
- * Tender → Card
- * ⭐ Only `won`, `lost`, and `submitted` tenders flow into the pipeline.
- *    - won       → Won column
- *    - lost      → Lost column
- *    - submitted → Negotiation column (awaiting result)
- *
- * Value = bidValue if present, else tentativeBudget.
- * Client = tenderer (the issuing company/authority).
- * Item   = tender title.
- */
 function tenderToCard(t: Tender): UnifiedCard {
     const stage: ForecastStage =
         t.stage === 'won' ? 'won' :
             t.stage === 'lost' ? 'lost' :
                 t.stage === 'submitted' ? 'negotiation' :
-                    'query';   // fallback (shouldn't be called for others)
+                    'query';
 
     const probability =
         stage === 'won' ? 100 :
             stage === 'lost' ? 0 :
-                stage === 'negotiation' ? 60 :
-                    50;
+                stage === 'negotiation' ? 60 : 50;
 
     const value = Number(t.bidValue || t.tentativeBudget || 0);
 
-    // Owner may be an object or a string depending on populate state
-    const ownerName =
-        typeof t.owner === 'string'
-            ? t.owner
-            : t.owner?.fullName || t.owner?.name || t.responsiblePerson || t.recordedBy || '';
+    const owner =
+        extractOwnerName(t.owner) ||
+        extractOwnerName(t.responsiblePerson) ||
+        extractOwnerName(t.recordedBy) ||
+        '';
 
     return {
         id: `tender-${t._id}`,
@@ -356,9 +368,9 @@ function tenderToCard(t: Tender): UnifiedCard {
         item: t.title || t.description || '—',
         value,
         probability,
-        country: '',                     // tenders don't carry a country field
-        owner: ownerName,
-        rfqNumber: '',                   // tenders use their own numbering
+        country: '',
+        owner,
+        rfqNumber: '',
         rfqId: null,
         pqNumber: '',
         quotationId: null,
@@ -472,53 +484,44 @@ export const SalesCrmApi = {
         }
     },
 
-    // ============================================================
     // ⭐ UNIFIED PIPELINE
-    // Merges RFQs + Quotations + ForecastEntries + Tenders
-    // ============================================================
     async unifiedPipeline(
         params: ForecastListParams = {}
     ): Promise<UnifiedPipelineData> {
         const [
-            forecastRes,
-            rfqRes,
-            quoteRes,
-            lostRfqRes,
-            wonTendersRes,
-            lostTendersRes,
-            submittedTendersRes,
+            forecastRes, rfqRes, quoteRes, lostRfqRes,
+            wonTendersRes, lostTendersRes, submittedTendersRes,
         ] = await Promise.all([
             this.pipeline(params),
 
             RfqApi.list({
-                limit: 200,
+                limit: 50,
                 country: params.country || undefined,
                 salesman: params.owner || undefined,
                 search: params.search || undefined,
             }).catch(() => ({ items: [] as RFQItem[], total: 0, page: 1, limit: 0, totalPages: 0 })),
 
             QuotationApi.list({
-                limit: 200,
+                limit: 50,
                 search: params.search || undefined,
             }).catch(() => ({ items: [] as Quotation[], total: 0, page: 1, limit: 0, totalPages: 0 })),
 
             RfqApi.list({
-                limit: 200,
+                limit: 50,
                 stage: 'lost',
                 country: params.country || undefined,
                 salesman: params.owner || undefined,
             }).catch(() => ({ items: [] as RFQItem[], total: 0, page: 1, limit: 0, totalPages: 0 })),
 
-            // ⭐ Tenders — fetched separately by stage
-            tenderApi.list({ stage: 'won', limit: 200 })
+            tenderApi.list({ stage: 'won', limit: 30 })
                 .then((r) => ({ data: r.data ?? [] }))
                 .catch(() => ({ data: [] as Tender[] })),
 
-            tenderApi.list({ stage: 'lost', limit: 200 })
+            tenderApi.list({ stage: 'lost', limit: 30 })
                 .then((r) => ({ data: r.data ?? [] }))
                 .catch(() => ({ data: [] as Tender[] })),
 
-            tenderApi.list({ stage: 'submitted', limit: 200 })
+            tenderApi.list({ stage: 'submitted', limit: 30 })
                 .then((r) => ({ data: r.data ?? [] }))
                 .catch(() => ({ data: [] as Tender[] })),
         ]);
@@ -533,20 +536,16 @@ export const SalesCrmApi = {
         const allRfqs = [...activeRfqs, ...lostRfqs];
         const allTenders = [...wonTenders, ...lostTenders, ...submittedTenders];
 
-        // ---- RFQs ----
         const rfqCards: UnifiedCard[] = allRfqs
             .filter((r) => r.stage !== 'archived')
             .map(rfqToCard);
 
-        // ---- Quotations ----
         const quotationCards: UnifiedCard[] = quotations
             .filter((q) => q.status !== 'expired')
             .map(quotationToCard);
 
-        // ---- Tenders (won / lost / submitted) ----
         const tenderCards: UnifiedCard[] = allTenders.map(tenderToCard);
 
-        // ---- Standalone forecast entries ----
         const standaloneForecast: UnifiedCard[] = [];
         Object.values(forecastRes.columns).forEach((col) => {
             col.forEach((f) => {
@@ -558,12 +557,8 @@ export const SalesCrmApi = {
             });
         });
 
-        // ---- Merge everything ----
         const allCards = [
-            ...rfqCards,
-            ...quotationCards,
-            ...tenderCards,
-            ...standaloneForecast,
+            ...rfqCards, ...quotationCards, ...tenderCards, ...standaloneForecast,
         ];
 
         const STAGES: ForecastStage[] = [

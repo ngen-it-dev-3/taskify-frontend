@@ -22,18 +22,27 @@ export function PipelineCard({ card, currency, rate, onClick }: Props) {
   const isLost = card.stage === 'lost';
   const isWon = card.stage === 'won';
 
-  // ⭐ Build the reference string in the top-right of the card
+  // Reference string
   const reference = (() => {
     if (card.source === 'quotation') return card.pqNumber || '';
     if (card.source === 'rfq') return card.rfqNumber || '';
     if (card.source === 'tender') {
-      // Tenders don't have a short ref number in the API —
-      // use tenderType (eGP / RFQ / Hardcopy Ref.) as the reference.
       const t = card.raw as Tender;
       return t?.tenderType || '';
     }
     return card.pqNumber || card.rfqNumber || '';
   })();
+
+  // ⭐ Owner — graceful fallback
+  const ownerDisplay = card.owner && card.owner.trim()
+    ? card.owner.trim()
+    : 'Unassigned';
+  const ownerIsUnassigned = ownerDisplay === 'Unassigned';
+
+  // ⭐ Country — graceful fallback
+  const countryDisplay = card.country && card.country !== '—'
+    ? card.country
+    : '';
 
   return (
     <button
@@ -80,18 +89,21 @@ export function PipelineCard({ card, currency, rate, onClick }: Props) {
 
       {/* Country + owner */}
       <div className="mt-2 pt-2 border-t border-black/5 flex items-center justify-between gap-2">
-        {card.country && card.country !== '—' ? (
+        {countryDisplay ? (
           <span className="inline-block rounded-md bg-white/70 border border-black/5 px-1.5 py-0.5 text-[9.5px] font-medium text-slate-600">
-            {card.country}
+            {countryDisplay}
           </span>
         ) : (
           <span />
         )}
-        {card.owner && (
-          <span className="text-[9.5px] text-slate-500 truncate">
-            {card.owner}
-          </span>
-        )}
+        <span
+          className={`text-[9.5px] truncate ${ownerIsUnassigned
+              ? 'text-slate-400 italic'
+              : 'text-slate-500'
+            }`}
+        >
+          {ownerDisplay}
+        </span>
       </div>
     </button>
   );

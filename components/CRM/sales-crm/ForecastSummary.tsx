@@ -28,6 +28,9 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
     const [salespeople, setSalespeople] = useState<BySalespersonData | null>(null);
     const [loading, setLoading] = useState(true);
 
+    // ⭐ Currently selected bar
+    const [selectedPoint, setSelectedPoint] = useState<ForecastTrendPoint | null>(null);
+
     const load = async () => {
         try {
             setLoading(true);
@@ -56,12 +59,14 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
 
     useEffect(() => {
         load();
+        // Reset selection when month changes
+        setSelectedPoint(null);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeMonth, filters.region, filters.territory, filters.owner]);
 
     const maxTrend = Math.max(1, ...trend.map((t) => Math.max(t.closed, t.open)));
 
-    // ---------- SKELETON ----------
+    // ---- SKELETON ----
     if (loading || !kpis) {
         return (
             <div className="space-y-5">
@@ -85,12 +90,62 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
         );
     }
 
+    // ⭐ Build the caption text
+    //    When nothing is selected → show the hint
+    //    When a bar is clicked    → show that bar's total
+    const captionNode = (() => {
+        if (!selectedPoint) {
+            return (
+                <span className="text-slate-400">
+                    {activeMonth === 'all'
+                        ? 'Click a month to see its totals'
+                        : 'Click a day to see its totals'}
+                </span>
+            );
+        }
+
+        const total = selectedPoint.closed + selectedPoint.open;
+        const isDaily = activeMonth !== 'all';
+        const label = isDaily
+            ? `${activeMonth} ${selectedPoint.label}`      // "Sep 29"
+            : selectedPoint.label;                          // "Sep"
+
+        return (
+            <span className="text-slate-700">
+                <span className="font-semibold text-[#0F2D4A]">{label}:</span>{' '}
+                <span className="font-mono font-bold text-[#0F2D4A]">
+                    {formatMoney(total, filters.currency, { rate: filters.rate })}
+                </span>{' '}
+                <span className="text-slate-500">
+                    {isDaily ? 'in sales this day' : 'in quoted pipeline this month'}
+                </span>
+                {(selectedPoint.closed > 0 || selectedPoint.open > 0) && (
+                    <>
+                        <span className="text-slate-400 mx-1">·</span>
+                        <span className="inline-flex items-center gap-1 text-emerald-700">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                            {formatMoney(selectedPoint.closed, filters.currency, {
+                                rate: filters.rate,
+                            })}
+                        </span>
+                        <span className="inline-flex items-center gap-1 ml-2 text-[#A06126]">
+                            <span className="w-2 h-2 rounded-full bg-[#A06126]" />
+                            {formatMoney(selectedPoint.open, filters.currency, {
+                                rate: filters.rate,
+                            })}
+                        </span>
+                    </>
+                )}
+            </span>
+        );
+    })();
+
     return (
         <div className="space-y-5">
             {/* 3-Column Row — Trend | Breakdown | By Salesperson */}
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
                 {/* Trend Chart */}
-                <div className="rounded-xl border border-[#EBE6DF] bg-white p-5 shadow-xs">
+                <div className="rounded-xl border border-[#EBE6DF] bg-white p-5 shadow-xs col-span-3">
                     <div className="mb-4 flex items-center justify-between">
                         <h3 className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-700">
                             {activeMonth === 'all'
@@ -102,14 +157,14 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                         </span>
                     </div>
 
+                    {/* Chart area */}
                     <div
                         className="overflow-x-auto overflow-y-hidden pb-1"
                         style={{ height: 200 }}
                     >
                         <div
-                            className={`flex items-end h-full ${
-                                activeMonth === 'all' ? 'gap-1' : 'gap-[3px]'
-                            }`}
+                            className={`flex items-end h-full ${activeMonth === 'all' ? 'gap-[7px]' : 'gap-[3px]'
+                                }`}
                         >
                             {trend.map((t) => {
                                 const totalH = Math.max(t.closed, t.open);
@@ -123,10 +178,24 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                                 const closedHeight =
                                     closedPct > 0 ? Math.max(2, closedPct) : 0;
 
+                                const isSelected = selectedPoint?.key === t.key;
+                                const isClickable = !t.noActivity;
+
                                 return (
-                                    <div
+                                    <button
                                         key={t.key}
-                                        className="flex flex-col items-center shrink-0"
+                                        type="button"
+                                        disabled={!isClickable}
+                                        onClick={() =>
+                                            setSelectedPoint(isSelected ? null : t)
+                                        }
+                                        className={`flex flex-col items-center shrink-0 rounded-sm transition ${isClickable
+                                                ? 'cursor-pointer hover:bg-slate-50'
+                                                : 'cursor-default'
+                                            } ${isSelected
+                                                ? 'bg-[#FFF7E8] ring-1 ring-[#A06126]/40'
+                                                : ''
+                                            }`}
                                         style={{
                                             width: activeMonth === 'all' ? 22 : 14,
                                             height: '100%',
@@ -139,20 +208,10 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                                             <div
                                                 className="w-full rounded-t bg-[#A06126]"
                                                 style={{ height: `${openHeight}%` }}
-                                                title={`${t.label} · Open: ${formatMoney(
-                                                    t.open,
-                                                    filters.currency,
-                                                    { rate: filters.rate }
-                                                )}`}
                                             />
                                             <div
                                                 className="w-full rounded-t bg-emerald-600"
                                                 style={{ height: `${closedHeight}%` }}
-                                                title={`${t.label} · Closed: ${formatMoney(
-                                                    t.closed,
-                                                    filters.currency,
-                                                    { rate: filters.rate }
-                                                )}`}
                                             />
                                             {t.noActivity && (
                                                 <div
@@ -162,15 +221,26 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                                             )}
                                         </div>
 
-                                        <span className="mt-1 text-[8px] font-semibold text-slate-500 leading-none">
+                                        <span
+                                            className={`mt-1 text-[8px] font-semibold leading-none ${isSelected
+                                                    ? 'text-[#A06126]'
+                                                    : 'text-slate-500'
+                                                }`}
+                                        >
                                             {t.label}
                                         </span>
-                                    </div>
+                                    </button>
                                 );
                             })}
                         </div>
                     </div>
 
+                    {/* ⭐ Inline caption — updates on bar click */}
+                    <div className="mt-3 text-[11px] leading-relaxed">
+                        {captionNode}
+                    </div>
+
+                    {/* Legend */}
                     <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-[#F0EBE3] pt-3 text-[10px] text-slate-500">
                         <span className="inline-flex items-center gap-1">
                             <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600" /> Closed
@@ -195,8 +265,8 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                             defaultValue="country"
                         >
                             <option value="country">By Country</option>
-                            <option value="stage">By Stage</option>
-                            <option value="source">By Source</option>
+                            <option value="stage">By Brand</option>
+                            <option value="source">By Category</option>
                         </select>
                     </div>
 
@@ -232,7 +302,7 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                 </div>
 
                 {/* By Salesperson */}
-                <div className="rounded-xl border border-[#EBE6DF] bg-white p-5 shadow-xs">
+                <div className="rounded-xl border border-[#EBE6DF] bg-white p-5 shadow-xs overflow-auto h-87.5`">
                     <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-700">
                         By Salesperson
                     </h3>
