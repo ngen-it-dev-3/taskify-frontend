@@ -110,7 +110,7 @@ export function EditClientModal({ client, constants, onClose, onSaved }: Props) 
                     </Field>
 
                     <Field label="Tier">
-                        <select value={tier} onChange={(e) => setTier(e.target.value)} className={selectCls}>
+                        <select value={tier} onChange={(e) => setTier(e.target.value as typeof tier)} className={selectCls}>
                             {(constants?.TIERS || ['Gold', 'Silver', 'Bronze', 'Standard']).map((t) => (
                                 <option key={t} value={t}>{t}</option>
                             ))}
@@ -167,7 +167,7 @@ export function EditClientModal({ client, constants, onClose, onSaved }: Props) 
                         />
                     </Field>
                     <Field label="Stage">
-                        <select value={stage} onChange={(e) => setStage(e.target.value)} className={selectCls}>
+                        <select value={stage} onChange={(e) => setStage(e.target.value as typeof stage)} className={selectCls}>
                             {STAGES.map((s) => (
                                 <option key={s} value={s}>
                                     {s.charAt(0).toUpperCase() + s.slice(1)}
