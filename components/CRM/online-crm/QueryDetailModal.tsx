@@ -9,6 +9,7 @@ import { fmtDate, fmtFull } from './constants';
 interface Props {
   query: OnlineQuery;
   onClose: () => void;
+  onSaved?: () => void;         // ⭐ NEW — optional, for compat
 }
 
 export function QueryDetailModal({ query, onClose }: Props) {
@@ -41,18 +42,17 @@ export function QueryDetailModal({ query, onClose }: Props) {
 
         {/* Body */}
         <div className="mt-5 overflow-hidden rounded-lg border border-[#F0EBE3]">
-          <Row label="Product" value={query.product} />
+          <Row label="Product" value={query.product || '—'} />
           <Row label="Date Received" value={fmtDate(query.date)} />
           <Row label="Source" value={query.source} />
           <Row
             label="Days Aging"
             value={
               <span
-                className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                  query.daysAging > 15
+                className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${query.daysAging > 15
                     ? 'bg-rose-50 text-rose-700'
                     : 'bg-emerald-50 text-emerald-700'
-                }`}
+                  }`}
               >
                 {query.daysAging} days
               </span>

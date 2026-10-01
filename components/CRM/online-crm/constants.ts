@@ -4,6 +4,8 @@ export {
   type QueryStage,
   type QuerySource,
   type QueryStatus,
+  type UnifiedOnlineRow,
+  type UnifiedSource,
 } from '@/services/onlineCrm.service';
 
 export const MONTHS_SHORT = [
@@ -30,6 +32,34 @@ export const ASSIGNEES = [
   'Unassigned',
 ] as const;
 
+// ============================================================
+// ⭐ SOURCE BADGE STYLES (unified view)
+// ============================================================
+export const SOURCE_BADGES: Record<
+  'rfq' | 'tender' | 'quotation' | 'online',
+  { label: string; className: string }
+> = {
+  rfq: {
+    label: 'RFQ',
+    className: 'bg-[#EEF4FB] text-[#1F3864] border-[#D6E3F5]',
+  },
+  quotation: {
+    label: 'Quote',
+    className: 'bg-[#F5EEFF] text-[#6B3FB5] border-[#E4D5F5]',
+  },
+  tender: {
+    label: 'Tender',
+    className: 'bg-[#E8F6F1] text-[#0F6B4F] border-[#C4E8DA]',
+  },
+  online: {
+    label: 'Online',
+    className: 'bg-[#FFF7E8] text-[#A06126] border-[#F5D9B8]',
+  },
+};
+
+// ============================================================
+// HELPERS
+// ============================================================
 export const fmtMoney = (n: number | null | undefined) => {
   if (n === null || n === undefined) return '—';
   if (n >= 10000000) return `৳${(n / 10000000).toFixed(2)}Cr`;

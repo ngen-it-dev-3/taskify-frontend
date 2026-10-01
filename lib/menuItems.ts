@@ -94,6 +94,7 @@ import {
   Shield,
   BarChart3Icon,
   Globe,
+  ShoppingCart,
 } from "lucide-react";
 
 import type { LucideIcon } from "lucide-react";
@@ -990,8 +991,8 @@ export const SUB_ITEMS = {
   ),
   crmClients: createSubNavItem(
     "crm-clients",
-    "Clients",
-    "/crm/clients",
+    "Clients 360",
+    "/crm/client-360",
     Users,
     "CRM",
     [
@@ -1006,10 +1007,10 @@ export const SUB_ITEMS = {
     { description: "Weighted monthly revenue forecast" },
   ),
   crmSalesOrder: createSubNavItem(
-    "crm-leaderboard",
-    "Sales Leaderboard",
-    "/crm/leaderboard",
-    Trophy,
+    "crm-sales-order",
+    "Sales Order",
+    "/crm/sales-orders",
+    ShoppingCart,
     "CRM",
     [
       ROLES.SUPER_ADMIN,
@@ -1022,11 +1023,11 @@ export const SUB_ITEMS = {
     ],
     { description: "Rep performance by won revenue and activity" },
   ),
-  crmActivities: createSubNavItem(
-    "crm-activities",
-    "My Activity Feed",
-    "/crm/activities",
-    Activity,
+  crmSalesLeaderboard: createSubNavItem(
+    "crm-sales-leaderboard",
+    "Sales Leaderboard",
+    "/crm/sales-leaderboard",
+    Trophy,
     "CRM",
     [
       ROLES.SUPER_ADMIN,
@@ -1035,11 +1036,10 @@ export const SUB_ITEMS = {
       ROLES.DEPT_MANAGER,
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
-      ROLES.EMPLOYEE,
+      ROLES.EMPLOYEE, 
     ],
-    { description: "Your recent calls, emails, and follow-ups" },
+    { description: "Rep performance by won revenue and activity" },
   ),
-
   // User Management Sub-items
   allUsers: createSubNavItem(
     "all-users",

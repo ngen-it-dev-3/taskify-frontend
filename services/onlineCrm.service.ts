@@ -4,7 +4,7 @@ import api from '@/lib/axios';
 const API_BASE = '/online-crm';
 
 // ============================================================
-// TYPES
+// TYPES (existing)
 // ============================================================
 export type QueryStage = 'To Start' | 'Not Quoted' | 'Quoted';
 export type QuerySource =
@@ -43,6 +43,7 @@ export interface OnlineQueryListParams {
   country?: string;
   assigned?: string;
   status?: string;
+  originSource?: string;   // ⭐ NEW — for unified endpoint
   month?: number | string;
   year?: number | string;
   dateFrom?: string;
@@ -105,10 +106,36 @@ export interface TopProductsData {
 }
 
 // ============================================================
+// ⭐ UNIFIED TYPES
+// ============================================================
+export type UnifiedSource = 'rfq' | 'tender' | 'quotation' | 'online';
+
+export interface UnifiedOnlineRow {
+  id: string;
+  source: UnifiedSource;
+  sourceLabel: string;         // 'RFQ' | 'Tender' | 'Quote' | 'Online'
+  rfqNumber: string;
+  date: string;
+  company: string;
+  country: string;
+  product: string;
+  productCategory: string;
+  assigned: string;
+  origin: string;              // 'Email' | 'Phone' | 'Portal' | 'Manual' | etc.
+  daysAging: number;
+  stage: QueryStage;
+  status?: string;
+  value: number | null;
+  currency: string;
+  raw: string;
+  createdAt: string;
+}
+
+// ============================================================
 // API CLIENT
 // ============================================================
 export const OnlineCrmApi = {
-  // ---- Queries CRUD ----
+  // ---- Existing: OnlineQuery CRUD ----
   async list(params: OnlineQueryListParams = {}) {
     const res = await api.get(`${API_BASE}/queries`, { params });
     return {
@@ -148,7 +175,7 @@ export const OnlineCrmApi = {
     return res.data.data as { deletedCount: number };
   },
 
-  // ---- Aggregations ----
+  // ---- Existing: Aggregations ----
   async stats(params: OnlineQueryListParams = {}): Promise<OnlineCrmStats> {
     const res = await api.get(`${API_BASE}/stats`, { params });
     return res.data.data as OnlineCrmStats;
@@ -178,5 +205,52 @@ export const OnlineCrmApi = {
   async countries(): Promise<string[]> {
     const res = await api.get(`${API_BASE}/countries`);
     return (res.data.data || []) as string[];
+  },
+
+  // ============================================================
+  // ⭐ UNIFIED — RFQ + Tender + Quotation + OnlineQuery
+  // ============================================================
+
+  async unifiedList(params: OnlineQueryListParams = {}) {
+    const res = await api.get(`${API_BASE}/unified`, { params });
+    return {
+      items: (res.data?.data || []) as UnifiedOnlineRow[],
+      total: res.data?.meta?.total || 0,
+      page: res.data?.meta?.page || 1,
+      limit: res.data?.meta?.limit || 200,
+      totalPages: res.data?.meta?.totalPages || 0,
+    };
+  },
+
+  async unifiedStats(
+    params: OnlineQueryListParams = {}
+  ): Promise<OnlineCrmStats> {
+    const res = await api.get(`${API_BASE}/unified/stats`, { params });
+    return res.data.data as OnlineCrmStats;
+  },
+
+  async unifiedMonthlyVolume(
+    params: OnlineQueryListParams = {}
+  ): Promise<MonthlyVolumeData> {
+    const res = await api.get(`${API_BASE}/unified/monthly-volume`, {
+      params,
+    });
+    return res.data.data as MonthlyVolumeData;
+  },
+
+  async unifiedByCountry(
+    params: OnlineQueryListParams = {}
+  ): Promise<ByCountryData> {
+    const res = await api.get(`${API_BASE}/unified/by-country`, { params });
+    return res.data.data as ByCountryData;
+  },
+
+  async unifiedTopProducts(
+    params: OnlineQueryListParams = {}
+  ): Promise<TopProductsData> {
+    const res = await api.get(`${API_BASE}/unified/top-products`, {
+      params,
+    });
+    return res.data.data as TopProductsData;
   },
 };

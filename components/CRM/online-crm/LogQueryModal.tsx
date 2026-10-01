@@ -6,6 +6,7 @@ import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   OnlineCrmApi,
+  type OnlineQuery,
   type QuerySource,
   type QueryStage,
 } from '@/services/onlineCrm.service';
@@ -20,17 +21,30 @@ import {
 interface Props {
   onClose: () => void;
   onSaved: () => void;
+  /** ⭐ When present → modal runs in EDIT mode. */
+  initial?: OnlineQuery | null;
 }
 
-export function LogQueryModal({ onClose, onSaved }: Props) {
-  const [company, setCompany] = useState('');
-  const [country, setCountry] = useState('');
-  const [product, setProduct] = useState('');
-  const [assigned, setAssigned] = useState<string>('Akramul');
-  const [source, setSource] = useState<QuerySource>('Email');
-  const [value, setValue] = useState('');
-  const [stage, setStage] = useState<QueryStage>('To Start');
-  const [comments, setComments] = useState('');
+export function LogQueryModal({ onClose, onSaved, initial }: Props) {
+  const isEdit = !!initial;
+
+  // Prefill from `initial` when editing
+  const [company, setCompany] = useState(initial?.company ?? '');
+  const [country, setCountry] = useState(initial?.country ?? '');
+  const [product, setProduct] = useState(initial?.product ?? '');
+  const [assigned, setAssigned] = useState<string>(
+    initial?.assigned ?? 'Akramul'
+  );
+  const [source, setSource] = useState<QuerySource>(
+    (initial?.source as QuerySource) ?? 'Email'
+  );
+  const [value, setValue] = useState<string>(
+    initial?.value != null ? String(initial.value) : ''
+  );
+  const [stage, setStage] = useState<QueryStage>(
+    (initial?.stage as QueryStage) ?? 'To Start'
+  );
+  const [comments, setComments] = useState(initial?.comments ?? '');
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -41,7 +55,8 @@ export function LogQueryModal({ onClose, onSaved }: Props) {
 
     try {
       setSaving(true);
-      await OnlineCrmApi.create({
+
+      const payload = {
         company: company.trim(),
         country: country.trim(),
         product: product.trim(),
@@ -50,8 +65,18 @@ export function LogQueryModal({ onClose, onSaved }: Props) {
         value: value === '' ? null : Number(value),
         stage,
         comments: comments.trim(),
-      });
-      toast.success('Query logged');
+      };
+
+      if (isEdit && initial?.id) {
+        // ⭐ Edit mode
+        await OnlineCrmApi.update(initial.id, payload);
+        toast.success('Query updated');
+      } else {
+        // ⭐ Create mode
+        await OnlineCrmApi.create(payload);
+        toast.success('Query logged');
+      }
+
       onSaved();
     } catch (e: any) {
       toast.error(e.message || 'Failed to save');
@@ -73,11 +98,12 @@ export function LogQueryModal({ onClose, onSaved }: Props) {
         <div className="mb-5 flex items-start justify-between">
           <div>
             <h2 className="font-serif text-xl font-bold text-[#0F2D4A]">
-              Log Online Query
+              {isEdit ? 'Edit Online Query' : 'Log Online Query'}
             </h2>
             <p className="mt-1 text-[11px] text-slate-500 leading-relaxed">
-              Logs a new online-sourced record at the top of the Online CRM log,
-              with today's date and 0 days aging.
+              {isEdit
+                ? 'Update this query\'s details — changes apply immediately to the Online CRM log.'
+                : "Logs a new online-sourced record at the top of the Online CRM log, with today's date and 0 days aging."}
             </p>
           </div>
           <button
@@ -184,7 +210,7 @@ export function LogQueryModal({ onClose, onSaved }: Props) {
             disabled={saving}
             className="rounded-lg bg-[#A06126] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60 transition"
           >
-            {saving ? 'Saving…' : 'Save Query'}
+            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Save Query'}
           </button>
         </div>
       </div>
