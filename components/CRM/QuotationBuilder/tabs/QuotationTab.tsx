@@ -28,12 +28,11 @@ interface Props {
     sending?: boolean;
     canRemoveLine?: boolean;
 }
-
 interface EditState {
     id: string;
     name: string;
-    qty: number;
-    price: number;   // client-facing unit price in display currency
+    qty: string;     // ⭐ stored as string so empty is allowed
+    price: string;   // ⭐ stored as string
 }
 
 export default function QuotationTab({
@@ -165,8 +164,8 @@ export default function QuotationTab({
                 setEditing({
                     id: newest.id,
                     name: '',
-                    qty: newest.qty || 1,
-                    price: Number(displayUnitPrice.toFixed(2)),
+                    qty: String(newest.qty || 1),
+                    price: displayUnitPrice > 0 ? String(Number(displayUnitPrice.toFixed(2))) : '',
                 });
             }
         }
@@ -184,8 +183,8 @@ export default function QuotationTab({
         setEditing({
             id: l.id,
             name: l.name === 'New Item' ? '' : l.name,
-            qty: l.qty,
-            price: Number(displayUnitPrice.toFixed(2)),
+            qty: String(l.qty ?? 1),
+            price: displayUnitPrice > 0 ? String(Number(displayUnitPrice.toFixed(2))) : '',
         });
     };
 
@@ -198,9 +197,12 @@ export default function QuotationTab({
             return;
         }
 
+        // ⭐ Parse numbers — empty string becomes 0
+        const qtyNum = Number(editing.qty) || 0;
+        const priceNum = Number(editing.price) || 0;
+
         // Display → base (undo currency conversion)
-        const displayClientPrice = editing.price;
-        const baseClientPrice = convertToBase(displayClientPrice, meta);
+        const baseClientPrice = convertToBase(priceNum, meta);
 
         // Base client price → principalCost (undo margins / discount / tax)
         const principalCost = derivePrincipalCost(
@@ -211,7 +213,7 @@ export default function QuotationTab({
         const finalName = editing.name.trim() || 'New Item';
         onUpdateLine?.(editing.id, {
             name: finalName,
-            qty: editing.qty,
+            qty: qtyNum,
             principalCost,
         });
         setEditing(null);
@@ -330,7 +332,7 @@ export default function QuotationTab({
                                     <th className="pb-3 text-right text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
                                         Unit Price
                                     </th>
-                                    <th className="pb-3 text-right text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
+                                    <th className="pb-3 text-center text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
                                         Total
                                     </th>
                                     <th className="pb-3 text-center text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-24">
@@ -372,41 +374,45 @@ export default function QuotationTab({
                                                 </td>
                                                 <td className="py-3.5 text-center">
                                                     <input
-                                                        type="number"
+                                                        type="text"
+                                                        inputMode="numeric"
                                                         value={editing.qty}
-                                                        onChange={(e) =>
-                                                            setEditing({
-                                                                ...editing,
-                                                                qty: Number(e.target.value) || 0,
-                                                            })
-                                                        }
+                                                        onChange={(e) => {
+                                                            // ⭐ Allow any input, including empty
+                                                            setEditing({ ...editing, qty: e.target.value });
+                                                        }}
+                                                        onFocus={(e) => e.target.select()}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') saveEdit();
                                                             if (e.key === 'Escape') cancelEdit();
                                                         }}
+                                                        placeholder="0"
                                                         className="w-16 bg-white border border-[#A06126] rounded px-2 py-1.5 text-center text-[12.5px] font-mono focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
                                                     />
                                                 </td>
                                                 <td className="py-3.5 text-right">
                                                     <input
-                                                        type="number"
+                                                        type="text"
+                                                        inputMode="decimal"
                                                         value={editing.price}
-                                                        onChange={(e) =>
-                                                            setEditing({
-                                                                ...editing,
-                                                                price: Number(e.target.value) || 0,
-                                                            })
-                                                        }
+                                                        onChange={(e) => {
+                                                            // ⭐ Allow any input, including empty and decimals
+                                                            setEditing({ ...editing, price: e.target.value });
+                                                        }}
+                                                        onFocus={(e) => e.target.select()}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') saveEdit();
                                                             if (e.key === 'Escape') cancelEdit();
                                                         }}
+                                                        placeholder="0"
                                                         className="w-32 bg-white border border-[#A06126] rounded px-2 py-1.5 text-right text-[12.5px] font-mono focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
                                                     />
                                                 </td>
-                                                <td className="py-3.5 text-right font-mono text-slate-500">
+                                                <td className="py-3.5 text-center font-mono text-slate-500">
                                                     {sym}
-                                                    {(editing.price * editing.qty).toLocaleString(undefined, {
+                                                    {(
+                                                        (Number(editing.price) || 0) * (Number(editing.qty) || 0)
+                                                    ).toLocaleString(undefined, {
                                                         maximumFractionDigits: 2,
                                                     })}
                                                 </td>

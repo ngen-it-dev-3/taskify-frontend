@@ -1,7 +1,7 @@
 // app/(dashboard)/online-crm/page.tsx
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -15,7 +15,6 @@ import {
   type TopProductsData,
   type OnlineQuery,
 } from '@/services/onlineCrm.service';
-import { KpiRow } from '@/components/CRM/online-crm/KpiCards';
 import { MonthlyVolumeChart } from '@/components/CRM/online-crm/MonthlyVolumeChart';
 import { ByCountryPanel } from '@/components/CRM/online-crm/ByCountryPanel';
 import { TopProductsPanel } from '@/components/CRM/online-crm/TopProductsPanel';
@@ -23,8 +22,17 @@ import { FilterBar, QueryFilters } from '@/components/CRM/online-crm/FilterBar';
 import { QueryLogTable } from '@/components/CRM/online-crm/QueryLogTable';
 import { LogQueryModal } from '@/components/CRM/online-crm/LogQueryModal';
 import { QueryDetailModal } from '@/components/CRM/online-crm/QueryDetailModal';
+import { QuotationApi } from '@/services/quotation.service';
+import { KpiRow } from '@/components/CRM/online-crm/KpiCards';
 
 type BottomTab = 'current' | 'pending' | 'not-quoted';
+type GroupBy = 'country' | 'source' | 'assigned' | 'stage';
+
+// ⭐ Month name → index map
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+] as const;
 
 export default function OnlineCrmPage() {
   const router = useRouter();
@@ -40,6 +48,7 @@ export default function OnlineCrmPage() {
   const [loading, setLoading] = useState(true);
   const [bottomTab, setBottomTab] = useState<BottomTab>('current');
   const [activeMonth, setActiveMonth] = useState<number | undefined>(undefined);
+  const [byDimension, setByDimension] = useState<GroupBy>('country');
 
   const [filters, setFilters] = useState<QueryFilters>({
     search: '',
@@ -47,12 +56,42 @@ export default function OnlineCrmPage() {
     stage: 'all',
     country: 'all',
     originSource: 'all',
+    month: 'all',
+    year: 'all',
   });
 
   // ---- Modals ----
-  const [logOpen, setLogOpen] = useState(false);              // create modal
-  const [viewingQuery, setViewingQuery] = useState<OnlineQuery | null>(null);   // read-only view
-  const [editingQuery, setEditingQuery] = useState<OnlineQuery | null>(null);   // edit modal
+  const [logOpen, setLogOpen] = useState(false);
+  const [viewingQuery, setViewingQuery] = useState<OnlineQuery | null>(null);
+  const [editingQuery, setEditingQuery] = useState<OnlineQuery | null>(null);
+
+  // ============================================================
+  // BUILD DATE RANGE
+  // ============================================================
+  const dateRange = useMemo(() => {
+    if (filters.month === 'all' && filters.year === 'all') {
+      return { dateFrom: undefined, dateTo: undefined };
+    }
+
+    const now = new Date();
+    const year =
+      filters.year !== 'all' ? Number(filters.year) : now.getFullYear();
+
+    if (filters.month !== 'all') {
+      const monthIdx = MONTH_NAMES.indexOf(
+        filters.month as (typeof MONTH_NAMES)[number]
+      );
+      if (monthIdx >= 0) {
+        const from = new Date(year, monthIdx, 1, 0, 0, 0);
+        const to = new Date(year, monthIdx + 1, 0, 23, 59, 59);
+        return { dateFrom: from.toISOString(), dateTo: to.toISOString() };
+      }
+    }
+
+    const from = new Date(year, 0, 1, 0, 0, 0);
+    const to = new Date(year, 11, 31, 23, 59, 59);
+    return { dateFrom: from.toISOString(), dateTo: to.toISOString() };
+  }, [filters.month, filters.year]);
 
   // ============================================================
   // FETCH
@@ -65,7 +104,13 @@ export default function OnlineCrmPage() {
       if (filters.search) baseParams.search = filters.search;
       if (filters.stage !== 'all') baseParams.stage = filters.stage;
       if (filters.country !== 'all') baseParams.country = filters.country;
-      if (filters.originSource !== 'all') baseParams.originSource = filters.originSource;
+      if (filters.originSource !== 'all')
+        baseParams.originSource = filters.originSource;
+
+      if (filters.month !== 'all') baseParams.month = filters.month;
+      if (filters.year !== 'all') baseParams.year = filters.year;
+      if (dateRange.dateFrom) baseParams.dateFrom = dateRange.dateFrom;
+      if (dateRange.dateTo) baseParams.dateTo = dateRange.dateTo;
 
       let tableStage = baseParams.stage;
       if (bottomTab === 'pending') tableStage = 'To Start';
@@ -80,7 +125,10 @@ export default function OnlineCrmPage() {
           }),
           OnlineCrmApi.unifiedStats(baseParams),
           OnlineCrmApi.unifiedMonthlyVolume(baseParams),
-          OnlineCrmApi.unifiedByCountry(baseParams),
+          OnlineCrmApi.unifiedByCountry({
+            ...baseParams,
+            by: byDimension,   // ⭐ NEW — pass the current grouping
+          }),
           OnlineCrmApi.unifiedTopProducts(baseParams),
         ]);
 
@@ -94,7 +142,7 @@ export default function OnlineCrmPage() {
     } finally {
       setLoading(false);
     }
-  }, [filters, bottomTab]);
+  }, [filters, bottomTab, dateRange.dateFrom, dateRange.dateTo, byDimension]);
 
   useEffect(() => {
     load();
@@ -105,6 +153,73 @@ export default function OnlineCrmPage() {
     window.addEventListener('focus', onFocus);
     return () => window.removeEventListener('focus', onFocus);
   }, [load]);
+
+  // ============================================================
+  // CLIENT-SIDE FALLBACK FILTER
+  // ============================================================
+  const visibleRows = useMemo(() => {
+    let out = rows;
+
+    if (filters.country !== 'all') {
+      const needle = filters.country.trim().toLowerCase();
+      out = out.filter((r) => {
+        const c = ((r as any).country || '').toString().trim().toLowerCase();
+        return c === needle;
+      });
+    }
+
+    if (filters.originSource !== 'all') {
+      out = out.filter((r) => r.source === filters.originSource);
+    }
+
+    if (filters.stage !== 'all') {
+      out = out.filter((r) => r.stage === filters.stage);
+    }
+
+    if (filters.search.trim()) {
+      const q = filters.search.trim().toLowerCase();
+      out = out.filter((r) => {
+        const hay = [
+          (r as any).company,
+          (r as any).rfqNumber,
+          (r as any).product,
+          (r as any).assigned,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    if (filters.month !== 'all' || filters.year !== 'all') {
+      const year = filters.year !== 'all' ? Number(filters.year) : undefined;
+      const monthIdx =
+        filters.month !== 'all'
+          ? MONTH_NAMES.indexOf(filters.month as (typeof MONTH_NAMES)[number])
+          : undefined;
+
+      out = out.filter((row) => {
+        if (!row.date) return false;
+        const d = new Date(row.date);
+        if (Number.isNaN(d.getTime())) return false;
+        if (year !== undefined && d.getFullYear() !== year) return false;
+        if (monthIdx !== undefined && monthIdx >= 0 && d.getMonth() !== monthIdx)
+          return false;
+        return true;
+      });
+    }
+
+    return out;
+  }, [
+    rows,
+    filters.country,
+    filters.originSource,
+    filters.stage,
+    filters.search,
+    filters.month,
+    filters.year,
+  ]);
 
   // ============================================================
   // HANDLERS
@@ -119,27 +234,43 @@ export default function OnlineCrmPage() {
     await load();
   };
 
-  /**
-   * Row click — routes by source:
-   *   Online     → opens the read-only detail modal
-   *   RFQ        → navigates to RFQ dashboard
-   *   Tender     → navigates to Tender dashboard
-   *   Quotation  → navigates to quotation builder
-   */
   const handleRowClick = async (row: UnifiedOnlineRow) => {
     if (row.source === 'rfq') {
       router.push(`/crm/rfq?selected=${row.raw}`);
       return;
     }
+
     if (row.source === 'tender') {
       router.push(`/tenders/manage?tenderId=${row.raw}`);
       return;
     }
+
     if (row.source === 'quotation') {
-      router.push(`/crm/quotation-builder/quotes`);
+      const rfqId =
+        (row as any).rfqId ||
+        (row as any).rfq_id ||
+        (row as any).meta?.rfqId ||
+        null;
+
+      if (rfqId) {
+        router.push(`/crm/quotation-builder/${rfqId}?tab=quotes`);
+        return;
+      }
+
+      try {
+        const quote = await QuotationApi.get(row.raw);
+        const linkedRfqId = quote?.rfqId;
+        if (linkedRfqId) {
+          router.push(`/crm/quotation-builder/${linkedRfqId}?tab=quotes`);
+        } else {
+          toast.error('This quotation has no linked RFQ');
+        }
+      } catch (e: any) {
+        toast.error(e.message || 'Failed to open quotation');
+      }
       return;
     }
-    // Online → open the read-only detail modal
+
     try {
       const full = await OnlineCrmApi.getById(row.raw);
       setViewingQuery(full);
@@ -148,10 +279,6 @@ export default function OnlineCrmPage() {
     }
   };
 
-  /**
-   * Edit button — only appears on Online rows.
-   * Opens the LogQueryModal in edit mode.
-   */
   const handleEditRow = async (row: UnifiedOnlineRow) => {
     if (row.source !== 'online') return;
     try {
@@ -203,6 +330,8 @@ export default function OnlineCrmPage() {
             notQuoted={stats.notQuoted}
             overdue={stats.overdue}
             crmManager={stats.crmManager}
+            crmUsers={stats.crmUsers || []}
+            crmUsersCount={stats.crmUsersCount || 0}
           />
         ) : (
           <KpiRowSkeleton />
@@ -215,6 +344,14 @@ export default function OnlineCrmPage() {
               data={monthly.data}
               activeMonth={activeMonth}
               onSelectMonth={setActiveMonth}
+              filterParams={{
+                ...(filters.country !== 'all'
+                  ? { country: filters.country }
+                  : {}),
+                ...(filters.originSource !== 'all'
+                  ? { originSource: filters.originSource }
+                  : {}),
+              }}
             />
           ) : (
             <PanelSkeleton />
@@ -224,6 +361,8 @@ export default function OnlineCrmPage() {
             <ByCountryPanel
               rows={byCountry.entries}
               total={byCountry.total}
+              by={byDimension}
+              onChangeBy={setByDimension}
             />
           ) : (
             <PanelSkeleton />
@@ -264,12 +403,26 @@ export default function OnlineCrmPage() {
         {/* Filter Bar */}
         <FilterBar value={filters} onChange={setFilters} />
 
+        {/* Active-filter summary */}
+        {(filters.month !== 'all' || filters.year !== 'all') && (
+          <div className="flex items-center gap-2 text-[11px] text-slate-500">
+            <span className="font-semibold">Filtered:</span>
+            <span className="inline-flex items-center gap-1 rounded-md bg-[#FFF7E8] border border-[#F5D9B8] px-2 py-0.5 text-[10px] font-bold text-[#A06126]">
+              {filters.month !== 'all' ? filters.month : 'All months'}
+              {filters.year !== 'all' ? ` ${filters.year}` : ''}
+            </span>
+            <span>
+              {visibleRows.length} of {rows.length} rows
+            </span>
+          </div>
+        )}
+
         {/* Query Log Table */}
         {loading && rows.length === 0 ? (
           <TableSkeleton />
         ) : (
           <QueryLogTable
-            queries={rows}
+            queries={visibleRows}
             onEdit={handleEditRow}
             onRowClick={handleRowClick}
           />
@@ -277,8 +430,6 @@ export default function OnlineCrmPage() {
       </div>
 
       {/* ---- Modals ---- */}
-
-      {/* Create new query */}
       {logOpen && (
         <LogQueryModal
           onClose={() => setLogOpen(false)}
@@ -286,7 +437,6 @@ export default function OnlineCrmPage() {
         />
       )}
 
-      {/* View details (read-only) */}
       {viewingQuery && (
         <QueryDetailModal
           query={viewingQuery}
@@ -294,7 +444,6 @@ export default function OnlineCrmPage() {
         />
       )}
 
-      {/* Edit existing query */}
       {editingQuery && (
         <LogQueryModal
           initial={editingQuery}

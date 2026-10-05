@@ -162,7 +162,7 @@ export interface SalesReportData {
 }
 
 // ============================================================
-// ⭐ UNIFIED PIPELINE TYPES
+// UNIFIED PIPELINE TYPES
 // ============================================================
 export type UnifiedSource = 'rfq' | 'quotation' | 'forecast' | 'tender';
 
@@ -191,30 +191,30 @@ export interface UnifiedPipelineData {
 }
 
 // ============================================================
-// ⭐ OWNER HELPERS
+// REFERENCE NORMALIZATION HELPERS
 // ============================================================
 
-/**
- * Extract a displayable owner name from any of these shapes:
- *   - "John Doe"            (plain string)
- *   - { fullName: "John" }  (user object)
- *   - { name: "John" }      (user object, alternate)
- *   - null / undefined / ""
- */
+function normalizeRef(s: any): string {
+    return String(s || '').replace(/[^0-9]/g, '');
+}
+
+function normalizeClient(s: any): string {
+    return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+// ============================================================
+// OWNER HELPERS
+// ============================================================
+
 function extractOwnerName(v: any): string {
     if (!v) return '';
     if (typeof v === 'string') return v.trim();
     if (typeof v === 'object') {
-        return String(
-            v.fullName || v.name || v.email || ''
-        ).trim();
+        return String(v.fullName || v.name || v.email || '').trim();
     }
     return '';
 }
 
-/**
- * Best-effort owner for a Quotation. Tries multiple paths.
- */
 function bestQuotationOwner(q: any): string {
     return (
         extractOwnerName(q?.crmManager) ||
@@ -225,9 +225,6 @@ function bestQuotationOwner(q: any): string {
     );
 }
 
-/**
- * Best-effort owner for a ForecastEntry.
- */
 function bestForecastOwner(f: any): string {
     return (
         extractOwnerName(f?.owner) ||
@@ -236,9 +233,6 @@ function bestForecastOwner(f: any): string {
     );
 }
 
-/**
- * Best-effort owner for an RFQ.
- */
 function bestRfqOwner(r: any): string {
     const assigned = extractOwnerName(r?.assignedTo);
     if (assigned && assigned !== 'Unassigned') return assigned;
@@ -271,8 +265,8 @@ function rfqToCard(r: RFQItem): UnifiedCard {
         value: 0,
         probability,
         country: r.country || '—',
-        owner: bestRfqOwner(r),   // ⭐ improved
-        rfqNumber: r.rfqNumber,
+        owner: bestRfqOwner(r),
+        rfqNumber: r.rfqNumber || '',
         rfqId: r.id,
         pqNumber: '',
         quotationId: null,
@@ -312,7 +306,7 @@ function quotationToCard(q: Quotation): UnifiedCard {
         value: q.totals?.grandTotal || 0,
         probability,
         country: q.client?.country || q.territory || '—',
-        owner: bestQuotationOwner(q),   // ⭐ improved
+        owner: bestQuotationOwner(q),
         rfqNumber: q.rfqNumber || '',
         rfqId: q.rfqId || null,
         pqNumber: q.pqNumber || '',
@@ -331,7 +325,7 @@ function forecastToCard(f: ForecastEntry): UnifiedCard {
         value: f.value || 0,
         probability: f.probability || 50,
         country: f.country || '—',
-        owner: bestForecastOwner(f),   // ⭐ improved
+        owner: bestForecastOwner(f),
         rfqNumber: f.rfqNumber || '',
         rfqId: f.rfqId || null,
         pqNumber: f.pqNumber || '',
@@ -536,6 +530,31 @@ export const SalesCrmApi = {
         const allRfqs = [...activeRfqs, ...lostRfqs];
         const allTenders = [...wonTenders, ...lostTenders, ...submittedTenders];
 
+        // ============================================================
+        // BUILD LOOKUP SETS
+        // ============================================================
+        const rfqIdSet = new Set(allRfqs.map((r) => String(r.id)));
+        const quoteIdSet = new Set(
+            quotations.map((q) => String(q.id)).filter(Boolean)
+        );
+
+        const rfqNumberSet = new Set(
+            allRfqs.map((r) => String(r.rfqNumber || '').trim()).filter(Boolean)
+        );
+
+        const rfqNormSet = new Set(
+            allRfqs.map((r) => normalizeRef(r.rfqNumber)).filter(Boolean)
+        );
+
+        const quoteNormSet = new Set(
+            quotations
+                .map((q) => normalizeRef((q as any).pqNumber))
+                .filter(Boolean)
+        );
+
+        // ============================================================
+        // BUILD CARDS
+        // ============================================================
         const rfqCards: UnifiedCard[] = allRfqs
             .filter((r) => r.stage !== 'archived')
             .map(rfqToCard);
@@ -546,19 +565,95 @@ export const SalesCrmApi = {
 
         const tenderCards: UnifiedCard[] = allTenders.map(tenderToCard);
 
-        const standaloneForecast: UnifiedCard[] = [];
-        Object.values(forecastRes.columns).forEach((col) => {
-            col.forEach((f) => {
-                const hasRfq = f.rfqId && allRfqs.some((r) => r.id === f.rfqId);
-                const hasQuote = !!f.quotationId;
-                if (!hasRfq && !hasQuote) {
-                    standaloneForecast.push(forecastToCard(f));
-                }
-            });
+        // ============================================================
+        // STANDALONE FORECAST — hides RFQ/Quote duplicates + dedupes internally
+        // ============================================================
+
+        // Collect ALL known rfqNumbers — from raw list AND rendered RFQ cards
+        const allKnownRfqNumbers = new Set<string>();
+        const allKnownRfqNorm = new Set<string>();
+        allRfqs.forEach((r) => {
+            const num = String(r.rfqNumber || '').trim();
+            if (num) allKnownRfqNumbers.add(num);
+            const norm = normalizeRef(num);
+            if (norm) allKnownRfqNorm.add(norm);
+        });
+        rfqCards.forEach((c) => {
+            const num = String(c.rfqNumber || '').trim();
+            if (num) allKnownRfqNumbers.add(num);
+            const norm = normalizeRef(num);
+            if (norm) allKnownRfqNorm.add(norm);
         });
 
+        // Collect ALL known quoteNumbers (pqNumbers)
+        const allKnownQuoteNorm = new Set<string>(quoteNormSet);
+        quotationCards.forEach((c) => {
+            const norm = normalizeRef(c.pqNumber);
+            if (norm) allKnownQuoteNorm.add(norm);
+        });
+
+        // Sort forecasts newest-first so dedup keeps the newest
+        const allForecastRows = Object.values(forecastRes.columns).flat();
+        const sortedForecasts = [...allForecastRows].sort((a, b) => {
+            const aD = new Date((a as any).createdAt || 0).getTime();
+            const bD = new Date((b as any).createdAt || 0).getTime();
+            return bD - aD;
+        });
+
+        // Dedupe forecasts internally
+        const seenForecastKeys = new Set<string>();
+        const standaloneForecast: UnifiedCard[] = [];
+
+        sortedForecasts.forEach((f) => {
+            // --- Matching against RFQs (by id, number, normalized number) ---
+            const byRfqId =
+                !!f.rfqId && rfqIdSet.has(String(f.rfqId));
+
+            const byRfqNumber =
+                !!f.rfqNumber &&
+                allKnownRfqNumbers.has(String(f.rfqNumber).trim());
+
+            const fRfqNorm = normalizeRef(f.rfqNumber);
+            const byRfqNorm =
+                !!fRfqNorm && allKnownRfqNorm.has(fRfqNorm);
+
+            // --- Matching against Quotations ---
+            const byQuoteId =
+                !!f.quotationId && quoteIdSet.has(String(f.quotationId));
+
+            const fQuoteNorm = normalizeRef(f.pqNumber);
+            const byQuoteNumber =
+                !!fQuoteNorm && allKnownQuoteNorm.has(fQuoteNorm);
+
+            const shouldHide =
+                byRfqId ||
+                byRfqNumber ||
+                byRfqNorm ||
+                byQuoteId ||
+                byQuoteNumber;
+
+            if (shouldHide) return;
+
+            // --- ⭐ Internal dedup — same reference appears only once ---
+            const dedupeKey =
+                (f.rfqNumber && `rfq:${normalizeRef(f.rfqNumber)}`) ||
+                (f.pqNumber && `pq:${normalizeRef(f.pqNumber)}`) ||
+                `client:${normalizeClient(f.client)}|${normalizeClient(f.item)}`;
+
+            if (seenForecastKeys.has(dedupeKey)) return;
+            seenForecastKeys.add(dedupeKey);
+
+            standaloneForecast.push(forecastToCard(f));
+        });
+
+        // ============================================================
+        // MERGE ALL CARDS
+        // ============================================================
         const allCards = [
-            ...rfqCards, ...quotationCards, ...tenderCards, ...standaloneForecast,
+            ...rfqCards,
+            ...quotationCards,
+            ...tenderCards,
+            ...standaloneForecast,
         ];
 
         const STAGES: ForecastStage[] = [

@@ -4,7 +4,7 @@ import api from '@/lib/axios';
 const API_BASE = '/online-crm';
 
 // ============================================================
-// TYPES (existing)
+// TYPES
 // ============================================================
 export type QueryStage = 'To Start' | 'Not Quoted' | 'Quoted';
 export type QuerySource =
@@ -14,6 +14,20 @@ export type QuerySource =
   | 'Tender Portal'
   | 'Site Visit';
 export type QueryStatus = 'Pending' | 'Quoted' | 'Won' | 'Lost';
+
+export interface CrmUser {
+  name: string;
+  email: string;
+  role: string;
+}
+
+export interface DailyVolumeData {
+  year: number;
+  month: number;         // 0-indexed
+  monthName?: string;
+  days: number;
+  data: number[];
+}
 
 export interface OnlineQuery {
   id: string;
@@ -43,11 +57,12 @@ export interface OnlineQueryListParams {
   country?: string;
   assigned?: string;
   status?: string;
-  originSource?: string;   // ⭐ NEW — for unified endpoint
+  originSource?: string;
   month?: number | string;
   year?: number | string;
   dateFrom?: string;
   dateTo?: string;
+  by?: 'country' | 'source' | 'assigned' | 'stage';
   page?: number;
   limit?: number;
 }
@@ -75,6 +90,8 @@ export interface OnlineCrmStats {
   notQuoted: number;
   overdue: number;
   crmManager: string;
+  crmUsers: CrmUser[];        // ⭐ NEW
+  crmUsersCount: number;      // ⭐ NEW
   total: number;
 }
 
@@ -106,14 +123,14 @@ export interface TopProductsData {
 }
 
 // ============================================================
-// ⭐ UNIFIED TYPES
+// UNIFIED TYPES
 // ============================================================
 export type UnifiedSource = 'rfq' | 'tender' | 'quotation' | 'online';
 
 export interface UnifiedOnlineRow {
   id: string;
   source: UnifiedSource;
-  sourceLabel: string;         // 'RFQ' | 'Tender' | 'Quote' | 'Online'
+  sourceLabel: string;
   rfqNumber: string;
   date: string;
   company: string;
@@ -121,7 +138,7 @@ export interface UnifiedOnlineRow {
   product: string;
   productCategory: string;
   assigned: string;
-  origin: string;              // 'Email' | 'Phone' | 'Portal' | 'Manual' | etc.
+  origin: string;
   daysAging: number;
   stage: QueryStage;
   status?: string;
@@ -135,7 +152,6 @@ export interface UnifiedOnlineRow {
 // API CLIENT
 // ============================================================
 export const OnlineCrmApi = {
-  // ---- Existing: OnlineQuery CRUD ----
   async list(params: OnlineQueryListParams = {}) {
     const res = await api.get(`${API_BASE}/queries`, { params });
     return {
@@ -145,6 +161,12 @@ export const OnlineCrmApi = {
       limit: res.data?.meta?.limit || 100,
       totalPages: res.data?.meta?.totalPages || 0,
     };
+  },
+  async unifiedDailyVolume(
+    params: OnlineQueryListParams = {}
+  ): Promise<DailyVolumeData> {
+    const res = await api.get(`${API_BASE}/unified/daily-volume`, { params });
+    return res.data.data as DailyVolumeData;
   },
 
   async getById(id: string): Promise<OnlineQuery> {
@@ -175,7 +197,6 @@ export const OnlineCrmApi = {
     return res.data.data as { deletedCount: number };
   },
 
-  // ---- Existing: Aggregations ----
   async stats(params: OnlineQueryListParams = {}): Promise<OnlineCrmStats> {
     const res = await api.get(`${API_BASE}/stats`, { params });
     return res.data.data as OnlineCrmStats;
@@ -208,7 +229,7 @@ export const OnlineCrmApi = {
   },
 
   // ============================================================
-  // ⭐ UNIFIED — RFQ + Tender + Quotation + OnlineQuery
+  // UNIFIED
   // ============================================================
 
   async unifiedList(params: OnlineQueryListParams = {}) {

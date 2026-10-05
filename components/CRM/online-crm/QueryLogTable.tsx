@@ -20,16 +20,27 @@ const STAGE_COLORS: Record<QueryStage, string> = {
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
+// ⭐ NEW — helper to derive month label from a date string
+const MONTH_LABELS = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+];
+
+function monthLabel(dateStr: string): string {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return '—';
+  return `${MONTH_LABELS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
 
-  // ⭐ Reset to page 1 whenever data or pageSize changes
   useEffect(() => {
     setPage(1);
   }, [queries, pageSize]);
 
-  // ⭐ Slice the current page
   const total = queries.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const safePage = Math.min(page, totalPages);
@@ -40,7 +51,6 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
     [queries, start, end]
   );
 
-  // ⭐ Generate visible page numbers (with ellipsis)
   const pageNumbers = useMemo(() => {
     const nums: (number | '...')[] = [];
     const maxVisible = 5;
@@ -51,14 +61,11 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
     }
 
     nums.push(1);
-
     const left = Math.max(2, safePage - 1);
     const right = Math.min(totalPages - 1, safePage + 1);
-
     if (left > 2) nums.push('...');
     for (let i = left; i <= right; i++) nums.push(i);
     if (right < totalPages - 1) nums.push('...');
-
     nums.push(totalPages);
     return nums;
   }, [safePage, totalPages]);
@@ -85,6 +92,8 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
               <th className="px-4 py-3 w-[70px]">Source</th>
               <th className="px-4 py-3">RFQ #</th>
               <th className="px-4 py-3">Date</th>
+              {/* ⭐ NEW — Month column */}
+              <th className="px-4 py-3 w-[90px]">Month</th>
               <th className="px-4 py-3">Company</th>
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Assigned</th>
@@ -120,6 +129,13 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
                     {fmtDate(q.date)}
                   </td>
 
+                  {/* ⭐ NEW — Month cell */}
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="inline-block rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                      {monthLabel(q.date)}
+                    </span>
+                  </td>
+
                   <td className="px-4 py-3">
                     <div className="font-semibold text-slate-800 truncate max-w-[200px]">
                       {q.company || '—'}
@@ -143,10 +159,11 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
 
                   <td className="px-4 py-3 text-center">
                     <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${q.daysAging > 15
+                      className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                        q.daysAging > 15
                           ? 'bg-rose-50 text-rose-700'
                           : 'bg-slate-100 text-slate-600'
-                        }`}
+                      }`}
                     >
                       {q.daysAging}d
                     </span>
@@ -186,7 +203,7 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
             {total === 0 && (
               <tr>
                 <td
-                  colSpan={11}
+                  colSpan={12}
                   className="px-6 py-10 text-center text-[11px] italic text-slate-400"
                 >
                   No queries match your filters.
@@ -197,10 +214,9 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
         </table>
       </div>
 
-      {/* ⭐ Pagination Footer */}
+      {/* Pagination Footer */}
       {total > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#F0EBE3] bg-[#FDFBF7] px-6 py-3">
-          {/* Left: page size selector */}
           <div className="flex items-center gap-2 text-[11px] text-slate-600">
             <span>Show</span>
             <select
@@ -217,9 +233,7 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
             <span>items</span>
           </div>
 
-          {/* Right: page buttons */}
           <div className="flex items-center gap-1">
-            {/* Prev */}
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage <= 1}
@@ -229,7 +243,6 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
               <ChevronLeft className="h-3.5 w-3.5" />
             </button>
 
-            {/* Page numbers */}
             {pageNumbers.map((n, i) =>
               n === '...' ? (
                 <span
@@ -242,17 +255,17 @@ export function QueryLogTable({ queries, onEdit, onRowClick }: Props) {
                 <button
                   key={n}
                   onClick={() => setPage(n as number)}
-                  className={`inline-flex h-7 min-w-[28px] items-center justify-center rounded border px-2 text-[11px] font-semibold transition ${n === safePage
+                  className={`inline-flex h-7 min-w-[28px] items-center justify-center rounded border px-2 text-[11px] font-semibold transition ${
+                    n === safePage
                       ? 'bg-[#A06126] text-white border-[#A06126]'
                       : 'bg-white text-slate-700 border-[#E2DBD1] hover:bg-slate-50'
-                    }`}
+                  }`}
                 >
                   {n}
                 </button>
               )
             )}
 
-            {/* Next */}
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={safePage >= totalPages}
