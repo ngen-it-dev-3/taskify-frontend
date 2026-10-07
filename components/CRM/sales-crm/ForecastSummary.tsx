@@ -89,29 +89,41 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
     // ============================================================
     useEffect(() => {
         if (trend.length === 0) return;
-        if (selectedPoint) return; // don't override a user's click
+        if (selectedPoint) return;   // user already picked something
 
         const now = new Date();
         const todayDay = String(now.getDate()).padStart(2, '0');
         const todayMonthShort = MONTH_SHORT[now.getMonth()];
 
-        // If there are >12 bars, we're in daily mode
         const isDaily = activeMonth !== 'all' || trend.length > 12;
 
         let match: ForecastTrendPoint | undefined;
+
         if (isDaily) {
-            match = trend.find((t) => t.label === todayDay);
-            // Fallback — match loosely (sometimes label is "5" not "05")
-            if (!match) {
-                match = trend.find((t) => String(Number(t.label)) === String(now.getDate()));
+            // ⭐ ONLY auto-select today when the chart is showing the CURRENT month.
+            const isCurrentMonth =
+                activeMonth !== 'all'
+                    ? activeMonth === todayMonthShort
+                    : trend.length > 12 &&
+                    trend.some((t) => t.month === todayMonthShort);
+
+            if (isCurrentMonth) {
+                match = trend.find((t) => t.label === todayDay);
+                if (!match) {
+                    match = trend.find(
+                        (t) => String(Number(t.label)) === String(now.getDate())
+                    );
+                }
             }
+            // else → no auto-select — user is viewing a historical month
         } else {
+            // Monthly mode — auto-select the current month only if it's in the data
             match = trend.find((t) => t.label === todayMonthShort);
         }
 
         if (match) setSelectedPoint(match);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [trend]);
+    }, [trend, activeMonth]);   // ⭐ include activeMonth
 
     const maxTrend = Math.max(1, ...trend.map((t) => Math.max(t.closed, t.open)));
 
@@ -253,8 +265,8 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                         {activePoint ? (
                             <span
                                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide ring-1 ${activeIsEmpty
-                                        ? 'bg-slate-100 text-slate-500 ring-slate-200'
-                                        : 'bg-[#FFF7E8] text-[#A06126] ring-[#F5D9B8]'
+                                    ? 'bg-slate-100 text-slate-500 ring-slate-200'
+                                    : 'bg-[#FFF7E8] text-[#A06126] ring-[#F5D9B8]'
                                     }`}
                             >
                                 <span className="uppercase">{activeLabel}</span>
@@ -325,10 +337,10 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                                     onMouseEnter={() => setHoveredKey(t.key)}
                                     onMouseLeave={() => setHoveredKey(null)}
                                     className={`flex flex-col items-center rounded-sm transition cursor-pointer ${isSelected
-                                            ? 'bg-[#FFF7E8] ring-1 ring-[#A06126]/40'
-                                            : isHovered
-                                                ? 'bg-slate-50'
-                                                : ''
+                                        ? 'bg-[#FFF7E8] ring-1 ring-[#A06126]/40'
+                                        : isHovered
+                                            ? 'bg-slate-50'
+                                            : ''
                                         }`}
                                     title={
                                         isEmpty
@@ -380,8 +392,8 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
                                     {/* Label — pill style when active */}
                                     <span
                                         className={`mt-1 text-[8px] font-semibold leading-none transition ${isActive
-                                                ? 'px-1.5 py-0.5 rounded-full bg-[#A06126] text-white'
-                                                : 'text-slate-500'
+                                            ? 'px-1.5 py-0.5 rounded-full bg-[#A06126] text-white'
+                                            : 'text-slate-500'
                                             }`}
                                     >
                                         {t.label}

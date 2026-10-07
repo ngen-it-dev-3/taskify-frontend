@@ -788,36 +788,101 @@ function ChecklistModal({
 function ViewProcurementModal({
   order,
   onClose,
+  onResend,
 }: {
   order: SalesOrder;
   onClose: () => void;
+  onResend: () => Promise<void> | void;
 }) {
-  const expectedDate = (order as any).expectedDeliveryDate;
+  const [resending, setResending] = useState(false);
+
+  const sentAt = (order as any).procurementFileSentAt;
+  const recipients: string[] = (order as any).procurementRecipients || [];
+  const isAwaitingConfirmation =
+    order.procurementStatus === 'Sent' ||
+    order.procurementStatus === 'Pending';
+
+  const handleResend = async () => {
+    try {
+      setResending(true);
+      await onResend();
+      toast.success('Reminder sent to recipients');
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to resend');
+    } finally {
+      setResending(false);
+    }
+  };
 
   return (
-    <ModalShell onClose={onClose} title="Procurement File" width="md">
-      <div className="space-y-3">
-        <div className="rounded-lg border border-[#EBE6DF] bg-[#FDFBF7] p-4">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-[#A06126] mb-1">
-            Order
+    <ModalShell
+      onClose={onClose}
+      title={`Procurement File — ${order.product || 'Order'}`}
+      width="md"
+    >
+      <div className="space-y-4">
+        {/* ---- Order sub-header ---- */}
+        <div className="text-[10.5px] text-slate-500 -mt-2">
+          PO {order.poRef}
+          {order.client?.company ? ` · ${order.client.company}` : ''}
+        </div>
+
+        {/* ---- FILE CONTENTS ---- */}
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+            File Contents
           </div>
-          <div className="text-[12px] font-semibold text-slate-800">
-            PO {order.poRef} · {order.client?.company}
+
+          <div className="divide-y divide-[#F0EBE3] border-t border-b border-[#F0EBE3]">
+            <Row
+              label="Product / Spec"
+              value={order.productSpec || order.product || '—'}
+            />
+            <Row
+              label="Sent"
+              value={sentAt ? fmtDateLong(sentAt) : 'Not sent yet'}
+            />
+            <Row
+              label="Awaiting"
+              value={
+                isAwaitingConfirmation
+                  ? 'Principal order confirmation'
+                  : order.procurementStatus || 'Not Sent'
+              }
+            />
           </div>
         </div>
 
-        <Row label="Principal" value={order.principal || '—'} />
-        <Row
-          label="Status"
-          value={
-            <span className="inline-block rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5 text-[10px] font-bold">
-              {order.procurementStatus || 'Not Sent'}
-            </span>
-          }
-        />
-        {expectedDate && (
-          <Row label="Expected Delivery" value={fmtDateLong(expectedDate)} />
+        {/* ---- SENT TO (recipients) ---- */}
+        {recipients.length > 0 && (
+          <div className="rounded-lg border border-dashed border-[#E5DFD3] bg-[#FFFBF3] p-4">
+            <div className="flex items-start gap-2 mb-2">
+              <Send className="w-3.5 h-3.5 text-[#A06126] mt-0.5 shrink-0" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#A06126]">
+                Sent To
+              </span>
+            </div>
+            <div className="text-[11.5px] text-slate-700 leading-relaxed mb-3">
+              {recipients.join(' · ')}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#A06126] px-4 py-2 text-[11.5px] font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60 transition"
+            >
+              {resending ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Send className="w-3.5 h-3.5" />
+              )}
+              {resending ? 'Sending…' : 'Resend Reminder'}
+            </button>
+          </div>
         )}
+
+        {/* ---- Extra details (mode, customs, notes) ---- */}
         {(order as any).logisticsMode && (
           <Row label="Logistics Mode" value={(order as any).logisticsMode} />
         )}
