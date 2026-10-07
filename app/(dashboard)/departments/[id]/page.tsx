@@ -511,7 +511,7 @@ export default function DepartmentDetailPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 mb-1">
-                  Active Members
+                 Working Members
                 </p>
                 <p className="text-2xl font-bold text-emerald-600">
                   {members.filter((m) => m.status === "active").length}

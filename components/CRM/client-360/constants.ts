@@ -20,7 +20,6 @@ export const TIER_STYLES: Record<string, string> = {
     Gold: 'bg-[#FFF3D6] text-[#8B6B1E] border-[#F1DFAE]',
     Silver: 'bg-slate-100 text-slate-700 border-slate-200',
     Bronze: 'bg-[#F7E8DA] text-[#8B5A2B] border-[#EBD3BA]',
-    Standard: 'bg-slate-50 text-slate-600 border-slate-200',
 };
 
 // ============================================================

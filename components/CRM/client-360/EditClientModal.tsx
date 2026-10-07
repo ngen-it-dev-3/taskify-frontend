@@ -27,7 +27,7 @@ const STAGES = ['hot', 'warm', 'won', 'cold'];
 
 export function EditClientModal({ client, constants, onClose, onSaved }: Props) {
     const [name, setName] = useState(client.name || '');
-    const [tier, setTier] = useState(client.tier || 'Standard');
+    const [tier, setTier] = useState(client.tier || '');
     const [isPartner, setIsPartner] = useState(!!client.isPartner);
     const [sector, setSector] = useState(client.sector || '');
     const [country, setCountry] = useState(client.country || 'Bangladesh');
@@ -111,7 +111,7 @@ export function EditClientModal({ client, constants, onClose, onSaved }: Props) 
 
                     <Field label="Tier">
                         <select value={tier} onChange={(e) => setTier(e.target.value as typeof tier)} className={selectCls}>
-                            {(constants?.TIERS || ['Gold', 'Silver', 'Bronze', 'Standard']).map((t) => (
+                            {(constants?.TIERS || ['Gold', 'Silver', 'Bronze']).map((t) => (
                                 <option key={t} value={t}>{t}</option>
                             ))}
                         </select>

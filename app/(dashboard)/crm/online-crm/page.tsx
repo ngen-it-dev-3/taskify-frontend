@@ -121,12 +121,13 @@ export default function OnlineCrmPage() {
           OnlineCrmApi.unifiedList({
             ...baseParams,
             ...(tableStage ? { stage: tableStage } : {}),
-            limit: 200,
+            limit: 500,
           }),
           OnlineCrmApi.unifiedStats(baseParams),
           OnlineCrmApi.unifiedMonthlyVolume(baseParams),
           OnlineCrmApi.unifiedByCountry({
             ...baseParams,
+            country: undefined,
             by: byDimension,   // ⭐ NEW — pass the current grouping
           }),
           OnlineCrmApi.unifiedTopProducts(baseParams),
@@ -157,6 +158,55 @@ export default function OnlineCrmPage() {
   // ============================================================
   // CLIENT-SIDE FALLBACK FILTER
   // ============================================================
+
+  // ⭐ Compute per-user query stats for the CRM Team modal
+  const crmUsersWithStats = useMemo(() => {
+    const users = stats?.crmUsers || [];
+    if (users.length === 0) return users;
+
+    // All online queries in scope (current filter)
+    const onlineRows = rows.filter((r) => r.source === 'online');
+
+    const now = new Date();
+    const todayStart = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      0, 0, 0, 0
+    );
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+
+    return users.map((u) => {
+      // Match rows assigned to this user — case-insensitive, whitespace-tolerant
+      const userRows = onlineRows.filter((r) => {
+        const assigned = String(r.assigned || '').trim().toLowerCase();
+        const target = String(u.name || '').trim().toLowerCase();
+        return assigned === target;
+      });
+
+      const queriesToday = userRows.filter((r) => {
+        const d = new Date(r.date);
+        return !Number.isNaN(d.getTime()) && d >= todayStart;
+      }).length;
+
+      const queriesThisMonth = userRows.filter((r) => {
+        const d = new Date(r.date);
+        return !Number.isNaN(d.getTime()) && d >= monthStart;
+      }).length;
+
+      const queriesAllTime = userRows.length;
+
+      return {
+        ...u,
+        queriesToday,
+        queriesThisMonth,
+        queriesAllTime,
+        status: 'active' as const,
+      };
+    });
+  }, [stats?.crmUsers, rows]);
+
+
   const visibleRows = useMemo(() => {
     let out = rows;
 
@@ -330,8 +380,8 @@ export default function OnlineCrmPage() {
             notQuoted={stats.notQuoted}
             overdue={stats.overdue}
             crmManager={stats.crmManager}
-            crmUsers={stats.crmUsers || []}
-            crmUsersCount={stats.crmUsersCount || 0}
+            crmUsers={crmUsersWithStats}
+            crmUsersCount={crmUsersWithStats.length}
           />
         ) : (
           <KpiRowSkeleton />

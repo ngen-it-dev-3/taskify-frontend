@@ -26,7 +26,7 @@ export function ClientHeader({ client, onNewQuotation, onEdit }: Props) {
             {/* Tier */}
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                TIER_STYLES[client.tier] || TIER_STYLES.Standard
+                TIER_STYLES[client.tier]
               }`}
             >
               {client.tier} Tier

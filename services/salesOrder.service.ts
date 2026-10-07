@@ -80,6 +80,7 @@ export interface SalesOrder {
   deliveredAt: string | null;
   invoicedAt: string | null;
   paidAt: string | null;
+  expectedDeliveryDate: string | null;
 
   notes: string;
   createdAt: string;

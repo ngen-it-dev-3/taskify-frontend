@@ -20,7 +20,7 @@ const COUNTRIES = [
 
 export function AddClientModal({ constants, onClose, onSaved }: Props) {
     const [name, setName] = useState('');
-    const [tier, setTier] = useState('Standard');
+    const [tier, setTier] = useState('Gold');
     const [isPartner, setIsPartner] = useState(false);
     const [sector, setSector] = useState('');
     const [country, setCountry] = useState('Bangladesh');
@@ -126,7 +126,7 @@ export function AddClientModal({ constants, onClose, onSaved }: Props) {
 
                     <Field label="Tier">
                         <select value={tier} onChange={(e) => setTier(e.target.value)} className={selectCls}>
-                            {(constants?.TIERS || ['Gold', 'Silver', 'Bronze', 'Standard']).map((t) => (
+                            {(constants?.TIERS || ['Gold', 'Silver', 'Bronze']).map((t) => (
                                 <option key={t} value={t}>{t}</option>
                             ))}
                         </select>

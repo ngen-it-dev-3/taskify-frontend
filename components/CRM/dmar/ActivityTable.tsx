@@ -152,7 +152,7 @@ export function ActivityTable({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="inline-flex items-center gap-1">
-                      {a.status === 'Quoted' && (
+                      {/* {a.status === 'Quoted' && (
                         <button
                           onClick={() => onMarkSold(a)}
                           title="Mark as Sold"
@@ -160,7 +160,7 @@ export function ActivityTable({
                         >
                           Sold
                         </button>
-                      )}
+                      )} */}
                       <button
                         onClick={() => onEdit(a)}
                         title="Edit"

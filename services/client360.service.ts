@@ -4,9 +4,68 @@ import api from '@/lib/axios';
 const API_BASE = '/clients';
 
 // ============================================================
+// ⭐ IN-MEMORY CACHE — avoids duplicate network calls
+// ============================================================
+const CACHE_TTL_MS = 30_000; // 30 seconds
+
+type CacheEntry<T> = {
+  data: T;
+  ts: number;
+};
+
+const cache = new Map<string, CacheEntry<any>>();
+const inflight = new Map<string, Promise<any>>();
+
+function cacheKey(prefix: string, params?: Record<string, any>): string {
+  if (!params) return prefix;
+  // Stable stringify — sort keys so order doesn't matter
+  const sorted = Object.keys(params)
+    .filter((k) => params[k] !== undefined && params[k] !== '' && params[k] !== 'all')
+    .sort()
+    .map((k) => `${k}=${params[k]}`)
+    .join('&');
+  return `${prefix}?${sorted}`;
+}
+
+async function withCache<T>(
+  key: string,
+  fetcher: () => Promise<T>
+): Promise<T> {
+  const now = Date.now();
+  const hit = cache.get(key);
+
+  // 1. Return fresh cache immediately
+  if (hit && now - hit.ts < CACHE_TTL_MS) {
+    return hit.data as T;
+  }
+
+  // 2. Dedupe concurrent identical requests
+  const pending = inflight.get(key);
+  if (pending) return pending as Promise<T>;
+
+  // 3. Fetch, store in cache, dedupe
+  const promise = fetcher()
+    .then((data) => {
+      cache.set(key, { data, ts: Date.now() });
+      return data;
+    })
+    .finally(() => {
+      inflight.delete(key);
+    });
+
+  inflight.set(key, promise);
+  return promise;
+}
+
+// ⭐ Allow caller to bust cache (e.g. after a mutation)
+export function invalidateClientCache() {
+  cache.clear();
+}
+
+// ============================================================
 // TYPES
 // ============================================================
-export type Tier = 'Gold' | 'Silver' | 'Bronze' | 'Standard';
+export type Tier = 'Gold' | 'Silver' | 'Bronze';
 
 export type AutoSource =
     | 'tender' | 'rfq' | 'quotation' | 'online-crm'
@@ -157,35 +216,48 @@ export interface ClientConstants {
 // ============================================================
 export const Client360Api = {
     async list(params: ClientListParams = {}) {
-        const res = await api.get(`${API_BASE}`, { params });
-        return {
-            items: (res.data?.data || []) as Client360[],
-            total: res.data?.meta?.total || 0,
-            page: res.data?.meta?.page || 1,
-            limit: res.data?.meta?.limit || 50,
-            totalPages: res.data?.meta?.totalPages || 0,
-        };
+        const key = cacheKey('client-list', params);
+        return withCache(key, async () => {
+            const res = await api.get(`${API_BASE}`, { params });
+            return {
+                items: (res.data?.data || []) as Client360[],
+                total: res.data?.meta?.total || 0,
+                page: res.data?.meta?.page || 1,
+                limit: res.data?.meta?.limit || 50,
+                totalPages: res.data?.meta?.totalPages || 0,
+            };
+        });
     },
 
     async getById(id: string): Promise<Client360> {
-        const res = await api.get(`${API_BASE}/${id}`);
-        return res.data.data as Client360;
+        const key = cacheKey('client-by-id', { id });
+        return withCache(key, async () => {
+            const res = await api.get(`${API_BASE}/${id}`);
+            return res.data.data as Client360;
+        });
     },
 
     async stats(params: ClientListParams = {}): Promise<ClientStats> {
-        const res = await api.get(`${API_BASE}/stats`, { params });
-        return res.data.data as ClientStats;
+        const key = cacheKey('client-stats', params);
+        return withCache(key, async () => {
+            const res = await api.get(`${API_BASE}/stats`, { params });
+            return res.data.data as ClientStats;
+        });
     },
 
     async sectorBreakdown(
         params: ClientListParams = {}
     ): Promise<SectorBreakdown> {
-        const res = await api.get(`${API_BASE}/sector-breakdown`, { params });
-        return res.data.data as SectorBreakdown;
+        const key = cacheKey('client-sector-breakdown', params);
+        return withCache(key, async () => {
+            const res = await api.get(`${API_BASE}/sector-breakdown`, { params });
+            return res.data.data as SectorBreakdown;
+        });
     },
 
     async create(payload: Partial<Client360>): Promise<Client360> {
         const res = await api.post(`${API_BASE}`, payload);
+        invalidateClientCache();   // ⭐ bust cache after create
         return res.data.data as Client360;
     },
 
@@ -194,11 +266,13 @@ export const Client360Api = {
         payload: Partial<Client360>
     ): Promise<Client360> {
         const res = await api.patch(`${API_BASE}/${id}`, payload);
+        invalidateClientCache();   // ⭐ bust cache after update
         return res.data.data as Client360;
     },
 
     async remove(id: string): Promise<{ id: string }> {
         const res = await api.delete(`${API_BASE}/${id}`);
+        invalidateClientCache();   // ⭐ bust cache after delete
         return res.data.data as { id: string };
     },
 
@@ -207,6 +281,7 @@ export const Client360Api = {
         contact: Partial<ClientContact>
     ): Promise<Client360> {
         const res = await api.post(`${API_BASE}/${clientId}/contacts`, contact);
+        invalidateClientCache();   // ⭐ bust cache
         return res.data.data as Client360;
     },
 
@@ -219,6 +294,7 @@ export const Client360Api = {
             `${API_BASE}/${clientId}/contacts/${contactId}`,
             updates
         );
+        invalidateClientCache();   // ⭐ bust cache
         return res.data.data as Client360;
     },
 
@@ -229,6 +305,7 @@ export const Client360Api = {
         const res = await api.delete(
             `${API_BASE}/${clientId}/contacts/${contactId}`
         );
+        invalidateClientCache();   // ⭐ bust cache
         return res.data.data as Client360;
     },
 
@@ -237,17 +314,25 @@ export const Client360Api = {
         entry: Partial<CommEntry>
     ): Promise<Client360> {
         const res = await api.post(`${API_BASE}/${clientId}/communications`, entry);
+        invalidateClientCache();   // ⭐ bust cache
         return res.data.data as Client360;
     },
 
     // ⭐ Live quotations for a client
     async getClientQuotations(clientId: string): Promise<ClientQuote[]> {
-        const res = await api.get(`${API_BASE}/${clientId}/quotations`);
-        return (res.data?.data || []) as ClientQuote[];
+        const key = cacheKey('client-quotations', { clientId });
+        return withCache(key, async () => {
+            const res = await api.get(`${API_BASE}/${clientId}/quotations`);
+            return (res.data?.data || []) as ClientQuote[];
+        });
     },
 
     async constants(): Promise<ClientConstants> {
-        const res = await api.get(`${API_BASE}/constants`);
-        return res.data.data as ClientConstants;
+        // Constants are static — cache for a long time
+        const key = cacheKey('client-constants');
+        return withCache(key, async () => {
+            const res = await api.get(`${API_BASE}/constants`);
+            return res.data.data as ClientConstants;
+        });
     },
 };

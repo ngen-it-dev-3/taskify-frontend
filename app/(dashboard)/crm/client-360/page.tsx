@@ -55,17 +55,19 @@ export default function Client360Page() {
     const [filters, setFilters] = useState<{
         sector: string;
         tier: string;
+        country: string;
         search: string;
         isPartner?: boolean;
     }>({
         sector: 'all',
         tier: 'all',
+        country: 'all',
         search: '',
         isPartner: undefined,
     });
 
     // ============================================================
-    // LOAD CONSTANTS (once)
+    // Constants — once on mount
     // ============================================================
     useEffect(() => {
         (async () => {
@@ -79,8 +81,7 @@ export default function Client360Page() {
     }, []);
 
     // ============================================================
-    // LOAD selected client (by url id) + sync active tab
-    // ⭐ Shows skeleton while fetching
+    // Selected client — on URL change
     // ============================================================
     useEffect(() => {
         if (!selectedId) {
@@ -108,36 +109,26 @@ export default function Client360Page() {
     }, [selectedId]);
 
     // ============================================================
-    // LOAD list + stats + sector breakdown (only on "All" tab)
+    // LIST — refetch only when filters change
     // ============================================================
-    const loadAll = useCallback(async () => {
+    const loadList = useCallback(async () => {
         try {
             setLoading(true);
 
             const params: ClientListParams = {
-                limit: 100,
+                limit: 500,   // ⭐ fetch more so pagination is fully client-side
                 page: 1,
             };
             if (filters.sector !== 'all') params.sector = filters.sector;
             if (filters.tier !== 'all') params.tier = filters.tier;
+            if (filters.country !== 'all') params.country = filters.country;
             if (filters.search) params.search = filters.search;
-            if (filters.isPartner) params.isPartner = 'true';
+            if (filters.isPartner !== undefined) {
+                params.isPartner = filters.isPartner ? 'true' : 'false';
+            }
 
-            const [listRes, statsRes, sectorRes] = await Promise.all([
-                Client360Api.list(params),
-                Client360Api.stats({
-                    tier: filters.tier !== 'all' ? filters.tier : undefined,
-                    sector: filters.sector !== 'all' ? filters.sector : undefined,
-                    isPartner: filters.isPartner ? 'true' : undefined,
-                }),
-                Client360Api.sectorBreakdown({
-                    tier: filters.tier !== 'all' ? filters.tier : undefined,
-                }),
-            ]);
-
+            const listRes = await Client360Api.list(params);
             setClients(listRes.items);
-            setStats(statsRes);
-            setSectorBreakdown(sectorRes);
         } catch (e: any) {
             toast.error(e.message || 'Failed to load clients');
         } finally {
@@ -146,14 +137,68 @@ export default function Client360Page() {
     }, [filters]);
 
     useEffect(() => {
-        if (topTab === 'all') {
-            loadAll();
+        if (topTab === 'all') loadList();
+    }, [topTab, loadList]);
+
+    // ============================================================
+    // AGGREGATES (stats + sector) — load only when tab opens
+    //                      not on every filter change
+    // ============================================================
+    const loadAggregates = useCallback(async () => {
+        try {
+            const [statsRes, sectorRes] = await Promise.all([
+                Client360Api.stats({}),
+                Client360Api.sectorBreakdown({}),
+            ]);
+            setStats(statsRes);
+            setSectorBreakdown(sectorRes);
+        } catch {
+            /* silent */
         }
-    }, [topTab, loadAll]);
+    }, []);
+
+    useEffect(() => {
+        if (topTab === 'all') loadAggregates();
+    }, [topTab, loadAggregates]);
 
     // ============================================================
     // HANDLERS
     // ============================================================
+
+    // ⭐ Fast save — updates local state, no full refetch
+    const handleSaveContact = async (
+        client: Client360,
+        contact: ClientContact,
+        updated: Partial<ClientContact>,
+        index: number
+    ) => {
+        try {
+            const contactId = contact._id;
+            if (!contactId) {
+                throw new Error(
+                    'Contact has no _id — cannot update. Try reloading.'
+                );
+            }
+
+            await Client360Api.updateContact(client.id, contactId, updated);
+
+            // ⭐ Local merge — instant UI update
+            setClients((prev) =>
+                prev.map((c) => {
+                    if (c.id !== client.id) return c;
+                    const newContacts = [...(c.contacts || [])];
+                    newContacts[index] = { ...newContacts[index], ...updated };
+                    return { ...c, contacts: newContacts };
+                })
+            );
+
+            toast.success(`Contact updated for ${client.name}`);
+        } catch (e: any) {
+            toast.error(e.message || 'Failed to update contact');
+            throw e;
+        }
+    };
+
     const handleSelectClient = (c: Client360) => {
         router.push(`/crm/client-360?id=${c.id}`);
     };
@@ -164,17 +209,14 @@ export default function Client360Page() {
     };
 
     const handleNewQuotation = () => {
-        // Every quotation requires an RFQ. Prefer a linked one.
         const rfqId = selected?.sourceRefs?.rfqId;
         if (rfqId) {
             router.push(`/crm/quotation-builder/${rfqId}`);
             return;
         }
-        // No RFQ linked → send user to RFQ dashboard
         router.push('/crm/rfq');
     };
 
-    // ---- Edit Client ----
     const handleEdit = () => {
         setEditClientOpen(true);
     };
@@ -184,7 +226,7 @@ export default function Client360Page() {
         setEditClientOpen(false);
     };
 
-    // ---- Contacts ----
+    // ---- Contacts (modal based) ----
     const handleAddContact = () => {
         setEditingContact(null);
         setContactModalOpen(true);
@@ -234,7 +276,8 @@ export default function Client360Page() {
 
     const handleClientSaved = async () => {
         setAddClientOpen(false);
-        await loadAll();
+        await loadList();
+        await loadAggregates();
     };
 
     const handleFilterChange = (f: typeof filters) => {
@@ -275,25 +318,16 @@ export default function Client360Page() {
                     >
                         Client Profile
                     </TopTabBtn>
-                    <TopTabBtn
-                        active={topTab === 'all'}
-                        onClick={handleBackToAll}
-                    >
+                    <TopTabBtn active={topTab === 'all'} onClick={handleBackToAll}>
                         All Clients
                     </TopTabBtn>
                 </div>
 
-                {/* ============================================================
-                    PROFILE TAB
-                    Three states: loading → loaded → empty
-                   ============================================================ */}
-
-                {/* 1. Loading skeleton */}
+                {/* PROFILE TAB */}
                 {topTab === 'profile' && loadingProfile && (
                     <ClientProfileSkeleton />
                 )}
 
-                {/* 2. Client loaded → full profile */}
                 {topTab === 'profile' && !loadingProfile && selected && (
                     <>
                         <ClientHeader
@@ -311,16 +345,13 @@ export default function Client360Page() {
                     </>
                 )}
 
-                {/* 3. No client & not loading → empty state */}
                 {topTab === 'profile' && !loadingProfile && !selected && (
                     <div className="rounded-xl border border-dashed border-[#E5DFD3] py-16 text-center text-[12px] italic text-slate-400">
                         Select a client from All Clients to view their profile.
                     </div>
                 )}
 
-                {/* ============================================================
-                    ALL CLIENTS TAB
-                   ============================================================ */}
+                {/* ALL CLIENTS TAB */}
                 {topTab === 'all' && (
                     <AllClientsView
                         clients={clients}
@@ -332,15 +363,30 @@ export default function Client360Page() {
                         onAddClient={handleAddClient}
                         onFilterChange={handleFilterChange}
                         activeFilter={filters}
+                        onSaveContact={handleSaveContact}
+                        onChatContact={() => {
+                            toast('Chat coming soon', { icon: '💬' });
+                        }}
+                        onEmailContact={(client, contact) => {
+                            if (contact.email) {
+                                window.location.href = `mailto:${contact.email}`;
+                            } else {
+                                toast.error('No email on file');
+                            }
+                        }}
+                        onCallContact={(client, contact) => {
+                            const phone = contact.personalPhone || contact.phone;
+                            if (phone) {
+                                window.location.href = `tel:${phone}`;
+                            } else {
+                                toast.error('No phone on file');
+                            }
+                        }}
                     />
                 )}
             </div>
 
-            {/* ============================================================
-                MODALS
-               ============================================================ */}
-
-            {/* Add Client */}
+            {/* MODALS */}
             {addClientOpen && (
                 <AddClientModal
                     constants={constants}
@@ -349,7 +395,6 @@ export default function Client360Page() {
                 />
             )}
 
-            {/* Edit Client */}
             {editClientOpen && selected && (
                 <EditClientModal
                     client={selected}
@@ -359,7 +404,6 @@ export default function Client360Page() {
                 />
             )}
 
-            {/* Contact Modal — add or edit */}
             {contactModalOpen && selected && (
                 <ContactModal
                     clientId={selected.id}
@@ -372,7 +416,6 @@ export default function Client360Page() {
                 />
             )}
 
-            {/* Communication Log Modal */}
             {commModalOpen && selected && (
                 <CommunicationModal
                     clientId={selected.id}
@@ -384,9 +427,6 @@ export default function Client360Page() {
     );
 }
 
-/* =========================================================
-   Top Tab Button
-   ========================================================= */
 function TopTabBtn({
     active,
     onClick,
@@ -399,8 +439,9 @@ function TopTabBtn({
     return (
         <button
             onClick={onClick}
-            className={`pb-3 font-semibold relative transition ${active ? 'text-[#A06126]' : 'text-slate-500 hover:text-slate-700'
-                }`}
+            className={`pb-3 font-semibold relative transition ${
+                active ? 'text-[#A06126]' : 'text-slate-500 hover:text-slate-700'
+            }`}
         >
             {children}
             {active && (

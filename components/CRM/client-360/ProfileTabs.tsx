@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Mail, Phone, Smartphone, User, Edit, Loader2 } from 'lucide-react';
+import { Mail, Phone, Smartphone, User, Edit, Loader2, Star } from 'lucide-react';
 import type {
     Client360,
     ClientContact,
@@ -45,8 +45,8 @@ export function ProfileTabs({
                         key={t.key}
                         onClick={() => setTab(t.key)}
                         className={`pb-3 font-semibold relative transition ${tab === t.key
-                                ? 'text-[#A06126]'
-                                : 'text-slate-500 hover:text-slate-700'
+                            ? 'text-[#A06126]'
+                            : 'text-slate-500 hover:text-slate-700'
                             }`}
                     >
                         {t.label}
@@ -92,7 +92,7 @@ function ContactsTab({
 }) {
     return (
         <>
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
                 {contacts.map((c, i) => (
                     <div
                         key={c._id || i}
@@ -102,9 +102,11 @@ function ContactsTab({
                             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#0F2D4A] text-[11px] font-bold text-white">
                                 {getInitials(c.name)}
                             </div>
-                            <div className="min-w-0">
-                                <div className="text-[13px] font-bold text-[#0F2D4A] truncate">
-                                    {c.name}
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-[13px] font-bold text-[#0F2D4A] truncate">
+                                        {c.name}
+                                    </span>
                                 </div>
                                 <div className="text-[10.5px] text-slate-500 truncate">
                                     {c.designation}
@@ -140,6 +142,17 @@ function ContactsTab({
                                         {c.notes}
                                     </span>
                                 </div>
+                            )}
+                            {c.isDecisionMaker && (
+                                <span
+                                    className="inline-flex mt-2 items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 uppercase tracking-wider shrink-0"
+                                    title="This person is a decision maker"
+                                >
+                                    <span className="w-3 h-3 text-slate-300 shrink-0">💬</span>
+                                    <span className="text-slate-500 italic text-[10.5px]">
+                                        Decision Maker
+                                    </span>
+                                </span>
                             )}
                         </div>
 
@@ -222,12 +235,12 @@ function OverviewTab({ client }: { client: Client360 }) {
                         <span className="text-slate-400">·</span>
                         <span
                             className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${deal.status === 'Sent'
-                                    ? 'bg-[#EEF4FB] text-[#1F3864]'
-                                    : deal.status === 'Won'
-                                        ? 'bg-emerald-50 text-emerald-700'
-                                        : deal.status === 'Lost'
-                                            ? 'bg-rose-50 text-rose-700'
-                                            : 'bg-slate-100 text-slate-600'
+                                ? 'bg-[#EEF4FB] text-[#1F3864]'
+                                : deal.status === 'Won'
+                                    ? 'bg-emerald-50 text-emerald-700'
+                                    : deal.status === 'Lost'
+                                        ? 'bg-rose-50 text-rose-700'
+                                        : 'bg-slate-100 text-slate-600'
                                 }`}
                         >
                             {deal.status}
@@ -390,12 +403,12 @@ function QuotesTab({
                         <span className="text-slate-400">·</span>
                         <span
                             className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${q.status === 'Sent'
-                                    ? 'bg-[#EEF4FB] text-[#1F3864]'
-                                    : q.status === 'Won'
-                                        ? 'bg-emerald-50 text-emerald-700'
-                                        : q.status === 'Lost'
-                                            ? 'bg-rose-50 text-rose-700'
-                                            : 'bg-slate-100 text-slate-600'
+                                ? 'bg-[#EEF4FB] text-[#1F3864]'
+                                : q.status === 'Won'
+                                    ? 'bg-emerald-50 text-emerald-700'
+                                    : q.status === 'Lost'
+                                        ? 'bg-rose-50 text-rose-700'
+                                        : 'bg-slate-100 text-slate-600'
                                 }`}
                         >
                             {q.status}
@@ -486,8 +499,8 @@ function LogTab({
                             key={r.key}
                             onClick={() => setRange(r.key)}
                             className={`pb-2 font-semibold relative transition ${range === r.key
-                                    ? 'text-[#A06126]'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                ? 'text-[#A06126]'
+                                : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             {r.label}

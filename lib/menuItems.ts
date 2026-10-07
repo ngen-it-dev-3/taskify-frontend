@@ -974,7 +974,7 @@ export const SUB_ITEMS = {
   ),
   crmDirectMarketing: createSubNavItem(
     "crm-direct-marketing",
-    "Direct Marketing",
+    "DMAR",
     "/crm/direct-marketing",
     Building2,
     "CRM",
