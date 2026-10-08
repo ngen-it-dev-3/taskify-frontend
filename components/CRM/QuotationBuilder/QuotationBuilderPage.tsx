@@ -112,7 +112,33 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     const canRemoveLine = removableCount > 1;
 
     // ============================================================
-    // LOAD RFQ + PQ + QUOTE NUMBERING SETTINGS
+    // ⭐ REUSABLE: refresh numbering numbers (PQ + Quote)
+    // ============================================================
+    const refreshNumbering = React.useCallback(async () => {
+        try {
+            const [pqSettings, quoteSettings] = await Promise.all([
+                NumberingApi.get('pq').catch(() => null),
+                NumberingApi.get('quote').catch(() => null),
+            ]);
+
+            const pqNumber = pqSettings ? buildPqNumberFromSettings(pqSettings) : '';
+            const quoteNumber = quoteSettings
+                ? buildQuoteNumberFromSettings(quoteSettings)
+                : '';
+
+            setMeta((prev) => ({
+                ...prev,
+                // ⭐ only overwrite if user hasn't manually overridden
+                pqNumber: prev.rfqRefOverride ? prev.pqNumber : (pqNumber || prev.pqNumber || ''),
+                quotationNumber: quoteNumber || prev.quotationNumber || '',
+            }));
+        } catch (err) {
+            console.warn('[QuotationBuilder] refreshNumbering failed', err);
+        }
+    }, []);
+
+    // ============================================================
+    // LOAD RFQ ON MOUNT
     // ============================================================
     useEffect(() => {
         if (!rfqId) {
@@ -128,7 +154,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 const rfq = await RfqApi.get(rfqId);
                 if (!mounted) return;
 
-                // ⭐ Load BOTH numbering scopes in parallel
+                // Load both numbering scopes in parallel
                 let pqNumber = '';
                 let quoteNumber = '';
                 try {
@@ -137,7 +163,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         NumberingApi.get('quote').catch(() => null),
                     ]);
                     if (pqSettings) pqNumber = buildPqNumberFromSettings(pqSettings);
-                    if (quoteSettings) quoteNumber = buildQuoteNumberFromSettings(quoteSettings);
+                    if (quoteSettings)
+                        quoteNumber = buildQuoteNumberFromSettings(quoteSettings);
                 } catch (err) {
                     console.warn('[QuotationBuilder] Numbering settings load failed', err);
                 }
@@ -708,6 +735,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         onDiscuss={() => { }}
                         generating={generating}
                         savingDraft={saving || sending}
+                        onNumberingSaved={refreshNumbering}
                     />
 
                     <ClientTypeBar meta={meta} onChange={setMeta} />

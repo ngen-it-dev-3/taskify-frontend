@@ -16,6 +16,7 @@ interface Props {
   onDiscuss?: () => void;
   generating?: boolean;
   savingDraft?: boolean;
+  onNumberingSaved?: () => void;
 }
 
 type DocType = 'quote' | 'pq';
@@ -87,6 +88,7 @@ export default function QuoteInfoCard({
   onDiscuss,
   generating = false,
   savingDraft = false,
+  onNumberingSaved,
 }: Props) {
   const [numberingOpen, setNumberingOpen] = useState(false);
 
@@ -159,7 +161,7 @@ export default function QuoteInfoCard({
       </div>
 
       {numberingOpen && (
-        <NumberingSettingsModal onClose={() => setNumberingOpen(false)} />
+        <NumberingSettingsModal onClose={() => setNumberingOpen(false)} onSaved={onNumberingSaved} />
       )}
     </>
   );
@@ -178,7 +180,13 @@ function MetaItem({ label, value }: { label: string; value: string }) {
   );
 }
 
-function NumberingSettingsModal({ onClose }: { onClose: () => void }) {
+function NumberingSettingsModal({
+  onClose,
+  onSaved,
+}: {
+  onClose: () => void;
+  onSaved?: () => void;    // ⭐ NEW
+}) {
   const [docType, setDocType] = useState<DocType>('quote');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -291,6 +299,10 @@ function NumberingSettingsModal({ onClose }: { onClose: () => void }) {
           ? 'Quotation numbering settings saved'
           : 'PQ numbering settings saved'
       );
+
+      // ⭐ NOTIFY the parent so it can refetch the numbers
+      onSaved?.();
+
       onClose();
     } catch (e: any) {
       toast.error(e.message || 'Failed to save settings');
