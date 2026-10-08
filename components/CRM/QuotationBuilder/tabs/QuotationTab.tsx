@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Pencil, X, Trash2, Pen } from 'lucide-react';
+import { Pencil, X, Trash2, Pen, Check } from 'lucide-react';
 import type {
     QuotationLineItem,
     QuotationMeta,
@@ -14,7 +14,7 @@ interface Props {
     meta: QuotationMeta;
     lines: QuotationLineItem[];
     calc: any;
-    rates: QuotationRates;               // ⭐ NEW
+    rates: QuotationRates;
     terms?: { label: string; value: string }[];
     onUpdateLine?: (id: string, patch: Partial<QuotationLineItem>) => void;
     onRemoveLine?: (id: string) => void;
@@ -27,12 +27,14 @@ interface Props {
     onGenerateLink?: () => void;
     sending?: boolean;
     canRemoveLine?: boolean;
+    onChangeMeta?: (patch: Partial<QuotationMeta>) => void;
 }
+
 interface EditState {
     id: string;
     name: string;
-    qty: string;     // ⭐ stored as string so empty is allowed
-    price: string;   // ⭐ stored as string
+    qty: string;
+    price: string;
 }
 
 export default function QuotationTab({
@@ -52,20 +54,19 @@ export default function QuotationTab({
     onWhatsApp,
     onGenerateLink,
     sending = false,
+    onChangeMeta,
 }: Props) {
     const [editing, setEditing] = useState<EditState | null>(null);
     const [withAttachment, setWithAttachment] = useState(false);
     const autoEditedIds = useRef<Set<string>>(new Set());
     const prevLineCount = useRef<number | null>(null);
 
-    // ---- Base amounts (BDT) — pulled from calc (already checkbox-aware) ----
     const subtotal = calc?.subTotal || 0;
     const discountAmt = calc?.discountTotal || 0;
     const netSub = calc?.customerPrice || subtotal;
     const gst = calc?.taxVatGst || 0;
     const grand = calc?.grandTotal || netSub + gst;
 
-    // ---- Display amounts (converted to selected currency) ----
     const displaySubtotal = convertToDisplay(subtotal, meta);
     const displayDiscount = convertToDisplay(discountAmt, meta);
     const displayNetSub = convertToDisplay(netSub, meta);
@@ -80,17 +81,6 @@ export default function QuotationTab({
     const discountOn = meta.discountEnabled !== false;
     const taxOn = meta.vatEnabled !== false;
 
-    // ============================================================
-    // ⭐ CLIENT PRICE HELPERS — mirror the calc logic exactly
-    // ============================================================
-    /**
-     * Compute the client-facing unit price (in BASE currency) for a line.
-     * Order of operations:
-     *   1. principalCost × (1 − principalDiscountPct/100)
-     *   2. × (1 + officePct/100 + profitPct/100 + othersPct/100)
-     *   3. × (1 − discountPct/100)          [only if discount enabled]
-     *   4. × (1 + taxPct/100)               [only if VAT enabled]
-     */
     const computeClientUnitPrice = (l: QuotationLineItem): number => {
         const principalRate = 1 - (rates?.principalDiscountPct || 0) / 100;
         const effectiveCost = (l.principalCost || 0) * principalRate;
@@ -113,16 +103,11 @@ export default function QuotationTab({
         return sub * discountRate * taxRate;
     };
 
-    /**
-     * Reverse of the above: given a client-facing unit price (in BASE),
-     * derive the principalCost the line needs to produce that price.
-     */
     const derivePrincipalCost = (
         baseClientPrice: number,
         discountPct: number
     ): number => {
         const principalRate = 1 - (rates?.principalDiscountPct || 0) / 100;
-
         const marginRate =
             1 +
             (rates?.officePct || 0) / 100 +
@@ -138,13 +123,9 @@ export default function QuotationTab({
 
         const divisor = principalRate * marginRate * discountRate * taxRate;
         if (divisor === 0) return 0;
-
         return baseClientPrice / divisor;
     };
 
-    // ============================================================
-    // AUTO-EDIT on new line
-    // ============================================================
     useEffect(() => {
         const currentCount = productLines.length;
 
@@ -165,7 +146,10 @@ export default function QuotationTab({
                     id: newest.id,
                     name: '',
                     qty: String(newest.qty || 1),
-                    price: displayUnitPrice > 0 ? String(Number(displayUnitPrice.toFixed(2))) : '',
+                    price:
+                        displayUnitPrice > 0
+                            ? String(Number(displayUnitPrice.toFixed(2)))
+                            : '',
                 });
             }
         }
@@ -173,9 +157,6 @@ export default function QuotationTab({
         prevLineCount.current = currentCount;
     }, [productLines.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // ============================================================
-    // EDIT HANDLERS
-    // ============================================================
     const startEdit = (l: QuotationLineItem) => {
         const baseUnitPrice = computeClientUnitPrice(l);
         const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
@@ -184,7 +165,10 @@ export default function QuotationTab({
             id: l.id,
             name: l.name === 'New Item' ? '' : l.name,
             qty: String(l.qty ?? 1),
-            price: displayUnitPrice > 0 ? String(Number(displayUnitPrice.toFixed(2))) : '',
+            price:
+                displayUnitPrice > 0
+                    ? String(Number(displayUnitPrice.toFixed(2)))
+                    : '',
         });
     };
 
@@ -197,14 +181,9 @@ export default function QuotationTab({
             return;
         }
 
-        // ⭐ Parse numbers — empty string becomes 0
         const qtyNum = Number(editing.qty) || 0;
         const priceNum = Number(editing.price) || 0;
-
-        // Display → base (undo currency conversion)
         const baseClientPrice = convertToBase(priceNum, meta);
-
-        // Base client price → principalCost (undo margins / discount / tax)
         const principalCost = derivePrincipalCost(
             baseClientPrice,
             original.discountPct || 0
@@ -222,19 +201,43 @@ export default function QuotationTab({
     const cancelEdit = () => {
         if (!editing) return;
         const original = lines.find((l) => l.id === editing.id);
-        if (original && original.name === 'New Item' && original.principalCost === 0) {
+        if (
+            original &&
+            original.name === 'New Item' &&
+            original.principalCost === 0
+        ) {
             onRemoveLine?.(editing.id);
         }
         setEditing(null);
     };
 
-    // ============================================================
-    // RENDER
-    // ============================================================
+    const patchMeta = (patch: Partial<QuotationMeta>) => {
+        onChangeMeta?.(patch);
+    };
+
+    const fullAddress =
+        [
+            meta.billToAddress,
+            !meta.billToAddress && meta.client?.address,
+            meta.client?.city,
+            meta.client?.country,
+            meta.client?.zipCode,
+        ]
+            .filter(Boolean)
+            .join(', ') || '—';
+
+    const displayDate =
+        meta.pqDate ||
+        new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        });
+
     return (
         <div className="w-full flex justify-center">
             <div className="w-full max-w-[980px] bg-white rounded-xl border border-[#EBE6DF] shadow-2xs overflow-hidden">
-                {/* ================= LETTERHEAD ================= */}
+                {/* LETTERHEAD */}
                 <div className="bg-[#0F2D4A] px-10 py-7 flex items-center justify-between flex-wrap gap-4">
                     <div className="flex items-center gap-3.5">
                         <div className="w-14 h-14 rounded-lg bg-[#A06126] flex items-center justify-center text-white font-bold text-xl shadow-lg">
@@ -254,41 +257,48 @@ export default function QuotationTab({
                     </div>
                 </div>
 
-                {/* ================= BILL TO + QUOTE DETAILS ================= */}
+                {/* BILL TO + QUOTE DETAILS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 px-10 py-8 border-b border-[#F0EBE3]">
                     <div>
                         <div className="text-[10px] font-bold text-[#A06126] uppercase mb-5">
                             Bill To
                         </div>
-                        <div className="space-y-4">
-                            <InfoRow
+                        <div className="space-y-0">
+                            <EditableRow
                                 label="Company"
-                                value={meta.client?.company || '—'}
+                                value={meta.billToCompany ?? meta.client?.company ?? '—'}
+                                onChange={(v) => patchMeta({ billToCompany: v })}
                                 strong
                             />
-                            <InfoRow
+                            <EditableRow
                                 label="Contact"
-                                value={meta.client?.contactName || '—'}
-                                sub={meta.client?.designation || undefined}
+                                value={
+                                    meta.billToContactName ??
+                                    meta.client?.contactName ??
+                                    '—'
+                                }
+                                sub={
+                                    meta.billToContactRole ??
+                                    meta.client?.designation ??
+                                    undefined
+                                }
+                                onChange={(v) => patchMeta({ billToContactName: v })}
+                                onSubChange={(v) =>
+                                    patchMeta({ billToContactRole: v })
+                                }
                             />
-                            <InfoRow
+                            <EditableRow
                                 label="Email / Phone"
-                                value={meta.client?.email || '—'}
-                                sub={meta.client?.phone || undefined}
+                                value={meta.billToEmail ?? meta.client?.email ?? '—'}
+                                sub={meta.billToPhone ?? meta.client?.phone ?? undefined}
+                                onChange={(v) => patchMeta({ billToEmail: v })}
+                                onSubChange={(v) => patchMeta({ billToPhone: v })}
                                 mono
                             />
-                            <InfoRow
+                            <EditableRow
                                 label="Address"
-                                value={
-                                    [
-                                        meta.client?.address,
-                                        meta.client?.city,
-                                        meta.client?.country,
-                                        meta.client?.zipCode,
-                                    ]
-                                        .filter(Boolean)
-                                        .join(', ') || '—'
-                                }
+                                value={fullAddress}
+                                onChange={(v) => patchMeta({ billToAddress: v })}
                             />
                         </div>
                     </div>
@@ -297,24 +307,42 @@ export default function QuotationTab({
                         <div className="text-[10px] font-bold text-[#A06126] uppercase mb-5">
                             Quote Details
                         </div>
-                        <div className="space-y-4">
-                            <InfoRow label="PQ #" value={meta.pqNumber || '—'} strong mono />
-                            <InfoRow
-                                label="Date"
-                                value={new Date().toLocaleDateString('en-GB', {
-                                    day: '2-digit',
-                                    month: 'short',
-                                    year: 'numeric',
-                                })}
+                        <div className="space-y-0">
+                            <EditableRow
+                                label="PQ #"
+                                value={meta.pqNumber || '—'}
+                                onChange={(v) => patchMeta({ pqNumber: v })}
+                                strong
                                 mono
                             />
-                            <InfoRow label="PQR #" value={meta.pqrNumber || '—'} mono />
-                            <InfoRow label="RFQ Ref" value={meta.rfqNumber || '—'} mono />
+                            <EditableRow
+                                label="Date"
+                                value={displayDate}
+                                onChange={(v) => patchMeta({ pqDate: v })}
+                                mono
+                            />
+                            <EditableRow
+                                label="PQR #"
+                                value={meta.pqrNumber || '—'}
+                                onChange={(v) => patchMeta({ pqrNumber: v })}
+                                mono
+                            />
+                            <EditableRow
+                                label="RFQ Ref"
+                                value={
+                                    meta.rfqRefOverride ||
+                                    meta.quotationNumber ||
+                                    meta.rfqNumber ||
+                                    '—'
+                                }
+                                onChange={(v) => patchMeta({ rfqRefOverride: v })}
+                                mono
+                            />
                         </div>
                     </div>
                 </div>
 
-                {/* ================= LINE ITEMS ================= */}
+                {/* LINE ITEMS */}
                 <div className="px-10 py-8">
                     <div className="overflow-x-auto">
                         <table className="w-full text-[12.5px]">
@@ -343,11 +371,8 @@ export default function QuotationTab({
                             <tbody className="divide-y divide-[#F0EBE3]">
                                 {displayLines.map((l, i) => {
                                     const isEditing = editing?.id === l.id;
-
-                                    // ⭐ Client-facing unit price (base + display)
                                     const baseUnitPrice = computeClientUnitPrice(l);
                                     const baseTotal = baseUnitPrice * l.qty;
-
                                     const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
                                     const displayTotal = convertToDisplay(baseTotal, meta);
 
@@ -361,7 +386,10 @@ export default function QuotationTab({
                                                     <input
                                                         value={editing.name}
                                                         onChange={(e) =>
-                                                            setEditing({ ...editing, name: e.target.value })
+                                                            setEditing({
+                                                                ...editing,
+                                                                name: e.target.value,
+                                                            })
                                                         }
                                                         placeholder="Enter product name…"
                                                         className="w-full bg-white border border-[#A06126] rounded px-2.5 py-1.5 text-[12.5px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
@@ -377,10 +405,12 @@ export default function QuotationTab({
                                                         type="text"
                                                         inputMode="numeric"
                                                         value={editing.qty}
-                                                        onChange={(e) => {
-                                                            // ⭐ Allow any input, including empty
-                                                            setEditing({ ...editing, qty: e.target.value });
-                                                        }}
+                                                        onChange={(e) =>
+                                                            setEditing({
+                                                                ...editing,
+                                                                qty: e.target.value,
+                                                            })
+                                                        }
                                                         onFocus={(e) => e.target.select()}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') saveEdit();
@@ -395,10 +425,12 @@ export default function QuotationTab({
                                                         type="text"
                                                         inputMode="decimal"
                                                         value={editing.price}
-                                                        onChange={(e) => {
-                                                            // ⭐ Allow any input, including empty and decimals
-                                                            setEditing({ ...editing, price: e.target.value });
-                                                        }}
+                                                        onChange={(e) =>
+                                                            setEditing({
+                                                                ...editing,
+                                                                price: e.target.value,
+                                                            })
+                                                        }
                                                         onFocus={(e) => e.target.select()}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') saveEdit();
@@ -411,7 +443,8 @@ export default function QuotationTab({
                                                 <td className="py-3.5 text-center font-mono text-slate-500">
                                                     {sym}
                                                     {(
-                                                        (Number(editing.price) || 0) * (Number(editing.qty) || 0)
+                                                        (Number(editing.price) || 0) *
+                                                        (Number(editing.qty) || 0)
                                                     ).toLocaleString(undefined, {
                                                         maximumFractionDigits: 2,
                                                     })}
@@ -472,10 +505,14 @@ export default function QuotationTab({
                                                         onClick={() => onRemoveLine?.(l.id)}
                                                         disabled={!canRemoveLine}
                                                         className={`w-7 h-7 rounded border inline-flex items-center justify-center transition ${canRemoveLine
-                                                            ? 'border-[#E2DBD1] hover:bg-rose-50 text-rose-600'
-                                                            : 'border-[#E2DBD1] text-slate-300 cursor-not-allowed opacity-50'
+                                                                ? 'border-[#E2DBD1] hover:bg-rose-50 text-rose-600'
+                                                                : 'border-[#E2DBD1] text-slate-300 cursor-not-allowed opacity-50'
                                                             }`}
-                                                        title={canRemoveLine ? 'Remove' : 'At least one line item is required'}
+                                                        title={
+                                                            canRemoveLine
+                                                                ? 'Remove'
+                                                                : 'At least one line item is required'
+                                                        }
                                                     >
                                                         <X className="w-3.5 h-3.5" />
                                                     </button>
@@ -508,11 +545,9 @@ export default function QuotationTab({
                         Add Item
                     </button>
 
-                    {/* ---------- TOTALS ---------- */}
+                    {/* TOTALS */}
                     <div className="mt-10 flex justify-end">
                         <div className="w-full max-w-[360px] space-y-3 text-[12.5px]">
-
-                            {/* Sub Total */}
                             <div className="flex justify-between items-center">
                                 <span className="text-slate-600">Sub Total</span>
                                 <span className="font-mono text-slate-900">
@@ -523,7 +558,6 @@ export default function QuotationTab({
                                 </span>
                             </div>
 
-                            {/* Discount — only if enabled AND applied */}
                             {discountOn && displayDiscount > 0 && (
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">
@@ -539,7 +573,6 @@ export default function QuotationTab({
                                 </div>
                             )}
 
-                            {/* Net Sub Total — only if discount present */}
                             {discountOn && displayDiscount > 0 && (
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">Net Sub Total</span>
@@ -552,7 +585,6 @@ export default function QuotationTab({
                                 </div>
                             )}
 
-                            {/* Tax — different design based on checkbox */}
                             {taxOn ? (
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">
@@ -576,15 +608,17 @@ export default function QuotationTab({
                                         <span className="text-slate-400">
                                             ({rates?.taxPct ?? 15}%)
                                         </span>{' '}
-                                        <small className="text-slate-400">(not included — may apply)</small>
+                                        <small className="text-slate-400">
+                                            (not included — may apply)
+                                        </small>
                                     </span>
                                     <span className="font-mono text-slate-400">
-                                        <strong>{sym}</strong>0.00 <small>(not included)</small>
+                                        <strong>{sym}</strong>0.00{' '}
+                                        <small>(not included)</small>
                                     </span>
                                 </div>
                             )}
 
-                            {/* Grand Total */}
                             <div className="flex justify-between items-baseline pt-3 border-t-2 border-[#0F2D4A]">
                                 <span className="font-bold text-[#0F2D4A] text-[14px]">
                                     Grand Total
@@ -600,7 +634,7 @@ export default function QuotationTab({
                     </div>
                 </div>
 
-                {/* ================= TERMS ================= */}
+                {/* TERMS */}
                 {terms.length > 0 && (
                     <div className="px-10 py-8 border-t border-[#F0EBE3] bg-[#FBFAF7]">
                         <div className="text-[10px] font-bold text-[#A06126] uppercase mb-5">
@@ -627,7 +661,7 @@ export default function QuotationTab({
                     </div>
                 )}
 
-                {/* ================= AUTHORIZED BRANDS ================= */}
+                {/* AUTHORIZED BRANDS */}
                 <div className="px-10 py-8 border-t border-[#F0EBE3]">
                     <div className="text-[10px] font-bold tracking-[0.18em] text-[#A06126] uppercase mb-4">
                         Authorized Brands
@@ -644,7 +678,7 @@ export default function QuotationTab({
                     </div>
                 </div>
 
-                {/* ================= SIGNATURE ================= */}
+                {/* SIGNATURE */}
                 <div className="px-10 py-8 border-t border-[#F0EBE3] flex flex-wrap items-end justify-between gap-4">
                     <div>
                         <div className="font-bold text-slate-900 text-[13.5px]">
@@ -661,7 +695,7 @@ export default function QuotationTab({
                     </div>
                 </div>
 
-                {/* ================= ACTION BAR ================= */}
+                {/* ACTION BAR */}
                 <div className="px-10 py-6 bg-[#FAF8F5] border-t border-[#F0EBE3]">
                     <label className="flex items-center gap-2 text-[12.5px] text-slate-600 cursor-pointer mb-4">
                         <input
@@ -712,27 +746,106 @@ export default function QuotationTab({
    ATOMS
    ========================================================= */
 
-function InfoRow({
+function EditableRow({
     label,
     value,
     sub,
     strong,
     mono,
+    onChange,
+    onSubChange,
 }: {
     label: string;
     value: string;
     sub?: string;
     strong?: boolean;
     mono?: boolean;
+    onChange?: (v: string) => void;
+    onSubChange?: (v: string) => void;
 }) {
+    const [editing, setEditing] = useState(false);
+    const [draft, setDraft] = useState(value);
+    const [draftSub, setDraftSub] = useState(sub ?? '');
+
+    useEffect(() => {
+        if (!editing) {
+            setDraft(value);
+            setDraftSub(sub ?? '');
+        }
+    }, [value, sub, editing]);
+
+    const save = () => {
+        onChange?.(draft);
+        if (onSubChange && sub !== undefined) onSubChange(draftSub);
+        setEditing(false);
+    };
+
+    const cancel = () => {
+        setDraft(value);
+        setDraftSub(sub ?? '');
+        setEditing(false);
+    };
+
+    if (editing) {
+        return (
+            <div className="grid grid-cols-[120px_1fr] gap-3 items-start py-2 border-b border-[#E5DFD3] last:border-b-0">
+                <span
+                    className="pt-1.5"
+                    style={{ color: '#A0AEC0', fontSize: '12px', fontWeight: 400 }}
+                >
+                    {label}
+                </span>
+                <div className="min-w-0 space-y-1.5">
+                    <input
+                        autoFocus
+                        value={draft}
+                        onChange={(e) => setDraft(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') save();
+                            if (e.key === 'Escape') cancel();
+                        }}
+                        className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12.5px] text-[#0F2D4A] font-medium focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
+                        style={{
+                            fontFamily: mono
+                                ? 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace'
+                                : 'inherit',
+                        }}
+                    />
+                    {sub !== undefined && onSubChange && (
+                        <input
+                            value={draftSub}
+                            onChange={(e) => setDraftSub(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') save();
+                                if (e.key === 'Escape') cancel();
+                            }}
+                            placeholder="(secondary line)"
+                            className="w-full bg-white border border-[#E2DBD1] rounded px-2 py-1 text-[11.5px] text-slate-600 focus:outline-none focus:ring-1 focus:ring-[#A06126]/30"
+                        />
+                    )}
+                    <div className="flex gap-2 pt-0.5">
+                        <button
+                            type="button"
+                            onClick={save}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#0F2D4A] hover:bg-[#1C3760] text-white text-[10px] font-semibold"
+                        >
+                            <Check className="w-3 h-3" /> Save
+                        </button>
+                        <button
+                            type="button"
+                            onClick={cancel}
+                            className="px-2.5 py-1 rounded border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 text-[10px] font-semibold"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div
-            className="
-        grid grid-cols-[120px_1fr] gap-3 items-center py-2 mb-0
-        border-b border-[#E5DFD3]
-        last:border-b-0
-      "
-        >
+        <div className="grid grid-cols-[120px_1fr] gap-3 items-center py-2 border-b border-[#E5DFD3] last:border-b-0 group">
             <span
                 className="pt-0.5"
                 style={{
@@ -745,34 +858,45 @@ function InfoRow({
                 {label}
             </span>
 
-            <div className="min-w-0">
-                <div
-                    className="break-words"
-                    style={{
-                        color: '#0F2D4A',
-                        fontSize: mono ? '12.5px' : '13px',
-                        fontWeight: strong ? 700 : 500,
-                        fontFamily: mono
-                            ? 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace'
-                            : 'inherit',
-                        lineHeight: '1.45',
-                    }}
-                >
-                    {value}
-                </div>
-                {sub && (
+            <div className="min-w-0 flex items-start gap-2">
+                <div className="flex-1 min-w-0">
                     <div
-                        className="mt-1 break-words"
+                        className="break-words"
                         style={{
-                            color: '#64748B',
-                            fontSize: '11.5px',
-                            fontWeight: 400,
-                            lineHeight: '1.4',
+                            color: '#0F2D4A',
+                            fontSize: mono ? '12.5px' : '13px',
+                            fontWeight: strong ? 700 : 500,
+                            fontFamily: mono
+                                ? 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace'
+                                : 'inherit',
+                            lineHeight: '1.45',
                         }}
                     >
-                        {sub}
+                        {value}
                     </div>
-                )}
+                    {sub && (
+                        <div
+                            className="mt-1 break-words"
+                            style={{
+                                color: '#64748B',
+                                fontSize: '11.5px',
+                                fontWeight: 400,
+                                lineHeight: '1.4',
+                            }}
+                        >
+                            {sub}
+                        </div>
+                    )}
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => setEditing(true)}
+                    className="opacity-0 group-hover:opacity-100 transition shrink-0 w-6 h-6 rounded hover:bg-slate-100 inline-flex items-center justify-center text-slate-400 hover:text-[#A06126]"
+                    title={`Edit ${label}`}
+                >
+                    <Pencil className="w-3 h-3" />
+                </button>
             </div>
         </div>
     );

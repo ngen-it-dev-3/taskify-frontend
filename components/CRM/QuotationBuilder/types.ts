@@ -1,3 +1,5 @@
+// components/CRM/quotation-builder/types.ts
+
 export interface QuotationLineItem {
   id: string;
   sl: number | '-';
@@ -20,6 +22,7 @@ export interface QuotationRates {
   othersPct: number;
   taxPct: number;
 }
+
 export interface QuotationClientInfo {
   company: string;
   contactName: string;
@@ -31,19 +34,20 @@ export interface QuotationClientInfo {
   country: string;
   zipCode?: string;
 }
+
 export interface QuotationMeta {
   rfqNumber: string;
   title: string;
   territory: string;
   crmManager: string;
   stage: string;
-  // ⭐ Currency
+
   currency: string;
   currencySymbol: string;
   baseCurrency: string;
   baseCurrencySymbol: string;
   exchangeRate: number;
-  // Other
+
   clientType: 'existing' | 'new';
   country: string;
   vatEnabled: boolean;
@@ -51,6 +55,19 @@ export interface QuotationMeta {
   client: QuotationClientInfo;
   pqNumber: string;
   pqrNumber: string;
+
+  // ⭐ Numbering-service generated quote number (e.g. RFQ-2026-66666)
+  quotationNumber?: string;
+
+  // ⭐ Editable Preview fields
+  billToCompany?: string;
+  billToContactName?: string;
+  billToContactRole?: string;
+  billToEmail?: string;
+  billToPhone?: string;
+  billToAddress?: string;
+  pqDate?: string;
+  rfqRefOverride?: string;
 }
 
 export interface LogisticsInfo {
@@ -68,7 +85,9 @@ export interface CostBreakdown {
   netProfit: number;
   taxVatGst: number;
   subTotal: number;
+  discountTotal: number;
   customerPrice: number;
+  grandTotal: number;
   totalWeight: number;
 }
 

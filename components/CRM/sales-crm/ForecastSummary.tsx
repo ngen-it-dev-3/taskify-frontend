@@ -134,15 +134,15 @@ export function ForecastSummary({ filters, activeMonth }: Props) {
         return (
             <div className="space-y-5">
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
-                    <div className="h-[280px] animate-pulse rounded-xl bg-white border border-[#EBE6DF] col-span-3" />
-                    <div className="h-[280px] animate-pulse rounded-xl bg-white border border-[#EBE6DF]" />
-                    <div className="h-[280px] animate-pulse rounded-xl bg-white border border-[#EBE6DF]" />
+                    <div className="h-70 animate-pulse rounded-xl bg-white border border-[#EBE6DF] col-span-3" />
+                    <div className="h-70 animate-pulse rounded-xl bg-white border border-[#EBE6DF]" />
+                    <div className="h-70 animate-pulse rounded-xl bg-white border border-[#EBE6DF]" />
                 </div>
                 <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
                     {Array.from({ length: 5 }).map((_, i) => (
                         <div
                             key={i}
-                            className="h-[90px] animate-pulse rounded-xl bg-white border border-[#EBE6DF]"
+                            className="h-22.5 animate-pulse rounded-xl bg-white border border-[#EBE6DF]"
                         />
                     ))}
                 </div>

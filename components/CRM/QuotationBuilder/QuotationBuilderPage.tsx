@@ -32,21 +32,48 @@ import type {
 import { RfqApi } from '@/services/rfq.service';
 import { useQuotation } from '@/hooks/crm/useQuotation';
 import { QuotationApi } from '@/services/quotation.service';
+import { NumberingApi } from '@/services/numbering.service';
 
 interface Props {
     rfqId?: string;
 }
 
+/* -----------------------------------------------------------
+   Build a PQ number preview from a settings object
+----------------------------------------------------------- */
+function buildPqNumberFromSettings(s: any): string {
+    if (!s) return '';
+    const now = new Date();
+    const yy = String(now.getFullYear()).slice(-2);
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const datePart = s.useTodayDate
+        ? `${yy}${mm}${dd}`
+        : (s.manualDate || `${yy}${mm}${dd}`).replace(/\D/g, '').slice(0, 6);
+    const padded = String((s.nextSeq || 0) + 1).padStart(s.padding || 4, '0');
+    return `${s.countryCode}-${s.regionCode}/${s.entityCode}/${s.docTypeCode}/${datePart}-${padded}`;
+}
+
+/* -----------------------------------------------------------
+   Build a Quote number preview from a settings object
+----------------------------------------------------------- */
+function buildQuoteNumberFromSettings(s: any): string {
+    if (!s) return '';
+    const year = new Date().getFullYear();
+    const yearPart =
+        s.yearSegment === 'none'
+            ? ''
+            : s.yearSegment === 'yy'
+                ? String(year).slice(-2)
+                : String(year);
+    const padded = String((s.nextSeq || 0) + 1).padStart(s.padding || 4, '0');
+    return [s.rfqPrefix, yearPart, padded].filter(Boolean).join('-');
+}
+
 export default function QuotationBuilderPage({ rfqId }: Props) {
-    // ============================================================
-    // NAVIGATION STATE
-    // ============================================================
     const [topTab, setTopTab] = useState<TopTabKey>('builder');
     const [tab, setTab] = useState<QuotationTabKey>('quotation');
 
-    // ============================================================
-    // FORM STATE
-    // ============================================================
     const [meta, setMeta] = useState<QuotationMeta>(DEFAULT_META);
     const [rates, setRates] = useState<QuotationRates>(DEFAULT_RATES);
     const [lines, setLines] = useState<QuotationLineItem[]>([...FIXED_LINES]);
@@ -58,20 +85,12 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     });
 
     const [autoEditLineId, setAutoEditLineId] = useState<string | null>(null);
-
-    // ⭐ Track unsaved line edits so hydration doesn't overwrite them
     const [linesDirty, setLinesDirty] = useState(false);
 
-    // ============================================================
-    // LOADING & SENDING STATE
-    // ============================================================
     const [loading, setLoading] = useState<boolean>(!!rfqId);
     const [sending, setSending] = useState(false);
-    const [generating, setGenerating] = useState(false);   // ⭐ NEW
+    const [generating, setGenerating] = useState(false);
 
-    // ============================================================
-    // QUOTATION PERSISTENCE HOOK
-    // ============================================================
     const {
         quotation,
         loading: loadingQuotation,
@@ -79,13 +98,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         create,
         update,
         send,
-        approve,
-        markOutcome,
     } = useQuotation(rfqId);
 
-    // ============================================================
-    // STATS FOR TAB BADGES
-    // ============================================================
     const [quoteStats, setQuoteStats] = useState({
         drafts: 0,
         sent: 0,
@@ -94,12 +108,11 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         awaiting: 0,
     });
 
-    // ⭐ Track whether user is allowed to remove a line
     const removableCount = lines.filter((l) => l.type !== 'fixed').length;
     const canRemoveLine = removableCount > 1;
 
     // ============================================================
-    // LOAD RFQ DATA
+    // LOAD RFQ + PQ + QUOTE NUMBERING SETTINGS
     // ============================================================
     useEffect(() => {
         if (!rfqId) {
@@ -115,35 +128,57 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 const rfq = await RfqApi.get(rfqId);
                 if (!mounted) return;
 
-                const clientInfo = {
-                    company: rfq.clientInfo?.company || rfq.company || '',
-                    contactName: rfq.clientInfo?.contactName || '',
-                    designation: rfq.clientInfo?.designation || '',
-                    email: rfq.clientInfo?.email || '',
-                    phone: rfq.clientInfo?.phone || '',
-                    address: rfq.clientInfo?.address || '',
-                    city: rfq.clientInfo?.city || '',
-                    country: rfq.clientInfo?.country || rfq.country || '',
-                    zipCode: rfq.clientInfo?.zipCode || '',
-                };
+                // ⭐ Load BOTH numbering scopes in parallel
+                let pqNumber = '';
+                let quoteNumber = '';
+                try {
+                    const [pqSettings, quoteSettings] = await Promise.all([
+                        NumberingApi.get('pq').catch(() => null),
+                        NumberingApi.get('quote').catch(() => null),
+                    ]);
+                    if (pqSettings) pqNumber = buildPqNumberFromSettings(pqSettings);
+                    if (quoteSettings) quoteNumber = buildQuoteNumberFromSettings(quoteSettings);
+                } catch (err) {
+                    console.warn('[QuotationBuilder] Numbering settings load failed', err);
+                }
 
-                const countryCode = (rfq.country || 'XX').slice(0, 2).toUpperCase();
-                const initials = (rfq.company || 'XX')
-                    .replace(/[^A-Za-z]/g, '')
-                    .slice(0, 4)
-                    .toUpperCase();
-                const pqNumber = `NG-${countryCode}/${initials}/RV/${(rfq.rfqNumber || '').replace(/-/g, '')}`;
+                if (!mounted) return;
 
                 setMeta((prev) => ({
                     ...prev,
-                    rfqNumber: rfq.rfqNumber || '',
+                    rfqNumber: rfq.rfqNumber || prev.rfqNumber || '',
                     title: `${rfq.company} — ${rfq.clientInfo?.city || rfq.country}`,
                     territory: rfq.country || '',
                     crmManager: rfq.assignedTo || rfq.salesman || prev.crmManager,
                     country: rfq.country || '',
-                    client: clientInfo,
-                    pqNumber,
-                    pqrNumber: 'ME0-P021(T10)-W(L1)',
+                    client: {
+                        company: rfq.clientInfo?.company || rfq.company || '',
+                        contactName: rfq.clientInfo?.contactName || '',
+                        designation: rfq.clientInfo?.designation || '',
+                        email: rfq.clientInfo?.email || '',
+                        phone: rfq.clientInfo?.phone || '',
+                        address: rfq.clientInfo?.address || '',
+                        city: rfq.clientInfo?.city || '',
+                        country: rfq.clientInfo?.country || rfq.country || '',
+                        zipCode: rfq.clientInfo?.zipCode || '',
+                    },
+                    pqNumber: pqNumber || prev.pqNumber || '',
+                    quotationNumber: quoteNumber || prev.quotationNumber || '',
+
+                    billToCompany:
+                        prev.billToCompany || rfq.clientInfo?.company || rfq.company || '',
+                    billToContactName:
+                        prev.billToContactName || rfq.clientInfo?.contactName || '',
+                    billToContactRole:
+                        prev.billToContactRole || rfq.clientInfo?.designation || '',
+                    billToEmail: prev.billToEmail || rfq.clientInfo?.email || '',
+                    billToPhone: prev.billToPhone || rfq.clientInfo?.phone || '',
+                    billToAddress:
+                        prev.billToAddress ||
+                        [rfq.clientInfo?.address, rfq.clientInfo?.city, rfq.clientInfo?.country]
+                            .filter(Boolean)
+                            .join(', '),
+                    pqrNumber: prev.pqrNumber || 'ME0-P021(T10)-W(L1)',
                 }));
 
                 const rawProducts = Array.isArray(rfq.products) ? rfq.products : [];
@@ -187,9 +222,12 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
         setMeta((prev) => ({
             ...prev,
-            pqNumber: quotation.pqNumber,
+            rfqNumber: quotation.rfqNumber || prev.rfqNumber || '',
+            pqNumber: quotation.pqNumber || prev.pqNumber || '',
+            quotationNumber:
+                (quotation as any).quotationNumber || prev.quotationNumber || '',
             client: { ...prev.client, ...quotation.client },
-            clientType: quotation.clientType,
+            clientType: quotation.clientType || prev.clientType,
             territory: quotation.territory || prev.territory,
             crmManager: quotation.crmManager || prev.crmManager,
             currency: quotation.currency || prev.currency,
@@ -198,6 +236,14 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             vatEnabled: quotation.vatEnabled,
             discountEnabled: quotation.discountEnabled,
             pqrNumber: quotation.pqrNumber || prev.pqrNumber,
+            billToCompany: quotation.billToCompany || prev.billToCompany,
+            billToContactName: quotation.billToContactName || prev.billToContactName,
+            billToContactRole: quotation.billToContactRole || prev.billToContactRole,
+            billToEmail: quotation.billToEmail || prev.billToEmail,
+            billToPhone: quotation.billToPhone || prev.billToPhone,
+            billToAddress: quotation.billToAddress || prev.billToAddress,
+            pqDate: quotation.pqDate || prev.pqDate,
+            rfqRefOverride: quotation.rfqRefOverride || prev.rfqRefOverride,
         }));
 
         if (!linesDirty) {
@@ -219,7 +265,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             try {
                 const stats = await QuotationApi.stats();
                 if (mounted) setQuoteStats(stats);
-            } catch { /* silent */ }
+            } catch { }
         })();
         return () => {
             mounted = false;
@@ -234,14 +280,12 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         let officeTotal = 0;
         let profitTotal = 0;
         let othersTotal = 0;
-
         let subTotal = 0;
         let discountTotal = 0;
         let customerPrice = 0;
         let totalWeight = 0;
 
         const principalRate = 1 - (rates.principalDiscountPct || 0) / 100;
-
         const discountOn = meta.discountEnabled !== false;
         const taxOn = meta.vatEnabled !== false;
         const taxPct = rates.taxPct || 0;
@@ -250,13 +294,10 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             const effectiveCost = (l.principalCost || 0) * principalRate;
             const lineTotal = (l.qty || 0) * effectiveCost;
             const weight = (l.qty || 0) * (l.weightKg || 0);
-
             const office = (lineTotal * (rates.officePct || 0)) / 100;
             const profit = (lineTotal * (rates.profitPct || 0)) / 100;
             const others = (lineTotal * (rates.othersPct || 0)) / 100;
-
             const sub = lineTotal + office + profit + others;
-
             const appliedPct = discountOn ? (l.discountPct || 0) : 0;
             const discountAmt = sub * (appliedPct / 100);
             const discounted = sub - discountAmt;
@@ -272,10 +313,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         }
 
         const taxVatGst =
-            !taxOn || taxPct === 0
-                ? 0
-                : (customerPrice * taxPct) / 100;
-
+            !taxOn || taxPct === 0 ? 0 : (customerPrice * taxPct) / 100;
         const grandTotal = customerPrice + taxVatGst;
 
         return {
@@ -304,11 +342,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     const addLine = () => {
         setLinesDirty(true);
         let newId = '';
-
         setLines((prev) => {
             const itemCount = prev.filter((l) => l.type !== 'fixed').length;
             newId = `new-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-
             const newLine: QuotationLineItem = {
                 id: newId,
                 sl: itemCount + 1,
@@ -322,7 +358,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 source2: { name: '', price: '' },
                 source3: { name: '', price: '' },
             };
-
             const firstFixedIdx = prev.findIndex((l) => l.type === 'fixed');
             if (firstFixedIdx === -1) return [...prev, newLine];
             return [
@@ -331,7 +366,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 ...prev.slice(firstFixedIdx),
             ];
         });
-
         setAutoEditLineId(newId);
     };
 
@@ -341,7 +375,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             toast.error('A quotation needs at least one line item.');
             return;
         }
-
         setLinesDirty(true);
         setLines((prev) => {
             const filtered = prev.filter((l) => l.id !== id);
@@ -359,27 +392,46 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     const addTerm = () => {
         setTerms((prev) => [...prev, { label: 'New Term', value: 'Description…' }]);
     };
-
     const updateTerm = (index: number, patch: { label?: string; value?: string }) => {
         setTerms((prev) => prev.map((t, i) => (i === index ? { ...t, ...patch } : t)));
     };
-
     const removeTerm = (index: number) => {
         setTerms((prev) => prev.filter((_, i) => i !== index));
     };
 
     // ============================================================
-    // VALIDATION HELPERS
+    // VALIDATION
     // ============================================================
     const DISCOUNT_THRESHOLD = 15;
-
     const maxDiscountPct = lines.reduce((max, l) => {
         if (l.type === 'fixed') return max;
         return Math.max(max, l.discountPct || 0);
     }, 0);
-
     const discountTooHigh = maxDiscountPct > DISCOUNT_THRESHOLD;
     const hasRealCosts = lines.some((l) => l.type !== 'fixed' && l.principalCost > 0);
+
+    // ============================================================
+    // BUILD PAYLOAD
+    // ============================================================
+    const buildMetaPayload = () => ({
+        client: meta.client,
+        clientType: meta.clientType,
+        crmManager: meta.crmManager,
+        territory: meta.territory,
+        vatEnabled: meta.vatEnabled,
+        discountEnabled: meta.discountEnabled,
+        pqrNumber: meta.pqrNumber,
+        pqNumber: meta.pqNumber,
+        quotationNumber: meta.quotationNumber,
+        billToCompany: meta.billToCompany,
+        billToContactName: meta.billToContactName,
+        billToContactRole: meta.billToContactRole,
+        billToEmail: meta.billToEmail,
+        billToPhone: meta.billToPhone,
+        billToAddress: meta.billToAddress,
+        pqDate: meta.pqDate,
+        rfqRefOverride: meta.rfqRefOverride,
+    });
 
     // ============================================================
     // SAVE DRAFT
@@ -389,7 +441,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             toast.error('No RFQ linked');
             return;
         }
-
         try {
             if (quotation?.id) {
                 if (
@@ -402,37 +453,24 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     );
                     return;
                 }
-
                 await update(quotation.id, {
-                    client: meta.client,
-                    clientType: meta.clientType,
+                    ...buildMetaPayload(),
                     lines,
                     rates,
                     terms,
                     logistics,
-                    crmManager: meta.crmManager,
-                    vatEnabled: meta.vatEnabled,
-                    discountEnabled: meta.discountEnabled,
                 });
-
                 setLinesDirty(false);
                 toast.success('Draft updated');
             } else {
                 await create({
                     rfqId,
-                    client: meta.client,
-                    clientType: meta.clientType,
+                    ...buildMetaPayload(),
                     lines,
                     rates,
                     terms,
                     logistics,
-                    crmManager: meta.crmManager,
-                    territory: meta.territory,
-                    vatEnabled: meta.vatEnabled,
-                    discountEnabled: meta.discountEnabled,
-                    pqrNumber: meta.pqrNumber,
                 });
-
                 setLinesDirty(false);
                 toast.success('Draft created');
             }
@@ -442,65 +480,46 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // GENERATE QUOTE — with loading guard
+    // GENERATE QUOTE
     // ============================================================
     const handleGenerateQuote = async () => {
-        // ⭐ Prevent double-click while in-flight
         if (generating) return;
-
         if (!rfqId) {
             toast.error('No RFQ linked');
             return;
         }
-
         if (!hasRealCosts) {
             toast.error('Please enter principal cost for at least one product');
             return;
         }
-
-        // ⭐ If quotation is already sent, just jump to Quotes tab
         if (quotation?.status === 'sent') {
             toast('Already sent — showing Quotes tab', { icon: 'ℹ️' });
             setTopTab('quotes');
             return;
         }
-
-        setGenerating(true);   // ⭐ Start loading
-
+        setGenerating(true);
         try {
             let qid = quotation?.id;
-
             if (!qid) {
                 const created = await create({
                     rfqId,
-                    client: meta.client,
-                    clientType: meta.clientType,
+                    ...buildMetaPayload(),
                     lines,
                     rates,
                     terms,
                     logistics,
-                    crmManager: meta.crmManager,
-                    territory: meta.territory,
-                    vatEnabled: meta.vatEnabled,
-                    discountEnabled: meta.discountEnabled,
-                    pqrNumber: meta.pqrNumber,
                 });
                 qid = created.id;
             } else {
                 await update(qid, {
-                    client: meta.client,
-                    clientType: meta.clientType,
+                    ...buildMetaPayload(),
                     lines,
                     rates,
                     terms,
                     logistics,
-                    vatEnabled: meta.vatEnabled,
-                    discountEnabled: meta.discountEnabled,
                 });
             }
-
             setLinesDirty(false);
-
             if (discountTooHigh) {
                 toast.error(
                     `Discount ${maxDiscountPct}% exceeds ${DISCOUNT_THRESHOLD}% — routed for approval`
@@ -508,37 +527,33 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 setTopTab('drafts');
                 return;
             }
-
             await send(qid);
             toast.success('Quote sent to client');
             setTopTab('quotes');
         } catch (e: any) {
             toast.error(e.message || 'Failed to generate quote');
         } finally {
-            setGenerating(false);   // ⭐ Always release the lock
+            setGenerating(false);
         }
     };
 
     // ============================================================
-    // SEND QUOTATION (action bar)
+    // SEND QUOTATION
     // ============================================================
     const handleSendQuote = async (withAttachment: boolean = false) => {
         if (!hasRealCosts) {
             toast.error('Please enter principal cost for at least one product');
             return;
         }
-
         if (discountTooHigh) {
             toast.error(
                 `Discount ${maxDiscountPct}% exceeds ${DISCOUNT_THRESHOLD}% — routed for approval`
             );
             return;
         }
-
         setSending(true);
         try {
             let qid = quotation?.id;
-
             if (!qid) {
                 if (!rfqId) {
                     toast.error('No RFQ linked');
@@ -546,28 +561,28 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 }
                 const created = await create({
                     rfqId,
-                    client: meta.client,
+                    ...buildMetaPayload(),
                     lines,
                     rates,
                     terms,
                     logistics,
-                    crmManager: meta.crmManager,
-                    territory: meta.territory,
-                    vatEnabled: meta.vatEnabled,
-                    discountEnabled: meta.discountEnabled,
                 });
                 qid = created.id;
+            } else {
+                await update(qid, {
+                    ...buildMetaPayload(),
+                    lines,
+                    rates,
+                    terms,
+                    logistics,
+                });
             }
-
             if (quotation?.status === 'sent') {
                 toast.error('Already sent');
                 return;
             }
-
-            const result = await send(qid, withAttachment);
-
+            await send(qid, withAttachment);
             setLinesDirty(false);
-
             toast.success(
                 withAttachment
                     ? 'Quotation sent with PDF attachment'
@@ -582,13 +597,12 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // SHAREABLE LINK
+    // SHARE
     // ============================================================
     const buildShareableLink = (): string => {
         const baseUrl =
             process.env.NEXT_PUBLIC_APP_URL ||
             'https://taskify-frontend-alpha.vercel.app';
-
         return rfqId
             ? `${baseUrl}/crm/quotation-builder/${rfqId}`
             : `${baseUrl}/crm/quotation-builder`;
@@ -596,10 +610,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
     const handleWhatsApp = () => {
         const link = buildShareableLink();
-        const message = `Hello! Here's your quotation ${meta.pqNumber || meta.rfqNumber
+        const message = `Hello! Here's your quotation ${meta.pqNumber || meta.quotationNumber || meta.rfqNumber
             }:\n${link}`;
         const text = encodeURIComponent(message);
-
         if (typeof window !== 'undefined') {
             window.open(`https://wa.me/?text=${text}`, '_blank');
         }
@@ -620,31 +633,23 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // UPDATE + SAVE (used by SourceTab ✓ button)
+    // UPDATE + SAVE (SourceTab)
     // ============================================================
     const updateLineAndSave = async (id: string, patch: Partial<QuotationLineItem>) => {
         const nextLines = lines.map((l) => (l.id === id ? { ...l, ...patch } : l));
         setLines(nextLines);
-
         if (!rfqId) return;
-
         try {
             if (quotation?.id) {
                 await update(quotation.id, { lines: nextLines });
             } else {
                 await create({
                     rfqId,
-                    client: meta.client,
-                    clientType: meta.clientType,
+                    ...buildMetaPayload(),
                     lines: nextLines,
                     rates,
                     terms,
                     logistics,
-                    crmManager: meta.crmManager,
-                    territory: meta.territory,
-                    vatEnabled: meta.vatEnabled,
-                    discountEnabled: meta.discountEnabled,
-                    pqrNumber: meta.pqrNumber,
                 });
             }
             setLinesDirty(false);
@@ -654,7 +659,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     };
 
     // ============================================================
-    // COMPUTED BADGE COUNTS
+    // BADGES
     // ============================================================
     const quoteCount =
         (quoteStats.sent || 0) +
@@ -689,8 +694,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 draftCount={draftCount}
                 onSaveDraft={handleSaveDraft}
                 onGenerateQuote={handleGenerateQuote}
-                generating={generating}            // ⭐ pass down
-                savingDraft={saving || sending}    // ⭐ optional
+                generating={generating}
+                savingDraft={saving || sending}
             />
 
             {topTab === 'builder' && (
@@ -701,17 +706,14 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         onSaveDraft={handleSaveDraft}
                         onGenerateQuote={handleGenerateQuote}
                         onDiscuss={() => { }}
-                        generating={generating}             // ⭐ pass down
-                        savingDraft={saving || sending}     // ⭐ optional
+                        generating={generating}
+                        savingDraft={saving || sending}
                     />
 
                     <ClientTypeBar meta={meta} onChange={setMeta} />
 
                     <div className="mt-6 border-b border-[#EBE6DF] flex items-center gap-6 text-xs">
-                        <InnerTab
-                            active={tab === 'quotation'}
-                            onClick={() => setTab('quotation')}
-                        >
+                        <InnerTab active={tab === 'quotation'} onClick={() => setTab('quotation')}>
                             Quotation
                         </InnerTab>
                         <InnerTab active={tab === 'cog'} onClick={() => setTab('cog')}>
@@ -741,6 +743,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                                 onWhatsApp={handleWhatsApp}
                                 onGenerateLink={handleGenerateLink}
                                 sending={sending}
+                                onChangeMeta={(patch: Partial<QuotationMeta>) =>
+                                    setMeta((m) => ({ ...m, ...patch }))
+                                }
                             />
                         )}
 
@@ -786,7 +791,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     );
 }
 
-/* ========================================================= */
 function InnerTab({
     active,
     onClick,
