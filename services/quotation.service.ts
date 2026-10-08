@@ -53,6 +53,7 @@ export interface QuotationRates {
 export interface Quotation {
   id: string;
   pqNumber: string;
+  quotationNumber?: string;
   status: QuotationStatus;
   stage: string;
   rfqId: string;
@@ -67,6 +68,14 @@ export interface Quotation {
   vatEnabled: boolean;
   discountEnabled: boolean;
   pqrNumber: string;
+  billToCompany?: string;
+  billToContactName?: string;
+  billToContactRole?: string;
+  billToEmail?: string;
+  billToPhone?: string;
+  billToAddress?: string;
+  pqDate?: string;
+  rfqRefOverride?: string;
   lines: QuotationLine[];
   rates: QuotationRates;
   logistics: {

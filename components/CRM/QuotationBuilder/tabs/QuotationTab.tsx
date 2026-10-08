@@ -845,7 +845,7 @@ function EditableRow({
     }
 
     return (
-        <div className="grid grid-cols-[120px_1fr] gap-3 items-center py-2 border-b border-[#E5DFD3] last:border-b-0 group">
+        <div className="grid grid-cols-[120px_1fr] gap-3 items-center py-1 border-b border-[#E5DFD3] last:border-b-0 group">
             <span
                 className="pt-0.5"
                 style={{
