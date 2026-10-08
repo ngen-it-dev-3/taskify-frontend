@@ -121,6 +121,16 @@ export interface CreateQuotationPayload {
   vatEnabled?: boolean;
   discountEnabled?: boolean;
   stage?: string;
+  pqNumber?: string;
+  quotationNumber?: string;
+  billToCompany?: string;
+  billToContactName?: string;
+  billToContactRole?: string;
+  billToEmail?: string;
+  billToPhone?: string;
+  billToAddress?: string;
+  pqDate?: string;
+  rfqRefOverride?: string;
 }
 
 export interface UpdateQuotationPayload {
@@ -134,6 +144,17 @@ export interface UpdateQuotationPayload {
   vatEnabled?: boolean;
   discountEnabled?: boolean;
   stage?: string;
+  // ⭐ NEW
+  pqNumber?: string;
+  quotationNumber?: string;
+  billToCompany?: string;
+  billToContactName?: string;
+  billToContactRole?: string;
+  billToEmail?: string;
+  billToPhone?: string;
+  billToAddress?: string;
+  pqDate?: string;
+  rfqRefOverride?: string;
 }
 
 export interface QuotationStats {

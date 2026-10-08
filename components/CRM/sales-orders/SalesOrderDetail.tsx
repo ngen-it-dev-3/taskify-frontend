@@ -792,7 +792,7 @@ function ViewProcurementModal({
 }: {
   order: SalesOrder;
   onClose: () => void;
-  onResend: () => Promise<void> | void;
+  onResend?: () => Promise<void> | void;
 }) {
   const [resending, setResending] = useState(false);
 
@@ -803,6 +803,10 @@ function ViewProcurementModal({
     order.procurementStatus === 'Pending';
 
   const handleResend = async () => {
+    if (!onResend) {
+      toast('Resend is not available right now.', { icon: 'ℹ️' });
+      return;
+    }
     try {
       setResending(true);
       await onResend();
@@ -869,7 +873,7 @@ function ViewProcurementModal({
             <button
               type="button"
               onClick={handleResend}
-              disabled={resending}
+              disabled={resending || !onResend}
               className="inline-flex items-center gap-1.5 rounded-lg bg-[#A06126] px-4 py-2 text-[11.5px] font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60 transition"
             >
               {resending ? (
