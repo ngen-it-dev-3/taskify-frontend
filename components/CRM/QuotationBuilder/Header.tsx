@@ -78,18 +78,16 @@ function TopTab({
     return (
         <button
             onClick={onClick}
-            className={`pb-3 font-semibold relative inline-flex items-center gap-2 transition ${
-                active ? 'text-[#A06126]' : 'text-slate-500 hover:text-slate-700'
-            }`}
+            className={`pb-3 font-semibold relative inline-flex items-center gap-2 transition ${active ? 'text-[#A06126]' : 'text-slate-500 hover:text-slate-700'
+                }`}
         >
             {label}
             {badge !== undefined && (
                 <span
-                    className={`inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded text-[10px] font-bold ${
-                        active
+                    className={`inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded text-[10px] font-bold ${active
                             ? 'bg-[#F9F1E2] text-[#A06126]'
                             : 'bg-slate-200 text-slate-700'
-                    }`}
+                        }`}
                 >
                     {badge}
                 </span>

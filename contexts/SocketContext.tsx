@@ -166,9 +166,8 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         }
 
         const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "https://taskify-server-5gat.onrender.com";
-        // const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000";
 
-        
+
 
         const socketInstance = io(SOCKET_URL, {
             auth: { token },
