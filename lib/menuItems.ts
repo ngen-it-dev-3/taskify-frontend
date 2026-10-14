@@ -571,6 +571,7 @@ export const SUB_ITEMS = {
       ROLES.HR_MANAGER,
       ROLES.EMPLOYEE,
       ROLES.DEPT_MANAGER,
+      ROLES.TENDER_USER,
     ],
     { description: "Update your personal information" },
   ),
