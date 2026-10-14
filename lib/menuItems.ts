@@ -335,7 +335,16 @@ export const PERSONAL_ITEMS = {
     "Dashboard",
     "/dashboard",
     LayoutDashboard,
-    [ROLES.ALL],
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.DEPT_MANAGER,
+      ROLES.PROJECT_MANAGER,
+      ROLES.LINE_MANAGER,
+      ROLES.EMPLOYEE,
+      ROLES.TENDER_USER
+    ],
     { section: "main", description: "Your personalized work overview" },
   ),
 } as const;
@@ -354,6 +363,7 @@ export const MAIN_ITEMS = {
       ROLES.HR_MANAGER,
       ROLES.EMPLOYEE,
       ROLES.DEPT_MANAGER,
+      ROLES.TENDER_USER
     ],
     { section: "main", description: "Manage your profile and preferences" },
   ),
@@ -479,7 +489,15 @@ export const MAIN_ITEMS = {
     "Tasks",
     "/tasks",
     ClipboardList,
-    [ROLES.ALL],
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.DEPT_MANAGER,
+      ROLES.PROJECT_MANAGER,
+      ROLES.LINE_MANAGER,
+      ROLES.EMPLOYEE,
+    ],
     {
       section: "tasks",
       description: "Manage and track all your tasks",
@@ -548,7 +566,15 @@ export const MAIN_ITEMS = {
     "Help & Support",
     "/support",
     LifeBuoyIcon,
-    [ROLES.ALL],
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.EMPLOYEE,
+      ROLES.DEPT_MANAGER,
+      ROLES.EMPLOYEE,
+      // ROLES.TENDER_USER,
+    ],
     { section: "support", description: "Get help, documentation, and support" },
   ),
 } as const;
@@ -587,7 +613,8 @@ export const SUB_ITEMS = {
       ROLES.HR_MANAGER,
       ROLES.EMPLOYEE,
       ROLES.DEPT_MANAGER,
-      ROLES.EMPLOYEE
+      ROLES.EMPLOYEE,
+      // ROLES.TENDER_USER,
     ],
     { description: "View your performance metrics and reviews" },
   ),
@@ -626,7 +653,15 @@ export const SUB_ITEMS = {
     "/ai-assistant",
     Sparkles,
     "My Profile",
-    [ROLES.ALL],
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.EMPLOYEE,
+      ROLES.DEPT_MANAGER,
+      ROLES.EMPLOYEE,
+      // ROLES.TENDER_USER,
+    ],
     {
       badge: "New",
       badgeColor: "bg-linear-to-r from-indigo-500 to-purple-500",
