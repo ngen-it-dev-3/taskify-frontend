@@ -119,6 +119,7 @@ export type UserRole =
   | "dept_manager"
   | "project_manager"
   | "line_manager"
+  | "tender_user"
   | "employee"
   | "all";
 
@@ -175,6 +176,7 @@ export const ROLES = {
   PROJECT_MANAGER: "project_manager",
   LINE_MANAGER: "line_manager",
   EMPLOYEE: "employee",
+  TENDER_USER: "tender_user",   // ✅ ADD THIS
   ALL: "all",
 } as const;
 
@@ -186,6 +188,7 @@ export const ROLE_PRIORITY: Record<UserRole, number> = {
   project_manager: 50,
   line_manager: 40,
   employee: 10,
+  tender_user: 5,   // ✅ ADD THIS (lowest, just above "all")
   all: 0,
 };
 
@@ -441,6 +444,7 @@ export const MAIN_ITEMS = {
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
       ROLES.EMPLOYEE,
+      ROLES.TENDER_USER,
     ],
     { section: "tender", description: "Manage tender processes and submissions" },
   ),
@@ -762,6 +766,7 @@ export const SUB_ITEMS = {
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
       ROLES.EMPLOYEE,
+      ROLES.TENDER_USER,
     ],
     { description: "Overview of tenders and submissions" },
   ),
@@ -779,6 +784,7 @@ export const SUB_ITEMS = {
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
       ROLES.EMPLOYEE,
+      ROLES.TENDER_USER,
     ],
     { description: "Manage all tender processes" },
   ),
@@ -796,6 +802,7 @@ export const SUB_ITEMS = {
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
       ROLES.EMPLOYEE,
+      ROLES.TENDER_USER,
     ],
     { description: "View and manage tender submissions" },
   ),
@@ -813,6 +820,7 @@ export const SUB_ITEMS = {
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
       ROLES.EMPLOYEE,
+      ROLES.TENDER_USER,
     ],
     { description: "Tender security and payment guarantees" },
   ),
@@ -830,6 +838,7 @@ export const SUB_ITEMS = {
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
       ROLES.EMPLOYEE,
+      ROLES.TENDER_USER,
     ],
     { description: "Company documents and templates" },
   ),
@@ -864,6 +873,7 @@ export const SUB_ITEMS = {
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
       ROLES.EMPLOYEE,
+      ROLES.TENDER_USER,
     ],
     { description: "Crawl schedule and matching criteria" },
   ),
@@ -1036,7 +1046,7 @@ export const SUB_ITEMS = {
       ROLES.DEPT_MANAGER,
       ROLES.PROJECT_MANAGER,
       ROLES.LINE_MANAGER,
-      ROLES.EMPLOYEE, 
+      ROLES.EMPLOYEE,
     ],
     { description: "Rep performance by won revenue and activity" },
   ),
@@ -1599,6 +1609,34 @@ export const SUB_ITEMS = {
 // UTILITY FUNCTIONS
 // ============================================================================
 
+
+/**
+ * ✅ Restrict nav for tender_user role.
+ * They only see: Dashboard, My Profile, Tender Management + its sub-items.
+ */
+const TENDER_USER_ALLOWED_MAIN_IDS = [
+  "dashboard",
+  "my-settings",
+  "tender-management",
+];
+
+const TENDER_USER_ALLOWED_SUB_IDS = [
+  "edit-profile",
+  "onboarding",
+  "performance",
+  "notifications",
+  "ai-assistant",
+  "team-chat",
+  // Tender Management sub-items
+  "tender-dashboard",
+  "tender-manage",
+  "tender-submissions",
+  "tender-security",
+  "tender-documents",
+  "tender-settings",
+];
+
+
 /**
  * Check if a user role has access to a menu item
  */
@@ -1611,22 +1649,25 @@ export const hasAccess = (
   return allowedRoles.includes(userRole as UserRole);
 };
 
-/**
- * Get all personal items for a user
- */
 export const getPersonalItems = (userRole: string): NavItem[] => {
   return Object.values(PERSONAL_ITEMS).filter((item) =>
     hasAccess(userRole, item.roles),
   );
 };
 
-/**
- * Get all main menu items for a user
- */
 export const getMainItems = (userRole: string): NavItem[] => {
-  return Object.values(MAIN_ITEMS).filter((item) =>
+  const items = Object.values(MAIN_ITEMS).filter((item) =>
     hasAccess(userRole, item.roles),
   );
+
+  // ✅ Tender user: only see Dashboard, My Profile, Tender Management
+  if (userRole === ROLES.TENDER_USER) {
+    return items.filter((item) =>
+      TENDER_USER_ALLOWED_MAIN_IDS.includes(item.id),
+    );
+  }
+
+  return items;
 };
 
 /**
@@ -1643,9 +1684,18 @@ export const getSubMenuItems = (
   parentName: string,
   userRole: string,
 ): SubNavItem[] => {
-  return Object.values(SUB_ITEMS).filter(
+  const items = Object.values(SUB_ITEMS).filter(
     (item) => item.parent === parentName && hasAccess(userRole, item.roles),
   );
+
+  // ✅ Tender user: only see the allowed subset of sub-items
+  if (userRole === ROLES.TENDER_USER) {
+    return items.filter((item) =>
+      TENDER_USER_ALLOWED_SUB_IDS.includes(item.id),
+    );
+  }
+
+  return items;
 };
 
 /**
@@ -1655,9 +1705,15 @@ export const hasSubMenuItems = (
   parentName: string,
   userRole: string,
 ): boolean => {
-  return Object.values(SUB_ITEMS).some(
+  const items = Object.values(SUB_ITEMS).filter(
     (item) => item.parent === parentName && hasAccess(userRole, item.roles),
   );
+
+  if (userRole === ROLES.TENDER_USER) {
+    return items.some((item) => TENDER_USER_ALLOWED_SUB_IDS.includes(item.id));
+  }
+
+  return items.length > 0;
 };
 
 /**
