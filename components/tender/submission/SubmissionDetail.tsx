@@ -56,6 +56,7 @@ export interface SubmissionInfoPayload {
   note?: string;
   attachments: SubmissionAttachment[];
   lastDateOfSubmissionRaw?: string;
+  eligibility?: string;
 }
 
 export interface SubmissionDetailData {
@@ -718,7 +719,7 @@ export function SubmissionDetail({
                 <select
                   value={data.packageMode ?? ""}
                   onChange={(e) =>
-                    savePreparation({ packageMode: e.target.value })
+                    savePreparation({ packageMode: e.target.value as any }) // ✅ Add "as any" here
                   }
                   disabled={savingPrep}
                   className="h-8 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 focus:border-[#a97400] focus:outline-none focus:ring-1 focus:ring-amber-200 disabled:opacity-60"
