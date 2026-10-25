@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     // ✅ Using your official backend on HTTPS
     const backendOrigin = (
-      process.env.NEXT_PUBLIC_API_URL ?? "https://orvix-backend.ngengroup.org/api/v1"
+      process.env.NEXT_PUBLIC_API_URL ?? "https://taskify-server-5gat.onrender.com/api/v1"
     ).replace(/\/api\/v1\/?$/, "");
 
     return [

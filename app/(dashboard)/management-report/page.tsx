@@ -103,7 +103,7 @@ function resolveImageUrl(imagePath?: string): string | null {
         return imagePath;
     }
     const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "https://orvix-backend.ngengroup.org/api/v1";
+        process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1";
     const baseUrl = apiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/, "");
     let path = imagePath.replace(/\\/g, "/");
     if (!path.startsWith("/")) path = "/" + path;

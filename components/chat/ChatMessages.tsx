@@ -178,7 +178,7 @@ const resolveMediaUrl = (url?: string): string => {
     if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("data:") || url.startsWith("blob:")) {
         return url;
     }
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") || "https://orvix-backend.ngengroup.org";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") || "https://taskify-server-5gat.onrender.com";
     const cleanPath = url.startsWith("/") ? url : `/${url}`;
     return `${baseUrl}${cleanPath}`;
 };

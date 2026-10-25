@@ -217,7 +217,7 @@ function resolveMediaUrl(path: string): string {
     if (!path) return "#";
     if (/^https?:\/\//i.test(path)) return path;
     const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "https://orvix-backend.ngengroup.org/api/v1";
+        process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1";
     const baseUrl = apiUrl.replace(/\/+$/, "").replace(/\/api\/v1$/, "");
     const clean = path.replace(/\\/g, "/");
     return `${baseUrl}${clean.startsWith("/") ? "" : "/"}${clean}`;
