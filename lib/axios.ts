@@ -17,9 +17,9 @@ export interface ApiResponse<T = any> {
 }
 
 // ============ ENVIRONMENT CONFIGURATION ============
+// ✅ FIXED: Using https:// and a proper fallback
 const API_BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1";
-  // "http://localhost:5000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL || "https://orvix-backend.ngengroup.org/api/v1";
 
 // ============ CREATE AXIOS INSTANCE =============
 const api: AxiosInstance = axios.create({
@@ -318,7 +318,7 @@ api.interceptors.response.use(
 /**
  * Get the correct full URL for files/images
  * Converts relative paths like /uploads/chat/images/file.jpg
- * to full URL like http://localhost:5000/uploads/chat/images/file.jpg
+ * to full URL like https://orvix-backend.ngengroup.org/uploads/chat/images/file.jpg
  */
 export const getFileUrl = (url: string): string => {
   if (!url) return '';
@@ -329,7 +329,7 @@ export const getFileUrl = (url: string): string => {
   }
 
   // Get the API base URL from environment
-  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://orvix-backend.ngengroup.org';
 
   // Remove /api/v1 from base URL if present
   let baseUrl = apiBaseUrl.replace('/api/v1', '');

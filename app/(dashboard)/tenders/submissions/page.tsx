@@ -28,11 +28,9 @@ export default function TenderSubmissionPage() {
     const [submitting, setSubmitting] = useState(false);
     const [bidderModalOpen, setBidderModalOpen] = useState(false);
 
-    /* ✅ Notify Finance modal state */
     const [notifyOpen, setNotifyOpen] = useState(false);
     const [notifying, setNotifying] = useState(false);
 
-    /* Auto-select the first row once data arrives */
     useEffect(() => {
         if (!selectedId && rows.length > 0) {
             setSelectedId(rows[0].id);
@@ -45,13 +43,11 @@ export default function TenderSubmissionPage() {
         refetch: refetchDetail,
     } = useSubmissionDetail(selectedId);
 
-    /* ---------- Delete ---------- */
     const handleDelete = (id: string) => {
         const row = rows.find((r) => r.id === id);
         confirmToast({
             title: `Delete ${row?.tenderer ?? "this submission"}?`,
-            description:
-                "This will permanently remove the tender and all its document tasks.",
+            description: "This will permanently remove the tender and all its document tasks.",
             confirmLabel: "Delete",
             variant: "danger",
             onConfirm: async () => {
@@ -62,30 +58,21 @@ export default function TenderSubmissionPage() {
                     if (selectedId === id) setSelectedId(null);
                     await refetchRows();
                 } catch (e) {
-                    toast.error(
-                        (e as Error).message || "Failed to delete",
-                        { id: loadingId },
-                    );
+                    toast.error((e as Error).message || "Failed to delete", { id: loadingId });
                 }
             },
         });
     };
 
-    /* ---------- Bidders ---------- */
     const handleSaveBidders = async (bidders: BidderRow[]) => {
         if (!detail) return;
         const loadingId = toast.loading("Saving bidders...");
         try {
-            await tenderApi.update(detail.id, {
-                otherParticipants: bidders,
-            });
+            await tenderApi.update(detail.id, { otherParticipants: bidders });
             toast.success("Bidders saved", { id: loadingId });
             await refetchDetail();
         } catch (e) {
-            toast.error(
-                (e as Error).message || "Failed to save bidders",
-                { id: loadingId },
-            );
+            toast.error((e as Error).message || "Failed to save bidders", { id: loadingId });
         }
     };
 
@@ -93,88 +80,70 @@ export default function TenderSubmissionPage() {
         if (!detail) return;
         confirmToast({
             title: `Clear all bidders?`,
-            description:
-                "This will remove every recorded bidder for this tender.",
+            description: "This will remove every recorded bidder for this tender.",
             confirmLabel: "Clear",
             variant: "danger",
-            onConfirm: async () => {
-                await handleSaveBidders([]);
-            },
+            onConfirm: async () => { await handleSaveBidders([]); },
         });
     };
 
-    /* ---------- Notify Finance — called by the modal ---------- */
     const handleNotifySend = async (emails: string[], note?: string) => {
         if (!detail) return;
-
         setNotifying(true);
         const loadingId = toast.loading("Notifying finance...");
         try {
-            // ✅ Now hits the real backend endpoint with emails + note
-            const res = await tenderApi.notifyFinance(detail.id, {
-                emails,
-                note,
-            });
+            const res = await tenderApi.notifyFinance(detail.id, { emails, note });
             const sent = res?.sent ?? emails.length;
             const failed = res?.failed ?? 0;
-
-            toast.success(
-                failed === 0
-                    ? `Finance notified (${sent} recipient${sent === 1 ? "" : "s"})`
-                    : `Notified ${sent} (${failed} failed)`,
-                { id: loadingId },
-            );
-
+            toast.success(failed === 0 ? `Finance notified (${sent} recipient${sent === 1 ? "" : "s"})` : `Notified ${sent} (${failed} failed)`, { id: loadingId });
             setNotifyOpen(false);
         } catch (e) {
-            toast.error(
-                (e as Error).message || "Failed to notify finance",
-                { id: loadingId },
-            );
-            // Rethrow so the modal can stay open and show its own error state
+            toast.error((e as Error).message || "Failed to notify finance", { id: loadingId });
             throw e;
         } finally {
             setNotifying(false);
         }
     };
 
-    /* ---------- Final Submit ---------- */
     const handleFinalSubmit = async () => {
-        if (!detail) return;
-        if (submitting) return;
-
+        if (!detail || submitting) return;
         const row = rows.find((r) => r.id === detail.id);
         confirmToast({
             title: `Submit ${row?.tenderer ?? "this tender"}?`,
-            description:
-                "The tender will be marked as Submitted and moved to the Submitted tab. This cannot be undone from here.",
+            description: "The tender will be marked as Submitted and moved to the Submitted tab. This cannot be undone from here.",
             confirmLabel: "Submit Tender",
             variant: "default",
             onConfirm: async () => {
                 setSubmitting(true);
                 const loadingId = toast.loading("Submitting tender...");
                 try {
-                    await tenderApi.changeStage(
-                        detail.id,
-                        "submitted",
-                        "Submitted to client",
-                    );
-                    toast.success("Tender marked as submitted", {
-                        id: loadingId,
-                    });
+                    await tenderApi.changeStage(detail.id, "submitted", "Submitted to client");
+                    toast.success("Tender marked as submitted", { id: loadingId });
                     await refetchRows();
                     setSelectedId(null);
                     router.push("/tenders/manage?tab=submitted");
                 } catch (e) {
-                    toast.error(
-                        (e as Error).message || "Failed to submit",
-                        { id: loadingId },
-                    );
+                    toast.error((e as Error).message || "Failed to submit", { id: loadingId });
                 } finally {
                     setSubmitting(false);
                 }
             },
         });
+    };
+
+    const handlePreparationChanged = async () => {
+        await refetchRows(); // ✅ Update table first
+        await refetchDetail(); // ✅ Then update detail
+    };
+
+    const handleTaskMutated = async () => {
+        await refetchDetail();
+        await refetchRows();
+    };
+
+    // ✅ THE FIX: Silently refresh the table ONLY to prevent the UI from resetting
+    const handleSilentUpdate = async () => {
+        await refetchRows();
     };
 
     return (
@@ -198,41 +167,38 @@ export default function TenderSubmissionPage() {
                     />
                 )}
 
-                {detailLoading && (
+                {/* ✅ FIX: Only show the full loader if there is absolutely no data yet */}
+                {!detail && detailLoading && (
                     <div className="h-[420px] animate-pulse rounded-xl border border-amber-200 bg-white" />
                 )}
 
-                {!detailLoading && detail && (
+                {detail && (
                     <>
                         <SubmissionDetail
                             data={{
                                 ...(() => {
-                                    const sanitized =
-                                        sanitizeSubmissionDetail(detail);
+                                    const sanitized = sanitizeSubmissionDetail(detail);
                                     return {
                                         ...sanitized,
                                         info: {
                                             ...sanitized.info,
-                                            attachments:
-                                                sanitized.info.attachments?.map(
-                                                    (attachment, index) => ({
-                                                        ...attachment,
-                                                        _id:
-                                                            attachment._id ??
-                                                            `${detail.id}-attachment-${index}`,
-                                                    }),
-                                                ),
+                                            lastDateOfSubmissionRaw: detail.info?.lastDateOfSubmission,
+                                            attachments: sanitized.info.attachments?.map((attachment, index) => ({
+                                                ...attachment,
+                                                _id: attachment._id ?? `${detail.id}-attachment-${index}`,
+                                            })),
                                         },
                                     };
                                 })(),
                                 notifyAction: {
                                     label: "Notify Finance",
-                                    // ✅ Just opens the modal — no API call here
                                     onClick: () => setNotifyOpen(true),
                                     loading: notifying,
                                 },
                             }}
-                            onTaskMutated={() => refetchDetail()}
+                            onTaskMutated={handleTaskMutated}
+                            onPreparationChanged={handlePreparationChanged}
+                            onHeaderUpdated={handleSilentUpdate}
                             submitAction={{
                                 label: "Submit Tender",
                                 onClick: handleFinalSubmit,
@@ -250,7 +216,6 @@ export default function TenderSubmissionPage() {
                 )}
             </div>
 
-            {/* ---------- Bidders Modal ---------- */}
             {detail && (
                 <AddBidderModal
                     open={bidderModalOpen}
@@ -260,7 +225,6 @@ export default function TenderSubmissionPage() {
                 />
             )}
 
-            {/* ---------- Notify Finance Modal ---------- */}
             {detail && (
                 <SecurityNotifyModal
                     open={notifyOpen}

@@ -183,7 +183,7 @@ export default function WorkloadCapacityPage() {
         return imagePath;
       }
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://orvix-backend.ngengroup.org/api/v1";
       const baseUrl = apiUrl.replace("/api/v1", "");
       const path = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
       return `${baseUrl}${path}?t=${Date.now()}`;

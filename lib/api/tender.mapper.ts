@@ -5,6 +5,8 @@ import type {
     SubmissionDetail,
     SubmissionRow,
     DocTaskStatus,
+    SubmissionDocTask,
+    TenderSection,
 } from "./tender.api";
 import type { TenderDetailData } from "@/components/tender/TenderDetailReview";
 import type { ActiveTenderDetail } from "@/components/tender/TenderDetailActive";
@@ -76,7 +78,6 @@ export function toReviewDetail(t: Tender | any): TenderDetailData {
             ? resolvedUrl.split("/").pop()?.split("?")[0]
             : undefined);
 
-    /* === Eligibility → comma + newline separated "Meets only" list === */
     const requirements = Array.isArray(t.eligibilityRequirements)
         ? t.eligibilityRequirements
         : [];
@@ -85,7 +86,7 @@ export function toReviewDetail(t: Tender | any): TenderDetailData {
         .filter((r: any) => r.match === "Meets")
         .map((r: any) => r.requirement)
         .filter(Boolean)
-        .join(",\n");   // ← প্রতিটা item আলাদা লাইনে, শেষে কমা
+        .join(",\n");
 
     return {
         id: t._id,
@@ -108,9 +109,6 @@ export function toReviewDetail(t: Tender | any): TenderDetailData {
         lastDateOfSubmission: fmtDateTime(t.lastDateOfSubmission),
         note: t.note,
         attachments: normalizeAttachments(t.attachments),
-
-        /* Show only "Meets" requirements, each on its own line,
-           separated by a comma. Falls back to plain eligibility text. */
         eligibility: meetsOnly || t.eligibility || "",
     };
 }
@@ -199,6 +197,8 @@ export interface SubmissionRowUI {
     status: string;
     statusColor: "in-progress" | "pending" | "complete" | "banking";
     readiness: number;
+    priority?: "high" | "medium" | "low"; // ✅ ADD THIS
+    tenderSecurityPurchased?: boolean;
 }
 
 export function toSubmissionUIRow(r: SubmissionRow): SubmissionRowUI {
@@ -219,32 +219,60 @@ export function toSubmissionUIRow(r: SubmissionRow): SubmissionRowUI {
         status: r.status || "Docs pending",
         statusColor,
         readiness: r.readiness ?? 0,
+        priority: (r as any).priority,
+        tenderSecurityPurchased: (r as any).tenderSecurityPurchased,
     };
 }
 
 export function sanitizeSubmissionDetail(
     d: SubmissionDetail,
 ): SubmissionDetail {
+    /* ✅ Map doc tasks — every task now carries sectionId */
+    const docTasks = (d.docTasks ?? []).map((t, index) => {
+        const safeStatus: DocTaskStatus =
+            t.status === "Done" || t.status === "In Progress" || t.status === "Pending"
+                ? t.status
+                : "Pending";
+
+        return {
+            id: String(t.id ?? t._id ?? `temp-${index}`),
+            _id: t._id,
+            sectionId: t.sectionId ?? "",
+            title: t.title ?? "",
+            owner: t.owner ?? "",
+            fileName: t.fileName ?? "No file uploaded yet",
+            status: safeStatus,
+            fileUrl: t.fileUrl,
+        };
+    });
+
+    /* ✅ Normalize sections — always an array, always sorted */
+    const sections: TenderSection[] = (d.sections ?? [])
+        .slice()
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+        .map((s) => ({
+            id: s.id,
+            key: s.key,
+            title: s.title,
+            description: s.description ?? "",
+            portalHint: s.portalHint ?? "",
+            order: s.order ?? 0,
+            readyCount: s.readyCount ?? 0,
+            totalCount: s.totalCount ?? 0,
+            todoItems: (s.todoItems ?? []).map((t) => ({
+                id: t.id,
+                title: t.title,
+                done: !!t.done,
+            })),
+        }));
+
     return {
         ...d,
-        docTasks: (d.docTasks ?? []).map((t, index) => {
-            /* Narrow the raw API string into one of our union values.
-               Anything unexpected falls back to "Pending". */
-            const safeStatus: DocTaskStatus =
-                t.status === "Done" || t.status === "In Progress" || t.status === "Pending"
-                    ? t.status
-                    : "Pending";
-
-            return {
-                id: String(t.id ?? t._id ?? `temp-${index}`),   // ✅ always a string
-                _id: t._id,
-                title: t.title ?? "",
-                owner: t.owner ?? "",
-                fileName: t.fileName ?? "No file uploaded yet",
-                status: safeStatus,
-                fileUrl: t.fileUrl,
-            };
-        }),
+        docTasks,
+        sections,
+        packageMode: d.packageMode ?? "",
+        packageLabel: d.packageLabel ?? "",
+        notes: d.notes ?? "",
         checklist: (d.checklist ?? []).map((c) => ({
             id: c.id,
             label: c.label,
@@ -257,8 +285,6 @@ export function sanitizeSubmissionDetail(
             ...d.info,
             recordedBy: d.info?.recordedBy || "—",
             responsiblePerson: d.info?.responsiblePerson || "—",
-            /* Normalize attachments — ensure _id, size, mimeType are
-               always present so the SubmissionAttachment type matches. */
             attachments: (d.info?.attachments ?? []).map((a, idx) => ({
                 _id: a._id ?? `att-${idx}-${a.name ?? idx}`,
                 name: a.name ?? "",
@@ -268,4 +294,64 @@ export function sanitizeSubmissionDetail(
             })),
         },
     };
+}
+
+/* ============================================================
+ * ✅ NEW — Helpers used by SubmissionDetail.tsx (Commit 3)
+ * ============================================================ */
+
+/** Default sections to seed when an old tender has no `sections` yet. */
+export const DEFAULT_SECTIONS: Array<{
+    key: string;
+    title: string;
+    description: string;
+    portalHint: string;
+}> = [
+        {
+            key: "company_eligibility",
+            title: "Company & eligibility",
+            description: "Legal documents, company profile and eligibility declarations.",
+            portalHint: 'Upload in the portal under "Company & eligibility"',
+        },
+        {
+            key: "technical",
+            title: "Technical",
+            description: "Technical proposal, methodology, and specifications.",
+            portalHint: 'Upload in the portal under "Technical"',
+        },
+        {
+            key: "financial",
+            title: "Financial / price",
+            description: "Price schedule, BOQ, and financial breakdown.",
+            portalHint: 'Upload in the portal under "Financial / price"',
+        },
+        {
+            key: "tender_security",
+            title: "Tender security",
+            description: "Pay order, bank guarantee, or bid security.",
+            portalHint: 'Upload in the portal under "Tender security"',
+        },
+        {
+            key: "review",
+            title: "Review & package",
+            description: "Final review, sign-off, and submission package.",
+            portalHint: 'Confirm all documents before final submission',
+        },
+    ];
+
+/**
+ * Group doc tasks by their sectionId. Tasks with no sectionId fall
+ * into the "" (Unsectioned) bucket, which we surface as its own group
+ * so users can still see + manage them.
+ */
+export function groupTasksBySection(
+    tasks: SubmissionDocTask[],
+): Record<string, SubmissionDocTask[]> {
+    const out: Record<string, SubmissionDocTask[]> = {};
+    for (const t of tasks) {
+        const key = t.sectionId || "";
+        if (!out[key]) out[key] = [];
+        out[key].push(t);
+    }
+    return out;
 }

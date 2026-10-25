@@ -1,31 +1,3 @@
-// import type { NextConfig } from "next";
-
-// const nextConfig: NextConfig = {
-//   images: {
-//     remotePatterns: [
-//       {
-//         protocol: "http",
-//         hostname: "localhost",
-//         port: "5000",
-//         pathname: "/uploads/**",
-//       },
-//       {
-//         protocol: "https",  // Changed from http to https
-//         hostname: "TaskFlow-server-5gat.onrender.com",
-//         // Remove the port - Render uses default HTTPS port
-//         pathname: "/uploads/**",
-//       },
-//     ],
-//   },
-//   typescript: {
-//     ignoreBuildErrors: false,
-//   },
-// };
-
-// export default nextConfig;
-
-
-
 // next.config.ts
 import type { NextConfig } from "next";
 
@@ -38,9 +10,10 @@ const nextConfig: NextConfig = {
         port: "5000",
         pathname: "/uploads/**",
       },
+      // ✅ Using only your official backend now
       {
         protocol: "https",
-        hostname: "TaskFlow-server-5gat.onrender.com",
+        hostname: "orvix-backend.ngengroup.org",
         pathname: "/uploads/**",
       },
     ],
@@ -53,8 +26,9 @@ const nextConfig: NextConfig = {
    * opening a new tab.
    * ------------------------------------------------ */
   async rewrites() {
+    // ✅ Using your official backend on HTTPS
     const backendOrigin = (
-      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1"
+      process.env.NEXT_PUBLIC_API_URL ?? "https://orvix-backend.ngengroup.org/api/v1"
     ).replace(/\/api\/v1\/?$/, "");
 
     return [

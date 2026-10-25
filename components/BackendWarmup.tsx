@@ -11,7 +11,7 @@ import { useEffect } from "react";
 export default function BackendWarmup() {
   useEffect(() => {
     const apiBase =
-      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
+      process.env.NEXT_PUBLIC_API_URL ?? "https://orvix-backend.ngengroup.org/api/v1";
     const origin = apiBase.replace(/\/api\/v1\/?$/, "");
 
     /* Ignore errors — this is a best-effort warmup */

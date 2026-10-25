@@ -4,12 +4,12 @@
 import { Eye, RotateCw, Trash2, FileText, ExternalLink } from "lucide-react";
 import type { CompanyDocUI } from "@/lib/api/mappers";
 
-/* ---------- Convert "/uploads/..." → "http://localhost:5000/uploads/..." ---------- */
+/* ---------- Convert "/uploads/..." → "https://orvix-backend.ngengroup.org/uploads/..." ---------- */
 function fullFileUrl(url?: string) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   const base =
-    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
+    process.env.NEXT_PUBLIC_API_URL ?? "https://orvix-backend.ngengroup.org/api/v1";
   const origin = base.replace(/\/api\/v1\/?$/, "");
   return `${origin}${url.startsWith("/") ? url : `/${url}`}`;
 }

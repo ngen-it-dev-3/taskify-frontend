@@ -1,7 +1,7 @@
 // components/tender/submission/SubmissionTable.tsx
 "use client";
 
-import { Trash2, Eye } from "lucide-react";
+import { Trash2, Eye, Star } from "lucide-react";
 import { ReadinessBar } from "./ReadinessBar";
 
 export interface SubmissionRow {
@@ -11,11 +11,13 @@ export interface SubmissionRow {
   submitted: "Submitted" | "Not yet";
   status: string;
   statusColor:
-    | "in-progress"
-    | "pending"
-    | "complete"
-    | "banking";
+  | "in-progress"
+  | "pending"
+  | "complete"
+  | "banking";
   readiness: number;
+  priority?: "high" | "medium" | "low"; // ✅ ADDED
+  tenderSecurityPurchased?: boolean;
 }
 
 const STATUS_STYLES: Record<SubmissionRow["statusColor"], string> = {
@@ -52,6 +54,7 @@ export function SubmissionTable({
               <th className="px-5 py-3">Mode</th>
               <th className="px-5 py-3">Submitted</th>
               <th className="px-5 py-3">Status</th>
+              <th className="px-5 py-3">Security</th>
               <th className="px-5 py-3">Readiness</th>
               {hasActions && (
                 <th className="w-[90px] px-5 py-3 text-right">Actions</th>
@@ -65,35 +68,57 @@ export function SubmissionTable({
                 <tr
                   key={r.id}
                   onClick={() => onSelect(r.id)}
-                  className={`cursor-pointer transition-colors ${
-                    selected ? "bg-amber-50/60" : "hover:bg-slate-50/70"
-                  }`}
+                  className={`cursor-pointer transition-colors ${selected ? "bg-amber-50/60" : "hover:bg-slate-50/70"
+                    }`}
                 >
+                  {/* ✅ UPDATED TENDERER COLUMN */}
                   <td className="px-5 py-3 text-[12px] font-semibold text-slate-800">
-                    {r.tenderer}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        {r.priority === "high" && (
+                          <Star className="h-3.5 w-3.5 fill-[#a97400] text-[#a97400]" />
+                        )}
+                        <span>{r.tenderer}</span>
+                      </div>
+                      {r.priority === "high" && (
+                        <span className="text-[10px] font-bold text-[#a97400] ml-5">
+                          High priority
+                        </span>
+                      )}
+                    </div>
                   </td>
+
                   <td className="px-5 py-3 text-[12px] text-slate-600">
                     {r.mode}
                   </td>
                   <td className="px-5 py-3">
                     <span
-                      className={`text-[12px] font-semibold ${
-                        r.submitted === "Submitted"
-                          ? "text-emerald-700"
-                          : "text-rose-600"
-                      }`}
+                      className={`text-[12px] font-semibold ${r.submitted === "Submitted"
+                        ? "text-emerald-700"
+                        : "text-rose-600"
+                        }`}
                     >
                       {r.submitted}
                     </span>
                   </td>
                   <td className="px-5 py-3">
                     <span
-                      className={`text-[12px] font-semibold ${
-                        STATUS_STYLES[r.statusColor]
-                      }`}
+                      className={`text-[12px] font-semibold ${STATUS_STYLES[r.statusColor]
+                        }`}
                     >
                       {r.status}
                     </span>
+                  </td>
+                  <td className="px-5 py-3">
+                    {r.tenderSecurityPurchased ? (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                        Yes
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-md bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-500 border border-slate-200">
+                        No
+                      </span>
+                    )}
                   </td>
                   <td className="px-5 py-3">
                     <ReadinessBar percent={r.readiness} />
@@ -102,7 +127,6 @@ export function SubmissionTable({
                   {hasActions && (
                     <td className="px-5 py-3 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
-
                         {onDelete && (
                           <button
                             type="button"

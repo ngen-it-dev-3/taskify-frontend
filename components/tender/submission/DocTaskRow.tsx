@@ -31,6 +31,8 @@ interface Props {
   onCancel?: () => void;
   onRemove?: () => void;
   onUploadFile?: (file: File) => void;
+  /** ✅ NEW: Helper to resolve the correct backend URL */
+  fileUrlResolver?: (url: string) => string;
 }
 
 export function DocTaskRow({
@@ -40,6 +42,7 @@ export function DocTaskRow({
   onCancel,
   onRemove,
   onUploadFile,
+  fileUrlResolver,
 }: Props) {
   if (task.isDraft) {
     return (
@@ -62,19 +65,27 @@ export function DocTaskRow({
       </span>
 
       {/* Title */}
-      <span className="min-w-0 flex-1 truncate text-[12px] font-semibold text-slate-800">
-        {task.title || "Untitled task"}
-      </span>
-
-      {/* Owner */}
-      <span className="w-[130px] shrink-0 truncate text-[11px] text-slate-500">
-        {task.owner || "—"}
-      </span>
-
-      {/* File name */}
-      <span className="w-[160px] shrink-0 truncate font-mono text-[10px] text-slate-400">
-        {task.fileName || "—"}
-      </span>
+      <div className="flex min-w-0 flex-1 items-center gap-2 truncate text-[12px]">
+        <span className="font-semibold text-slate-800 truncate">
+          {task.title || "Untitled task"}
+        </span>
+        {task.owner && (
+          <>
+            <span className="text-slate-300">|</span>
+            <span className="text-slate-500 truncate text-[11px]">
+              {task.owner}
+            </span>
+          </>
+        )}
+        {task.fileName && task.fileName !== "No file uploaded yet" && (
+          <>
+            <span className="text-slate-300">|</span>
+            <span className="text-slate-500 truncate font-mono text-[10px]">
+              {task.fileName}
+            </span>
+          </>
+        )}
+      </div>
 
       {/* Status pill */}
       <span
@@ -92,7 +103,8 @@ export function DocTaskRow({
       <div className="flex shrink-0 items-center gap-1">
         {task.status === "Done" && task.fileUrl && (
           <a
-            href={task.fileUrl}
+            /* ✅ Use the resolver if provided */
+            href={fileUrlResolver ? fileUrlResolver(task.fileUrl) : task.fileUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-7 items-center rounded-md border border-slate-200 bg-white px-2.5 text-[10px] font-semibold text-slate-600 hover:bg-slate-50"

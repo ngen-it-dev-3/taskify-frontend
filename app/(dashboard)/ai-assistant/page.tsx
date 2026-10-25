@@ -146,7 +146,7 @@ export default function AIAssistantPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push("/login");
+      router.push("/");
       return;
     }
     fetchChats();

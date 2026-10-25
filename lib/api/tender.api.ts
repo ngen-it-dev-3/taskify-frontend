@@ -4,7 +4,7 @@
  * AUTH HELPERS
  * ============================================================ */
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL ?? "https://orvix-backend.ngengroup.org/api/v1";
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
@@ -86,6 +86,40 @@ export interface TenderStageHistoryEntry {
   note?: string;
 }
 
+/* ============================================================
+ * SUBMISSION PACKAGE
+ * ============================================================ */
+
+export type SubmissionPackageMode =
+  | "section_by_section"
+  | "single_package"
+  | "portal"
+  | "rfq"
+  | "";
+
+export interface TenderTodo {
+  id: string;
+  title: string;
+  done: boolean;
+}
+
+export interface TenderSection {
+  id: string;
+  key: string;
+  title: string;
+  description?: string;
+  portalHint?: string;
+  order: number;
+  todoItems: TenderTodo[];
+  /** Computed server-side from doc tasks */
+  readyCount?: number;
+  totalCount?: number;
+}
+
+/* ============================================================
+ * TENDER
+ * ============================================================ */
+
 export interface Tender {
   _id: string;
 
@@ -96,7 +130,9 @@ export interface Tender {
   draft?: boolean;
   stage: TenderStage;
   tenderType: "eGP" | "RFQ" | "Hardcopy Ref.";
-
+  /* ✅ ADD THESE 2 LINES HERE */
+  priority?: "high" | "medium" | "low";
+  tenderSecurityPurchased?: boolean;
   /* Metadata */
   tenderLink?: string;
   recordedBy?: string;
@@ -145,6 +181,12 @@ export interface Tender {
 
   /* Checklist */
   checklist?: TenderChecklistItem[];
+
+  /* Submission package */
+  packageMode?: SubmissionPackageMode;
+  packageLabel?: string;
+  sections?: TenderSection[];
+  notes?: string;
 
   /* Loss */
   lossReason?: string;
@@ -221,8 +263,6 @@ export interface PerformanceDataPoint {
   value?: number;
 }
 
-// lib/api/tender.api.ts (partial)
-
 export interface PerformanceResponse {
   data: PerformanceDataPoint[];
   winRate: number;
@@ -232,20 +272,20 @@ export interface PerformanceResponse {
   totalValue?: number;
   pipelineMix?: PipelineSegment[];
   wonValue?: string;
-  wonValueShort?: string;  // NEW: e.g. "৳13.6L"
+  wonValueShort?: string;
   lostCount?: number;
 }
 
 export interface TenderActivity {
   id: string;
   kind:
-    | "chat"
-    | "discussed"
-    | "lost"
-    | "stage_change"
-    | "submitted"
-    | "uploaded"
-    | "won";
+  | "chat"
+  | "discussed"
+  | "lost"
+  | "stage_change"
+  | "submitted"
+  | "uploaded"
+  | "won";
   tenderer: string;
   message: string;
   timeAgo: string;
@@ -269,6 +309,8 @@ export type DocTaskStatus = "Done" | "In Progress" | "Pending";
 export interface SubmissionDocTask {
   _id?: string;
   id: string;
+  /** ✅ Scopes the task under a submission-package section */
+  sectionId?: string;
   title: string;
   owner: string;
   status: DocTaskStatus;
@@ -285,6 +327,15 @@ export interface SubmissionDetail {
   docTasks: SubmissionDocTask[];
   checklist: TenderChecklistItem[];
   otherParticipants?: TenderOtherParticipant[];
+
+  /* ✅ Submission package */
+  packageMode?: SubmissionPackageMode;
+  packageLabel?: string;
+  notes?: string;
+  sections?: TenderSection[];
+  priority?: "high" | "medium" | "low";
+  tenderSecurityPurchased?: boolean;
+
   info: {
     advertisementFile?: string;
     advertisementUrl?: string;
@@ -295,6 +346,7 @@ export interface SubmissionDetail {
     responsiblePerson: string;
     lastDateOfPurchase?: string;
     lastDateOfSubmission?: string;
+    lastDateOfSubmissionRaw?: string; // ✅ For the Live Countdown
     note?: string;
     attachments: TenderAttachment[];
     eligibility?: string;
@@ -461,6 +513,142 @@ export const tenderApi = {
     return handle<TenderChecklistItem[]>(r);
   },
 
+  /* ============================================================
+   * ✅ SUBMISSION PREPARATION
+   * ============================================================ */
+
+  async updatePreparation(
+    id: string,
+    body: {
+      packageMode?: SubmissionPackageMode;
+      packageLabel?: string;
+      notes?: string;
+    },
+  ): Promise<{
+    packageMode: SubmissionPackageMode;
+    packageLabel: string;
+    notes: string;
+    sections: TenderSection[];
+  }> {
+    const r = await fetch(`${API_BASE}/tenders/${id}/preparation`, {
+      method: "PATCH",
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+    });
+    return handle(r);
+  },
+
+  // ✅ ADDED: Apply Section Template
+  async applySectionTemplate(
+    id: string,
+    mode: string,
+  ): Promise<Tender> {
+    const r = await fetch(`${API_BASE}/tenders/${id}/sections/apply-template`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify({ mode }),
+    });
+    return handle<Tender>(r);
+  },
+
+  async addSection(
+    id: string,
+    body: {
+      key?: string;
+      title: string;
+      description?: string;
+      portalHint?: string;
+    },
+  ): Promise<TenderSection> {
+    const r = await fetch(`${API_BASE}/tenders/${id}/sections`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+    });
+    return handle<TenderSection>(r);
+  },
+
+  async updateSection(
+    id: string,
+    sectionId: string,
+    body: Partial<{
+      key: string;
+      title: string;
+      description: string;
+      portalHint: string;
+      order: number;
+    }>,
+  ): Promise<TenderSection> {
+    const r = await fetch(
+      `${API_BASE}/tenders/${id}/sections/${sectionId}`,
+      {
+        method: "PATCH",
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      },
+    );
+    return handle<TenderSection>(r);
+  },
+
+  async deleteSection(id: string, sectionId: string): Promise<void> {
+    const r = await fetch(
+      `${API_BASE}/tenders/${id}/sections/${sectionId}`,
+      {
+        method: "DELETE",
+        headers: authHeaders(),
+      },
+    );
+    return handle<void>(r);
+  },
+
+  async addTodo(
+    id: string,
+    sectionId: string,
+    body: { title: string },
+  ): Promise<TenderTodo> {
+    const r = await fetch(
+      `${API_BASE}/tenders/${id}/sections/${sectionId}/todos`,
+      {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      },
+    );
+    return handle<TenderTodo>(r);
+  },
+
+  async updateTodo(
+    id: string,
+    sectionId: string,
+    todoId: string,
+    body: Partial<{ title: string; done: boolean }>,
+  ): Promise<TenderTodo> {
+    const r = await fetch(
+      `${API_BASE}/tenders/${id}/sections/${sectionId}/todos/${todoId}`,
+      {
+        method: "PATCH",
+        headers: authHeaders(),
+        body: JSON.stringify(body),
+      },
+    );
+    return handle<TenderTodo>(r);
+  },
+
+  async deleteTodo(
+    id: string,
+    sectionId: string,
+    todoId: string,
+  ): Promise<void> {
+    const r = await fetch(
+      `${API_BASE}/tenders/${id}/sections/${sectionId}/todos/${todoId}`,
+      {
+        method: "DELETE",
+        headers: authHeaders(),
+      },
+    );
+    return handle<void>(r);
+  },
+
   async uploadAttachment(id: string, file: File): Promise<TenderAttachment> {
     const fd = new FormData();
     fd.append("file", file);
@@ -510,7 +698,6 @@ export const tenderApi = {
     return handle<void>(r);
   },
 
-  /* ✅ NEW — Notify Finance about pending banking docs */
   async notifyFinance(
     id: string,
     body: { emails: string[]; note?: string },
@@ -556,6 +743,8 @@ export const docTaskApi = {
       owner: string;
       status: string;
       fileName?: string;
+      /** ✅ Attach to a submission-package section */
+      sectionId?: string;
     },
   ): Promise<{ _id: string }> {
     const r = await fetch(`${API_BASE}/tenders/${tenderId}/doc-tasks`, {
@@ -576,6 +765,7 @@ export const docTaskApi = {
       fileName: string;
       fileUrl: string;
       order: number;
+      sectionId: string;
     }>,
   ): Promise<any> {
     const r = await fetch(

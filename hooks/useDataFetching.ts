@@ -36,7 +36,7 @@ export function useDataFetching<T>(
     } catch (err: any) {
       setError(err.message || "Failed to fetch data");
       if (err.response?.status === 401) {
-        router.push("/login");
+        router.push("/");
       }
     } finally {
       setLoading(false);
