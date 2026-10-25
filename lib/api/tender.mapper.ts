@@ -199,6 +199,7 @@ export interface SubmissionRowUI {
     readiness: number;
     priority?: "high" | "medium" | "low"; // ✅ ADD THIS
     tenderSecurityPurchased?: boolean;
+    lastDateOfSubmission?: string | null;
 }
 
 export function toSubmissionUIRow(r: SubmissionRow): SubmissionRowUI {
@@ -221,6 +222,7 @@ export function toSubmissionUIRow(r: SubmissionRow): SubmissionRowUI {
         readiness: r.readiness ?? 0,
         priority: (r as any).priority,
         tenderSecurityPurchased: (r as any).tenderSecurityPurchased,
+         lastDateOfSubmission: (r as any).lastDateOfSubmission,
     };
 }
 
