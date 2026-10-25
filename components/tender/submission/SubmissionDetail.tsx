@@ -354,8 +354,9 @@ export function SubmissionDetail({
     }
   };
 
+  // ✅ Update the type signature here
   const savePreparation = async (patch: {
-    packageMode?: string;
+    packageMode?: SubmissionPackageMode; // Changed from string to SubmissionPackageMode
     packageLabel?: string;
     notes?: string;
   }) => {
@@ -366,7 +367,7 @@ export function SubmissionDetail({
         await tenderApi.applySectionTemplate(data.id, patch.packageMode);
         await onPreparationChanged?.();
       } else {
-        await tenderApi.updatePreparation(data.id, patch);
+        await tenderApi.updatePreparation(data.id, patch); // ✅ This will now be perfectly typed
         onPreparationChanged?.();
       }
       toast.success("Saved", { id: loadingId });
