@@ -9,11 +9,14 @@ import {
     type CompanyDocCategory,
 } from "@/lib/api/tender.api";
 
+// ✅ Updated to match the new 6 categories
 const EMPTY_COUNTS: Record<CompanyDocCategory, number> = {
     legal: 0,
     profiles: 0,
-    experience: 0,
+    "work-orders": 0,
     certificates: 0,
+    team: 0,
+    datasheets: 0,
 };
 
 /* ============================================================
