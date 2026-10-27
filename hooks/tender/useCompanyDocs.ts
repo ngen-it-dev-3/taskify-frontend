@@ -43,11 +43,14 @@ export function useCompanyDocs(params?: {
 }
 
 export function useCompanyDocCounts() {
+  // ✅ Replaced "experience" with the new categories
   const [counts, setCounts] = useState<Record<CompanyDocCategory, number>>({
     legal: 0,
     profiles: 0,
-    experience: 0,
+    "work-orders": 0,
     certificates: 0,
+    team: 0,
+    datasheets: 0,
   });
   const [loading, setLoading] = useState(true);
 
