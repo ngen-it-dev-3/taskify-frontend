@@ -1,7 +1,7 @@
 // components/tender/documents/modals/ViewDocModal.tsx
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import {
   Download,
   ExternalLink,
@@ -16,6 +16,9 @@ import {
   FileType,
   Award,
   AlignLeft,
+  Users,
+  ShieldCheck,
+  CheckCircle2,
 } from "lucide-react";
 import { StatusPill } from "../StatusPill";
 import type { CompanyDocUI } from "@/lib/api/mappers";
@@ -26,11 +29,7 @@ interface Props {
   doc: CompanyDocUI | null;
 }
 
-/* ---------- Convert "/uploads/..." → full URL ----------
- * Keeps relative URLs relative so Next.js's `/uploads` rewrite
- * proxies them same-origin. This is REQUIRED for `<a download>`
- * to actually save a file — cross-origin anchors ignore `download`.
- */
+/* ---------- Convert "/uploads/..." → full URL ---------- */
 function fullFileUrl(url?: string) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -56,16 +55,6 @@ function fmtDate(iso?: string) {
   });
 }
 
-/* Chips order for experience rows: [sector, duration, volume] */
-function parseExperienceChips(chips?: string[]) {
-  const arr = Array.isArray(chips) ? chips : [];
-  return {
-    sector: arr[0] || "",
-    duration: arr[1] || "",
-    volume: arr[2] || "",
-  };
-}
-
 export function ViewDocModal({ open, onOpenChange, doc }: Props) {
   /* Esc close + body scroll lock */
   useEffect(() => {
@@ -81,16 +70,13 @@ export function ViewDocModal({ open, onOpenChange, doc }: Props) {
     };
   }, [open, onOpenChange]);
 
-  const isExperience = doc?.category === "experience";
+  // Categories
+  const isWorkOrder = doc?.category === "work-orders";
+  const isTeam = doc?.category === "team";
   const isProfile = doc?.category === "profiles";
   const isCertificate = doc?.category === "certificates";
-
-  const meta = useMemo(() => {
-    if (!doc) return { sector: "", duration: "", volume: "" };
-    return isExperience
-      ? parseExperienceChips(doc.chips)
-      : { sector: "", duration: "", volume: "" };
-  }, [doc, isExperience]);
+  const isDatasheet = doc?.category === "datasheets";
+  const isLegal = doc?.category === "legal";
 
   if (!open || !doc) return null;
 
@@ -98,10 +84,7 @@ export function ViewDocModal({ open, onOpenChange, doc }: Props) {
   const isPDF = url.toLowerCase().endsWith(".pdf");
   const isImage = url ? /\.(jpg|jpeg|png|webp|gif)$/i.test(url) : false;
 
-  /* Non-experience chips are the free-form tags from AddDocModal */
-  const genericChips = !isExperience && doc.chips ? doc.chips : [];
-
-  /* Profile description — prefer `description`, fall back to `subtitle` */
+  const genericChips = doc.chips || [];
   const profileDescription = isProfile
     ? (doc.description || doc.subtitle || "").trim()
     : "";
@@ -139,8 +122,8 @@ export function ViewDocModal({ open, onOpenChange, doc }: Props) {
                 {doc.title}
               </h2>
 
-              {/* Experience: show product/work description */}
-              {isExperience && doc.subtitle && (
+              {/* Subtitle for Work Orders, Team, Datasheets */}
+              {(isWorkOrder || isTeam || isDatasheet) && doc.subtitle && (
                 <p className="mt-0.5 truncate text-[12px] text-slate-600">
                   {doc.subtitle}
                 </p>
@@ -232,89 +215,112 @@ export function ViewDocModal({ open, onOpenChange, doc }: Props) {
           {/* -------- Details grid -------- */}
           <div>
             <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              {isExperience ? "Experience Details" : "Document Details"}
+              {isWorkOrder
+                ? "Work Order Details"
+                : isTeam
+                  ? "Team Member Details"
+                  : isCertificate
+                    ? "Certificate Details"
+                    : "Document Details"}
             </p>
 
-            {isExperience ? (
-              /* ---------- WORK EXPERIENCE ---------- */
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            {/* ---------- WORK ORDERS ---------- */}
+            {isWorkOrder ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <DetailCard
+                  icon={<Banknote className="h-3.5 w-3.5" />}
+                  label="Total Value"
+                  value={doc.totalValue ? `৳${doc.totalValue.toLocaleString()}` : "—"}
+                  tone="emerald"
+                />
                 <DetailCard
                   icon={<Building2 className="h-3.5 w-3.5" />}
+                  label="Customer Type"
+                  value={doc.customerType || "—"}
+                  tone="sky"
+                />
+                <DetailCard
+                  icon={<ShieldCheck className="h-3.5 w-3.5" />}
                   label="Sector"
-                  value={meta.sector}
+                  value={doc.isGovt ? "Government" : "Non-Government"}
                   tone="amber"
                 />
                 <DetailCard
                   icon={<Clock className="h-3.5 w-3.5" />}
-                  label="Duration"
-                  value={meta.duration}
-                  tone="sky"
-                />
-                <DetailCard
-                  icon={<Banknote className="h-3.5 w-3.5" />}
-                  label="Volume"
-                  value={meta.volume}
-                  tone="emerald"
-                />
-              </div>
-            ) : isCertificate ? (
-              /* ---------- CERTIFICATE — Certificate Type first ---------- */
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <DetailCard
-                  icon={<Award className="h-3.5 w-3.5" />}
-                  label="Certificate Type"
-                  value={doc.docType || ""}
-                  tone="amber"
-                />
-                <DetailCard
-                  icon={<Hash className="h-3.5 w-3.5" />}
-                  label="Reference / ID"
-                  value={doc.reference || ""}
-                  tone="slate"
-                  mono
-                />
-                <DetailCard
-                  icon={<Calendar className="h-3.5 w-3.5" />}
-                  label="Issued On"
+                  label="Order Date"
                   value={fmtDate(doc.issuedOn)}
                   tone="slate"
                 />
                 <DetailCard
-                  icon={<Calendar className="h-3.5 w-3.5" />}
-                  label="Valid Until"
-                  value={fmtDate(doc.validUntil)}
+                  icon={<Tag className="h-3.5 w-3.5" />}
+                  label="Work Type"
+                  value={doc.workType || "—"}
                   tone="slate"
                 />
-                <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                    Status
-                  </p>
-                  <div className="mt-1.5">
-                    <StatusPill status={doc.status} />
-                  </div>
-                </div>
-                {doc.validity && (
-                  <DetailCard
-                    icon={<FileType className="h-3.5 w-3.5" />}
-                    label="Validity Note"
-                    value={doc.validity}
-                    tone="slate"
-                  />
-                )}
+                <DetailCard
+                  icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+                  label="Completion Cert."
+                  value={doc.certReceived ? "Received" : "Pending"}
+                  tone={doc.certReceived ? "emerald" : "slate"}
+                />
+              </div>
+            ) : isTeam ? (
+              /* ---------- TEAM & CVs ---------- */
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <DetailCard
+                  icon={<Building2 className="h-3.5 w-3.5" />}
+                  label="Designation"
+                  value={doc.subtitle || "—"}
+                  tone="amber"
+                />
+                <DetailCard
+                  icon={<Clock className="h-3.5 w-3.5" />}
+                  label="Experience"
+                  value={doc.experienceYears ? `${doc.experienceYears} Years` : "—"}
+                  tone="sky"
+                />
+                <DetailCard
+                  icon={<Users className="h-3.5 w-3.5" />}
+                  label="Role Type"
+                  value={doc.isEngineer ? "Engineer / Technician" : "Management / Other"}
+                  tone={doc.isEngineer ? "emerald" : "slate"}
+                />
+              </div>
+            ) : isDatasheet ? (
+              /* ---------- DATASHEETS ---------- */
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <DetailCard
+                  icon={<Building2 className="h-3.5 w-3.5" />}
+                  label="Brand"
+                  value={doc.subtitle || "—"}
+                  tone="amber"
+                />
+                <DetailCard
+                  icon={<Tag className="h-3.5 w-3.5" />}
+                  label="Category"
+                  value={doc.customerType || "—"} // using customerType to store datasheet category
+                  tone="sky"
+                />
+                <DetailCard
+                  icon={<FileType className="h-3.5 w-3.5" />}
+                  label="Type"
+                  value={doc.docType || "Datasheet"}
+                  tone="slate"
+                />
               </div>
             ) : (
-              /* ---------- GENERIC DOCS (legal, profiles) ---------- */
+              /* ---------- GENERIC DOCS (Legal, Profiles, Certs) ---------- */
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <DetailCard
                   icon={<Tag className="h-3.5 w-3.5" />}
                   label="Document Type"
-                  value={doc.docType || ""}
+                  value={doc.docType || "—"}
                   tone="slate"
                 />
                 <DetailCard
                   icon={<Hash className="h-3.5 w-3.5" />}
                   label="Reference / ID"
-                  value={doc.reference || ""}
+                  value={doc.reference || "—"}
                   tone="slate"
                   mono
                 />
@@ -350,11 +356,11 @@ export function ViewDocModal({ open, onOpenChange, doc }: Props) {
             )}
           </div>
 
-          {/* -------- Free-form chips (only for non-experience docs) -------- */}
+          {/* -------- Chips / Tags -------- */}
           {genericChips.length > 0 && (
             <div>
               <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Tags
+                {isTeam ? "Skills" : isWorkOrder ? "Products" : "Tags"}
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {genericChips.map((c, i) => (
@@ -369,8 +375,8 @@ export function ViewDocModal({ open, onOpenChange, doc }: Props) {
             </div>
           )}
 
-          {/* -------- Status row for experience (kept separate from grid) -------- */}
-          {isExperience && (
+          {/* -------- Status pill for Work Orders / Team (kept separate) -------- */}
+          {(isWorkOrder || isTeam) && (
             <div className="rounded-lg border border-slate-200 bg-slate-50/60 p-3">
               <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                 Status
@@ -446,12 +452,13 @@ function DetailCard({
         </p>
       </div>
       <p
-        className={`mt-1.5 truncate text-[13px] font-semibold ${empty
+        className={`mt-1.5 truncate text-[13px] font-semibold ${
+          empty
             ? "italic text-slate-400"
             : mono
               ? "font-mono text-slate-800"
               : "text-slate-800"
-          }`}
+        }`}
         title={value || undefined}
       >
         {empty ? "Not set" : value}
