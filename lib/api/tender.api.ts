@@ -404,7 +404,7 @@ export interface CompanyDocument {
   // Team specific fields
   experienceYears?: number;
   isEngineer?: boolean;
-  
+
 }
 
 /* ============================================================
@@ -682,6 +682,18 @@ export const tenderApi = {
       body: JSON.stringify(body),
     });
     return handle<NotifyFinanceResult>(r);
+  },
+  // ✅ Add Company Docs to Tender
+  async addCompanyDocsToTender(
+    tenderId: string,
+    body: { documentIds: string[]; sectionId: string }
+  ): Promise<any> {
+    const r = await fetch(`${API_BASE}/tenders/${tenderId}/add-documents`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+    });
+    return handle<any>(r);
   },
 };
 
