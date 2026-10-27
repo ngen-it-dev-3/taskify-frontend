@@ -844,7 +844,7 @@ export const SUB_ITEMS = {
   ),
   tenderSecurity: createSubNavItem(
     "tender-security",
-    "Tender Security",
+    "Payment & Security",
     "/tenders/security",
     ShieldCheck,                      // ← uses the icon that's already imported
     "Tender Management",
@@ -862,7 +862,7 @@ export const SUB_ITEMS = {
   ),
   tenderDocuments: createSubNavItem(
     "tender-documents",
-    "Company Docs",
+    "Required Documents",
     "/tenders/documents",
     FileText,
     "Tender Management",
@@ -878,23 +878,40 @@ export const SUB_ITEMS = {
     ],
     { description: "Company documents and templates" },
   ),
-  // tenderSites: createSubNavItem(
-  //   "tender-sites",
-  //   "Tender Sites",
-  //   "/tenders/tender-sites",
-  //   Globe,          // ← was FileText
-  //   "Tender Management",
-  //   [
-  //     ROLES.SUPER_ADMIN,
-  //     ROLES.ADMIN,
-  //     ROLES.HR_MANAGER,
-  //     ROLES.DEPT_MANAGER,
-  //     ROLES.PROJECT_MANAGER,
-  //     ROLES.LINE_MANAGER,
-  //     ROLES.EMPLOYEE,
-  //   ],
-  //   { description: "Crawler targets and source sites" },
-  // ),
+    tenderSites: createSubNavItem(
+    "tender-sites",
+    "Site Directory & Credentials",
+    "/tenders/sites",
+    Globe,
+    "Tender Management", // ✅ FIX: Changed from "Tender Sites" to "Tender Management"
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.DEPT_MANAGER,
+      ROLES.PROJECT_MANAGER,
+      ROLES.LINE_MANAGER,
+      ROLES.EMPLOYEE,
+    ],
+    { description: "Crawler targets and source sites" },
+  ),
+    tenderClients: createSubNavItem(
+    "tender-clients",
+    "Client Management",
+    "/tenders/clients",
+    Users,
+    "Tender Management", // ✅ FIX: Changed from "Tender Sites" to "Tender Management"
+    [
+      ROLES.SUPER_ADMIN,
+      ROLES.ADMIN,
+      ROLES.HR_MANAGER,
+      ROLES.DEPT_MANAGER,
+      ROLES.PROJECT_MANAGER,
+      ROLES.LINE_MANAGER,
+      ROLES.EMPLOYEE,
+    ],
+    { description: "Crawler targets and source sites" },
+  ),
   tenderSettings: createSubNavItem(
     "tender-settings",
     "Tender Settings",
@@ -1670,6 +1687,7 @@ const TENDER_USER_ALLOWED_SUB_IDS = [
   "tender-security",
   "tender-documents",
   "tender-settings",
+  "tender-sites",
 ];
 
 

@@ -5,72 +5,36 @@ import { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import toast from "react-hot-toast";
 import { DocsHeader } from "@/components/tender/documents/DocsHeader";
-import {
-  DocsTabs,
-  type DocsTab,
-} from "@/components/tender/documents/DocsTabs";
+import { DocsTabs, type DocsTab } from "@/components/tender/documents/DocsTabs";
 import { DocsGrid } from "@/components/tender/documents/DocsGrid";
 import { DocsListView } from "@/components/tender/documents/DocsListView";
-import {
-  DocsFilterBar,
-  type ExperienceFilters,
-  type DocsViewMode,
-} from "@/components/tender/documents/DocsFilterBar";
-import {
-  ImportBar,
-  type ImportTarget,
-} from "@/components/tender/documents/ImportBar";
-import { ExpiryWarningBanner } from "@/components/tender/documents/ExpiryWarningBanner"; // ⭐ NEW
-import {
-  companyDocApi,
-  type CompanyDocCategory,
-  tenderApi,
-} from "@/lib/api/tender.api";
+import { DocsFilterBar, type DocsViewMode, type WorkOrderFilters } from "@/components/tender/documents/DocsFilterBar";
+import { ImportBar, type ImportTarget } from "@/components/tender/documents/ImportBar";
+import { ExpiryWarningBanner } from "@/components/tender/documents/ExpiryWarningBanner";
+import { companyDocApi, tenderApi } from "@/lib/api/tender.api";
 import { toCompanyDocUI, type CompanyDocUI } from "@/lib/api/mappers";
 import { AddDocModal } from "@/components/tender/documents/modal/AddDocModal";
 import { ViewDocModal } from "@/components/tender/documents/modal/ViewDocModal";
 import { confirmToast } from "@/lib/confirmToast";
-import {
-  useCompanyDocBundle,
-  invalidateBundleCache,
-} from "@/hooks/tender/useCompanyDocBundle";
+import { useCompanyDocBundle, invalidateBundleCache } from "@/hooks/tender/useCompanyDocBundle";
 
-/* ---------- Config ---------- */
-const SECTORS = [
-  "Power & Energy",
-  "Financial",
-  "Government",
-  "Telecom",
-  "Education",
-  "Helthcare",
-];
-
-/* ---------- Import-target cache ---------- */
 let TARGET_CACHE: { data: ImportTarget[]; ts: number } | null = null;
 let TARGET_IN_FLIGHT: Promise<ImportTarget[]> | null = null;
 const TARGET_TTL_MS = 60_000;
 
 async function loadImportTargets(): Promise<ImportTarget[]> {
-  if (TARGET_CACHE && Date.now() - TARGET_CACHE.ts < TARGET_TTL_MS) {
-    return TARGET_CACHE.data;
-  }
+  if (TARGET_CACHE && Date.now() - TARGET_CACHE.ts < TARGET_TTL_MS) return TARGET_CACHE.data;
   if (TARGET_IN_FLIGHT) return TARGET_IN_FLIGHT;
 
   TARGET_IN_FLIGHT = (async () => {
     const res = await tenderApi.list({ includeDrafts: true, limit: 200 });
-
     const list: ImportTarget[] = (res?.data ?? [])
       .filter((t) => !t.draft)
-      .map((t) => {
-        const group: ImportTarget["group"] =
-          t.stage === "potential" ? "Potential" : "Submission";
-        return {
-          id: t._id,
-          label: `${t.tenderer} — ${t.title}`,
-          group,
-        };
-      });
-
+      .map((t) => ({
+        id: t._id,
+        label: `${t.tenderer} — ${t.title}`,
+        group: t.stage === "potential" ? "Potential" : "Submission",
+      }));
     TARGET_CACHE = { data: list, ts: Date.now() };
     TARGET_IN_FLIGHT = null;
     return list;
@@ -84,65 +48,86 @@ export default function CompanyDocsPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [addOpen, setAddOpen] = useState(false);
   const [viewDoc, setViewDoc] = useState<CompanyDocUI | null>(null);
+  const [editDoc, setEditDoc] = useState<CompanyDocUI | null>(null);
   const [renewDoc, setRenewDoc] = useState<CompanyDocUI | null>(null);
   const [viewMode, setViewMode] = useState<DocsViewMode>("grid");
 
-  const [filters, setFilters] = useState<ExperienceFilters>({
-    sector: "all",
-    duration: "all",
-    volume: "all",
+  // Work Order Filters State
+  const [filters, setFilters] = useState<WorkOrderFilters>({
+    search: "",
+    sort: "newest",
+    value: "all",
+    customers: [],
+    types: [],
+    products: [],
   });
 
-  const { rows, counts, loading, refetch } = useCompanyDocBundle({
-    category: tab,
-    sector: tab === "experience" ? filters.sector : undefined,
-    duration: tab === "experience" ? filters.duration : undefined,
-    volume: tab === "experience" ? filters.volume : undefined,
-  });
+  const { rows, counts, loading, refetch } = useCompanyDocBundle({ category: tab });
 
-  /* ✅ Safe map */
-  const docs: CompanyDocUI[] = useMemo(() => {
-    if (!Array.isArray(rows)) return [];
-    return rows.map(toCompanyDocUI);
-  }, [rows]);
+  const baseDocs: CompanyDocUI[] = useMemo(() => (Array.isArray(rows) ? rows.map(toCompanyDocUI) : []), [rows]);
 
-  /* ⭐ Expired certificates (only relevant on certificates tab) */
-  const expiredDocs = useMemo(() => {
-    if (tab !== "certificates") return [];
-    return docs.filter((d) => d.status === "Expired");
-  }, [docs, tab]);
+  // ✅ DYNAMIC FILTERING LOGIC
+  const docs = useMemo(() => {
+    if (tab !== "work-orders") return baseDocs;
 
-  /* ⭐ Optional: map expired doc to the tender it's blocking */
+    let filtered = [...baseDocs];
+
+    // 1. Text Search
+    if (filters.search) {
+      const q = filters.search.toLowerCase();
+      filtered = filtered.filter((d) =>
+        d.title?.toLowerCase().includes(q) ||
+        d.subtitle?.toLowerCase().includes(q) ||
+        (d.products || []).some((p) => p.toLowerCase().includes(q))
+      );
+    }
+
+    // 2. Multi-Select Filters
+    if (filters.customers.length > 0) {
+      filtered = filtered.filter((d) => filters.customers.includes(d.customerType || ""));
+    }
+    if (filters.types.length > 0) {
+      filtered = filtered.filter((d) => filters.types.includes(d.workType || ""));
+    }
+    if (filters.products.length > 0) {
+      filtered = filtered.filter((d) =>
+        (d.products || []).some((p) => filters.products.includes(p))
+      );
+    }
+
+    // 3. Value Filter
+    if (filters.value !== "all") {
+      const val = filters.value === "1lac" ? 100000 : filters.value === "10lac" ? 1000000 : 5000000;
+      filtered = filtered.filter((d) => (d.totalValue || 0) >= val);
+    }
+
+    // 4. Sort
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.issuedOn || 0).getTime();
+      const dateB = new Date(b.issuedOn || 0).getTime();
+      return filters.sort === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+    return filtered;
+  }, [baseDocs, filters, tab]);
+
+  const expiredDocs = useMemo(() => (tab === "certificates" ? docs.filter((d) => d.status === "Expired") : []), [docs, tab]);
+
   const linkedTenderName = useMemo(() => {
     if (expiredDocs.length === 0) return undefined;
-    const first = expiredDocs[0];
-    if (first.title.toLowerCase().includes("acronis")) {
-      return "BPDB Acronis Backup";
-    }
+    if (expiredDocs[0].title.toLowerCase().includes("acronis")) return "BPDB Acronis Backup";
     return undefined;
   }, [expiredDocs]);
 
-  /* ---------- Import targets ---------- */
-  const [targets, setTargets] = useState<ImportTarget[]>(
-    TARGET_CACHE?.data ?? []
-  );
+  const [targets, setTargets] = useState<ImportTarget[]>(TARGET_CACHE?.data ?? []);
   const [importTargetId, setImportTargetId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    loadImportTargets()
-      .then((list) => {
-        if (!cancelled) setTargets(list);
-      })
-      .catch(() => {
-        /* silent */
-      });
-    return () => {
-      cancelled = true;
-    };
+    loadImportTargets().then((list) => { if (!cancelled) setTargets(list); }).catch(() => { });
+    return () => { cancelled = true; };
   }, []);
 
-  /* ---------- Selection ---------- */
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -152,21 +137,14 @@ export default function CompanyDocsPage() {
     });
   };
 
-  /* ---------- Import ---------- */
   const handleImport = async () => {
     if (!importTargetId || selectedIds.size === 0) return;
     try {
-      await companyDocApi.importToTender({
-        targetTenderId: importTargetId,
-        documentIds: Array.from(selectedIds),
-      });
+      await companyDocApi.importToTender({ targetTenderId: importTargetId, documentIds: Array.from(selectedIds) });
       const target = targets.find((t) => t.id === importTargetId);
-      toast.success(
-        `${selectedIds.size} document${selectedIds.size === 1 ? "" : "s"} imported to ${target?.label ?? "tender"}`
-      );
+      toast.success(`${selectedIds.size} document${selectedIds.size === 1 ? "" : "s"} imported to ${target?.label ?? "tender"}`);
       setSelectedIds(new Set());
       setImportTargetId(null);
-
       invalidateBundleCache();
       await refetch();
     } catch (e) {
@@ -174,70 +152,32 @@ export default function CompanyDocsPage() {
     }
   };
 
-  /* ---------- Create OR Renew ---------- */
-  const handleCreate = async (payload: {
-    title: string;
-    description?: string;
-    reference?: string;
-    validity?: string;
-    validityDate?: string;
-    issuedOn?: string;
-    subtitle?: string;
-    chips?: string[];
-    file?: File;
-    category?: CompanyDocCategory;
-    docType?: string;
-  }) => {
+  const handleCreate = async (payload: any) => {
     try {
       if (renewDoc) {
-        await companyDocApi.renewDoc(renewDoc.id, {
-          validityDate: payload.validityDate!,
-          issuedOn: payload.issuedOn,
-        });
-
+        await companyDocApi.renewDoc(renewDoc.id, { validityDate: payload.validityDate!, issuedOn: payload.issuedOn });
         if (payload.file) {
           const loadingId = toast.loading(`Uploading ${payload.file.name}...`);
-          try {
-            await companyDocApi.uploadDocFile(renewDoc.id, payload.file);
-            toast.success("Certificate renewed", { id: loadingId });
-          } catch (e) {
-            toast.error((e as Error).message || "File upload failed", {
-              id: loadingId,
-            });
-          }
-        } else {
-          toast.success("Certificate renewed");
-        }
+          try { await companyDocApi.uploadDocFile(renewDoc.id, payload.file); toast.success("Renewed", { id: loadingId }); }
+          catch (e) { toast.error((e as Error).message || "Upload failed", { id: loadingId }); }
+        } else { toast.success("Renewed"); }
         setRenewDoc(null);
-      } else {
-        const created = await companyDocApi.create({
-          category: payload.category ?? tab,
-          title: payload.title,
-          description: payload.description,
-          reference: payload.reference,
-          validity: payload.validity,
-          validityDate: payload.validityDate,
-          issuedOn: payload.issuedOn,
-          subtitle: payload.subtitle,
-          chips: payload.chips,
-          docType: payload.docType,
-        });
-
+      } else if (editDoc) {
+        await companyDocApi.update(editDoc.id, payload);
         if (payload.file) {
           const loadingId = toast.loading(`Uploading ${payload.file.name}...`);
-          try {
-            await companyDocApi.uploadDocFile(created._id, payload.file);
-            toast.success("Document saved", { id: loadingId });
-          } catch (e) {
-            toast.error((e as Error).message || "File upload failed", {
-              id: loadingId,
-            });
-          }
-        } else {
-          toast.success("Document saved");
-        }
+          try { await companyDocApi.uploadDocFile(editDoc.id, payload.file); toast.success("Updated", { id: loadingId }); }
+          catch (e) { toast.error((e as Error).message || "Upload failed", { id: loadingId }); }
+        } else { toast.success("Updated"); }
+        setEditDoc(null);
+      } else {
+        const created = await companyDocApi.create({ category: payload.category ?? tab, ...payload });
+        if (payload.file) {
+          const loadingId = toast.loading(`Uploading ${payload.file.name}...`);
+          try { await companyDocApi.uploadDocFile(created._id, payload.file); toast.success("Saved", { id: loadingId }); }
+          catch (e) { toast.error((e as Error).message || "Upload failed", { id: loadingId }); }
+        } else { toast.success("Saved"); }
       }
-
       setAddOpen(false);
       invalidateBundleCache();
       await refetch();
@@ -246,37 +186,40 @@ export default function CompanyDocsPage() {
     }
   };
 
-  /* ---------- Delete ---------- */
   const handleDelete = (doc: CompanyDocUI) => {
     confirmToast({
       title: `Delete "${doc.title}"?`,
-      description:
-        "This will permanently remove the document and its attached file.",
+      description: "This will permanently remove the document and its attached file.",
       confirmLabel: "Delete",
       variant: "danger",
       onConfirm: async () => {
         const loadingId = toast.loading("Deleting...");
         try {
           await companyDocApi.remove(doc.id);
-          toast.success("Document deleted", { id: loadingId });
+          toast.success("Deleted", { id: loadingId });
           invalidateBundleCache();
           await refetch();
         } catch (e) {
-          toast.error((e as Error).message || "Delete failed", {
-            id: loadingId,
-          });
+          toast.error((e as Error).message || "Delete failed", { id: loadingId });
         }
       },
     });
   };
 
-  /* ---------- Action (View / Renew) ---------- */
-  const handleAction = (doc: CompanyDocUI) => {
-    if (doc.action === "Renew" || doc.action === "Replace") {
-      setRenewDoc(doc);
-      setAddOpen(true);
-    } else {
-      setViewDoc(doc);
+  const handleAction = (doc: CompanyDocUI, action: "view" | "edit" | "renew" = "view") => {
+    if (action === "edit") { setEditDoc(doc); setAddOpen(true); }
+    else if (action === "renew" || doc.action === "Renew" || doc.action === "Replace") { setRenewDoc(doc); setAddOpen(true); }
+    else { setViewDoc(doc); }
+  };
+
+  const getAddButtonText = () => {
+    switch (tab) {
+      case "work-orders": return "Add Work Order";
+      case "certificates": return "Add Partnership Certificate";
+      case "team": return "Add Person / CV";
+      case "datasheets": return "Add Datasheet / Brochure";
+      case "profiles": return "Add Company Profile";
+      default: return "Add Legal Doc";
     }
   };
 
@@ -284,47 +227,35 @@ export default function CompanyDocsPage() {
     <main className="min-h-screen bg-[#faf7f0] pb-24 text-slate-900">
       <div className="mx-auto max-w-[1600px] space-y-6 p-6 lg:p-8">
         <DocsHeader />
-
         <DocsTabs active={tab} counts={counts} onChange={setTab} />
 
         <div className="flex justify-end">
           <button
             type="button"
-            onClick={() => {
-              setRenewDoc(null);
-              setAddOpen(true);
-            }}
+            onClick={() => { setRenewDoc(null); setEditDoc(null); setAddOpen(true); }}
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#a97400] px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-[#8f6100]"
           >
-            <Plus className="h-3.5 w-3.5" />
-            {tab === "experience"
-              ? "Add Work Experience"
-              : tab === "certificates"
-                ? "Add Partnership Certificate"
-                : "Add Document"}
+            <Plus className="h-3.5 w-3.5" /> {getAddButtonText()}
           </button>
         </div>
 
-        {tab === "experience" && (
+        {tab === "work-orders" && (
           <DocsFilterBar
             value={filters}
             onChange={setFilters}
-            sectors={SECTORS}
             view={viewMode}
             onViewChange={setViewMode}
+            category={tab}
           />
         )}
 
         {loading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[180px] animate-pulse rounded-xl border border-slate-200/80 bg-white"
-              />
+              <div key={i} className="h-[180px] animate-pulse rounded-xl border border-slate-200/80 bg-white" />
             ))}
           </div>
-        ) : viewMode === "list" ? (
+        ) : viewMode === "list" && tab === "work-orders" ? (
           <DocsListView
             docs={docs}
             selectedIds={selectedIds}
@@ -340,44 +271,25 @@ export default function CompanyDocsPage() {
             onToggleSelect={toggleSelect}
             onAction={handleAction}
             onDelete={handleDelete}
+            category={tab}
           />
         )}
 
-        <ExpiryWarningBanner
-          expiredDocs={expiredDocs}
-          linkedTenderName={linkedTenderName}
-          onRenew={(doc) => {
-            setRenewDoc(doc);
-            setAddOpen(true);
-          }}
-        />
+        <ExpiryWarningBanner expiredDocs={expiredDocs} linkedTenderName={linkedTenderName} onRenew={(doc) => { setRenewDoc(doc); setAddOpen(true); }} />
       </div>
 
-      <ImportBar
-        selectedCount={selectedIds.size}
-        targets={targets}
-        value={importTargetId}
-        onChangeTarget={setImportTargetId}
-        onImport={handleImport}
-      />
+      <ImportBar selectedCount={selectedIds.size} targets={targets} value={importTargetId} onChangeTarget={setImportTargetId} onImport={handleImport} />
 
-      {/* Modals */}
       <AddDocModal
         open={addOpen}
-        onOpenChange={(o) => {
-          setAddOpen(o);
-          if (!o) setRenewDoc(null);
-        }}
+        onOpenChange={(o) => { setAddOpen(o); if (!o) { setRenewDoc(null); setEditDoc(null); } }}
         category={tab}
         onSubmit={handleCreate}
         renewDoc={renewDoc}
+        editDoc={editDoc}
       />
 
-      <ViewDocModal
-        open={!!viewDoc}
-        onOpenChange={(o) => !o && setViewDoc(null)}
-        doc={viewDoc}
-      />
+      <ViewDocModal open={!!viewDoc} onOpenChange={(o) => !o && setViewDoc(null)} doc={viewDoc} />
     </main>
   );
 }

@@ -33,6 +33,7 @@ import { confirmToast } from "@/lib/confirmToast";
 import toast from "react-hot-toast";
 import { LiveCountdown } from "./LiveCountdown";
 import { DocTaskRow } from "./DocTaskRow";
+import { AddDocumentsModal } from "./AddDocumentsModal"; // ✅ Import Modal
 
 export interface SubmissionAttachment {
   _id?: string;
@@ -86,7 +87,7 @@ interface Props {
   data: SubmissionDetailData;
   onTaskMutated?: () => void;
   onPreparationChanged?: () => void;
-  onHeaderUpdated?: () => void; // ✅ ADD THIS LINE
+  onHeaderUpdated?: () => void;
   submitAction?: {
     label: string;
     onClick: () => void;
@@ -134,6 +135,10 @@ export function SubmissionDetail({
   const [securityPurchased, setSecurityPurchased] = useState(
     Boolean(data.tenderSecurityPurchased)
   );
+
+  // ✅ State for Add Documents Modal
+  const [addDocsOpen, setAddDocsOpen] = useState(false);
+  const [targetSection, setTargetSection] = useState<{ id: string; title: string } | null>(null);
 
   const sections = useMemo<TenderSection[]>(
     () =>
@@ -355,9 +360,8 @@ export function SubmissionDetail({
     }
   };
 
-  // ✅ Update the type signature here
   const savePreparation = async (patch: {
-    packageMode?: SubmissionPackageMode; // Changed from string to SubmissionPackageMode
+    packageMode?: SubmissionPackageMode;
     packageLabel?: string;
     notes?: string;
   }) => {
@@ -368,7 +372,7 @@ export function SubmissionDetail({
         await tenderApi.applySectionTemplate(data.id, patch.packageMode);
         await onPreparationChanged?.();
       } else {
-        await tenderApi.updatePreparation(data.id, patch); // ✅ This will now be perfectly typed
+        await tenderApi.updatePreparation(data.id, patch);
         onPreparationChanged?.();
       }
       toast.success("Saved", { id: loadingId });
@@ -451,16 +455,13 @@ export function SubmissionDetail({
   };
 
   const togglePriority = async () => {
-    // ✅ Toggle between "high" and ""
     const next = priority === "high" ? "" : "high";
-    setPriority(next as any); // Updates local UI instantly
-
+    setPriority(next as any);
     try {
-      // ✅ Add "as any" here to bypass the strict type check for empty string
       await tenderApi.update(data.id, { priority: next as any });
-      onHeaderUpdated?.(); // ONLY updates the top table, prevents the UI reset
+      onHeaderUpdated?.();
     } catch (e) {
-      setPriority(priority); // Revert if API fails
+      setPriority(priority);
       toast.error("Failed to save");
     }
   };
@@ -470,7 +471,7 @@ export function SubmissionDetail({
     setSecurityPurchased(next);
     try {
       await tenderApi.update(data.id, { tenderSecurityPurchased: next });
-      onHeaderUpdated?.(); // ✅ Changed from onTaskMutated to onHeaderUpdated
+      onHeaderUpdated?.();
     } catch (e) {
       setSecurityPurchased(securityPurchased);
       toast.error("Failed to save");
@@ -546,6 +547,28 @@ export function SubmissionDetail({
         }
       },
     });
+  };
+
+  // ✅ Handle adding documents from the modal to the backend
+  const handleAddDocsToTender = async (selectedIds: string[], category: string) => {
+    if (!targetSection) return;
+    
+    const loadingId = toast.loading(`Adding ${selectedIds.length} documents...`);
+    try {
+      await tenderApi.addCompanyDocsToTender(data.id, {
+        documentIds: selectedIds,
+        sectionId: targetSection.id,
+      });
+      
+      toast.success("Documents added to section", { id: loadingId });
+      
+      // This forces the page to refresh the tender data, showing the new docs!
+      onPreparationChanged?.(); 
+      
+    } catch (e) {
+      toast.error((e as Error).message || "Failed to add documents", { id: loadingId });
+      throw e; // Let the modal know it failed so it doesn't close silently
+    }
   };
 
   const activeIndex = sections.findIndex((s) => s.id === activeSectionId);
@@ -719,7 +742,7 @@ export function SubmissionDetail({
                 <select
                   value={data.packageMode ?? ""}
                   onChange={(e) =>
-                    savePreparation({ packageMode: e.target.value as any }) // ✅ Add "as any" here
+                    savePreparation({ packageMode: e.target.value as any })
                   }
                   disabled={savingPrep}
                   className="h-8 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 focus:border-[#a97400] focus:outline-none focus:ring-1 focus:ring-amber-200 disabled:opacity-60"
@@ -751,31 +774,46 @@ export function SubmissionDetail({
                   onAddSection={() => setIsSectionModalOpen(true)}
                 />
                 {activeSection && (
-                  <SectionCard
-                    section={activeSection}
-                    tasks={activeSectionTasks}
-                    isFirst={activeIndex <= 0}
-                    isLast={activeIndex >= sections.length - 1}
-                    onTaskChange={patchTask}
-                    onTaskSave={saveTask}
-                    onTaskCancel={cancelTask}
-                    onTaskRemove={removeTask}
-                    onTaskUploadFile={uploadTaskFile}
-                    onAddTask={addTask}
-                    onAddTodo={handleAddTodo}
-                    onToggleTodo={handleToggleTodo}
-                    onRemoveTodo={handleRemoveTodo}
-                    onPrev={() =>
-                      activeIndex > 0 &&
-                      setActiveSectionId(sections[activeIndex - 1].id)
-                    }
-                    onNext={() =>
-                      activeIndex < sections.length - 1 &&
-                      setActiveSectionId(sections[activeIndex + 1].id)
-                    }
-                    onRemoveSection={removeActiveSection}
-                    fileUrlResolver={fullFileUrl}
-                  />
+                  <>
+                    {/* ✅ Add Documents Button trigger */}
+                    <div className="flex justify-end mb-2">
+                       <button 
+                         onClick={() => {
+                           setTargetSection({ id: activeSection.id, title: activeSection.title });
+                           setAddDocsOpen(true);
+                         }}
+                         className="inline-flex h-7 items-center gap-1 rounded-md bg-[#fdf8ec] px-3 text-[10px] font-bold text-[#a97400] border border-[#d5b98a] hover:bg-[#f5ecdc] transition"
+                       >
+                         + Add from Library
+                       </button>
+                    </div>
+
+                    <SectionCard
+                      section={activeSection}
+                      tasks={activeSectionTasks}
+                      isFirst={activeIndex <= 0}
+                      isLast={activeIndex >= sections.length - 1}
+                      onTaskChange={patchTask}
+                      onTaskSave={saveTask}
+                      onTaskCancel={cancelTask}
+                      onTaskRemove={removeTask}
+                      onTaskUploadFile={uploadTaskFile}
+                      onAddTask={addTask}
+                      onAddTodo={handleAddTodo}
+                      onToggleTodo={handleToggleTodo}
+                      onRemoveTodo={handleRemoveTodo}
+                      onPrev={() =>
+                        activeIndex > 0 &&
+                        setActiveSectionId(sections[activeIndex - 1].id)
+                      }
+                      onNext={() =>
+                        activeIndex < sections.length - 1 &&
+                        setActiveSectionId(sections[activeIndex + 1].id)
+                      }
+                      onRemoveSection={removeActiveSection}
+                      fileUrlResolver={fullFileUrl}
+                    />
+                  </>
                 )}
 
                 {unsectionedTasks.length > 0 && (
@@ -1080,6 +1118,17 @@ export function SubmissionDetail({
         onOpenChange={setIsSectionModalOpen}
         onSubmit={handleCreateSectionSubmit}
       />
+
+      {/* ✅ Render the Add Documents Modal */}
+      {targetSection && (
+        <AddDocumentsModal
+          open={addDocsOpen}
+          onOpenChange={setAddDocsOpen}
+          onAdd={handleAddDocsToTender}
+          targetSectionId={targetSection.id}
+          targetSectionTitle={targetSection.title}
+        />
+      )}
     </section>
   );
 }

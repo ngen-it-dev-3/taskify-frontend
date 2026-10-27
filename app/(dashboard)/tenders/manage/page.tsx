@@ -34,7 +34,6 @@ import {
 import type { Tender, TenderEligibilityRequirement } from "@/lib/api/tender.api";
 import { tenderApi } from "@/lib/api/tender.api";
 import { confirmToast } from "@/lib/confirmToast";
-import SiteDirectory from "@/components/tender/site-directory/SiteDirectory";
 
 /* ---------- Column schemas ---------- */
 const COLUMNS_POTENTIAL = [
@@ -232,6 +231,7 @@ export default function TenderManagePage() {
 /* ---------- Sub-tab type for Potential ---------- */
 type PotentialSource = "all" | "manual" | "crawled";
 
+// ✅ Removed "site-directory" from the VALID_TABS
 const VALID_TABS: TenderTab[] = [
   "potential",
   "active",
@@ -239,7 +239,6 @@ const VALID_TABS: TenderTab[] = [
   "lost",
   "won",
   "drafts",
-  "site-directory",
 ];
 
 function TenderManageContent() {
@@ -271,14 +270,12 @@ function TenderManageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // ⭐ Read both `tab` and `stage` (Pipeline sends `stage=won`, dashboard uses `tab`)
   const urlTab = searchParams.get("tab");
   const urlStage = searchParams.get("stage");
   const urlTenderId = searchParams.get("tenderId");
 
   const didInitTab = useRef(false);
 
-  /* ⭐ Initialize tab from URL — accepts both ?tab= and ?stage= */
   useEffect(() => {
     if (didInitTab.current) return;
     didInitTab.current = true;
@@ -289,7 +286,6 @@ function TenderManageContent() {
     }
   }, [urlTab, urlStage]);
 
-  /* ⭐ Auto-select the tender from ?tenderId= once groups are loaded */
   useEffect(() => {
     if (!urlTenderId) return;
     if (loading) return;
@@ -298,7 +294,6 @@ function TenderManageContent() {
     const match = allTenders.find((t) => t._id === urlTenderId);
     if (!match) return;
 
-    // 1. Switch the main tab to the tender's stage
     const stageToTab: Record<string, TenderTab> = {
       potential: "potential",
       active: "active",
@@ -312,7 +307,6 @@ function TenderManageContent() {
       setTab(desiredTab);
     }
 
-    // ⭐ 2. If the tender lives in "potential", pick the correct sub-tab
     if (match.stage === "potential" || !match.stage) {
       const crawled = isCrawledTender(match);
       if (crawled && potentialSource !== "crawled") {
@@ -322,7 +316,6 @@ function TenderManageContent() {
       }
     }
 
-    // 3. Select the tender
     if (match._id !== selectedId) {
       setSelectedId(match._id);
     }
@@ -338,7 +331,6 @@ function TenderManageContent() {
     return () => window.removeEventListener("keydown", onKey);
   }, [lostPrompt]);
 
-  /* ---------- Potential sub-tab filtering ---------- */
   const manualRows = useMemo(
     () => groups.potential.filter((t) => !isCrawledTender(t)),
     [groups.potential],
@@ -355,8 +347,7 @@ function TenderManageContent() {
     return groups.potential;
   }, [potentialSource, manualRows, crawledRows, groups.potential]);
 
-  const currentRows =
-    tab === "site-directory" ? [] : (groups[tab] ?? []);
+  const currentRows = groups[tab] ?? [];
   const selected =
     currentRows.find((t) => t._id === selectedId) ?? currentRows[0] ?? null;
 
@@ -596,15 +587,15 @@ function TenderManageContent() {
                             type="button"
                             onClick={() => setPotentialSource(s.id)}
                             className={`inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-[11.5px] font-semibold transition ${active
-                                ? "bg-[#a97400] text-white shadow-sm"
-                                : "text-slate-600 hover:bg-slate-50"
+                              ? "bg-[#a97400] text-white shadow-sm"
+                              : "text-slate-600 hover:bg-slate-50"
                               }`}
                           >
                             {s.label}
                             <span
                               className={`inline-flex h-4 min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] font-bold ${active
-                                  ? "bg-white/25 text-white"
-                                  : "bg-slate-100 text-slate-600"
+                                ? "bg-white/25 text-white"
+                                : "bg-slate-100 text-slate-600"
                                 }`}
                             >
                               {s.count}
@@ -842,8 +833,6 @@ function TenderManageContent() {
                 )}
               </>
             )}
-
-            {tab === "site-directory" && <SiteDirectory />}
           </>
         )}
       </div>

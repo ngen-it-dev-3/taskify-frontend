@@ -1,409 +1,341 @@
 // app/(dashboard)/tenders/security/page.tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { SecurityHeader } from "@/components/tender/security/SecurityHeader";
+import { Search, ChevronDown, Plus } from "lucide-react";
+import { useSecurity } from "@/hooks/tender/useSecurity";
+import { toSecurityUIRow, toSecurityStatsTiles } from "@/lib/api/mappers";
+import { securityApi, type SecurityType } from "@/lib/api/tender.api";
 import { SecurityStats } from "@/components/tender/security/SecurityStats";
-import {
-  SecurityFilters,
-  type FilterState,
-} from "@/components/tender/security/SecurityFilters";
-import {
-  SecurityTable,
-  type SecurityType,
-} from "@/components/tender/security/SecurityTable";
-import { SecurityFooter } from "@/components/tender/security/SecurityFooter";
-import {
-  useSecurity,
-  useSecurityStats,
-} from "@/hooks/tender/useSecurity";
-import { securityApi } from "@/lib/api/tender.api";
-import {
-  toSecurityUIRow,
-  toSecurityStatsTiles,
-  type SecurityRowUI,
-} from "@/lib/api/mappers";
-import { SecurityNotifyModal } from "@/components/tender/modal/SecurityNotifyModal";
+import { SecurityTable } from "@/components/tender/security/SecurityTable";
+import { UpdatePaymentModal } from "@/components/tender/security/UpdatePaymentModal";
+import { PaymentHistoryModal } from "@/components/tender/security/PaymentHistoryModal";
+import { AddSecurityModal } from "@/components/tender/security/AddSecurityModal";
+import { EditSecurityModal } from "@/components/tender/security/EditSecurityModal";
 
 const ENTITIES = ["NGL-26", "NG-26", "JT"];
-const TYPES: SecurityType[] = [
-  "Tender Security",
-  "Performance Security",
-  "Bank Guarantee",
-];
+const TYPES: SecurityType[] = ["Tender Security", "Performance Security", "Bank Guarantee"];
 
-type SecurityTab = "pending" | "done";
+type MainView = "payments" | "security";
 
 export default function TenderSecurityPage() {
-  /* ============================================================
-   * 1. All state declarations FIRST (so nothing is referenced
-   *    before its declaration line).
-   * ============================================================ */
+  const [mainView, setMainView] = useState<MainView>("payments");
+  const [activeTab, setActiveTab] = useState("all");
 
-  const [activeTab, setActiveTab] = useState<SecurityTab>("pending");
+  const { rows: rawRows, loading, refetch: refetchRows } = useSecurity({ limit: 200 });
 
-  const [notifyRow, setNotifyRow] = useState<{
-    id: string;
-    entity: string;
-  } | null>(null);
-  const [notifyingId, setNotifyingId] = useState<string | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  const [filters, setFilters] = useState<FilterState>({
-    entity: "all",
-    type: "all",
-    docs: "all",
-  });
+  const fetchStats = async () => {
+    try {
+      setStatsLoading(true);
+      const data = await securityApi.stats();
+      setStats(data);
+    } catch (e) {
+      console.error("Failed to load stats", e);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editPatch, setEditPatch] = useState<Partial<SecurityRowUI>>({});
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
-  const [savingId, setSavingId] = useState<string | null>(null);
+  useEffect(() => {
+    setActiveTab("all");
+  }, [mainView]);
+
+  // ✅ Modals state
+  const [payRow, setPayRow] = useState<any>(null);
+  const [historyRow, setHistoryRow] = useState<any>(null);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+
+  // ✅ NEW: Edit Modal State
+  const [editingRow, setEditingRow] = useState<any>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // ✅ Moved UP — must be declared before any useMemo references it
-  const [draft, setDraft] = useState<SecurityRowUI | null>(null);
+  const allRows = useMemo(() => rawRows.map(toSecurityUIRow), [rawRows]);
+  const statTiles = useMemo(() => stats ? toSecurityStatsTiles(stats) : [], [stats]);
 
-  /* ============================================================
-   * 2. Data fetching
-   * ============================================================ */
+  // Payments View Filters
+  const paymentRows = useMemo(() => {
+    if (activeTab === "all") return allRows;
+    if (activeTab === "upcoming") return allRows.filter(r => r.paymentStatus === "Invoiced" || r.paymentStatus === "Part paid");
+    if (activeTab === "overdue") return allRows.filter(r => r.isOverdue);
+    if (activeTab === "not_invoiced") return allRows.filter(r => r.paymentStatus === "Not invoiced");
+    if (activeTab === "ready") return allRows.filter(r => r.paymentStatus === "Paid in full");
+    if (activeTab === "closed") return allRows.filter(r => r.paymentStatus === "Closed");
+    return allRows;
+  }, [allRows, activeTab]);
 
-  const { rows, loading, refetch } = useSecurity({
-    entity: filters.entity === "all" ? undefined : filters.entity,
-    type: filters.type === "all" ? undefined : filters.type,
-    // Docs filter is now driven by tabs — always pass undefined so both
-    // lists are fetched at once and split client-side.
-    docs: undefined,
-    limit: 200,
-  });
+  const paymentCounts = {
+    all: allRows.length,
+    upcoming: allRows.filter(r => r.paymentStatus === "Invoiced" || r.paymentStatus === "Part paid").length,
+    overdue: allRows.filter(r => r.isOverdue).length,
+    notInvoiced: allRows.filter(r => r.paymentStatus === "Not invoiced").length,
+    ready: allRows.filter(r => r.paymentStatus === "Paid in full").length,
+    closed: allRows.filter(r => r.paymentStatus === "Closed").length,
+  };
 
-  const { stats, loading: statsLoading, refetch: refetchStats } =
-    useSecurityStats();
-
-  /* ============================================================
-   * 3. Derived rows
-   * ============================================================ */
-
-  const allRows: SecurityRowUI[] = useMemo(() => {
-    const base = rows.map(toSecurityUIRow);
-    if (!editingId) return base;
-    return base.map((r) =>
-      r.id === editingId ? { ...r, ...editPatch, isEditing: true } : r,
-    );
-  }, [rows, editingId, editPatch]);
-
-  const pendingRows = useMemo(
-    () =>
-      allRows.filter(
-        (r) => r.docsStatus === "Missing" || Boolean(r.isDraft),
-      ),
-    [allRows],
-  );
-
-  const doneRows = useMemo(
-    () => allRows.filter((r) => r.docsStatus === "Attached"),
-    [allRows],
-  );
-
-  const visibleRows = useMemo(() => {
-    const base = activeTab === "pending" ? pendingRows : doneRows;
-    if (draft && activeTab === "pending") return [...base, draft];
+  // Security View Filters
+  const securityRows = useMemo(() => {
+    const base = allRows.filter(r => r.paymentStatus === "Not invoiced" || r.type !== "Tender Security");
+    if (activeTab === "all") return base;
+    if (activeTab === "requested") return base.filter(r => r.docsStatus === "Missing");
+    if (activeTab === "overdue_to_arrange") return base.filter(r => r.isOverdue);
+    if (activeTab === "upcoming") return base.filter(r => !r.isOverdue);
+    if (activeTab === "matured") return base.filter(r => r.isOverdue && r.docsStatus === "Attached");
+    if (activeTab === "released") return base.filter(r => r.delivery === "Closed");
     return base;
-  }, [activeTab, pendingRows, doneRows, draft]);
+  }, [allRows, activeTab]);
 
-  const counts = useMemo(
-    () => ({
-      pending: pendingRows.length,
-      done: doneRows.length,
-    }),
-    [pendingRows, doneRows],
-  );
-
-  /* ============================================================
-   * 4. Handlers
-   * ============================================================ */
-
-  const addRecord = () => {
-    if (allRows.some((r) => r.isDraft)) return;
-    if (editingId) return;
-    if (savingId || deletingId) return;
-
-    // Force switch to Pending tab so the draft is visible
-    setActiveTab("pending");
-
-    setDraft({
-      id: `draft-${crypto.randomUUID()}`,
-      entity: ENTITIES[0],
-      clientDescription: "",
-      type: "Tender Security",
-      amount: 0,
-      currency: "৳",
-      dueDate: "",
-      docsStatus: "Missing",
-      isDraft: true,
-    });
+  const securityCounts = {
+    all: allRows.length,
+    requested: allRows.filter(r => r.docsStatus === "Missing").length,
+    overdue_to_arrange: allRows.filter(r => r.isOverdue).length,
+    upcoming: allRows.filter(r => !r.isOverdue).length,
+    matured: allRows.filter(r => r.isOverdue && r.docsStatus === "Attached").length,
+    released: allRows.filter(r => r.delivery === "Closed").length,
   };
 
-  const saveRow = async (r: SecurityRowUI) => {
-    if (!r.clientDescription.trim()) {
-      toast.error("Description is required");
-      return;
-    }
-    if (savingId === r.id) return;
-
-    setSavingId(r.id);
+  const handleSavePayment = async (data: any) => {
+    if (!payRow) return;
+    const loadingId = toast.loading("Recording payment...");
     try {
-      await securityApi.create({
-        entity: r.entity,
-        clientDescription: r.clientDescription,
-        type: r.type,
-        amount: r.amount,
-        docsStatus: r.docsStatus,
-        ...(r.dueDate ? { dueDate: new Date(r.dueDate).toISOString() } : {}),
-      });
-      toast.success("Security record saved");
-      setDraft(null);
-      await Promise.all([refetch(), refetchStats()]);
-    } catch (e) {
-      toast.error((e as Error).message || "Save failed");
-    } finally {
-      setSavingId(null);
+      await securityApi.recordPayment(payRow.id, data);
+      toast.success("Payment recorded successfully", { id: loadingId });
+      await refetchRows();
+      await fetchStats();
+      setPayRow(null);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to save payment", { id: loadingId });
+      throw e;
     }
   };
 
-  const updateRow = (id: string, patch: Partial<SecurityRowUI>) => {
-    if (draft && draft.id === id) {
-      setDraft({ ...draft, ...patch });
-      return;
-    }
-    if (editingId === id) {
-      setEditPatch((prev) => ({ ...prev, ...patch }));
-    }
-  };
-
-  const startEdit = (id: string) => {
-    if (draft) return;
-    if (savingId || deletingId || notifyingId) return;
-    setEditingId(id);
-    setEditPatch({});
-  };
-
-  const saveEdit = async (id: string) => {
-    if (savingId === id) return;
-
-    if (!editPatch || Object.keys(editPatch).length === 0) {
-      setEditingId(null);
-      setEditPatch({});
-      return;
-    }
-
-    const merged = { ...editPatch };
-    if (
-      typeof merged.clientDescription === "string" &&
-      !merged.clientDescription.trim()
-    ) {
-      toast.error("Description is required");
-      return;
-    }
-
-    const payload: Record<string, unknown> = { ...merged };
-    if (typeof merged.dueDate === "string") {
-      payload.dueDate = merged.dueDate
-        ? new Date(merged.dueDate).toISOString()
-        : null;
-    }
-
-    setSavingId(id);
+  const handleAddSave = async (data: any) => {
+    const loadingId = toast.loading("Creating record...");
     try {
-      await securityApi.update(id, payload);
-      toast.success("Security record updated");
-      setEditingId(null);
-      setEditPatch({});
-      await Promise.all([refetch(), refetchStats()]);
-    } catch (e) {
-      toast.error((e as Error).message || "Failed to save changes");
-    } finally {
-      setSavingId(null);
+      await securityApi.create(data);
+      toast.success("Record created successfully", { id: loadingId });
+      await refetchRows();
+      await fetchStats();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to create record", { id: loadingId });
+      throw e;
     }
   };
 
-  const cancelEdit = () => {
-    if (savingId === editingId) return;
-    setEditingId(null);
-    setEditPatch({});
+  const handleSaveEdit = async (id: string, data: any) => {
+    const loadingId = toast.loading("Updating record...");
+    try {
+      await securityApi.update(id, data);
+      toast.success("Record updated successfully", { id: loadingId });
+      await refetchRows();
+      await fetchStats();
+      setEditingRow(null);
+    } catch (e: any) {
+      toast.error(e.message || "Failed to update record", { id: loadingId });
+      throw e;
+    }
   };
 
-  const deleteRow = async (id: string) => {
-    if (deletingId === id) return;
-
-    if (draft && draft.id === id) {
-      if (savingId === id) return;
-      setDraft(null);
-      return;
-    }
-
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this record?")) return;
     setDeletingId(id);
     try {
       await securityApi.remove(id);
-      toast.success("Security record deleted");
-      await Promise.all([refetch(), refetchStats()]);
-    } catch (e) {
-      toast.error((e as Error).message || "Delete failed");
+      toast.success("Record deleted");
+      await refetchRows();
+      await fetchStats();
+    } catch (e: any) {
+      toast.error(e.message || "Failed to delete");
     } finally {
       setDeletingId(null);
     }
   };
 
-  const openNotify = (id: string) => {
-    if (notifyingId) return;
-    const row = allRows.find((r) => r.id === id);
-    if (!row) return;
-    setNotifyingId(id);
-    setNotifyRow({ id: row.id, entity: row.entity });
-  };
-
-  const closeNotify = () => {
-    setNotifyRow(null);
-    setNotifyingId(null);
-  };
-
-  const statTiles = useMemo(
-    () => (stats ? toSecurityStatsTiles(stats) : []),
-    [stats],
-  );
-
-  /* ============================================================
-   * 5. Render
-   * ============================================================ */
+  if (loading && !rawRows.length) {
+    return <div className="p-10 text-center animate-pulse">Loading security records...</div>;
+  }
 
   return (
-    <main className="min-h-screen bg-[#faf7f0] pb-16 text-slate-900">
-      <div className="mx-auto max-w-[1600px] space-y-6 p-6 lg:p-8">
-        <SecurityHeader onAdd={addRecord} />
+    <main className="min-h-screen bg-[#faf7f0] pb-16 text-slate-900 font-sans">
+      <div className="mx-auto max-w-[1600px] p-6 lg:p-8 space-y-5">
 
-        {statsLoading || !stats ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-[80px] animate-pulse rounded-xl border border-slate-200/80 bg-white"
-              />
-            ))}
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[#b8860b]">TENDER DASHBOARD</p>
+            <h1 className="mt-1 text-[28px] font-serif font-bold tracking-tight text-[#1a202c]">Payment &amp; Security</h1>
+            <p className="mt-1 max-w-xl text-[13px] text-slate-500 leading-relaxed">
+              Track what each tender owes you, and every bank security that is held, due to mature or ready to collect back.
+            </p>
           </div>
-        ) : (
-          <SecurityStats stats={statTiles} />
-        )}
-
-        <SecurityFilters
-          value={filters}
-          entities={ENTITIES}
-          types={TYPES}
-          onChange={setFilters}
-        />
-
-        {/* ---------- Pending / Done Tabs ---------- */}
-        <div className="flex items-center gap-1 border-b border-slate-200">
-          {(
-            [
-              { id: "pending", label: "Pending", count: counts.pending },
-              { id: "done", label: "Done", count: counts.done },
-            ] as const
-          ).map((t) => {
-            const active = activeTab === t.id;
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => {
-                  setActiveTab(t.id);
-                  if (t.id === "done" && draft) setDraft(null);
-                  if (editingId) {
-                    setEditingId(null);
-                    setEditPatch({});
-                  }
-                }}
-                className={`relative inline-flex items-center gap-2 px-4 py-2.5 text-[12px] font-semibold transition-colors ${active
-                  ? "text-slate-900"
-                  : "text-slate-500 hover:text-slate-800"
-                  }`}
-              >
-                {t.label}
-                <span
-                  className={`inline-flex h-5 min-w-[22px] items-center justify-center rounded-full px-1.5 text-[10px] font-bold ${active
-                    ? "bg-[#a97400] text-white"
-                    : "bg-slate-100 text-slate-600"
-                    }`}
-                >
-                  {t.count}
-                </span>
-                {active && (
-                  <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-[#a97400]" />
-                )}
-              </button>
-            );
-          })}
+          <button
+            onClick={() => setAddModalOpen(true)}
+            className="inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#a97400] px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-[#8f6100]"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            Add Security Record
+          </button>
         </div>
 
-        {loading ? (
-          <div className="h-[300px] animate-pulse rounded-xl border border-slate-200/80 bg-white" />
+        <div className="bg-[#f4ebd8] text-[#8a6a2b] text-[11.5px] font-medium px-4 py-2 rounded-md">
+          Live data — synced with the database.
+        </div>
+
+        {/* Stats Grid */}
+        {statsLoading ? (
+          <div className="h-[100px] animate-pulse rounded-xl bg-slate-200" />
         ) : (
-          <SecurityTable
-            rows={visibleRows}
-            entities={ENTITIES}
-            types={TYPES}
-            savingId={savingId}
-            deletingId={deletingId}
-            notifyingId={notifyingId}
-            onUpdate={(id, patch) => {
-              updateRow(id, patch);
-            }}
-            onCreate={(d) => {
-              if (d.id) void saveRow(d as SecurityRowUI);
-            }}
-            onDelete={(id) => {
-              void deleteRow(id);
-            }}
-            onNotify={(id) => openNotify(id)}
-            onEdit={(id) => startEdit(id)}
-            onSaveEdit={(id) => {
-              void saveEdit(id);
-            }}
-            onCancelEdit={() => cancelEdit()}
-          />
+          <SecurityStats stats={statTiles as any} />
         )}
 
-        <SecurityFooter rows={visibleRows} />
+        {/* Main Tabs */}
+        <div className="flex items-center gap-2 border-b border-transparent">
+          <button
+            onClick={() => setMainView("payments")}
+            className={`px-5 py-2.5 rounded-t-lg text-[12px] font-semibold transition-colors ${mainView === "payments" ? "bg-[#0b172a] text-white" : "bg-[#e8e4d9] text-slate-600 hover:bg-[#ddd8ca]"
+              }`}
+          >
+            Tender payments
+          </button>
+          <button
+            onClick={() => setMainView("security")}
+            className={`px-5 py-2.5 rounded-t-lg text-[12px] font-semibold transition-colors ${mainView === "security" ? "bg-[#0b172a] text-white" : "bg-[#e8e4d9] text-slate-600 hover:bg-[#ddd8ca]"
+              }`}
+          >
+            Security &amp; guarantees
+          </button>
+        </div>
+
+        {/* Table Area */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.03)] overflow-hidden">
+
+          {/* Filter Bar */}
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between p-4 gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              {mainView === "payments" ? (
+                [
+                  { id: "all", label: "All", count: paymentCounts.all },
+                  { id: "upcoming", label: "Upcoming", count: paymentCounts.upcoming },
+                  { id: "overdue", label: "Overdue", count: paymentCounts.overdue },
+                  { id: "not_invoiced", label: "Not invoiced", count: paymentCounts.notInvoiced },
+                  { id: "ready", label: "Paid — ready to close", count: paymentCounts.ready },
+                  { id: "closed", label: "Closed", count: paymentCounts.closed },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setActiveTab(t.id)}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-[11.5px] font-semibold transition-colors ${activeTab === t.id
+                        ? "bg-[#f4ebd8] border-[#d5b98a] text-[#8a6a2b]"
+                        : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                      }`}
+                  >
+                    {t.label}
+                    <span className={`inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] ${activeTab === t.id ? "bg-white text-[#8a6a2b]" : "bg-slate-100 text-slate-500"
+                      }`}>
+                      {t.count}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                [
+                  { id: "all", label: "All", count: securityCounts.all },
+                  { id: "requested", label: "Requested", count: securityCounts.requested },
+                  { id: "overdue_to_arrange", label: "Overdue to arrange", count: securityCounts.overdue_to_arrange },
+                  { id: "upcoming", label: "Upcoming", count: securityCounts.upcoming },
+                  { id: "matured", label: "Matured", count: securityCounts.matured },
+                  { id: "released", label: "Released", count: securityCounts.released },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setActiveTab(t.id)}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1 text-[11.5px] font-semibold transition-colors ${activeTab === t.id
+                        ? "bg-[#f4ebd8] border-[#d5b98a] text-[#8a6a2b]"
+                        : "bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                      }`}
+                  >
+                    {t.label}
+                    <span className={`inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[10px] ${activeTab === t.id ? "bg-white text-[#8a6a2b]" : "bg-slate-100 text-slate-500"
+                      }`}>
+                      {t.count}
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[14px] w-[14px] text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search tender or client"
+                  className="h-[34px] w-[220px] rounded border border-slate-200 bg-white pl-9 pr-3 text-[12px] text-slate-700 focus:border-slate-400 focus:outline-none"
+                />
+              </div>
+
+              {mainView === "security" && (
+                <button className="inline-flex h-[34px] items-center justify-between gap-3 rounded border border-slate-200 bg-white px-3 text-[12px] font-medium text-slate-700 hover:bg-slate-50">
+                  All types <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                </button>
+              )}
+
+              <button className="inline-flex h-[34px] items-center justify-between gap-3 rounded border border-slate-200 bg-white px-3 text-[12px] font-medium text-slate-700 hover:bg-slate-50">
+                All entities <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+              </button>
+            </div>
+          </div>
+
+          {/* Table */}
+          <SecurityTable
+            rows={mainView === "payments" ? paymentRows : securityRows}
+            onRecordPayment={setPayRow}
+            onViewHistory={setHistoryRow}
+            onEdit={setEditingRow}
+            onDelete={handleDelete}
+            deletingId={deletingId}
+          />
+
+          {/* Footer */}
+          <div className="px-5 py-4 border-t border-slate-100 bg-white">
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Once a tender is paid in full, closing it also closes its order and delivery tracking. Accounts, Sales and Management can update payments.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <SecurityNotifyModal
-        open={!!notifyRow}
-        onOpenChange={(o) => {
-          if (!o) closeNotify();
-        }}
-        entity={notifyRow?.entity ?? ""}
-        variant="security"
-        onSend={async (emails, note) => {
-          if (!notifyRow) return;
+      {/* Modals */}
+      <AddSecurityModal
+        open={addModalOpen}
+        onOpenChange={setAddModalOpen}
+        onSave={handleAddSave}
+      />
 
-          const loadingId = toast.loading("Sending notification...");
-          try {
-            const result = await securityApi.notify(notifyRow.id, {
-              emails,
-              note,
-            });
-            toast.success(
-              `Sent to ${result.accepted?.length ?? emails.length} recipient(s)`,
-              { id: loadingId },
-            );
-            closeNotify();
-          } catch (e) {
-            toast.error(
-              (e as Error).message || "Failed to send notification",
-              { id: loadingId },
-            );
-            throw e;
-          }
-        }}
+      <EditSecurityModal
+        open={!!editingRow}
+        onOpenChange={(o) => !o && setEditingRow(null)}
+        row={editingRow}
+        onSave={handleSaveEdit}
+      />
+
+      <UpdatePaymentModal
+        open={!!payRow}
+        onOpenChange={(o) => !o && setPayRow(null)}
+        row={payRow}
+        onSave={handleSavePayment}
+      />
+
+      <PaymentHistoryModal
+        open={!!historyRow}
+        onOpenChange={(o) => !o && setHistoryRow(null)}
+        row={historyRow}
       />
     </main>
   );

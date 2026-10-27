@@ -1,100 +1,111 @@
 // components/tender/documents/DocsFilterBar.tsx
 "use client";
 
-import { List, LayoutGrid } from "lucide-react";
+import { List, LayoutGrid, Search } from "lucide-react";
+import { MultiSelectDropdown } from "./MultiSelectDropdown";
 
 export interface ExperienceFilters {
-  sector: string;    // "all" | sector name
-  duration: string;  // "all" | "1+ Yr" | "3+ Yrs" | "5+ Yrs"
-  volume: string;    // "all" | "৳3L+" | "৳5L+" | "৳10L+"
+  sector: string;
+  duration: string;
+  volume: string;
+}
+
+export interface WorkOrderFilters {
+  search: string;
+  sort: string;
+  value: string;
+  customers: string[];
+  types: string[];
+  products: string[];
 }
 
 export type DocsViewMode = "grid" | "list";
 
 interface Props {
-  value: ExperienceFilters;
-  onChange: (next: ExperienceFilters) => void;
-  sectors: string[];
+  value: WorkOrderFilters;
+  onChange: (next: WorkOrderFilters) => void;
   view: DocsViewMode;
   onViewChange: (v: DocsViewMode) => void;
+  category?: string;
 }
 
-const selectCls =
-  "h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 shadow-sm focus:border-slate-900 focus:outline-none";
+const CUSTOMER_TYPES = ["Government", "Autonomous / State-owned", "Educational", "NGO / Development", "MNC", "Financial (private)", "Enterprise (private)", "Telecom", "Other"];
+const WORK_TYPES = ["Supply", "Service", "Supply + Service"];
+const PRODUCTS = ["Software", "Antivirus", "EDR", "Acronis", "Kiosk", "Radmin", "Printer", "Symantec", "Tenable", "EViews"];
 
-export function DocsFilterBar({
-  value,
-  onChange,
-  sectors,
-  view,
-  onViewChange,
-}: Props) {
+export function DocsFilterBar({ value, onChange, view, onViewChange, category }: Props) {
   const isList = view === "list";
+  
+  if (category !== "work-orders") return null;
 
   return (
-    <section className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
-      <div className="flex flex-wrap items-center gap-2">
-        <select
-          className={selectCls}
-          value={value.sector}
-          onChange={(e) => onChange({ ...value, sector: e.target.value })}
-        >
-          <option value="all">All Sectors</option>
-          {sectors.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-
-        <select
-          className={selectCls}
-          value={value.duration}
-          onChange={(e) => onChange({ ...value, duration: e.target.value })}
-        >
-          <option value="all">Any Duration</option>
-          <option value="1+ Yr">1+ Yr</option>
-          <option value="3+ Yrs">3+ Yrs</option>
-          <option value="5+ Yrs">5+ Yrs</option>
-        </select>
-
-        <select
-          className={selectCls}
-          value={value.volume}
-          onChange={(e) => onChange({ ...value, volume: e.target.value })}
-        >
-          <option value="all">Any Volume</option>
-          <option value="৳3L+">৳3L+</option>
-          <option value="৳5L+">৳5L+</option>
-          <option value="৳10L+">৳10L+</option>
-        </select>
-
-        <button
-          type="button"
-          onClick={() => onViewChange(isList ? "grid" : "list")}
-          className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold shadow-sm transition ${isList
-              ? "border-[#a97400] bg-[#a97400] text-white hover:bg-[#8f6100]"
-              : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
-            }`}
-          title={isList ? "Switch to grid view" : "Switch to list view"}
-        >
-          {isList ? (
-            <>
-              <LayoutGrid className="h-3.5 w-3.5" />
-              Grid View
-            </>
-          ) : (
-            <>
-              <List className="h-3.5 w-3.5" />
-              List View
-            </>
-          )}
-        </button>
+    <section className="flex flex-col gap-3 mt-4">
+      {/* Top Row: Search, Sort, Value */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Search client or product (e.g. Tenable)" 
+              value={value.search}
+              onChange={(e) => onChange({ ...value, search: e.target.value })}
+              className="h-9 w-[260px] rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-[12px] focus:border-slate-400 outline-none"
+            />
+          </div>
+          <select 
+            value={value.sort}
+            onChange={(e) => onChange({ ...value, sort: e.target.value })}
+            className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-[12px] outline-none"
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+          <select 
+            value={value.value}
+            onChange={(e) => onChange({ ...value, value: e.target.value })}
+            className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-[12px] outline-none"
+          >
+            <option value="all">Any value</option>
+            <option value="1lac">Above 1 Lac</option>
+            <option value="10lac">Above 10 Lac</option>
+            <option value="50lac">Above 50 Lac</option>
+          </select>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => onViewChange(isList ? "grid" : "list")}
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-[12px] font-semibold shadow-sm transition hover:bg-slate-50"
+          >
+            {isList ? <LayoutGrid className="h-3.5 w-3.5" /> : <List className="h-3.5 w-3.5" />}
+            {isList ? "Card view" : "List view"}
+          </button>
+        </div>
       </div>
 
-      <p className="text-[11px] text-slate-500">
-        Select entries below to import as reference certificates.
-      </p>
+      {/* Bottom Row: MultiSelect Filters */}
+      <div className="flex items-center gap-2">
+        <MultiSelectDropdown
+          label="Customer All"
+          options={CUSTOMER_TYPES}
+          selected={value.customers}
+          onChange={(customers) => onChange({ ...value, customers })}
+        />
+        <MultiSelectDropdown
+          label="Type All"
+          options={WORK_TYPES}
+          selected={value.types}
+          onChange={(types) => onChange({ ...value, types })}
+        />
+        <MultiSelectDropdown
+          label="Product All"
+          options={PRODUCTS}
+          selected={value.products}
+          onChange={(products) => onChange({ ...value, products })}
+        />
+      </div>
     </section>
   );
 }

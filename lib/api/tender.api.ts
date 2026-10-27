@@ -111,7 +111,6 @@ export interface TenderSection {
   portalHint?: string;
   order: number;
   todoItems: TenderTodo[];
-  /** Computed server-side from doc tasks */
   readyCount?: number;
   totalCount?: number;
 }
@@ -122,88 +121,56 @@ export interface TenderSection {
 
 export interface Tender {
   _id: string;
-
-  /* Basic */
   tenderer: string;
   title: string;
   description?: string;
   draft?: boolean;
   stage: TenderStage;
   tenderType: "eGP" | "RFQ" | "Hardcopy Ref.";
-  /* ✅ ADD THESE 2 LINES HERE */
   priority?: "high" | "medium" | "low";
   tenderSecurityPurchased?: boolean;
-  /* Metadata */
   tenderLink?: string;
   recordedBy?: string;
   responsiblePerson?: string;
   mode?: string;
-
-  /* Dates */
   lastDateOfPurchase?: string | null;
   lastDateOfSubmission?: string | null;
   submittedAt?: string | null;
   lostAt?: string | null;
-
-  /* Value */
   tentativeBudget?: number;
   bidValue?: number;
   currency?: string;
-
-  /* Security */
   tenderSecurityAmount?: number;
   tenderSecurityValidity?: string | null;
   performanceSecurityAmount?: number;
   performanceSecurityValidity?: string | null;
   securityMode?: string;
-
-  /* Submission */
   submitted?: boolean;
   readiness?: number;
   docStatus?: string;
-
-  /* Advertisement */
   advertisementFile?: string;
   advertisementUrl?: string;
   advertisementUploadedBy?: string;
   advertisementUploadedAt?: string | null;
-
-  /* Notes / Eligibility */
   note?: string;
   eligibility?: string;
   eligibilityRequirements?: TenderEligibilityRequirement[];
-
-  /* Attachments */
   attachments?: TenderAttachment[];
-
-  /* Competitors */
   otherParticipants?: TenderOtherParticipant[];
-
-  /* Checklist */
   checklist?: TenderChecklistItem[];
-
-  /* Submission package */
   packageMode?: SubmissionPackageMode;
   packageLabel?: string;
   sections?: TenderSection[];
   notes?: string;
-
-  /* Loss */
   lossReason?: string;
   lowestCompliantBidder?: string;
   lowestCompliantValue?: number;
-
-  /* Ownership */
   owner?: any;
   departmentId?: string;
-
-  /* Audit */
   createdBy?: string;
   updatedBy?: string;
   createdAt?: string;
   updatedAt?: string;
-
-  /* Stage history */
   stageHistory?: TenderStageHistoryEntry[];
 }
 
@@ -309,7 +276,6 @@ export type DocTaskStatus = "Done" | "In Progress" | "Pending";
 export interface SubmissionDocTask {
   _id?: string;
   id: string;
-  /** ✅ Scopes the task under a submission-package section */
   sectionId?: string;
   title: string;
   owner: string;
@@ -327,15 +293,12 @@ export interface SubmissionDetail {
   docTasks: SubmissionDocTask[];
   checklist: TenderChecklistItem[];
   otherParticipants?: TenderOtherParticipant[];
-
-  /* ✅ Submission package */
   packageMode?: SubmissionPackageMode;
   packageLabel?: string;
   notes?: string;
   sections?: TenderSection[];
   priority?: "high" | "medium" | "low";
   tenderSecurityPurchased?: boolean;
-
   info: {
     advertisementFile?: string;
     advertisementUrl?: string;
@@ -346,7 +309,7 @@ export interface SubmissionDetail {
     responsiblePerson: string;
     lastDateOfPurchase?: string;
     lastDateOfSubmission?: string;
-    lastDateOfSubmissionRaw?: string; // ✅ For the Live Countdown
+    lastDateOfSubmissionRaw?: string;
     note?: string;
     attachments: TenderAttachment[];
     eligibility?: string;
@@ -397,14 +360,16 @@ export interface SecurityStats {
 }
 
 /* ============================================================
- * COMPANY DOC TYPES
+ * COMPANY DOC TYPES (UPDATED)
  * ============================================================ */
 
 export type CompanyDocCategory =
-  | "certificates"
   | "legal"
   | "profiles"
-  | "experience";
+  | "work-orders"
+  | "certificates"
+  | "team"
+  | "datasheets";
 
 export interface CompanyDocument {
   _id: string;
@@ -425,7 +390,21 @@ export interface CompanyDocument {
   chips?: string[];
   validUntil?: string;
   issuedOn?: string;
+  createdBy?: { _id: string; fullName?: string; name?: string; email?: string } | string;
   createdAt?: string;
+
+  // Work Order specific fields
+  totalValue?: number;
+  customerType?: string;
+  isGovt?: boolean;
+  products?: string[];
+  workType?: string;
+  certReceived?: boolean;
+
+  // Team specific fields
+  experienceYears?: number;
+  isEngineer?: boolean;
+  
 }
 
 /* ============================================================
@@ -513,10 +492,6 @@ export const tenderApi = {
     return handle<TenderChecklistItem[]>(r);
   },
 
-  /* ============================================================
-   * ✅ SUBMISSION PREPARATION
-   * ============================================================ */
-
   async updatePreparation(
     id: string,
     body: {
@@ -538,7 +513,6 @@ export const tenderApi = {
     return handle(r);
   },
 
-  // ✅ ADDED: Apply Section Template
   async applySectionTemplate(
     id: string,
     mode: string,
@@ -743,7 +717,6 @@ export const docTaskApi = {
       owner: string;
       status: string;
       fileName?: string;
-      /** ✅ Attach to a submission-package section */
       sectionId?: string;
     },
   ): Promise<{ _id: string }> {
@@ -823,6 +796,25 @@ export const securityApi = {
       : json.data?.rows ?? [];
 
     return { data, total: json.data?.total };
+  },
+
+  async recordPayment(
+    id: string,
+    body: {
+      amount: number;
+      date: string;
+      mode: string;
+      reference: string;
+      delivery: string;
+      closeOrder: boolean;
+    },
+  ): Promise<TenderSecurity> {
+    const r = await fetch(`${API_BASE}/tenders/security/${id}/pay`, {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+    });
+    return handle<TenderSecurity>(r);
   },
 
   async stats(): Promise<TenderSecurityStats> {
@@ -937,6 +929,14 @@ export const companyDocApi = {
     subtitle?: string;
     chips?: string[];
     docType?: string;
+    totalValue?: number;
+    customerType?: string;
+    isGovt?: boolean;
+    products?: string[];
+    workType?: string;
+    certReceived?: boolean;
+    experienceYears?: number;
+    isEngineer?: boolean;
   }): Promise<CompanyDocument> {
     const r = await fetch(`${API_BASE}/tenders/docs`, {
       method: "POST",
