@@ -144,7 +144,7 @@ const sanitizeImageUrl = (path?: string | null): string | null => {
 
     const apiBase =
         process.env.NEXT_PUBLIC_API_URL?.replace(/\/api\/?$/, "") ||
-        "https://taskify-server-5gat.onrender.com";
+        "http://localhost:5000";
 
     return `${apiBase}${trimmed.startsWith("/") ? "" : "/"}${trimmed}`;
 };

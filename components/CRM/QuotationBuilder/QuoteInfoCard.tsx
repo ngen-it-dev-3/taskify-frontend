@@ -154,7 +154,7 @@ export default function QuoteInfoCard({
 
         <div className="px-5 pb-4 flex flex-wrap items-center gap-x-10 gap-y-2">
           <MetaItem label="TERRITORY" value={meta.territory} />
-          <MetaItem label="CRM MANAGER" value={meta.crmManager} />
+          <MetaItem label="Assigned To" value={meta.crmManager} />
           <MetaItem label="STAGE" value={meta.stage} />
           <MetaItem label="CURRENCY" value={meta.currency} />
         </div>

@@ -29,7 +29,6 @@ export function PipelineTab({ filters }: Props) {
   const [loading, setLoading] = useState(true);
   const [selectedForecast, setSelectedForecast] = useState<ForecastEntry | null>(null);
 
-  // ⭐ Stable params — prevents re-fetches on parent re-renders
   const params = useMemo(() => {
     const p: Record<string, string> = {};
     if (filters.region !== 'All Regions') p.country = filters.region;
@@ -43,18 +42,53 @@ export function PipelineTab({ filters }: Props) {
       if (!data) setLoading(true);
       const res = await SalesCrmApi.unifiedPipeline(params);
 
+      // ⭐ FIX: Deduplicate RFQs that have already been converted to Quotations
+      const allCards = Object.values(res.columns).flat();
+      
+      // 1. Get all RFQ IDs that have an associated Quotation
+      const quotedRfqIds = new Set(
+        allCards
+          .filter((c) => c.source === 'quotation')
+          .map((c) => (c.raw as Quotation).rfqId)
+          .filter(Boolean) // Remove null/undefined
+      );
+
+      // 2. Filter the columns to remove the original RFQ if a Quote exists
+      const deduplicatedColumns = Object.fromEntries(
+        Object.entries(res.columns).map(([stage, cards]) => [
+          stage,
+          cards.filter((c) => {
+            // Keep everything EXCEPT RFQs that are in the quotedRfqIds list
+            if (c.source === 'rfq') {
+              const rfq = c.raw as RFQItem;
+              return !quotedRfqIds.has(rfq.id);
+            }
+            return true;
+          }),
+        ])
+      ) as typeof res.columns;
+
+      // Recalculate counts for the new deduplicated columns
+      const deduplicatedCounts = { ...res.counts };
+      (Object.keys(deduplicatedColumns) as (keyof typeof deduplicatedColumns)[]).forEach(
+        (k) => {
+          deduplicatedCounts[k] = deduplicatedColumns[k].length;
+        }
+      );
+
+      // Apply Source Filters (ALL, RFQ, QUOTE, etc.)
       const activeSources = filters.sources || [];
       if (activeSources.length === 0) {
-        setData(res);
+        setData({ ...res, columns: deduplicatedColumns, counts: deduplicatedCounts });
       } else {
         const filteredColumns = Object.fromEntries(
-          Object.entries(res.columns).map(([stage, cards]) => [
+          Object.entries(deduplicatedColumns).map(([stage, cards]) => [
             stage,
             cards.filter((c) => activeSources.includes(c.source)),
           ])
         ) as typeof res.columns;
 
-        const filteredCounts = { ...res.counts };
+        const filteredCounts = { ...deduplicatedCounts };
         (Object.keys(filteredColumns) as (keyof typeof filteredColumns)[]).forEach(
           (k) => {
             filteredCounts[k] = filteredColumns[k].length;
@@ -75,9 +109,6 @@ export function PipelineTab({ filters }: Props) {
     load();
   }, [load]);
 
-  /**
-   * ⭐ Click routing — source-aware AND stage-aware.
-   */
   const handleCardClick = (card: UnifiedCard) => {
     const goToSource = () => {
       if (card.source === 'rfq') {
@@ -118,7 +149,6 @@ export function PipelineTab({ filters }: Props) {
 
   return (
     <>
-      {/* ⭐ Board — 6 columns, each scrolls independently */}
       <div
         className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6"
         style={{
@@ -134,7 +164,6 @@ export function PipelineTab({ filters }: Props) {
               key={key}
               className="min-w-[220px] flex flex-col h-full overflow-hidden"
             >
-              {/* Column header — sticky, never scrolls */}
               <div className="mb-3 flex items-center justify-between shrink-0">
                 <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-700">
                   {label}
@@ -144,7 +173,6 @@ export function PipelineTab({ filters }: Props) {
                 </span>
               </div>
 
-              {/* ⭐ Cards area — its own scroll */}
               <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2.5 pipeline-scroll">
                 {cards.map((c) => (
                   <PipelineCard
@@ -166,7 +194,6 @@ export function PipelineTab({ filters }: Props) {
         })}
       </div>
 
-      {/* EntryDrawer — only for forecast-sourced cards */}
       {selectedForecast && (
         <EntryDrawer
           key={selectedForecast.id}

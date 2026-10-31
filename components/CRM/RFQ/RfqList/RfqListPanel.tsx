@@ -44,9 +44,11 @@ export default function RfqListPanel({
           </div>
         ) : (
           safeRfqs.map((rfq) => {
-            // ⭐ NEW: hide action buttons for lost/archived RFQs
+            // ⭐ Changed rfq.status to rfq.stage
             const actionsLocked =
-              rfq.stage === 'lost' || rfq.stage === 'archived';
+              rfq.stage === 'lost' || 
+              rfq.stage === 'archived' || 
+              rfq.stage === 'quoted';
 
             return (
               <RfqListItem
@@ -56,7 +58,7 @@ export default function RfqListPanel({
                 onSelect={() => onSelect(rfq.id)}
                 onAssign={() => onAssign(rfq.id)}
                 onQuote={() => onQuote(rfq)}
-                hideActions={actionsLocked}   // ⭐ pass the flag
+                hideActions={actionsLocked}
               />
             );
           })

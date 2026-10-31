@@ -43,11 +43,10 @@ export default function RfqListItem({
   return (
     <div
       onClick={onSelect}
-      className={`p-4 transition cursor-pointer border-l-3 ${
-        isSelected
+      className={`p-4 transition cursor-pointer border-l-3 ${isSelected
           ? 'bg-[#FAF6EE] border-[#A06126]'
           : 'hover:bg-[#FDFBF7] border-transparent'
-      }`}
+        }`}
     >
       <div className="flex justify-between items-start">
         <strong className="text-xs font-bold text-[#0F2D4A]">
@@ -108,13 +107,12 @@ export default function RfqListItem({
         ) : (
           /* Optional fallback pill — remove this block if you want nothing shown */
           <span
-            className={`px-2.5 py-1 rounded text-[10px] font-semibold border ${
-              isLost
+            className={`px-2.5 py-1 rounded text-[10px] font-semibold border ${isLost
                 ? 'bg-rose-50 text-rose-600 border-rose-200'
                 : 'bg-slate-100 text-slate-500 border-slate-200'
-            }`}
+              }`}
           >
-            {isLost ? '🔒 Lost — no actions' : '🔒 Locked'}
+            {isLost ? '🔒 Lost — no actions' : '🔒 Already Quoted'}
           </span>
         )}
       </div>

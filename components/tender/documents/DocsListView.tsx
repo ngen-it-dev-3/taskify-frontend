@@ -5,12 +5,12 @@ import { Eye, RotateCw, Trash2, FileText, ExternalLink } from "lucide-react";
 import type { CompanyDocUI } from "@/lib/api/mappers";
 import type { DocsTab } from "./DocsTabs";
 
-/* ---------- Convert "/uploads/..." → "https://taskify-server-5gat.onrender.com/uploads/..." ---------- */
+/* ---------- Convert "/uploads/..." → "http://localhost:5000/uploads/..." ---------- */
 function fullFileUrl(url?: string) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   const base =
-    process.env.NEXT_PUBLIC_API_URL ?? "https://taskify-server-5gat.onrender.com/api/v1";
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
   const origin = base.replace(/\/api\/v1\/?$/, "");
   return `${origin}${url.startsWith("/") ? url : `/${url}`}`;
 }

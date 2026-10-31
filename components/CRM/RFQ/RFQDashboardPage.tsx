@@ -28,12 +28,9 @@ export default function RFQDashboardPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // ⭐ URL params sent by Pipeline click
   const selectedFromUrl = searchParams.get('selected');
   const stageFromUrl = searchParams.get('stage');
 
-  // ⭐ Compute initial viewMode from URL stage
-  //    This avoids a two-render cycle where the first render uses 'active'
   const initialViewMode: FilterState['viewMode'] =
     stageFromUrl === 'lost' ? 'lost' :
       stageFromUrl === 'archived' ? 'archived' :
@@ -43,12 +40,11 @@ export default function RFQDashboardPage() {
     countryFilter: '0',
     salesmanFilter: '0',
     companySearch: '',
-    viewMode: initialViewMode,   // ⭐ seeded from URL on first render
+    viewMode: initialViewMode,
     year: '',
     month: '',
   });
 
-  // ---- Build API params from filters ----
   const listParams = useMemo(() => {
     const year = filters.year ? Number(filters.year) : undefined;
     const monthIndex =
@@ -100,11 +96,8 @@ export default function RFQDashboardPage() {
     refresh,
   } = useRfq(listParams);
 
-  // ---- Selection ----
   const [selectedRFQId, setSelectedRFQId] = useState<string | null>(null);
 
-  // ⭐ Effect 1 — If URL requests 'lost' or 'archived' but we're not on that
-  //             view yet (e.g. user navigates within SPA), switch it.
   useEffect(() => {
     if (stageFromUrl === 'lost' && filters.viewMode !== 'lost') {
       setFilters((prev) => ({ ...prev, viewMode: 'lost' }));
@@ -114,7 +107,6 @@ export default function RFQDashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stageFromUrl]);
 
-  // ⭐ Effect 2 — Auto-select the RFQ from ?selected=<id> once the list loads
   useEffect(() => {
     if (!selectedFromUrl) return;
     if (selectedRFQId === selectedFromUrl) return;
@@ -131,18 +123,18 @@ export default function RFQDashboardPage() {
     [rfqs, selectedRFQId]
   );
 
-  // ---- Modals ----
   const [selectedProductModal, setSelectedProductModal] =
     useState<RFQProduct | null>(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [showAddRfqModal, setShowAddRfqModal] = useState(false);
   const [showClientInfoModal, setShowClientInfoModal] = useState(false);
 
-  // ---- Filters ----
+  // ⭐ NEW: State to track which RFQ is currently being edited
+  const [editingRfqId, setEditingRfqId] = useState<string | null>(null);
+
   const patchFilters = (patch: Partial<FilterState>) =>
     setFilters((prev) => ({ ...prev, ...patch }));
 
-  // ---- Handlers ----
   const handleAssign = (id: string) => {
     setSelectedRFQId(id);
     setShowAssignModal(true);
@@ -158,10 +150,21 @@ export default function RFQDashboardPage() {
   };
 
   const handleQuote = (rfq: RFQItem) => {
+    if (rfq.stage === 'quoted') {
+      toast.error('A quotation has already been created for this RFQ.');
+      return;
+    }
     router.push(`/crm/quotation-builder/${rfq.id}`);
   };
 
   const handleClientDetails = () => setShowClientInfoModal(true);
+
+  // ⭐ NEW: Open the AddRfqModal in 'Edit' mode
+  const handleEdit = () => {
+    if (!selectedRFQ) return;
+    setEditingRfqId(selectedRFQ.id);
+    setShowAddRfqModal(true);
+  };
 
   const confirmAssign = async (payload: {
     assignedTo: string;
@@ -173,13 +176,25 @@ export default function RFQDashboardPage() {
     await assign(selectedRFQ.id, payload as any);
   };
 
-  const submitNewRfq = async (data: any) => {
+  // ⭐ UPDATED: Handle both Create and Update submissions
+  const submitRfq = async (data: any) => {
     try {
-      await create(data);
+      if (editingRfqId) {
+        // Update existing RFQ
+        const { RfqApi } = await import('@/services/rfq.service');
+        await RfqApi.update(editingRfqId, data);
+        toast.success('RFQ updated successfully');
+      } else {
+        // Create new RFQ
+        await create(data);
+        toast.success('RFQ created successfully');
+      }
+
       setShowAddRfqModal(false);
-      toast.success('RFQ created successfully');
+      setEditingRfqId(null);
+      await refresh();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to create RFQ');
+      toast.error(e.message || 'Failed to save RFQ');
     }
   };
 
@@ -231,7 +246,6 @@ export default function RFQDashboardPage() {
     await refresh();
   };
 
-  // ---- Loading / error ----
   if (loading && rfqs.length === 0) {
     return (
       <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
@@ -264,7 +278,10 @@ export default function RFQDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1E293B] font-sans antialiased p-6 lg:p-8 selection:bg-[#EFE8DA]">
-      <Header onAddRfq={() => setShowAddRfqModal(true)} />
+      <Header onAddRfq={() => {
+        setEditingRfqId(null); // Ensure it opens in 'Create' mode
+        setShowAddRfqModal(true);
+      }} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
         <TotalRfqCard stats={stats} />
@@ -301,6 +318,8 @@ export default function RFQDashboardPage() {
             onUnarchive={handleUnarchive}
             onDelete={handleDelete}
             onMarkLost={handleMarkLost}
+            onQuote={() => handleQuote(selectedRFQ)}
+            onEdit={handleEdit} // ⭐ Pass the edit handler
           />
         ) : (
           <div className="lg:col-span-7 bg-white rounded-xl p-8 border border-[#EBE6DF] shadow-2xs text-center text-xs text-slate-500">
@@ -324,10 +343,41 @@ export default function RFQDashboardPage() {
         />
       )}
 
+      {/* ⭐ UPDATED: AddRfqModal accepts initialData for editing */}
       {showAddRfqModal && (
         <AddRfqModal
-          onClose={() => setShowAddRfqModal(false)}
-          onSubmit={submitNewRfq}
+          onClose={() => {
+            setShowAddRfqModal(false);
+            setEditingRfqId(null); // Clear edit state on close
+          }}
+          onSubmit={submitRfq}
+          initialData={
+            editingRfqId && selectedRFQ
+              ? {
+                companyName: selectedRFQ.company,
+                country: selectedRFQ.country,
+                contactName: selectedRFQ.clientInfo.contactName,
+                email: selectedRFQ.clientInfo.email,
+                phone: selectedRFQ.clientInfo.phone,
+                designation: selectedRFQ.clientInfo.designation,
+                address: selectedRFQ.clientInfo.address,
+                city: selectedRFQ.clientInfo.city,
+                zipCode: selectedRFQ.clientInfo.zipCode,
+                tentativeBudget: selectedRFQ.clientInfo.tentativeBudget,
+                tentativePurchaseDate: selectedRFQ.clientInfo.purchaseDate,
+                items: selectedRFQ.products.map((p, i) => ({
+                  id: String(i),
+                  product: p.name,
+                  qty: p.qty,
+                  sku: p.sku,
+                  modelNo: p.modelNo,
+                  brand: p.brand,
+                  description: p.description,
+                  additionalInfo: p.additionalInfo,
+                })),
+              }
+              : undefined
+          }
         />
       )}
 

@@ -328,7 +328,7 @@ export default function AuditLogsPage() {
             params.append("format", exportFormat);
 
             const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1";
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
             const res = await fetch(`${apiUrl}/audit-logs/export?${params.toString()}`, {
                 headers: {

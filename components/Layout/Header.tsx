@@ -158,7 +158,7 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
         return imagePath;
       }
       const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1";
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
       const baseUrl = apiUrl.replace("/api/v1", "");
       const path = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
       const cacheBuster = user?._id || Date.now();

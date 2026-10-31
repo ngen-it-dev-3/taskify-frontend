@@ -1,5 +1,20 @@
 // components/CRM/quotation-builder/types.ts
 
+// ⭐ NEW: Create a dedicated interface for the sources
+export interface QuotationSourceData {
+  name: string;
+  price: string;
+  currency?: string;
+  targetCurrency?: string;
+  exchangeRate?: number | string;
+  address?: string;
+  email?: string;
+  phone?: string;
+  reference?: string;
+  category?: 'principle' | 'reseller' | '';
+  documents?: string[];
+}
+
 export interface QuotationLineItem {
   id: string;
   sl: number | '-';
@@ -10,9 +25,11 @@ export interface QuotationLineItem {
   discountPct: number;
   type?: 'item' | 'fixed';
   spec?: string;
-  source1?: { name: string; price: string };
-  source2?: { name: string; price: string };
-  source3?: { name: string; price: string };
+
+  // ⭐ UPDATED: Use the new interface here
+  source1?: QuotationSourceData;
+  source2?: QuotationSourceData;
+  source3?: QuotationSourceData;
 }
 
 export interface QuotationRates {

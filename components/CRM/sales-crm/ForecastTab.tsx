@@ -150,16 +150,16 @@ export function ForecastTab({ filters, activeMonth, onChangeMonth }: Props) {
                         <table className="w-full text-xs">
                             <thead className="bg-white">
                                 <tr className="border-b border-[#F0EBE3] text-[10px] font-bold uppercase tracking-wider text-slate-500 text-left">
-                                    <th className="px-6 py-3">Category</th>
-                                    <th className="px-6 py-3 w-[110px]">Date</th>
-                                    <th className="px-6 py-3">Client</th>
-                                    <th className="px-6 py-3">Item</th>
-                                    <th className="px-6 py-3 text-right w-[140px]">Value</th>
-                                    <th className="px-6 py-3 text-right w-[70px]">Prob.</th>
-                                    <th className="px-6 py-3 w-[160px]">Salesperson</th>
-                                    <th className="px-6 py-3 w-[130px]">Stage</th>
-                                    <th className="px-6 py-3 w-[110px]">Follow-up</th>
-                                    <th className="px-6 py-3">Note</th>
+                                    <th className="px-6 py-3" title="Category">Category</th>
+                                    <th className="px-6 py-3 w-[110px]" title="Date">Date</th>
+                                    <th className="px-6 py-3" title="Client">Client</th>
+                                    <th className="px-6 py-3" title="Item">Item</th>
+                                    <th className="px-6 py-3 text-right w-[140px]" title="Estimated Value">Value</th>
+                                    <th className="px-6 py-3 text-right w-[70px]" title="Probability of closing">Prob.</th>
+                                    <th className="px-6 py-3 w-[160px]" title="Assigned Salesperson">Salesperson</th>
+                                    <th className="px-6 py-3 w-[130px]" title="Current Pipeline Stage">Stage</th>
+                                    <th className="px-6 py-3 w-[110px]" title="Next Follow-up Date">Follow-up</th>
+                                    <th className="px-6 py-3" title="Additional Notes">Note</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#F0EBE3]">

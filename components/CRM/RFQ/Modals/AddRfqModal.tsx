@@ -20,6 +20,7 @@ import type { CreateRFQPayload } from '@/services/rfq.service';
 interface Props {
   onClose: () => void;
   onSubmit: (data: CreateRFQPayload) => void;
+  initialData?: Partial<RFQFormData>; // ⭐ ADD THIS
 }
 
 interface LineItem {
@@ -138,10 +139,15 @@ type Step = 0 | 1 | 2 | 3;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function AddRfqModal({ onClose, onSubmit }: Props) {
-  const [tab, setTab] = useState<Tab>('sync');
+export default function AddRfqModal({ onClose, onSubmit, initialData }: Props) {
+  const [tab, setTab] = useState<Tab>(initialData ? 'manual' : 'sync');
   const [step, setStep] = useState<Step>(0);
-  const [form, setForm] = useState<RFQFormData>(INITIAL_FORM);
+  const [form, setForm] = useState<RFQFormData>({
+    ...INITIAL_FORM,
+    ...initialData,
+    // Make sure items array is properly structured
+    items: initialData?.items || INITIAL_FORM.items,
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [toast, setToast] = useState<string | null>(null);
   const [syncing, setSyncing] = useState(false);

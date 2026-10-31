@@ -29,8 +29,15 @@ export default function ClientInfoModal({ rfqNumber, clientInfo, onClose }: Prop
     }
   };
 
-  // Build a full address line from available fields
-  const fullAddress = '10, Anson Road, #21-07 International Plaza';
+  // ⭐ Build a full dynamic address line from available fields
+  const dynamicAddress = [
+    clientInfo.address,
+    clientInfo.city,
+    clientInfo.zipCode,
+    clientInfo.country
+  ]
+    .filter(Boolean) // Remove undefined/null/empty values
+    .join(', ');
 
   return (
     <div
@@ -63,8 +70,9 @@ export default function ClientInfoModal({ rfqNumber, clientInfo, onClose }: Prop
 
         {/* ---------- Two-column body ---------- */}
         <div className="px-8 py-6 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
-          <InfoColumn title="SHIPPING INFO" info={clientInfo} address={fullAddress} />
-          <InfoColumn title="END-USER INFO" info={clientInfo} address={fullAddress} />
+          {/* ⭐ Passed the dynamic address down */}
+          <InfoColumn title="SHIPPING INFO" info={clientInfo} address={dynamicAddress} />
+          <InfoColumn title="END-USER INFO" info={clientInfo} address={dynamicAddress} />
         </div>
       </div>
     </div>
@@ -92,15 +100,16 @@ function InfoColumn({
 
       {/* Rows */}
       <div className="divide-y divide-slate-100">
-        <Row label="Name" value={info.contactName} />
-        <Row label="Email" value={info.email} link />
-        <Row label="Phone" value={info.phone} />
-        <Row label="Company Name" value={info.company} />
-        <Row label="Designation" value="Admin" />
-        <Row label="Address" value={address} multiline />
-        <Row label="Country" value={info.country} />
-        <Row label="City" value={info.country} />
-        <Row label="Zip Code" value={info.zipCode} />
+        {/* ⭐ Added fallbacks (|| '—') for all fields so it never breaks if data is missing */}
+        <Row label="Name" value={info.contactName || '—'} />
+        <Row label="Email" value={info.email || '—'} link />
+        <Row label="Phone" value={info.phone || '—'} />
+        <Row label="Company Name" value={info.company || '—'} />
+        <Row label="Designation" value={info.designation || '—'} />
+        <Row label="Address" value={address || '—'} multiline />
+        <Row label="Country" value={info.country || '—'} />
+        <Row label="City" value={info.city || '—'} /> {/* ⭐ Fixed bug: was info.country */}
+        <Row label="Zip Code" value={info.zipCode || '—'} />
       </div>
     </div>
   );
