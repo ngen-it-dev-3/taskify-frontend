@@ -188,7 +188,7 @@ export default function SourceTab({
                 email: draft.source1.email,
                 phone: draft.source1.phone,
                 reference: draft.source1.reference,
-                category: draft.source1.category,
+                category: draft.source1.category as any,
                 documents: draft.source1.documents,
             },
             source2: {
@@ -201,7 +201,7 @@ export default function SourceTab({
                 email: draft.source2.email,
                 phone: draft.source2.phone,
                 reference: draft.source2.reference,
-                category: draft.source2.category,
+                category: draft.source2.category as any,
                 documents: draft.source2.documents,
             },
             source3: {
@@ -214,7 +214,7 @@ export default function SourceTab({
                 email: draft.source3.email,
                 phone: draft.source3.phone,
                 reference: draft.source3.reference,
-                category: draft.source3.category,
+                category: draft.source3.category as any,
                 documents: draft.source3.documents,
             },
         });
