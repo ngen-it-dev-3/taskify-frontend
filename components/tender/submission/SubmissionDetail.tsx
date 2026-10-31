@@ -102,7 +102,7 @@ type Tab = (typeof TABS)[number];
 function fullFileUrl(url: string) {
   if (!url) return "";
   if (url.startsWith("http")) return url;
-  const uploadBase = process.env.NEXT_PUBLIC_API_URL_UPLOAD || "http://localhost:5000";
+  const uploadBase = process.env.NEXT_PUBLIC_API_URL_UPLOAD || "https://taskify-server-5gat.onrender.com";
   return `${uploadBase}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
