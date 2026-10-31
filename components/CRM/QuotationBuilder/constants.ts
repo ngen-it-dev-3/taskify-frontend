@@ -1,3 +1,4 @@
+// components/CRM/quotation-builder/constants.ts
 import type {
     QuotationLineItem,
     QuotationMeta,
@@ -126,8 +127,27 @@ export const AUTHORIZED_BRANDS = [
     'Fortinet',
 ];
 
-export const COUNTRIES = ['Bangladesh', 'Singapore', 'Europe', 'Middle East', 'UK'];
+// ⭐ Expanded list to match ClientTypeBar mapping
+export const COUNTRIES = [
+    'Bangladesh',
+    'United States of America',
+    'United Kingdom',
+    'Europe',
+    'Singapore',
+    'Pakistan',
+    'India',
+    'United Arab Emirates',
+    'Saudi Arabia',
+    'Malaysia',
+    'Japan',
+    'Australia',
+    'Canada',
+    'China',
+    'Qatar',
+    'Kuwait',
+].sort();
 
+// In constants.ts
 export const CURRENCIES = [
     { code: 'BDT', symbol: '৳', label: 'Taka (৳)', rateToBDT: 1 },
     { code: 'USD', symbol: '$', label: 'USD ($)', rateToBDT: 110 },
@@ -135,4 +155,17 @@ export const CURRENCIES = [
     { code: 'GBP', symbol: '£', label: 'GBP (£)', rateToBDT: 140 },
     { code: 'AED', symbol: 'AED', label: 'AED', rateToBDT: 30 },
     { code: 'SGD', symbol: 'S$', label: 'Singapore (S$)', rateToBDT: 82 },
+    
+    // ⭐ UPDATE THIS RATE
+    { code: 'PKR', symbol: '₨', label: 'Pakistani Rupee (₨)', rateToBDT: 0.45 }, 
+    
+    { code: 'INR', symbol: '₹', label: 'Indian Rupee (₹)', rateToBDT: 1.3 },
+    { code: 'SAR', symbol: 'ر.س', label: 'Saudi Riyal (ر.س)', rateToBDT: 29.5 },
+    { code: 'MYR', symbol: 'RM', label: 'Malaysian Ringgit (RM)', rateToBDT: 23.5 },
+    { code: 'JPY', symbol: '¥', label: 'Japanese Yen (¥)', rateToBDT: 0.75 },
+    { code: 'AUD', symbol: 'A$', label: 'Australian Dollar (A$)', rateToBDT: 72 },
+    { code: 'CAD', symbol: 'C$', label: 'Canadian Dollar (C$)', rateToBDT: 80 },
+    { code: 'CNY', symbol: '¥', label: 'Chinese Yuan (¥)', rateToBDT: 15.5 },
+    { code: 'QAR', symbol: 'ر.ق', label: 'Qatari Riyal (ر.ق)', rateToBDT: 30 },
+    { code: 'KWD', symbol: 'د.ك', label: 'Kuwaiti Dinar (د.ك)', rateToBDT: 360 },
 ];
