@@ -299,7 +299,7 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
                   <button
                     key={p.value}
                     type="button"
-                    onClick={() => setPriority(p.value)}
+                    onClick={() => setPriority(p.value as any)}
                     disabled={submitting}
                     className={`px-2 py-1.5 rounded-lg text-[11px] font-semibold border transition ${
                       active
