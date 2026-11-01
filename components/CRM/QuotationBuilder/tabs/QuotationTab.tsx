@@ -8,7 +8,6 @@ import type {
     QuotationRates,
 } from '../types';
 import { AUTHORIZED_BRANDS } from '../constants';
-import { convertToDisplay, convertToBase } from '../utils';
 
 interface Props {
     meta: QuotationMeta;
@@ -67,11 +66,12 @@ export default function QuotationTab({
     const gst = calc?.taxVatGst || 0;
     const grand = calc?.grandTotal || netSub + gst;
 
-    const displaySubtotal = convertToDisplay(subtotal, meta);
-    const displayDiscount = convertToDisplay(discountAmt, meta);
-    const displayNetSub = convertToDisplay(netSub, meta);
-    const displayGst = convertToDisplay(gst, meta);
-    const displayGrand = convertToDisplay(grand, meta);
+    // ⭐ REMOVED convertToDisplay — values are already in Territory Currency
+    const displaySubtotal = subtotal;
+    const displayDiscount = discountAmt;
+    const displayNetSub = netSub;
+    const displayGst = gst;
+    const displayGrand = grand;
 
     const sym = meta.currencySymbol || '৳';
 
@@ -140,15 +140,14 @@ export default function QuotationTab({
                 autoEditedIds.current.add(newest.id);
 
                 const baseUnitPrice = computeClientUnitPrice(newest);
-                const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
 
                 setEditing({
                     id: newest.id,
                     name: '',
                     qty: String(newest.qty || 1),
                     price:
-                        displayUnitPrice > 0
-                            ? String(Number(displayUnitPrice.toFixed(2)))
+                        baseUnitPrice > 0
+                            ? String(Number(baseUnitPrice.toFixed(2)))
                             : '',
                 });
             }
@@ -159,15 +158,14 @@ export default function QuotationTab({
 
     const startEdit = (l: QuotationLineItem) => {
         const baseUnitPrice = computeClientUnitPrice(l);
-        const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
 
         setEditing({
             id: l.id,
             name: l.name === 'New Item' ? '' : l.name,
             qty: String(l.qty ?? 1),
             price:
-                displayUnitPrice > 0
-                    ? String(Number(displayUnitPrice.toFixed(2)))
+                baseUnitPrice > 0
+                    ? String(Number(baseUnitPrice.toFixed(2)))
                     : '',
         });
     };
@@ -182,10 +180,11 @@ export default function QuotationTab({
         }
 
         const qtyNum = Number(editing.qty) || 0;
+        // ⭐ Price typed is already in the correct currency
         const priceNum = Number(editing.price) || 0;
-        const baseClientPrice = convertToBase(priceNum, meta);
+
         const principalCost = derivePrincipalCost(
-            baseClientPrice,
+            priceNum,
             original.discountPct || 0
         );
 
@@ -373,8 +372,6 @@ export default function QuotationTab({
                                     const isEditing = editing?.id === l.id;
                                     const baseUnitPrice = computeClientUnitPrice(l);
                                     const baseTotal = baseUnitPrice * l.qty;
-                                    const displayUnitPrice = convertToDisplay(baseUnitPrice, meta);
-                                    const displayTotal = convertToDisplay(baseTotal, meta);
 
                                     if (isEditing && editing) {
                                         return (
@@ -480,13 +477,13 @@ export default function QuotationTab({
                                             </td>
                                             <td className="py-2 text-right font-mono text-slate-700">
                                                 {sym}
-                                                {displayUnitPrice.toLocaleString(undefined, {
+                                                {baseUnitPrice.toLocaleString(undefined, {
                                                     maximumFractionDigits: 2,
                                                 })}
                                             </td>
                                             <td className="py-2 text-right font-mono font-semibold text-slate-900">
                                                 {sym}
-                                                {displayTotal.toLocaleString(undefined, {
+                                                {baseTotal.toLocaleString(undefined, {
                                                     maximumFractionDigits: 2,
                                                 })}
                                             </td>
@@ -505,8 +502,8 @@ export default function QuotationTab({
                                                         onClick={() => onRemoveLine?.(l.id)}
                                                         disabled={!canRemoveLine}
                                                         className={`w-7 h-7 rounded border inline-flex items-center justify-center transition ${canRemoveLine
-                                                                ? 'border-[#E2DBD1] hover:bg-rose-50 text-rose-600'
-                                                                : 'border-[#E2DBD1] text-slate-300 cursor-not-allowed opacity-50'
+                                                            ? 'border-[#E2DBD1] hover:bg-rose-50 text-rose-600'
+                                                            : 'border-[#E2DBD1] text-slate-300 cursor-not-allowed opacity-50'
                                                             }`}
                                                         title={
                                                             canRemoveLine

@@ -2,10 +2,8 @@
 
 import api from '@/lib/axios';
 
-const API_BASE =
-  (process.env.NEXT_PUBLIC_API_URL || 'https://taskify-server-5gat.onrender.com/api/v1') +
-  '/crm/rfq';
-
+// ⭐ HARDCODED to force local development
+const API_BASE = 'https://taskify-server-5gat.onrender.com/api/v1/crm/rfq';
 // ============================================================
 // TYPES
 // ============================================================
@@ -62,6 +60,12 @@ export interface RFQItem {
   source: RFQSource;
   salesman: string;
   assignedTo: string;
+
+  // ⭐ CRITICAL: These 3 fields were missing. Adding them fixes the UI.
+  territory?: string;
+  currency?: string;
+  exchangeRate?: number;
+
   clientInfo: RFQClientInfo;
   products: RFQProduct[];
   createdAt?: string;
@@ -112,6 +116,9 @@ export interface AssignRFQPayload {
   assignedToEmail?: string;
   priority?: RFQPriority;
   notes?: string;
+  territory?: string;
+  currency?: string;
+  exchangeRate?: number;
 }
 
 export interface UpdateRFQPayload {
@@ -142,7 +149,6 @@ export interface RFQStats {
   quoted: number;
   archived: number;
   lost: number;
-  // ⭐ NEW — month-over-month tracking
   thisMonth: number;
   lastMonth: number;
   momDelta: number;
@@ -154,8 +160,6 @@ export interface RFQStats {
 
 // ============================================================
 // UNAUTHENTICATED FETCH HELPER
-// Used for public CRM endpoints. The axios `api` instance
-// handles authenticated calls (see `salespeople()`).
 // ============================================================
 async function request<T>(
   path: string,
@@ -227,7 +231,7 @@ export const RfqApi = {
     return res.data;
   },
 
-  // ---- Assign (also triggers backend emails) ----
+  // ---- Assign ----
   async assign(id: string, payload: AssignRFQPayload): Promise<RFQItem> {
     const res = await request<RFQItem>(`/${id}/assign`, {
       method: 'POST',
@@ -259,15 +263,11 @@ export const RfqApi = {
     return res.data;
   },
 
-  // ---- Salespeople (uses authenticated axios instance) ----
+  // ---- Salespeople ----
   async salespeople(): Promise<Salesperson[]> {
     const res = await api.get('/auth/users/active');
     const json = res.data;
 
-    // Normalize — API may return:
-    //   { success, data: [...] }
-    //   { success, data: { users: [...] } }
-    //   { success, users: [...] }
     const raw: any[] = Array.isArray(json?.data)
       ? json.data
       : Array.isArray(json?.data?.users)
@@ -303,7 +303,6 @@ export const RfqApi = {
     const res = await fetch(`${API_BASE}/upload`, {
       method: 'POST',
       body: fd,
-      // Do NOT set Content-Type — browser sets multipart boundary
     });
     const json = (await res.json().catch(() => ({}))) as ApiResponse<{
       files: string[];

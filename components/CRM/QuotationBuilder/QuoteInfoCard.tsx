@@ -2,11 +2,12 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Settings, MessageCircle, Loader2, X } from 'lucide-react';
+import { Settings, MessageCircle, Loader2, X, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { QuotationMeta } from './types';
 import Link from 'next/link';
 import { NumberingApi } from '@/services/numbering.service';
+import { COUNTRIES, CURRENCIES } from './constants';
 
 interface Props {
   meta: QuotationMeta;
@@ -20,6 +21,28 @@ interface Props {
 }
 
 type DocType = 'quote' | 'pq';
+
+const COUNTRY_CURRENCY_MAP: Record<string, string> = {
+  'Turkey': 'TRY',
+  'Qatar': 'QAR',
+  'Saudi Arabia': 'SAR',
+  'Pakistan': 'PKR',
+  'United Arab Emirates': 'AED',
+  'United States of America': 'USD',
+  'United States': 'USD',
+  'United Kingdom': 'GBP',
+  'Singapore': 'SGD',
+  'India': 'INR',
+  'Europe': 'EUR',
+  'Bangladesh': 'BDT',
+  'Australia': 'AUD',
+  'Canada': 'CAD',
+  'China': 'CNY',
+  'Malaysia': 'MYR',
+  'Japan': 'JPY',
+  'Kuwait': 'KWD',
+  'Vietnam': 'VND',
+};
 
 /* -----------------------------------------------------------
    Country presets
@@ -56,11 +79,7 @@ const REGION_CODES = [
 
 /* -----------------------------------------------------------
    Date conversion helpers
-   Stored format:  YYMMDD      ("261008")
-   Display format: DD/MM/YYYY  ("08/10/2026")
 ----------------------------------------------------------- */
-
-/** "261008" → "08/10/2026" */
 function formatDdMmYyyy(yyMmDd: string): string {
   const digits = (yyMmDd || '').replace(/\D/g, '');
   if (digits.length !== 6) return '';
@@ -70,7 +89,6 @@ function formatDdMmYyyy(yyMmDd: string): string {
   return `${dd}/${mm}/20${yy}`;
 }
 
-/** "08/10/2026" or "08102026" → "261008" */
 function ddmmyyyyToYyMmDd(input: string): string {
   const d = (input || '').replace(/\D/g, '').slice(0, 8);
   if (d.length !== 8) return '';
@@ -91,6 +109,28 @@ export default function QuoteInfoCard({
   onNumberingSaved,
 }: Props) {
   const [numberingOpen, setNumberingOpen] = useState(false);
+  const [territoryOpen, setTerritoryOpen] = useState(false);
+
+  const handleTerritoryChange = (newTerritory: string) => {
+    // Extract company name from title (e.g. "Samsung — Vietnam" -> "Samsung")
+    const companyName = meta.title.split('—')[0].trim() || meta.client?.company || 'Client';
+    const newTitle = `${companyName} — ${newTerritory}`;
+
+    const newCurrency = COUNTRY_CURRENCY_MAP[newTerritory] || meta.currency;
+    const currencyData = CURRENCIES.find(c => c.code === newCurrency);
+
+    onChange({
+      ...meta,
+      territory: newTerritory,
+      country: newTerritory,
+      title: newTitle,
+      currency: newCurrency,
+      currencySymbol: currencyData?.symbol || meta.currencySymbol,
+      exchangeRate: newCurrency === 'BDT' ? 1 : (currencyData?.rateToBDT || 1)
+    });
+    
+    setTerritoryOpen(false);
+  };
 
   return (
     <>
@@ -152,8 +192,36 @@ export default function QuoteInfoCard({
           </div>
         </div>
 
-        <div className="px-5 pb-4 flex flex-wrap items-center gap-x-10 gap-y-2">
-          <MetaItem label="TERRITORY" value={meta.territory} />
+        <div className="px-5 pb-4 flex flex-wrap items-center gap-x-10 gap-y-2 relative">
+          {/* Clickable Territory Dropdown */}
+          <div className="relative">
+            <div 
+              onClick={() => setTerritoryOpen(!territoryOpen)}
+              className="leading-tight cursor-pointer group"
+            >
+              <div className="text-[10px] font-bold tracking-[0.08em] text-slate-400 uppercase flex items-center gap-1">
+                TERRITORY <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-[#A06126]" />
+              </div>
+              <div className="text-[12.5px] font-semibold text-[#0F2D4A] mt-0.5 group-hover:text-[#A06126] transition">
+                {meta.territory || 'Unassigned'}
+              </div>
+            </div>
+
+            {territoryOpen && (
+              <div className="absolute z-20 top-full left-0 mt-1 w-48 bg-white border border-[#EBE6DF] shadow-lg rounded-lg max-h-60 overflow-y-auto">
+                {COUNTRIES.map(c => (
+                  <div 
+                    key={c} 
+                    onClick={() => handleTerritoryChange(c)}
+                    className="px-3 py-2 text-xs hover:bg-slate-50 cursor-pointer text-slate-700 font-medium"
+                  >
+                    {c}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <MetaItem label="Assigned To" value={meta.crmManager} />
           <MetaItem label="STAGE" value={meta.stage} />
           <MetaItem label="CURRENCY" value={meta.currency} />
@@ -185,7 +253,7 @@ function NumberingSettingsModal({
   onSaved,
 }: {
   onClose: () => void;
-  onSaved?: () => void;    // ⭐ NEW
+  onSaved?: () => void;
 }) {
   const [docType, setDocType] = useState<DocType>('quote');
   const [loading, setLoading] = useState(false);
@@ -245,7 +313,6 @@ function NumberingSettingsModal({
     value: (typeof pqState)[K]
   ) => setPqState((s) => ({ ...s, [key]: value }));
 
-  /* ---------- Quotation preview ---------- */
   const year = new Date().getFullYear();
   const quoteYearPart =
     quoteState.yearSegment === 'none'
@@ -261,7 +328,6 @@ function NumberingSettingsModal({
     .filter(Boolean)
     .join('-');
 
-  /* ---------- PQ preview ---------- */
   const now = new Date();
   const yyyy = String(now.getFullYear());
   const yy = yyyy.slice(-2);
@@ -299,10 +365,7 @@ function NumberingSettingsModal({
           ? 'Quotation numbering settings saved'
           : 'PQ numbering settings saved'
       );
-
-      // ⭐ NOTIFY the parent so it can refetch the numbers
       onSaved?.();
-
       onClose();
     } catch (e: any) {
       toast.error(e.message || 'Failed to save settings');
@@ -492,7 +555,6 @@ function NumberingSettingsModal({
                 )}
               </Field>
 
-              {/* ⭐ Region / Branch — now a dropdown with "Other" */}
               <Field label="Region / Branch Code">
                 <select
                   value={isPresetRegion ? pqState.regionCode : 'other'}
@@ -544,7 +606,6 @@ function NumberingSettingsModal({
                 />
               </Field>
 
-              {/* Date Segment — DD/MM/YYYY display, YYMMDD storage */}
               <Field label="Date (DD/MM/YYYY)">
                 <div className="flex items-center gap-2">
                   <input

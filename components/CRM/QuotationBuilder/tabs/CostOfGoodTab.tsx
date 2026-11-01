@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ArrowUpCircle } from 'lucide-react';
 import type { QuotationLineItem, QuotationRates, QuotationMeta } from '../types';
-import { convertToDisplay, convertToBase } from '../utils';
+import { CURRENCIES } from '../constants';
 
 interface Props {
   meta: QuotationMeta;
@@ -22,6 +22,28 @@ interface Props {
   onChangeLogistics: (l: any) => void;
 }
 
+const COUNTRY_CURRENCY_MAP: Record<string, string> = {
+  'Turkey': 'TRY',
+  'Qatar': 'QAR',
+  'Saudi Arabia': 'SAR',
+  'Pakistan': 'PKR',
+  'United Arab Emirates': 'AED',
+  'United States of America': 'USD',
+  'United States': 'USD',
+  'United Kingdom': 'GBP',
+  'Singapore': 'SGD',
+  'India': 'INR',
+  'Europe': 'EUR',
+  'Bangladesh': 'BDT',
+  'Australia': 'AUD',
+  'Canada': 'CAD',
+  'China': 'CNY',
+  'Malaysia': 'MYR',
+  'Japan': 'JPY',
+  'Kuwait': 'KWD',
+  'Vietnam': 'VND',
+};
+
 export default function CostOfGoodTab({
   meta,
   lines,
@@ -34,19 +56,17 @@ export default function CostOfGoodTab({
   onRemoveLine,
   onChangeLogistics,
 }: Props) {
-  const sym = meta.currencySymbol || '৳';
+  // ⭐ FORCE the currency based on Territory, ignoring backend BDT defaults
+  const territoryCurrency = COUNTRY_CURRENCY_MAP[meta.territory] || meta.currency || 'BDT';
+  const currencyData = CURRENCIES.find(c => c.code === territoryCurrency);
+  const sym = currencyData?.symbol || meta.currencySymbol || '৳';
 
-  const disp = (base: number) => convertToDisplay(base || 0, meta);
+  // Formatting function
+  const fmt = (value: number) =>
+    sym + (value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
 
-  const fmt = (base: number) =>
-    sym +
-    disp(base).toLocaleString(undefined, { maximumFractionDigits: 2 });
-
-  const toBase = (displayVal: number) => convertToBase(displayVal || 0, meta);
-
-  // ⭐ Effective rates honoring the checkboxes
   const effectiveTaxPct = meta.vatEnabled ? (rates.taxPct || 0) : 0;
-  const discountEnabled = meta.discountEnabled !== false;   // default: on
+  const discountEnabled = meta.discountEnabled !== false;
 
   return (
     <div className="space-y-4">
@@ -105,28 +125,18 @@ export default function CostOfGoodTab({
           </thead>
           <tbody className="divide-y divide-[#F0EBE3]">
             {lines.map((l, i) => {
-              // ⭐ Principal discount reduces cost basis
-              const effectiveCost =
-                (l.principalCost || 0) *
-                (1 - (rates.principalDiscountPct || 0) / 100);
-
+              const effectiveCost = (l.principalCost || 0) * (1 - (rates.principalDiscountPct || 0) / 100);
               const lineTotal = (l.qty || 0) * effectiveCost;
               const office = (lineTotal * (rates.officePct || 0)) / 100;
               const profit = (lineTotal * (rates.profitPct || 0)) / 100;
               const others = (lineTotal * (rates.othersPct || 0)) / 100;
               const sub = lineTotal + office + profit + others;
 
-              // ⭐ Per-line client discount — only if Special Discount is ON
               const appliedDiscPct = discountEnabled ? (l.discountPct || 0) : 0;
               const discountAmt = sub * (appliedDiscPct / 100);
               const netSub = sub - discountAmt;
 
-              // ⭐ Tax — only if VAT/GST checkbox is ON
-              const lineTax =
-                effectiveTaxPct === 0
-                  ? 0
-                  : (netSub * effectiveTaxPct) / 100;
-
+              const lineTax = effectiveTaxPct === 0 ? 0 : (netSub * effectiveTaxPct) / 100;
               const clientPrice = netSub + lineTax;
 
               const isFixed = l.type === 'fixed';
@@ -140,17 +150,21 @@ export default function CostOfGoodTab({
                     {isFixed ? (
                       <span className="font-medium text-slate-800">{l.name}</span>
                     ) : (
-                      <input
-                        value={l.name}
-                        onChange={(e) =>
-                          onChangeLine(l.id, { name: e.target.value })
-                        }
-                        className="w-full bg-transparent border-0 focus:outline-none text-slate-800 font-medium"
-                      />
+                      <div className="flex items-center gap-2">
+                        <input
+                          value={l.name}
+                          onChange={(e) => onChangeLine(l.id, { name: e.target.value })}
+                          className="w-full bg-transparent border-0 focus:outline-none text-slate-800 font-medium"
+                        />
+                        {l.principalCost > 0 && (
+                          <span title="Price was imported from Source">
+                            <ArrowUpCircle className="w-4 h-4 text-[#A06126] shrink-0" />
+                          </span>
+                        )}
+                      </div>
                     )}
                   </td>
 
-                  {/* ⭐ Qty */}
                   <td className="px-3 py-2 text-center">
                     <CellInput
                       value={l.qty}
@@ -160,19 +174,15 @@ export default function CostOfGoodTab({
                     />
                   </td>
 
-                  {/* ⭐ Principal Cost */}
                   <td className="px-3 py-2 text-right">
                     <CellInput
-                      value={Number(disp(l.principalCost).toFixed(2))}
-                      onChange={(v) =>
-                        onChangeLine(l.id, { principalCost: toBase(v) })
-                      }
+                      value={Number((l.principalCost || 0).toFixed(2))}
+                      onChange={(v) => onChangeLine(l.id, { principalCost: v })}
                       className="w-24 text-right"
                       step="0.01"
                     />
                   </td>
 
-                  {/* ⭐ Weight */}
                   <td className="px-3 py-2 text-right">
                     <CellInput
                       value={l.weightKg}
@@ -204,7 +214,6 @@ export default function CostOfGoodTab({
                     {fmt(sub)}
                   </td>
 
-                  {/* ⭐ Discount % */}
                   <td className="px-3 py-2 text-center">
                     <CellInput
                       value={l.discountPct}
@@ -339,26 +348,26 @@ export default function CostOfGoodTab({
         {/* ---------- COST CALCULATION ---------- */}
         <div className="bg-[#0F2D4A] rounded-xl p-5 text-white shadow-2xs">
           <h3 className="text-[11px] font-bold tracking-wider uppercase mb-4 text-[#F0B85A]">
-            Cost Calculation ({meta.currency})
+            Cost Calculation ({territoryCurrency})
           </h3>
           <div className="divide-y divide-white/10 text-xs">
-            <CalcRow label="Cost of Goods" value={calc.costOfGoods} meta={meta} />
+            <CalcRow label="Cost of Goods" value={calc.costOfGoods} fmt={fmt} />
             <CalcRow
               label="Remittance + Office Expenses"
               value={calc.remittanceOfficeExp}
-              meta={meta}
+              fmt={fmt}
             />
             <CalcRow
               label="Customs / C&F + Freight / Logistics"
               value={calc.customsFreight}
-              meta={meta}
+              fmt={fmt}
             />
             <CalcRow
               label="Commission / Others"
               value={calc.commissionOthers}
-              meta={meta}
+              fmt={fmt}
             />
-            <CalcRow label="Net Profit" value={calc.netProfit} meta={meta} />
+            <CalcRow label="Net Profit" value={calc.netProfit} fmt={fmt} />
 
             <div className="py-2.5 flex items-center justify-between">
               <span className="text-white/70">Sub Total</span>
@@ -367,8 +376,8 @@ export default function CostOfGoodTab({
 
             {discountEnabled && calc.discountTotal > 0 && (
               <div className="py-2.5 flex items-center justify-between">
-                <span className="text-black">Discount (applied)</span>
-                <span className="font-mono text-black">
+                <span className="text-white/70">Discount (applied)</span>
+                <span className="font-mono text-rose-400">
                   −{fmt(calc.discountTotal)}
                 </span>
               </div>
@@ -428,21 +437,17 @@ function RateInput({
     if (numericLocal !== value) {
       setLocal(value === 0 ? '0' : String(value));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-
     if (raw === '') {
       setLocal('');
       onChange(0);
       return;
     }
-
     const cleaned = raw.replace(/^0+(?=\d)/, '');
     setLocal(cleaned);
-
     const num = Number(cleaned);
     if (!Number.isNaN(num)) onChange(num);
   };
@@ -467,12 +472,6 @@ function RateInput({
   );
 }
 
-/**
- * ⭐ CellInput
- * Allows the field to be **empty** while typing.
- * Shows '' when value is 0. Sends 0 when cleared.
- * Parent state keeps 0, but display stays blank.
- */
 function CellInput({
   value,
   onChange,
@@ -488,34 +487,26 @@ function CellInput({
   integer?: boolean;
   disabled?: boolean;
 }) {
-  // Local string state — '' when value is 0
   const [local, setLocal] = React.useState<string>(
     value === 0 || value === null || value === undefined ? '' : String(value)
   );
 
-  // Sync when parent value changes externally
   React.useEffect(() => {
     const numericLocal = local === '' ? 0 : Number(local);
     if (numericLocal !== value) {
       setLocal(value === 0 ? '' : String(value));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-
-    // Allow empty
     if (raw === '') {
       setLocal('');
       onChange(0);
       return;
     }
-
-    // Strip leading zeros
     const cleaned = raw.replace(/^0+(?=\d)/, '');
     setLocal(cleaned);
-
     const num = integer ? parseInt(cleaned, 10) : Number(cleaned);
     if (!Number.isNaN(num)) onChange(num);
   };
@@ -528,7 +519,6 @@ function CellInput({
       onChange={handleChange}
       onFocus={(e) => e.target.select()}
       onBlur={() => {
-        // If left empty, keep it visually empty (0 in state)
         if (local === '' || local === '-') setLocal('');
       }}
       disabled={disabled}
@@ -550,21 +540,16 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 function CalcRow({
   label,
   value,
-  meta,
+  fmt,
 }: {
   label: string;
   value: number;
-  meta: QuotationMeta;
+  fmt: (val: number) => string;
 }) {
-  const sym = meta.currencySymbol || '৳';
-  const converted = convertToDisplay(value || 0, meta);
   return (
     <div className="py-2.5 flex items-center justify-between">
       <span className="text-white/70">{label}</span>
-      <span className="font-mono">
-        {sym}
-        {converted.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-      </span>
+      <span className="font-mono">{fmt(value)}</span>
     </div>
   );
 }

@@ -145,6 +145,8 @@ export const COUNTRIES = [
     'China',
     'Qatar',
     'Kuwait',
+    'Turkey',
+    'Vietnam',
 ].sort();
 
 // In constants.ts
@@ -155,10 +157,7 @@ export const CURRENCIES = [
     { code: 'GBP', symbol: '£', label: 'GBP (£)', rateToBDT: 140 },
     { code: 'AED', symbol: 'AED', label: 'AED', rateToBDT: 30 },
     { code: 'SGD', symbol: 'S$', label: 'Singapore (S$)', rateToBDT: 82 },
-    
-    // ⭐ UPDATE THIS RATE
     { code: 'PKR', symbol: '₨', label: 'Pakistani Rupee (₨)', rateToBDT: 0.45 }, 
-    
     { code: 'INR', symbol: '₹', label: 'Indian Rupee (₹)', rateToBDT: 1.3 },
     { code: 'SAR', symbol: 'ر.س', label: 'Saudi Riyal (ر.س)', rateToBDT: 29.5 },
     { code: 'MYR', symbol: 'RM', label: 'Malaysian Ringgit (RM)', rateToBDT: 23.5 },
@@ -168,4 +167,7 @@ export const CURRENCIES = [
     { code: 'CNY', symbol: '¥', label: 'Chinese Yuan (¥)', rateToBDT: 15.5 },
     { code: 'QAR', symbol: 'ر.ق', label: 'Qatari Riyal (ر.ق)', rateToBDT: 30 },
     { code: 'KWD', symbol: 'د.ك', label: 'Kuwaiti Dinar (د.ك)', rateToBDT: 360 },
+    // ⭐ ADDED MISSING CURRENCIES
+    { code: 'TRY', symbol: '₺', label: 'Turkish Lira (₺)', rateToBDT: 3.5 }, 
+    { code: 'VND', symbol: '₫', label: 'Vietnamese Dong (₫)', rateToBDT: 0.0045 },
 ];

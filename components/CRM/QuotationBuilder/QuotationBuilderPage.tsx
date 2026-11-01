@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 
 import Header from './Header';
@@ -19,6 +19,7 @@ import {
     DEFAULT_RATES,
     DEFAULT_TERMS,
     FIXED_LINES,
+    CURRENCIES,
 } from './constants';
 
 import type {
@@ -38,9 +39,28 @@ interface Props {
     rfqId?: string;
 }
 
-/* -----------------------------------------------------------
-   Build a PQ number preview from a settings object
------------------------------------------------------------ */
+const COUNTRY_CURRENCY_MAP: Record<string, string> = {
+    'Turkey': 'TRY',
+    'Qatar': 'QAR',
+    'Saudi Arabia': 'SAR',
+    'Pakistan': 'PKR',
+    'United Arab Emirates': 'AED',
+    'United States of America': 'USD',
+    'United States': 'USD',
+    'United Kingdom': 'GBP',
+    'Singapore': 'SGD',
+    'India': 'INR',
+    'Europe': 'EUR',
+    'Bangladesh': 'BDT',
+    'Australia': 'AUD',
+    'Canada': 'CAD',
+    'China': 'CNY',
+    'Malaysia': 'MYR',
+    'Japan': 'JPY',
+    'Kuwait': 'KWD',
+    'Vietnam': 'VND',
+};
+
 function buildPqNumberFromSettings(s: any): string {
     if (!s) return '';
     const now = new Date();
@@ -54,9 +74,6 @@ function buildPqNumberFromSettings(s: any): string {
     return `${s.countryCode}-${s.regionCode}/${s.entityCode}/${s.docTypeCode}/${datePart}-${padded}`;
 }
 
-/* -----------------------------------------------------------
-   Build a Quote number preview from a settings object
------------------------------------------------------------ */
 function buildQuoteNumberFromSettings(s: any): string {
     if (!s) return '';
     const year = new Date().getFullYear();
@@ -111,9 +128,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     const removableCount = lines.filter((l) => l.type !== 'fixed').length;
     const canRemoveLine = removableCount > 1;
 
-    // ============================================================
-    // ⭐ REUSABLE: refresh numbering numbers (PQ + Quote)
-    // ============================================================
+    // ⭐ Prevents the useEffect from overwriting manual changes after a save
+    const hasLoadedInitialRef = useRef(false);
+
     const refreshNumbering = React.useCallback(async () => {
         try {
             const [pqSettings, quoteSettings] = await Promise.all([
@@ -128,7 +145,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
             setMeta((prev) => ({
                 ...prev,
-                // ⭐ only overwrite if user hasn't manually overridden
                 pqNumber: prev.rfqRefOverride ? prev.pqNumber : (pqNumber || prev.pqNumber || ''),
                 quotationNumber: quoteNumber || prev.quotationNumber || '',
             }));
@@ -137,9 +153,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         }
     }, []);
 
-    // ============================================================
-    // LOAD RFQ ON MOUNT
-    // ============================================================
+    // 1️⃣ Load RFQ Data
     useEffect(() => {
         if (!rfqId) {
             setLoading(false);
@@ -154,7 +168,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 const rfq = await RfqApi.get(rfqId);
                 if (!mounted) return;
 
-                // Load both numbering scopes in parallel
                 let pqNumber = '';
                 let quoteNumber = '';
                 try {
@@ -171,13 +184,21 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
                 if (!mounted) return;
 
+                const assignedTerritory = rfq.territory || rfq.country || 'Bangladesh';
+                const derivedCurrencyCode = COUNTRY_CURRENCY_MAP[assignedTerritory] || rfq.currency || 'BDT';
+                const currencyData = CURRENCIES.find((c) => c.code === derivedCurrencyCode);
+
                 setMeta((prev) => ({
                     ...prev,
                     rfqNumber: rfq.rfqNumber || prev.rfqNumber || '',
-                    title: `${rfq.company} — ${rfq.clientInfo?.city || rfq.country}`,
-                    territory: rfq.country || '',
+                    title: `${rfq.company} — ${assignedTerritory}`,
+                    territory: assignedTerritory,
+                    country: assignedTerritory,
+                    currency: derivedCurrencyCode,
+                    currencySymbol: currencyData?.symbol || '৳',
+                    exchangeRate: derivedCurrencyCode === 'BDT' ? 1 : currencyData?.rateToBDT || 1,
+
                     crmManager: rfq.assignedTo || rfq.salesman || prev.crmManager,
-                    country: rfq.country || '',
                     client: {
                         company: rfq.clientInfo?.company || rfq.company || '',
                         contactName: rfq.clientInfo?.contactName || '',
@@ -191,13 +212,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     },
                     pqNumber: pqNumber || prev.pqNumber || '',
                     quotationNumber: quoteNumber || prev.quotationNumber || '',
-
-                    billToCompany:
-                        prev.billToCompany || rfq.clientInfo?.company || rfq.company || '',
-                    billToContactName:
-                        prev.billToContactName || rfq.clientInfo?.contactName || '',
-                    billToContactRole:
-                        prev.billToContactRole || rfq.clientInfo?.designation || '',
+                    billToCompany: prev.billToCompany || rfq.clientInfo?.company || rfq.company || '',
+                    billToContactName: prev.billToContactName || rfq.clientInfo?.contactName || '',
+                    billToContactRole: prev.billToContactRole || rfq.clientInfo?.designation || '',
                     billToEmail: prev.billToEmail || rfq.clientInfo?.email || '',
                     billToPhone: prev.billToPhone || rfq.clientInfo?.phone || '',
                     billToAddress:
@@ -228,6 +245,8 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     if (hasRealLines) return prev;
                     return [...productLines, ...FIXED_LINES];
                 });
+
+                hasLoadedInitialRef.current = true;
             } catch (e: any) {
                 console.error('[QuotationBuilder] Failed to load RFQ:', e);
                 if (mounted) toast.error(e.message || 'Failed to load RFQ data');
@@ -241,51 +260,78 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         };
     }, [rfqId]);
 
-    // ============================================================
-    // HYDRATE FROM EXISTING QUOTATION
-    // ============================================================
+    // 2️⃣ Load Existing Quotation (if any)
     useEffect(() => {
         if (!quotation) return;
 
-        setMeta((prev) => ({
-            ...prev,
-            rfqNumber: quotation.rfqNumber || prev.rfqNumber || '',
-            pqNumber: quotation.pqNumber || prev.pqNumber || '',
-            quotationNumber:
-                (quotation as any).quotationNumber || prev.quotationNumber || '',
-            client: { ...prev.client, ...quotation.client },
-            clientType: quotation.clientType || prev.clientType,
-            territory: quotation.territory || prev.territory,
-            crmManager: quotation.crmManager || prev.crmManager,
-            currency: quotation.currency || prev.currency,
-            currencySymbol: quotation.currencySymbol || prev.currencySymbol,
-            exchangeRate: quotation.exchangeRate ?? 1,
-            vatEnabled: quotation.vatEnabled,
-            discountEnabled: quotation.discountEnabled,
-            pqrNumber: quotation.pqrNumber || prev.pqrNumber,
-            billToCompany: quotation.billToCompany || prev.billToCompany,
-            billToContactName: quotation.billToContactName || prev.billToContactName,
-            billToContactRole: quotation.billToContactRole || prev.billToContactRole,
-            billToEmail: quotation.billToEmail || prev.billToEmail,
-            billToPhone: quotation.billToPhone || prev.billToPhone,
-            billToAddress: quotation.billToAddress || prev.billToAddress,
-            pqDate: quotation.pqDate || prev.pqDate,
-            rfqRefOverride: quotation.rfqRefOverride || prev.rfqRefOverride,
-        }));
+        setMeta((prev) => {
+            const quotationTerritory = quotation.territory || prev.territory;
+            const isFirstLoadOfQuotation = hasLoadedInitialRef.current;
+
+            const companyName = (quotation.client?.company || prev.client.company || 'Client').trim();
+            const finalTitle = isFirstLoadOfQuotation
+                ? (quotation as any).title || `${companyName} — ${quotationTerritory}`
+                : prev.title;
+
+            const expectedCurrency = COUNTRY_CURRENCY_MAP[quotationTerritory];
+            const newCurrencyCode = expectedCurrency || quotation.currency || prev.currency;
+            const currencyData = CURRENCIES.find(c => c.code === newCurrencyCode);
+
+            return {
+                ...prev,
+                rfqNumber: quotation.rfqNumber || prev.rfqNumber || '',
+                pqNumber: quotation.pqNumber || prev.pqNumber || '',
+                quotationNumber: (quotation as any).quotationNumber || prev.quotationNumber || '',
+                client: { ...prev.client, ...quotation.client },
+                clientType: quotation.clientType || prev.clientType,
+
+                title: finalTitle,
+                territory: isFirstLoadOfQuotation ? quotationTerritory : prev.territory,
+                country: isFirstLoadOfQuotation ? quotationTerritory : prev.country,
+
+                currency: isFirstLoadOfQuotation ? newCurrencyCode : prev.currency,
+                currencySymbol: quotation.currencySymbol || currencyData?.symbol || prev.currencySymbol,
+                exchangeRate: isFirstLoadOfQuotation ? (quotation.exchangeRate ?? prev.exchangeRate ?? 1) : prev.exchangeRate,
+
+                crmManager: quotation.crmManager || prev.crmManager,
+                vatEnabled: quotation.vatEnabled,
+                discountEnabled: quotation.discountEnabled,
+                pqrNumber: quotation.pqrNumber || prev.pqrNumber,
+                billToCompany: quotation.billToCompany || prev.billToCompany,
+                billToContactName: quotation.billToContactName || prev.billToContactName,
+                billToContactRole: quotation.billToContactRole || prev.billToContactRole,
+                billToEmail: quotation.billToEmail || prev.billToEmail,
+                billToPhone: quotation.billToPhone || prev.billToPhone,
+                billToAddress: quotation.billToAddress || prev.billToAddress,
+                pqDate: quotation.pqDate || prev.pqDate,
+                rfqRefOverride: quotation.rfqRefOverride || prev.rfqRefOverride,
+            };
+        });
 
         if (!linesDirty) {
-            setLines(quotation.lines?.length ? quotation.lines : [...FIXED_LINES]);
+            const loadedLines = quotation.lines?.length ? quotation.lines : [...FIXED_LINES];
+            setLines(prevLines => {
+                return loadedLines.map(newLine => {
+                    const oldLine = prevLines.find(l => l.id === newLine.id);
+                    if (!oldLine) return newLine;
+                    return {
+                        ...newLine,
+                        source1: { ...newLine.source1, manualRate: (oldLine.source1 as any)?.manualRate },
+                        source2: { ...newLine.source2, manualRate: (oldLine.source2 as any)?.manualRate },
+                        source3: { ...newLine.source3, manualRate: (oldLine.source3 as any)?.manualRate },
+                    };
+                });
+            });
         }
 
         if (quotation.rates) setRates(quotation.rates);
         if (quotation.terms?.length) setTerms(quotation.terms);
         if (quotation.logistics)
             setLogistics((prev) => ({ ...prev, ...quotation.logistics }));
+
+        hasLoadedInitialRef.current = false;
     }, [quotation, linesDirty]);
 
-    // ============================================================
-    // FETCH STATS
-    // ============================================================
     useEffect(() => {
         let mounted = true;
         (async () => {
@@ -299,9 +345,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         };
     }, [topTab, quotation?.id]);
 
-    // ============================================================
-    // LIVE CALC
-    // ============================================================
     const calc = useMemo(() => {
         let costOfGoods = 0;
         let officeTotal = 0;
@@ -339,8 +382,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
             totalWeight += weight;
         }
 
-        const taxVatGst =
-            !taxOn || taxPct === 0 ? 0 : (customerPrice * taxPct) / 100;
+        const taxVatGst = !taxOn || taxPct === 0 ? 0 : (customerPrice * taxPct) / 100;
         const grandTotal = customerPrice + taxVatGst;
 
         return {
@@ -358,9 +400,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         };
     }, [lines, rates, meta.vatEnabled, meta.discountEnabled]);
 
-    // ============================================================
-    // LINE HANDLERS
-    // ============================================================
     const updateLine = (id: string, patch: Partial<QuotationLineItem>) => {
         setLinesDirty(true);
         setLines((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
@@ -372,6 +411,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         setLines((prev) => {
             const itemCount = prev.filter((l) => l.type !== 'fixed').length;
             newId = `new-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+            const targetCurr = COUNTRY_CURRENCY_MAP[meta.territory] || meta.currency || 'BDT';
+
             const newLine: QuotationLineItem = {
                 id: newId,
                 sl: itemCount + 1,
@@ -381,9 +423,9 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                 weightKg: 0,
                 discountPct: 0,
                 type: 'item',
-                source1: { name: '', price: '' },
-                source2: { name: '', price: '' },
-                source3: { name: '', price: '' },
+                source1: { name: '', price: '', currency: targetCurr },
+                source2: { name: '', price: '', currency: targetCurr },
+                source3: { name: '', price: '', currency: targetCurr },
             };
             const firstFixedIdx = prev.findIndex((l) => l.type === 'fixed');
             if (firstFixedIdx === -1) return [...prev, newLine];
@@ -413,9 +455,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         });
     };
 
-    // ============================================================
-    // TERM HANDLERS
-    // ============================================================
     const addTerm = () => {
         setTerms((prev) => [...prev, { label: 'New Term', value: 'Description…' }]);
     };
@@ -426,9 +465,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         setTerms((prev) => prev.filter((_, i) => i !== index));
     };
 
-    // ============================================================
-    // VALIDATION
-    // ============================================================
     const DISCOUNT_THRESHOLD = 15;
     const maxDiscountPct = lines.reduce((max, l) => {
         if (l.type === 'fixed') return max;
@@ -437,32 +473,33 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
     const discountTooHigh = maxDiscountPct > DISCOUNT_THRESHOLD;
     const hasRealCosts = lines.some((l) => l.type !== 'fixed' && l.principalCost > 0);
 
-    // ============================================================
-    // BUILD PAYLOAD
-    // ============================================================
-    const buildMetaPayload = () => ({
-        client: meta.client,
-        clientType: meta.clientType,
-        crmManager: meta.crmManager,
-        territory: meta.territory,
-        vatEnabled: meta.vatEnabled,
-        discountEnabled: meta.discountEnabled,
-        pqrNumber: meta.pqrNumber,
-        pqNumber: meta.pqNumber,
-        quotationNumber: meta.quotationNumber,
-        billToCompany: meta.billToCompany,
-        billToContactName: meta.billToContactName,
-        billToContactRole: meta.billToContactRole,
-        billToEmail: meta.billToEmail,
-        billToPhone: meta.billToPhone,
-        billToAddress: meta.billToAddress,
-        pqDate: meta.pqDate,
-        rfqRefOverride: meta.rfqRefOverride,
-    });
+    const buildMetaPayload = () => {
+        const strictCurrency = COUNTRY_CURRENCY_MAP[meta.territory] || meta.currency;
 
-    // ============================================================
-    // SAVE DRAFT
-    // ============================================================
+        return {
+            title: meta.title,
+            client: meta.client,
+            clientType: meta.clientType,
+            crmManager: meta.crmManager,
+            territory: meta.territory,
+            currency: strictCurrency,
+            exchangeRate: meta.exchangeRate,
+            vatEnabled: meta.vatEnabled,
+            discountEnabled: meta.discountEnabled,
+            pqrNumber: meta.pqrNumber,
+            pqNumber: meta.pqNumber,
+            quotationNumber: meta.quotationNumber,
+            billToCompany: meta.billToCompany,
+            billToContactName: meta.billToContactName,
+            billToContactRole: meta.billToContactRole,
+            billToEmail: meta.billToEmail,
+            billToPhone: meta.billToPhone,
+            billToAddress: meta.billToAddress,
+            pqDate: meta.pqDate,
+            rfqRefOverride: meta.rfqRefOverride,
+        };
+    };
+
     const handleSaveDraft = async () => {
         if (!rfqId) {
             toast.error('No RFQ linked');
@@ -506,9 +543,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         }
     };
 
-    // ============================================================
-    // GENERATE QUOTE
-    // ============================================================
     const handleGenerateQuote = async () => {
         if (generating) return;
         if (!rfqId) {
@@ -564,9 +598,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         }
     };
 
-    // ============================================================
-    // SEND QUOTATION
-    // ============================================================
     const handleSendQuote = async (withAttachment: boolean = false) => {
         if (!hasRealCosts) {
             toast.error('Please enter principal cost for at least one product');
@@ -623,9 +654,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         }
     };
 
-    // ============================================================
-    // SHARE
-    // ============================================================
     const buildShareableLink = (): string => {
         const baseUrl =
             process.env.NEXT_PUBLIC_APP_URL ||
@@ -659,9 +687,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         }
     };
 
-    // ============================================================
-    // UPDATE + SAVE (SourceTab)
-    // ============================================================
     const updateLineAndSave = async (id: string, patch: Partial<QuotationLineItem>) => {
         const nextLines = lines.map((l) => (l.id === id ? { ...l, ...patch } : l));
         setLines(nextLines);
@@ -685,9 +710,41 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         }
     };
 
-    // ============================================================
-    // BADGES
-    // ============================================================
+    // ⭐ NEW: Handler to select a source price, update principal cost, and SAVE to backend
+    const handleSelectSourcePrice = async (lineId: string, selectedPrice: number) => {
+        // Round to 2 decimal places to prevent long floats like 4.4285714285
+        const roundedPrice = Number(selectedPrice.toFixed(2));
+
+        setLinesDirty(true);
+
+        // 1. Update local state instantly
+        const nextLines = lines.map((l) =>
+            l.id === lineId ? { ...l, principalCost: roundedPrice } : l
+        );
+        setLines(nextLines);
+
+        // 2. Save to backend automatically so it persists on reload
+        if (!rfqId) return;
+        try {
+            if (quotation?.id) {
+                await update(quotation.id, { lines: nextLines });
+            } else {
+                await create({
+                    rfqId,
+                    ...buildMetaPayload(),
+                    lines: nextLines,
+                    rates,
+                    terms,
+                    logistics,
+                });
+            }
+            setLinesDirty(false);
+            toast.success('Principal cost updated and saved');
+        } catch (e: any) {
+            toast.error(e.message || 'Failed to save imported price');
+        }
+    };
+
     const quoteCount =
         (quoteStats.sent || 0) +
         (quoteStats.won || 0) +
@@ -695,9 +752,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         (quoteStats.awaiting || 0);
     const draftCount = quoteStats.drafts || 0;
 
-    // ============================================================
-    // LOADING
-    // ============================================================
     if (loading || loadingQuotation) {
         return (
             <div className="min-h-screen bg-[#FDFBF7] flex items-center justify-center">
@@ -709,9 +763,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
         );
     }
 
-    // ============================================================
-    // RENDER
-    // ============================================================
     return (
         <div className="min-h-screen bg-[#FDFBF7] text-[#1E293B] antialiased p-6 lg:p-8">
             <Header
@@ -738,7 +789,10 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         onNumberingSaved={refreshNumbering}
                     />
 
-                    <ClientTypeBar meta={meta} onChange={setMeta} />
+                    <ClientTypeBar
+                        meta={meta}
+                        onChange={(newMeta) => setMeta(newMeta)}
+                    />
 
                     <div className="mt-6 border-b border-[#EBE6DF] flex items-center gap-6 text-xs">
                         <InnerTab active={tab === 'quotation'} onClick={() => setTab('quotation')}>
@@ -795,11 +849,16 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         {tab === 'source' && (
                             <SourceTab
                                 lines={lines}
+                                meta={meta}
                                 autoEditLineId={autoEditLineId}
                                 onAutoEditConsumed={() => setAutoEditLineId(null)}
                                 onUpdateLine={updateLineAndSave}
                                 onRemoveLine={removeLine}
                                 onAddLine={addLine}
+                                onChangeMeta={(patch: Partial<QuotationMeta>) =>
+                                    setMeta((m) => ({ ...m, ...patch }))
+                                }
+                                onSelectSource={handleSelectSourcePrice}
                             />
                         )}
 

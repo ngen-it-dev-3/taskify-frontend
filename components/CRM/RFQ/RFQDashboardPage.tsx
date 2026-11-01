@@ -129,7 +129,7 @@ export default function RFQDashboardPage() {
   const [showAddRfqModal, setShowAddRfqModal] = useState(false);
   const [showClientInfoModal, setShowClientInfoModal] = useState(false);
 
-  // ⭐ NEW: State to track which RFQ is currently being edited
+  // ⭐ State to track which RFQ is currently being edited
   const [editingRfqId, setEditingRfqId] = useState<string | null>(null);
 
   const patchFilters = (patch: Partial<FilterState>) =>
@@ -159,33 +159,36 @@ export default function RFQDashboardPage() {
 
   const handleClientDetails = () => setShowClientInfoModal(true);
 
-  // ⭐ NEW: Open the AddRfqModal in 'Edit' mode
   const handleEdit = () => {
     if (!selectedRFQ) return;
     setEditingRfqId(selectedRFQ.id);
     setShowAddRfqModal(true);
   };
 
+  // ⭐ FIXED: Removed currency/exchangeRate and ensured modal closes immediately
   const confirmAssign = async (payload: {
     assignedTo: string;
     assignedToEmail?: string;
     priority: string;
     notes: string;
+    territory: string;
   }) => {
     if (!selectedRFQ) throw new Error('No RFQ selected');
+    
+    // 1. Send to backend
     await assign(selectedRFQ.id, payload as any);
+    
+    // 2. Close modal immediately
+    setShowAssignModal(false);
   };
 
-  // ⭐ UPDATED: Handle both Create and Update submissions
   const submitRfq = async (data: any) => {
     try {
       if (editingRfqId) {
-        // Update existing RFQ
         const { RfqApi } = await import('@/services/rfq.service');
         await RfqApi.update(editingRfqId, data);
         toast.success('RFQ updated successfully');
       } else {
-        // Create new RFQ
         await create(data);
         toast.success('RFQ created successfully');
       }
@@ -279,7 +282,7 @@ export default function RFQDashboardPage() {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1E293B] font-sans antialiased p-6 lg:p-8 selection:bg-[#EFE8DA]">
       <Header onAddRfq={() => {
-        setEditingRfqId(null); // Ensure it opens in 'Create' mode
+        setEditingRfqId(null);
         setShowAddRfqModal(true);
       }} />
 
@@ -319,7 +322,7 @@ export default function RFQDashboardPage() {
             onDelete={handleDelete}
             onMarkLost={handleMarkLost}
             onQuote={() => handleQuote(selectedRFQ)}
-            onEdit={handleEdit} // ⭐ Pass the edit handler
+            onEdit={handleEdit}
           />
         ) : (
           <div className="lg:col-span-7 bg-white rounded-xl p-8 border border-[#EBE6DF] shadow-2xs text-center text-xs text-slate-500">
@@ -335,20 +338,21 @@ export default function RFQDashboardPage() {
         />
       )}
 
+      {/* ⭐ CRITICAL FIX: Added key prop to force modal to refresh with new territory data */}
       {showAssignModal && selectedRFQ && (
         <AssignRfqModal
+          key={`assign-${selectedRFQ.id}-${selectedRFQ.territory || 'none'}`}
           rfq={selectedRFQ}
           onClose={() => setShowAssignModal(false)}
           onConfirm={confirmAssign}
         />
       )}
 
-      {/* ⭐ UPDATED: AddRfqModal accepts initialData for editing */}
       {showAddRfqModal && (
         <AddRfqModal
           onClose={() => {
             setShowAddRfqModal(false);
-            setEditingRfqId(null); // Clear edit state on close
+            setEditingRfqId(null);
           }}
           onSubmit={submitRfq}
           initialData={

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { X, UserCheck, ChevronDown, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { X, UserCheck, ChevronDown, Loader2, AlertCircle, CheckCircle2, Search, MapPin } from 'lucide-react';
 import type { RFQItem } from '../types';
 import { useSalespeople } from '@/hooks/crm/useSalespeople';
 
@@ -13,6 +13,7 @@ interface Props {
     assignedToEmail?: string;
     priority: string;
     notes: string;
+    territory: string;
   }) => Promise<void> | void;
 }
 
@@ -23,21 +24,41 @@ const PRIORITIES = [
   { value: 'urgent', label: 'Urgent' },
 ];
 
+// ⭐ Only country names, no currency data needed
+const WORLD_TERRITORIES = [
+  'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia', 'Austria', 'Bahrain',
+  'Bangladesh', 'Belgium', 'Bhutan', 'Brazil', 'Canada', 'China', 'Denmark', 'Egypt',
+  'France', 'Germany', 'Hong Kong', 'India', 'Indonesia', 'Italy', 'Japan', 'Kuwait',
+  'Malaysia', 'Maldives', 'Nepal', 'Netherlands', 'Nigeria', 'Oman', 'Pakistan',
+  'Philippines', 'Qatar', 'Saudi Arabia', 'Singapore', 'South Africa', 'South Korea',
+  'Spain', 'Sri Lanka', 'Sweden', 'Switzerland', 'Thailand', 'Turkey', 'United Arab Emirates',
+  'United Kingdom', 'United States', 'Vietnam', 'Global'
+].sort();
+
 export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
-  // ---- Users (cached) ----
   const { users, loading: loadingUsers, error: usersError } = useSalespeople();
 
-  // ---- Form ----
+  // ---- Form State ----
   const [assignedTo, setAssignedTo] = useState('');
-  const [priority, setPriority] = useState('normal');
+  
+  // ⭐ Initialize territory from RFQ's saved territory or original country
+  const initialTerritory = rfq.territory || rfq.country || 'Bangladesh';
+  const [territory, setTerritory] = useState(initialTerritory);
+
+  const [priority, setPriority] = useState(rfq.priority || 'normal');
   const [notes, setNotes] = useState('');
+  
+  // ---- UI State ----
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const panelRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // ---- Preselect current assignee once users load ----
+  // ---- Preselect current assignee ----
   useEffect(() => {
     if (!users.length || assignedTo) return;
     const current = users.find(
@@ -49,6 +70,17 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
     setAssignedTo(current?.fullName || users[0]?.fullName || '');
   }, [users, rfq.salesman, rfq.assignedTo, assignedTo]);
 
+  // ---- Click outside to close search dropdown ----
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // ---- ESC to close ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -58,13 +90,8 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose, submitting]);
 
-  // ---- Click outside ----
   const onBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (
-      panelRef.current &&
-      !panelRef.current.contains(e.target as Node) &&
-      !submitting
-    ) {
+    if (panelRef.current && !panelRef.current.contains(e.target as Node) && !submitting) {
       onClose();
     }
   };
@@ -74,64 +101,51 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
     e.preventDefault();
     if (!assignedTo || submitting) return;
 
-    const selected = users.find((u) => u.fullName === assignedTo);
+    const selectedUser = users.find((u) => u.fullName === assignedTo);
+    
+    const payload = {
+      assignedTo,
+      assignedToEmail: selectedUser?.email,
+      priority,
+      notes,
+      territory,
+    };
+
     setSubmitting(true);
     setSubmitError(null);
 
     try {
-      await onConfirm({
-        assignedTo,
-        assignedToEmail: selected?.email,
-        priority,
-        notes,
-      });
-
-      // Show success state
+      await onConfirm(payload);
       setSuccess(true);
-      setTimeout(() => {
-        onClose();
-      }, 1400);
+      setTimeout(() => onClose(), 1400);
     } catch (err: any) {
       setSubmitError(err?.message || 'Failed to assign RFQ');
       setSubmitting(false);
     }
   };
 
-  // Pretty role label
   const roleLabel = (role: string) =>
-    role
-      .split('_')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
+    role.split('_').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
   // ---- Success view ----
   if (success) {
     return (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px] animate-in fade-in duration-150"
-        role="dialog"
-        aria-modal="true"
-      >
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px] animate-in fade-in duration-150">
         <div className="bg-white rounded-xl max-w-sm w-full shadow-2xl border border-[#EBE6DF] p-8 text-center animate-in zoom-in-95 duration-200">
           <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
           </div>
-          <h3 className="text-base font-serif font-bold text-[#0F2D4A]">
-            Assignment Confirmed
-          </h3>
+          <h3 className="text-base font-serif font-bold text-[#0F2D4A]">Assignment Confirmed</h3>
           <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
-            <strong className="text-slate-700">{assignedTo}</strong> has been
-            assigned to this RFQ.
+            <strong className="text-slate-700">{assignedTo}</strong> has been assigned to this RFQ for <strong className="text-slate-700">{territory}</strong>.
           </p>
-          <p className="text-[11px] text-slate-400 mt-2">
-            📧 Notification email sent
-          </p>
+          <p className="text-[11px] text-slate-400 mt-2">📧 Notification email sent</p>
         </div>
       </div>
     );
   }
 
-  // ---- Main form view ----
+  // ---- Main Form ----
   return (
     <div
       onClick={onBackdropClick}
@@ -144,48 +158,34 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
         ref={panelRef}
         className="bg-white rounded-xl max-w-md w-full shadow-2xl border border-[#EBE6DF] relative animate-in zoom-in-95 duration-200"
       >
-        {/* ---------- Header ---------- */}
+        {/* Header */}
         <div className="flex items-start justify-between p-5 border-b border-[#F0EBE3]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-[#F8F1E5] text-[#A06126] flex items-center justify-center">
               <UserCheck className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-[10px] font-bold tracking-wider text-[#A06126] uppercase">
-                Assign Representative
-              </span>
-              <h3
-                id="assign-modal-title"
-                className="text-sm font-serif font-bold text-[#0F2D4A] mt-0.5"
-              >
-                {rfq.company}
-              </h3>
+              <span className="text-[10px] font-bold tracking-wider text-[#A06126] uppercase">Assign Representative</span>
+              <h3 id="assign-modal-title" className="text-sm font-serif font-bold text-[#0F2D4A] mt-0.5">{rfq.company}</h3>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            disabled={submitting}
-            className="text-slate-400 hover:text-slate-700 transition disabled:opacity-40"
-            aria-label="Close"
-          >
+          <button onClick={onClose} disabled={submitting} className="text-slate-400 hover:text-slate-700 transition disabled:opacity-40">
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* ---------- Meta strip ---------- */}
+        {/* Meta strip */}
         <div className="px-5 pt-3 pb-1 flex items-center gap-2 text-[11px] text-slate-500">
           <span className="font-mono">RFQ# {rfq.rfqNumber}</span>
           <span className="text-slate-300">·</span>
           <span>{rfq.country}</span>
           <span className="text-slate-300">·</span>
-          <span className="text-rose-600 font-semibold">
-            ⏰ {rfq.agingDays}d aging
-          </span>
+          <span className="text-rose-600 font-semibold">⏰ {rfq.agingDays}d aging</span>
         </div>
 
-        {/* ---------- Body ---------- */}
+        {/* Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
-          {/* Error banner */}
+          {/* Error Banner */}
           {submitError && (
             <div className="flex items-center gap-2 px-3 py-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-700">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" />
@@ -193,7 +193,7 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
             </div>
           )}
 
-          {/* Assigned To */}
+          {/* Searchable Assigned Salesmanager */}
           <div>
             <label className="block text-slate-600 font-semibold mb-1.5">
               Assigned Salesmanager <span className="text-rose-500">*</span>
@@ -201,49 +201,97 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
 
             {loadingUsers ? (
               <div className="flex items-center gap-2 px-3 py-2.5 bg-[#FDFBF7] border border-[#E2DBD1] rounded-lg text-slate-500">
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                Loading users…
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading users…
               </div>
             ) : usersError ? (
               <div className="flex items-center gap-2 px-3 py-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-700">
-                <AlertCircle className="w-3.5 h-3.5" />
-                {usersError}
-              </div>
-            ) : users.length === 0 ? (
-              <div className="px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-700">
-                No active users found.
+                <AlertCircle className="w-3.5 h-3.5" /> {usersError}
               </div>
             ) : (
-              <div className="relative">
-                <select
-                  value={assignedTo}
-                  onChange={(e) => setAssignedTo(e.target.value)}
-                  disabled={submitting}
-                  className="w-full appearance-none bg-[#FDFBF7] border border-[#E2DBD1] rounded-lg pl-3 pr-8 py-2 text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-[#A06126] disabled:opacity-60"
+              <div className="relative" ref={dropdownRef}>
+                <div 
+                  onClick={() => setIsDropdownOpen(true)}
+                  className="w-full flex items-center justify-between bg-[#FDFBF7] border border-[#E2DBD1] rounded-lg px-3 py-2 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#A06126]"
                 >
-                  {users.map((u) => (
-                    <option key={u.id} value={u.fullName}>
-                      {u.fullName} — {roleLabel(u.role)}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <span className={assignedTo ? 'text-slate-800 font-medium' : 'text-slate-400'}>
+                    {assignedTo || 'Select a salesperson...'}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </div>
+
+                {isDropdownOpen && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-[#E2DBD1] rounded-lg shadow-xl max-h-60 flex flex-col overflow-hidden">
+                    <div className="p-2 border-b border-slate-100 sticky top-0 bg-white">
+                      <div className="relative">
+                        <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          placeholder="Search name or email..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-md pl-8 pr-2 py-1.5 text-xs focus:outline-none focus:border-[#A06126]"
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+                    <div className="overflow-y-auto flex-1">
+                      {users.filter(u => 
+                        u.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                        u.email.toLowerCase().includes(searchQuery.toLowerCase())
+                      ).map((u) => (
+                        <button
+                          key={u.id}
+                          type="button"
+                          onClick={() => {
+                            setAssignedTo(u.fullName);
+                            setIsDropdownOpen(false);
+                            setSearchQuery('');
+                          }}
+                          className={`w-full flex flex-col items-start px-3 py-2 text-xs text-left hover:bg-slate-50 transition ${
+                            assignedTo === u.fullName ? 'bg-amber-50' : ''
+                          }`}
+                        >
+                          <span className="font-semibold text-slate-800">{u.fullName}</span>
+                          <span className="text-[10px] text-slate-500">{roleLabel(u.role)} · {u.email}</span>
+                        </button>
+                      ))}
+                      {users.length === 0 && (
+                        <div className="p-4 text-center text-xs text-slate-400 italic">No users found</div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-
             {!loadingUsers && !usersError && users.length > 0 && (
-              <p className="text-[10.5px] text-slate-400 mt-1">
-                {users.length} user{users.length !== 1 ? 's' : ''} available ·
-                Email will be sent automatically
-              </p>
+              <p className="text-[10.5px] text-slate-400 mt-1">Email will be sent automatically</p>
             )}
+          </div>
+
+          {/* ⭐ Territory (Currency removed) */}
+          <div>
+            <label className="block text-slate-600 font-semibold mb-1.5 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-slate-400" />
+              Territory
+            </label>
+            <div className="relative">
+              <select
+                value={territory}
+                onChange={(e) => setTerritory(e.target.value)}
+                disabled={submitting}
+                className="w-full appearance-none bg-[#FDFBF7] border border-[#E2DBD1] rounded-lg pl-3 pr-8 py-2 text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-[#A06126] disabled:opacity-60 cursor-pointer"
+              >
+                {WORLD_TERRITORIES.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+            </div>
           </div>
 
           {/* Priority */}
           <div>
-            <label className="block text-slate-600 font-semibold mb-1.5">
-              Priority
-            </label>
+            <label className="block text-slate-600 font-semibold mb-1.5">Priority</label>
             <div className="grid grid-cols-4 gap-1.5">
               {PRIORITIES.map((p) => {
                 const active = priority === p.value;
@@ -268,9 +316,7 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
 
           {/* Notes */}
           <div>
-            <label className="block text-slate-600 font-semibold mb-1.5">
-              Notes / Priority Instructions
-            </label>
+            <label className="block text-slate-600 font-semibold mb-1.5">Notes / Priority Instructions</label>
             <textarea
               rows={3}
               value={notes}
@@ -280,12 +326,10 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
               placeholder="e.g. Client requested pricing by Friday. Include volume discount for 50+ units."
               className="w-full bg-[#FDFBF7] border border-[#E2DBD1] rounded-lg p-2.5 text-slate-700 resize-none focus:outline-none focus:ring-1 focus:ring-[#A06126] disabled:opacity-60"
             />
-            <div className="text-right text-[10px] text-slate-400 mt-1">
-              {notes.length}/500
-            </div>
+            <div className="text-right text-[10px] text-slate-400 mt-1">{notes.length}/500</div>
           </div>
 
-          {/* ---------- Footer ---------- */}
+          {/* Footer */}
           <div className="flex justify-end gap-2 pt-2 border-t border-[#F0EBE3]">
             <button
               type="button"
@@ -297,9 +341,7 @@ export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {
             </button>
             <button
               type="submit"
-              disabled={
-                submitting || loadingUsers || !!usersError || users.length === 0
-              }
+              disabled={submitting || loadingUsers || !!usersError || users.length === 0}
               className="px-4 py-1.5 rounded-lg bg-[#A06126] text-white font-semibold hover:bg-[#88501E] transition disabled:opacity-60 inline-flex items-center gap-1.5"
             >
               {submitting ? (
