@@ -152,7 +152,7 @@ export default function SourceTab({
     ) => {
         if (!draft) return;
         
-        let updatedSource = { ...draft[key], [field]: value };
+        const updatedSource = { ...draft[key], [field]: value };
         if (field === 'currency') {
             updatedSource.manualRate = undefined;
         }

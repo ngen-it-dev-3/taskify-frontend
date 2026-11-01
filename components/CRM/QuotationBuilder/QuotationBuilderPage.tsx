@@ -310,19 +310,27 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
 
         if (!linesDirty) {
             const loadedLines = quotation.lines?.length ? quotation.lines : [...FIXED_LINES];
+
             setLines(prevLines => {
-                return loadedLines.map(newLine => {
+                return loadedLines.map((newLine): QuotationLineItem => {
                     const oldLine = prevLines.find(l => l.id === newLine.id);
-                    if (!oldLine) return newLine;
+
+                    if (!oldLine) return newLine as QuotationLineItem;
+
                     return {
                         ...newLine,
                         source1: { ...newLine.source1, manualRate: (oldLine.source1 as any)?.manualRate },
                         source2: { ...newLine.source2, manualRate: (oldLine.source2 as any)?.manualRate },
                         source3: { ...newLine.source3, manualRate: (oldLine.source3 as any)?.manualRate },
-                    };
+                    } as QuotationLineItem;
                 });
             });
         }
+
+
+
+
+
 
         if (quotation.rates) setRates(quotation.rates);
         if (quotation.terms?.length) setTerms(quotation.terms);
