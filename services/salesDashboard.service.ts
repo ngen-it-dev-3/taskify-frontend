@@ -181,7 +181,7 @@ export const SalesDashboardApi = {
 
             // ⭐ THE FIX: Fetching 'industry' instead of 'source'
             safe(
-                SalesCrmApi.breakdown({ by: 'industry', country: countryParam }),
+                SalesCrmApi.breakdown({ by: 'industry' as any, country: countryParam }),
                 { total: 0, by: 'industry', entries: [] }
             ),
 
