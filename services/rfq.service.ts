@@ -66,6 +66,13 @@ export interface RFQItem {
   currency?: string;
   exchangeRate?: number;
 
+  // Additional Details
+  projectName?: string;
+  tentativeBudget?: string;
+  currentProjectStatus?: string;
+  tentativePurchaseDate?: string;
+  comment?: string;
+
   clientInfo: RFQClientInfo;
   products: RFQProduct[];
   createdAt?: string;
@@ -121,12 +128,34 @@ export interface AssignRFQPayload {
   exchangeRate?: number;
 }
 
+// ⭐ UPDATED: Added all the fields sent from the Edit Form
 export interface UpdateRFQPayload {
+  // Status
   stage?: RFQStage;
   priority?: RFQPriority;
   assignedTo?: string;
   salesman?: string;
+
+  // Company & Contact
+  company?: string;
+  country?: string;
+  contactName?: string;
+  email?: string;
+  phone?: string;
+  designation?: string;
+  address?: string;
+  city?: string;
+  zipCode?: string;
+  isReseller?: boolean;
+
+  // Additional Details
+  projectName?: string;
+  tentativeBudget?: string;
+  currentProjectStatus?: string;
+  tentativePurchaseDate?: string;
   comment?: string;
+
+  // Products
   products?: RFQProduct[];
 }
 

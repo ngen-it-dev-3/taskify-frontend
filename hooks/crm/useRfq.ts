@@ -1,10 +1,10 @@
+// hooks/crm/useRfq.ts
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { RfqApi } from '@/services/rfq.service';
 import type { RFQItem, RFQListParams, RFQStats } from '@/services/rfq.service';
 
-// Serialize params to a stable string so we can detect real changes
 function serializeParams(p: RFQListParams): string {
   return JSON.stringify({
     page: p.page ?? 1,
@@ -26,19 +26,13 @@ export function useRfq(externalParams: RFQListParams = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ⭐ paramsKey changes whenever a meaningful param changes
-  const paramsKey = useMemo(
-    () => serializeParams(externalParams),
-    [externalParams]
-  );
-
-  // Keep a ref to the latest params so refresh() always uses fresh values
+  const paramsKey = useMemo(() => serializeParams(externalParams), [externalParams]);
   const latestParamsRef = useRef<RFQListParams>(externalParams);
+
   useEffect(() => {
     latestParamsRef.current = externalParams;
   }, [externalParams]);
 
-  // ---- LIST ----
   const fetchList = useCallback(async (p: RFQListParams) => {
     setLoading(true);
     setError(null);
@@ -53,32 +47,21 @@ export function useRfq(externalParams: RFQListParams = {}) {
     }
   }, []);
 
-  // ---- STATS ----
   const fetchStats = useCallback(async () => {
     try {
       const s = await RfqApi.stats();
       setStats(s);
-    } catch {
-      // silent
-    }
+    } catch { }
   }, []);
 
-  // ---- REFRESH ----
   const refresh = useCallback(async () => {
-    await Promise.all([
-      fetchList(latestParamsRef.current),
-      fetchStats(),
-    ]);
+    await Promise.all([fetchList(latestParamsRef.current), fetchStats()]);
   }, [fetchList, fetchStats]);
 
-  // ⭐ Refetch whenever the serialized params key changes
-  //    This is what makes `viewMode` switches work
   useEffect(() => {
     fetchList(latestParamsRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey]);
 
-  // Fetch stats once on mount
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
@@ -89,16 +72,15 @@ export function useRfq(externalParams: RFQListParams = {}) {
     loading,
     error,
     refresh,
-
-    // Mutations
     create: async (payload: Parameters<typeof RfqApi.create>[0]) => {
       const created = await RfqApi.create(payload);
       await refresh();
       return created;
     },
+    // ⭐ PROPERLY EXPOSE UPDATE
     update: async (id: string, payload: Parameters<typeof RfqApi.update>[1]) => {
       const updated = await RfqApi.update(id, payload);
-      await refresh();
+      await refresh(); // ⭐ This forces the UI to pull the new data from the backend
       return updated;
     },
     assign: async (id: string, payload: Parameters<typeof RfqApi.assign>[1]) => {

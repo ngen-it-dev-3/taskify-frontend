@@ -1,3 +1,4 @@
+// components/CRM/rfq/RfqDetailPanel.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,7 +7,7 @@ import type { RFQItem, RFQProduct } from '../types';
 import StepperTimeline from './StepperTimeline';
 import ClientInfoPanel from './ClientInfoPanel';
 import ProductInfoTable from './ProductInfoTable';
-import RFQDetailsModal from './RFQDetailsModal'; // ⭐ Ensure this is imported
+import RFQDetailsModal from './RFQDetailsModal';
 import { DeleteConfirmModal } from '@/components/modals/DeleteConfirmModal';
 
 type ActionType =
@@ -15,7 +16,7 @@ type ActionType =
   | 'archive'
   | 'unarchive'
   | 'delete'
-  | 'edit' 
+  | 'edit'
   | null;
 
 interface Props {
@@ -28,11 +29,11 @@ interface Props {
   onDelete?: () => Promise<void> | void;
   onMarkLost?: () => Promise<void> | void;
   onQuote?: () => void;
-  onEdit?: () => void; 
+  onEdit?: () => void;
 }
 
 const ACTION_CONFIG: Record<
-  Exclude<ActionType, null | 'reassign' | 'edit'>, 
+  Exclude<ActionType, null | 'reassign' | 'edit'>,
   {
     title: string;
     message: string;
@@ -80,36 +81,43 @@ export default function RfqDetailPanel({
   onDelete,
   onMarkLost,
   onQuote,
-  onEdit, 
+  onEdit,
 }: Props) {
   const [busy, setBusy] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ActionType>(null);
   
-  // ⭐ State to control the new product list modal
+  // State to control the new product list modal
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const isArchived = rfq.stage === 'archived';
   const isAlreadyQuoted = rfq.stage === 'quoted';
   
-  // ⭐ Lock the actions if it's quoted, lost, or archived
+  // Lock the actions if it's quoted, lost, or archived
   const isLocked = isAlreadyQuoted || rfq.stage === 'lost' || isArchived;
 
   const handleActionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const action = e.target.value as ActionType;
+    
+    // Reset the select box back to default immediately
     e.target.value = '';
+
     if (!action) return;
 
-    if (action === 'reassign') {
-      onReassign?.();
-      return;
-    }
-    
-    if (action === 'edit') {
-      onEdit?.();
-      return;
-    }
+    // ⭐ SMOOTH FIX: Use a tiny timeout so the native dropdown 
+    // finishes closing before React opens the modal.
+    setTimeout(() => {
+      if (action === 'reassign') {
+        onReassign?.();
+        return;
+      }
+      
+      if (action === 'edit') {
+        onEdit?.();
+        return;
+      }
 
-    setConfirmAction(action);
+      setConfirmAction(action);
+    }, 50);
   };
 
   const handleConfirm = async () => {
@@ -173,7 +181,7 @@ export default function RfqDetailPanel({
               >
                 <option value="">{busy ? 'Working…' : 'Actions'}</option>
                 
-                {/* ⭐ Only allow editing if it hasn't been quoted or locked */}
+                {/* Only allow editing if it hasn't been quoted or locked */}
                 {!isLocked && (
                   <option value="edit">Edit RFQ</option>
                 )}
@@ -195,7 +203,7 @@ export default function RfqDetailPanel({
         <StepperTimeline rfq={rfq} />
         <ClientInfoPanel info={rfq.clientInfo} onDetails={onClientDetails} />
         
-        {/* ⭐ Passed the new onViewAllDetails trigger to open the modal */}
+        {/* Passed the new onViewAllDetails trigger to open the modal */}
         <ProductInfoTable 
           products={rfq.products} 
           onDetails={onProductDetails} 
@@ -203,7 +211,7 @@ export default function RfqDetailPanel({
         />
       </div>
 
-      {/* ⭐ Render the Modal */}
+      {/* Render the Modal */}
       <RFQDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}

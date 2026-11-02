@@ -1,3 +1,4 @@
+// app/(dashboard)/crm/rfq/page.tsx (or wherever your page is located)
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
@@ -89,6 +90,7 @@ export default function RFQDashboardPage() {
     loading,
     error,
     create,
+    update,
     assign,
     archive,
     unarchive,
@@ -141,11 +143,14 @@ export default function RFQDashboardPage() {
   };
 
   const handleSelect = (id: string) => {
+    // 1. ⭐ Immediately update the local state for an instant, smooth UI click
     setSelectedRFQId(id);
+
+    // 2. Silently update the URL in the background so it doesn't block the UI
     if (id) {
-      router.replace(`${pathname}?selected=${id}`, { scroll: false });
+      window.history.replaceState(null, '', `${pathname}?selected=${id}`);
     } else {
-      router.replace(pathname, { scroll: false });
+      window.history.replaceState(null, '', pathname);
     }
   };
 
@@ -165,7 +170,6 @@ export default function RFQDashboardPage() {
     setShowAddRfqModal(true);
   };
 
-  // ⭐ FIXED: Removed currency/exchangeRate and ensured modal closes immediately
   const confirmAssign = async (payload: {
     assignedTo: string;
     assignedToEmail?: string;
@@ -174,29 +178,72 @@ export default function RFQDashboardPage() {
     territory: string;
   }) => {
     if (!selectedRFQ) throw new Error('No RFQ selected');
-    
-    // 1. Send to backend
     await assign(selectedRFQ.id, payload as any);
-    
-    // 2. Close modal immediately
     setShowAssignModal(false);
   };
 
   const submitRfq = async (data: any) => {
     try {
       if (editingRfqId) {
-        const { RfqApi } = await import('@/services/rfq.service');
-        await RfqApi.update(editingRfqId, data);
+        const itemsArray = data.items || data.products || [];
+
+        // ⭐ Flattening the payload to match the Mongoose Schema exactly
+        await update(editingRfqId, {
+          company: data.companyName || data.company,
+          country: data.country,
+          contactName: data.contactName,
+          email: data.email,
+          phone: data.phone,
+          designation: data.designation,
+          address: data.address,
+          city: data.city,
+          zipCode: data.zipCode,
+          isReseller: data.isReseller,
+
+          projectName: data.projectName,
+          tentativeBudget: data.tentativeBudget,
+          currentProjectStatus: data.currentProjectStatus,
+          tentativePurchaseDate: data.tentativePurchaseDate,
+          comment: data.comment,
+
+          products: itemsArray.map((p: any) => ({
+            name: p.product || p.name || 'Unnamed Product',
+            qty: Number(p.qty) || 1,
+            sku: p.sku || '',
+            modelNo: p.modelNo || '',
+            brand: p.brand || '',
+            description: p.description || '',
+            additionalInfo: p.additionalInfo || '',
+          })),
+        } as any);
+
         toast.success('RFQ updated successfully');
+
+        // Force the UI to stay on the updated item
+        setSelectedRFQId(editingRfqId);
+
       } else {
-        await create(data);
+        // Create flow
+        await create({
+          ...data,
+          company: data.companyName || data.company,
+          products: (data.items || []).map((p: any) => ({
+            name: p.product || p.name,
+            qty: p.qty,
+            sku: p.sku,
+            modelNo: p.modelNo,
+            brand: p.brand,
+            description: p.description,
+            additionalInfo: p.additionalInfo,
+          }))
+        });
         toast.success('RFQ created successfully');
       }
 
       setShowAddRfqModal(false);
       setEditingRfqId(null);
-      await refresh();
     } catch (e: any) {
+      console.error(e);
       toast.error(e.message || 'Failed to save RFQ');
     }
   };
@@ -338,7 +385,6 @@ export default function RFQDashboardPage() {
         />
       )}
 
-      {/* ⭐ CRITICAL FIX: Added key prop to force modal to refresh with new territory data */}
       {showAssignModal && selectedRFQ && (
         <AssignRfqModal
           key={`assign-${selectedRFQ.id}-${selectedRFQ.territory || 'none'}`}
@@ -350,6 +396,9 @@ export default function RFQDashboardPage() {
 
       {showAddRfqModal && (
         <AddRfqModal
+          // ⭐ Force modal to completely reload the state when switching between Add and Edit
+          key={editingRfqId ? `edit-${editingRfqId}` : 'add-new'}
+          isEditing={!!editingRfqId}
           onClose={() => {
             setShowAddRfqModal(false);
             setEditingRfqId(null);
@@ -358,27 +407,36 @@ export default function RFQDashboardPage() {
           initialData={
             editingRfqId && selectedRFQ
               ? {
-                companyName: selectedRFQ.company,
-                country: selectedRFQ.country,
-                contactName: selectedRFQ.clientInfo.contactName,
-                email: selectedRFQ.clientInfo.email,
-                phone: selectedRFQ.clientInfo.phone,
-                designation: selectedRFQ.clientInfo.designation,
-                address: selectedRFQ.clientInfo.address,
-                city: selectedRFQ.clientInfo.city,
-                zipCode: selectedRFQ.clientInfo.zipCode,
-                tentativeBudget: selectedRFQ.clientInfo.tentativeBudget,
-                tentativePurchaseDate: selectedRFQ.clientInfo.purchaseDate,
-                items: selectedRFQ.products.map((p, i) => ({
+                // Company Info
+                companyName: selectedRFQ.company || '',
+                country: selectedRFQ.country || '',
+                contactName: selectedRFQ.clientInfo?.contactName || '',
+                email: selectedRFQ.clientInfo?.email || '',
+                phone: selectedRFQ.clientInfo?.phone || '',
+                designation: selectedRFQ.clientInfo?.designation || '',
+                address: selectedRFQ.clientInfo?.address || '',
+                city: selectedRFQ.clientInfo?.city || '',
+                zipCode: selectedRFQ.clientInfo?.zipCode || '',
+                isReseller: (selectedRFQ as any).isReseller || false,
+
+                // Additional Details (The missing data!)
+                projectName: (selectedRFQ as any).projectName || (selectedRFQ as any).clientInfo?.projectName || '',
+                tentativeBudget: (selectedRFQ as any).tentativeBudget || (selectedRFQ as any).clientInfo?.tentativeBudget || '',
+                currentProjectStatus: (selectedRFQ as any).currentProjectStatus || (selectedRFQ as any).clientInfo?.currentProjectStatus || '',
+                tentativePurchaseDate: (selectedRFQ as any).tentativePurchaseDate || (selectedRFQ as any).clientInfo?.purchaseDate || '',
+                comment: (selectedRFQ as any).comment || (selectedRFQ as any).clientInfo?.comment || '',
+
+                // Products
+                items: selectedRFQ.products?.map((p, i) => ({
                   id: String(i),
-                  product: p.name,
-                  qty: p.qty,
-                  sku: p.sku,
-                  modelNo: p.modelNo,
-                  brand: p.brand,
-                  description: p.description,
-                  additionalInfo: p.additionalInfo,
-                })),
+                  product: p.name || '',
+                  qty: p.qty || 1,
+                  sku: p.sku || '',
+                  modelNo: p.modelNo || '',
+                  brand: p.brand || '',
+                  description: p.description || '',
+                  additionalInfo: p.additionalInfo || '',
+                })) || [],
               }
               : undefined
           }

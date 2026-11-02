@@ -22,6 +22,7 @@ interface Props {
   onClose: () => void;
   onSubmit: (data: CreateRFQPayload) => void;
   initialData?: Partial<RFQFormData>; // ⭐ ADD THIS
+  isEditing?: boolean;
 }
 
 interface LineItem {
@@ -326,7 +327,7 @@ type Step = 0 | 1 | 2 | 3;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function AddRfqModal({ onClose, onSubmit, initialData }: Props) {
+export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing }: Props) {
   const [tab, setTab] = useState<Tab>(initialData ? 'manual' : 'sync');
   const [step, setStep] = useState<Step>(0);
   const [form, setForm] = useState<RFQFormData>({
@@ -605,17 +606,23 @@ export default function AddRfqModal({ onClose, onSubmit, initialData }: Props) {
   // ============================================================
   // Submit
   // ============================================================
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault(); // ⭐ Safe check before preventing default
 
-    for (const s of [0, 1, 2, 3] as Step[]) {
-      if (!validateStep(s)) {
-        setStep(s);
-        return;
+    // If editing, skip the strict step-by-step validation and just save!
+    if (!isEditing) {
+      for (const s of [0, 1, 2, 3] as Step[]) {
+        if (!validateStep(s)) {
+          setStep(s);
+          return;
+        }
       }
     }
 
     setSubmitting(true);
+
+    // Ensure items is ALWAYS an array
+    const safeItems = form.items || [];
 
     const payload: CreateRFQPayload = {
       source: 'manual',
@@ -631,7 +638,7 @@ export default function AddRfqModal({ onClose, onSubmit, initialData }: Props) {
       isReseller: form.isReseller,
       receivedVia: 'Email',
       priority: 'normal',
-      products: form.items.map((it, i) => ({
+      products: safeItems.map((it, i) => ({
         sl: i + 1,
         name: it.product || `Item ${i + 1}`,
         qty: it.qty,
@@ -681,7 +688,7 @@ export default function AddRfqModal({ onClose, onSubmit, initialData }: Props) {
           <div className="sticky top-0 bg-white z-10 flex items-start justify-between px-8 pt-6 pb-4 border-b border-slate-100 rounded-t-2xl">
             <div>
               <h2 id="add-rfq-title" className="text-xl font-bold text-slate-900">
-                Add RFQ
+                {isEditing ? 'Edit RFQ' : 'Add RFQ'}
               </h2>
               <p className="text-xs text-slate-500 mt-1 max-w-lg leading-relaxed">
                 RFQs arrive two ways — sync fresh ones from the NGEN IT website's RFQ form, or
@@ -697,23 +704,25 @@ export default function AddRfqModal({ onClose, onSubmit, initialData }: Props) {
             </button>
           </div>
 
-          {/* TAB SWITCHER */}
-          <div className="px-8 pt-5">
-            <div className="flex items-center gap-6 border-b border-slate-100">
-              <TabButton
-                active={tab === 'sync'}
-                onClick={() => setTab('sync')}
-                icon={<Globe className="w-3.5 h-3.5" />}
-                label="Sync from Web Portal"
-              />
-              <TabButton
-                active={tab === 'manual'}
-                onClick={() => setTab('manual')}
-                icon={<Mail className="w-3.5 h-3.5" />}
-                label="Manual Entry (Email/Phone)"
-              />
+          {/* TAB SWITCHER - ⭐ Hide when editing */}
+          {!isEditing && (
+            <div className="px-8 pt-5">
+              <div className="flex items-center gap-6 border-b border-slate-100">
+                <TabButton
+                  active={tab === 'sync'}
+                  onClick={() => setTab('sync')}
+                  icon={<Globe className="w-3.5 h-3.5" />}
+                  label="Sync from Web Portal"
+                />
+                <TabButton
+                  active={tab === 'manual'}
+                  onClick={() => setTab('manual')}
+                  icon={<Mail className="w-3.5 h-3.5" />}
+                  label="Manual Entry (Email/Phone)"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           {/* BODY */}
           <div className="px-8 py-6">
@@ -739,6 +748,7 @@ export default function AddRfqModal({ onClose, onSubmit, initialData }: Props) {
                 handleSubmit={handleSubmit}
                 submitting={submitting}
                 onEditProduct={(id) => setEditingProductId(id)}
+                isEditing={isEditing} // ⭐ Pass this down
               />
             )}
           </div>
@@ -857,6 +867,7 @@ function ManualPanel({
   handleSubmit,
   submitting,
   onEditProduct,
+  isEditing,
 }: {
   step: Step;
   setStep: (s: Step) => void;
@@ -876,6 +887,7 @@ function ManualPanel({
   handleSubmit: (e: React.FormEvent) => void;
   submitting: boolean;
   onEditProduct: (id: string) => void;
+  isEditing?: boolean;
 }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -989,20 +1001,15 @@ function ManualPanel({
 
       {/* STEP CONTENT */}
       <div className="pt-1">
-        {step === 0 && (
-          <CompanyInfoStep form={form} errors={errors} setField={setField} />
-        )}
-        {step === 1 && (
-          <ShippingStep form={form} errors={errors} setField={setField} />
-        )}
-        {step === 2 && (
-          <EndUserStep form={form} errors={errors} setField={setField} />
-        )}
+        {step === 0 && <CompanyInfoStep form={form} errors={errors} setField={setField} />}
+        {step === 1 && <ShippingStep form={form} errors={errors} setField={setField} />}
+        {step === 2 && <EndUserStep form={form} errors={errors} setField={setField} />}
         {step === 3 && <AdditionalStep form={form} errors={errors} setField={setField} />}
       </div>
 
       {/* FOOTER */}
       <div className="flex items-center justify-between pt-3">
+        {/* Left Side: Previous Button */}
         {step > 0 ? (
           <button
             type="button"
@@ -1016,31 +1023,44 @@ function ManualPanel({
           <span />
         )}
 
-        {step < 3 ? (
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={!currentStepValid}
-            className={`inline-flex items-center gap-1.5 px-5 py-2 rounded text-white text-xs font-semibold transition ${currentStepValid
-              ? 'bg-rose-700 hover:bg-rose-800'
-              : 'bg-rose-200 cursor-not-allowed'
-              }`}
-          >
-            Next
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        ) : (
-          <button
-            type="submit"
-            disabled={submitting || !allStepsValid}
-            className={`inline-flex items-center gap-1.5 px-5 py-2 rounded text-white text-xs font-semibold transition ${submitting || !allStepsValid
-              ? 'bg-rose-200 cursor-not-allowed'
-              : 'bg-rose-700 hover:bg-rose-800'
-              }`}
-          >
-            {submitting ? 'Submitting…' : 'Submit'}
-          </button>
-        )}
+        {/* Right Side: Save, Next, and Submit Buttons */}
+        <div className="flex items-center gap-3">
+          {/* ⭐ Always Visible Save Button */}
+          {isEditing && (
+            <button
+              type="button"
+              onClick={(e) => handleSubmit(e)} 
+              disabled={submitting}
+              className={`inline-flex items-center gap-1.5 px-5 py-2 rounded text-white text-xs font-semibold transition ${submitting ? 'bg-emerald-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'
+                }`}
+            >
+              {submitting ? 'Saving…' : 'Save Changes'}
+            </button>
+          )}
+
+          {/* Next / Submit Button */}
+          {step < 3 ? (
+            <button
+              type="button"
+              onClick={goNext}
+              disabled={!currentStepValid}
+              className={`inline-flex items-center gap-1.5 px-5 py-2 rounded text-white text-xs font-semibold transition ${currentStepValid ? 'bg-rose-700 hover:bg-rose-800' : 'bg-rose-200 cursor-not-allowed'
+                }`}
+            >
+              Next
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={submitting || (!isEditing && !allStepsValid)}
+              className={`inline-flex items-center gap-1.5 px-5 py-2 rounded text-white text-xs font-semibold transition ${submitting || (!isEditing && !allStepsValid) ? 'bg-rose-200 cursor-not-allowed' : 'bg-rose-700 hover:bg-rose-800'
+                }`}
+            >
+              {submitting ? 'Saving…' : isEditing ? 'Update RFQ' : 'Submit RFQ'}
+            </button>
+          )}
+        </div>
       </div>
     </form>
   );
