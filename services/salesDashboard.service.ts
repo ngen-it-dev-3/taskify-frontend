@@ -151,7 +151,7 @@ export const SalesDashboardApi = {
             quotationStats,
             forecastKpis,
             forecastBreakdownCountry,
-            forecastBreakdownSource,
+            forecastBreakdownIndustry, // ⭐ Changed variable name
             salesReport,
             onlineStats,
             unifiedPipeline,
@@ -179,9 +179,10 @@ export const SalesDashboardApi = {
                 { total: 0, by: 'country', entries: [] }
             ),
 
+            // ⭐ THE FIX: Fetching 'industry' instead of 'source'
             safe(
-                SalesCrmApi.breakdown({ by: 'source', country: countryParam }),
-                { total: 0, by: 'source', entries: [] }
+                SalesCrmApi.breakdown({ by: 'industry', country: countryParam }),
+                { total: 0, by: 'industry', entries: [] }
             ),
 
             safe(SalesCrmApi.salesReport({ country: countryParam }), {
@@ -211,12 +212,7 @@ export const SalesDashboardApi = {
 
         /* =========================================================
            ⭐ CLIENT-SIDE FILTERING
-           - country: applied to unified pipeline cards
-           - time: applied to unified pipeline cards (by createdAt)
-           This makes the filters visibly work even if the backend
-           doesn't support the params.
         ========================================================= */
-        /* ⭐ Cast columns to a typed record so TS knows what a card looks like */
         type UnifiedCard = {
             id: string;
             stage: 'query' | 'rfq' | 'quotation' | 'negotiation' | 'won' | 'lost';
@@ -341,7 +337,7 @@ export const SalesDashboardApi = {
            Product vs Industry donut
         ========================================================= */
         const productVsIndustry: SalesDashboardData['productVsIndustry'] =
-            (forecastBreakdownSource.entries || [])
+            (forecastBreakdownIndustry.entries || []) // ⭐ Uses Industry breakdown now
                 .slice(0, 4)
                 .map((e: any, i: number) => ({
                     label: e.key || 'Other',
@@ -358,19 +354,47 @@ export const SalesDashboardApi = {
         ========================================================= */
         let bars: Array<{ name: string; value: number; color: string }> = [];
 
-        if (dimension === 'Country') {
+                if (dimension === 'Country') {
             const countryMap = new Map<string, number>();
-            filteredCards.forEach((c) => {
-                if (!c.country) return;
-                countryMap.set(c.country, (countryMap.get(c.country) || 0) + (c.value || 0));
-            });
 
+            // 1. First priority: Use the Sales Forecast breakdown (matches the KPI)
+            if (forecastBreakdownCountry.entries && forecastBreakdownCountry.entries.length > 0) {
+                forecastBreakdownCountry.entries.forEach((entry: any) => {
+                    if (!entry.key) return;
+                    // If a specific country is selected, ONLY add that country
+                    if (!countryParam || sameCountry(entry.key, countryParam)) {
+                        countryMap.set(entry.key, entry.value || 0);
+                    }
+                });
+            } 
+            
+            // 2. Fallback: If forecast is completely empty, use the pipeline cards
             if (countryMap.size === 0) {
-                (rfqStats.byCountry || []).forEach((c: any) => {
-                    if (c.country) countryMap.set(c.country, c.count);
+                filteredCards.forEach((c) => {
+                    if (!c.country) return;
+                    if (!countryParam || sameCountry(c.country, countryParam)) {
+                        countryMap.set(c.country, (countryMap.get(c.country) || 0) + (c.value || 0));
+                    }
                 });
             }
 
+            // 3. Fallback 2: If still empty, use RFQ stats
+            if (countryMap.size === 0) {
+                (rfqStats.byCountry || []).forEach((c: any) => {
+                    if (c.country) {
+                        if (!countryParam || sameCountry(c.country, countryParam)) {
+                             countryMap.set(c.country, c.count || 1); 
+                        }
+                    }
+                });
+            }
+
+            // 4. If there is STILL nothing, add a placeholder so the chart doesn't break
+            if (countryMap.size === 0) {
+                 countryMap.set(countryParam || 'No Data', 0);
+            }
+
+            // 5. Map to bars
             bars = Array.from(countryMap.entries())
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 6)
@@ -380,7 +404,7 @@ export const SalesDashboardApi = {
                     color: PALETTE[i % PALETTE.length],
                 }));
         } else if (dimension === 'Industry') {
-            bars = (forecastBreakdownSource.entries || [])
+            bars = (forecastBreakdownIndustry.entries || []) // ⭐ Uses Industry breakdown now
                 .sort((a: any, b: any) => b.value - a.value)
                 .slice(0, 6)
                 .map((e: any, i: number) => ({
@@ -506,7 +530,6 @@ export const SalesDashboardApi = {
 
         /* =========================================================
            Report Summary (target vs actual by quarter)
-           ⭐ filtered by time
         ========================================================= */
         const reportSummary: SalesDashboardData['reportSummary'] = [];
         const monthMap: Record<string, any[]> = {};

@@ -6,9 +6,10 @@ import type { RFQProduct } from '../types';
 interface Props {
   products: RFQProduct[];
   onDetails: (product: RFQProduct) => void;
+  onViewAllDetails: () => void; // <-- Add this new prop
 }
 
-export default function ProductInfoTable({ products, onDetails }: Props) {
+export default function ProductInfoTable({ products, onDetails, onViewAllDetails }: Props) {
   return (
     <div className="bg-[#FAF8F4] rounded-lg p-4 border border-[#EFE9DF]">
       <div className="flex justify-between items-center mb-3">
@@ -16,7 +17,7 @@ export default function ProductInfoTable({ products, onDetails }: Props) {
           Product Information
         </h3>
         <button
-          onClick={() => onDetails(products[0])}
+          onClick={onViewAllDetails} // <-- Change this from onDetails(products[0])
           className="text-xs font-semibold text-[#A06126] hover:underline"
         >
           Details →

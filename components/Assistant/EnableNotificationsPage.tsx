@@ -14,7 +14,9 @@ interface EnableNotificationsPageProps {
 }
 
 const AUTO_CLOSE_MS = 5000; // 5 seconds
-const GRANTED_KEY = "ngen:notifications:granted";
+
+// ⭐ We use localStorage so it remembers permanently across page refreshes
+const PROMPT_SHOWN_KEY = "ngen:notifications:prompt_shown";
 
 export default function EnableNotificationsPage({
     isOpen,
@@ -37,6 +39,21 @@ export default function EnableNotificationsPage({
     }, [onClose, onSkip, onEnable]);
 
     // ============================================================
+    // ⭐ Check if user already saw it on mount
+    // ============================================================
+    useEffect(() => {
+        // If already granted or already skipped in the past, auto-close immediately
+        if (typeof window !== "undefined") {
+            const alreadySeen = localStorage.getItem(PROMPT_SHOWN_KEY);
+            const alreadyGranted = Notification?.permission === "granted";
+
+            if ((alreadySeen || alreadyGranted) && isOpen) {
+                onCloseRef.current?.();
+            }
+        }
+    }, [isOpen]);
+
+    // ============================================================
     // Visibility + 5s auto-close
     // ============================================================
     useEffect(() => {
@@ -47,8 +64,9 @@ export default function EnableNotificationsPage({
 
         const showTimer = setTimeout(() => setIsVisible(true), 100);
 
-        // ⭐ Auto-close after 5s — does NOT remember anything (will show again)
+        // ⭐ Auto-close after 5s — Save to localStorage so it NEVER shows again
         const closeTimer = setTimeout(() => {
+            localStorage.setItem(PROMPT_SHOWN_KEY, "1"); // Remember it
             onSkipRef.current?.();
             onCloseRef.current?.();
         }, AUTO_CLOSE_MS);
@@ -60,13 +78,14 @@ export default function EnableNotificationsPage({
     }, [isOpen]);
 
     // ============================================================
-    // Escape key closes (treated as skip — no permanent memory)
+    // Escape key closes (Save so it never shows again)
     // ============================================================
     useEffect(() => {
         if (!isOpen) return;
 
         const onKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
+                localStorage.setItem(PROMPT_SHOWN_KEY, "1");
                 onSkipRef.current?.();
                 onCloseRef.current?.();
             }
@@ -77,10 +96,11 @@ export default function EnableNotificationsPage({
     }, [isOpen]);
 
     // ============================================================
-    // ⭐ Outside click closes (treated as skip — no permanent memory)
+    // Outside click closes (Save so it never shows again)
     // ============================================================
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
+            localStorage.setItem(PROMPT_SHOWN_KEY, "1");
             onSkipRef.current?.();
             onCloseRef.current?.();
         }
@@ -98,30 +118,26 @@ export default function EnableNotificationsPage({
                 if (permission === "granted") {
                     toast.success("🔔 Notifications enabled successfully!");
 
-                    // ⭐ Remember ONLY the granted state — modal won't show on
-                    //    refresh in this tab
-                    try {
-                        sessionStorage.setItem(GRANTED_KEY, "1");
-                    } catch { }
+                    // Mark as shown so it never pops up again
+                    localStorage.setItem(PROMPT_SHOWN_KEY, "1");
 
                     onEnable?.();
                     onClose();
                 } else {
-                    // Denied or dismissed — show again on refresh
-                    toast.error(
-                        "Notifications disabled. You can enable them later from settings."
-                    );
+                    toast.error("Notifications disabled. You can enable them later from settings.");
+                    localStorage.setItem(PROMPT_SHOWN_KEY, "1"); // Remember they denied it
                     onSkip?.();
                     onClose();
                 }
             } else {
-                // Browser doesn't support notifications — show again on refresh
                 toast.error("Notifications are not supported in this browser.");
+                localStorage.setItem(PROMPT_SHOWN_KEY, "1");
                 onEnable?.();
                 onClose();
             }
         } catch (error) {
             console.error("Notification error:", error);
+            localStorage.setItem(PROMPT_SHOWN_KEY, "1");
             onSkip?.();
             onClose();
         } finally {
@@ -130,9 +146,10 @@ export default function EnableNotificationsPage({
     };
 
     // ============================================================
-    // Skip (X, "Skip for now" button) — NOT persisted
+    // Skip (X, "Skip for now" button) — Saved permanently
     // ============================================================
     const handleSkip = () => {
+        localStorage.setItem(PROMPT_SHOWN_KEY, "1"); // ⭐ Save so it doesn't show again
         onSkip?.();
         onClose();
     };

@@ -42,33 +42,58 @@ export function PipelineTab({ filters }: Props) {
       if (!data) setLoading(true);
       const res = await SalesCrmApi.unifiedPipeline(params);
 
-      // ⭐ FIX: Deduplicate RFQs that have already been converted to Quotations
       const allCards = Object.values(res.columns).flat();
-      
-      // 1. Get all RFQ IDs that have an associated Quotation
+
+      // ⭐ 1. Find all RFQ IDs that ALREADY have a Quotation
       const quotedRfqIds = new Set(
         allCards
           .filter((c) => c.source === 'quotation')
           .map((c) => (c.raw as Quotation).rfqId)
-          .filter(Boolean) // Remove null/undefined
+          .filter(Boolean)
       );
 
-      // 2. Filter the columns to remove the original RFQ if a Quote exists
+      // ⭐ 2. GLOBAL DEDUPLICATION
+      const seen = new Set<string>();
+      const validCardIds = new Set<string>();
+
+      // Force Forecasts to be processed BEFORE Tenders so we keep the green Forecast card
+      const sortedAllCards = [...allCards].sort((a, b) => {
+        if (a.source === 'forecast' && b.source === 'tender') return -1;
+        if (a.source === 'tender' && b.source === 'forecast') return 1;
+        return 0;
+      });
+
+      sortedAllCards.forEach((c) => {
+        // A. Remove raw RFQs if they have been quoted
+        if (c.source === 'rfq') {
+          const rfq = c.raw as RFQItem;
+          if (quotedRfqIds.has(rfq.id)) return;
+        }
+
+        // B. Create a signature using ONLY Title and Value
+        const rawTitle = c.title || c.raw?.title || c.raw?.name || 'Untitled';
+        // Remove all spaces and lowercase it so "Test Tender 1" and "Test Tender 1 " match perfectly
+        const cleanTitle = rawTitle.replace(/\s+/g, '').toLowerCase();
+        const value = c.value || 0;
+
+        const signature = `${cleanTitle}-${value}`;
+
+        // C. If we haven't seen this exact deal, keep it
+        if (!seen.has(signature)) {
+          seen.add(signature);
+          validCardIds.add(c.id);
+        }
+      });
+
+      // ⭐ 3. Rebuild the columns keeping ONLY valid cards
       const deduplicatedColumns = Object.fromEntries(
         Object.entries(res.columns).map(([stage, cards]) => [
           stage,
-          cards.filter((c) => {
-            // Keep everything EXCEPT RFQs that are in the quotedRfqIds list
-            if (c.source === 'rfq') {
-              const rfq = c.raw as RFQItem;
-              return !quotedRfqIds.has(rfq.id);
-            }
-            return true;
-          }),
+          cards.filter((c) => validCardIds.has(c.id)),
         ])
       ) as typeof res.columns;
 
-      // Recalculate counts for the new deduplicated columns
+      // Recalculate counts
       const deduplicatedCounts = { ...res.counts };
       (Object.keys(deduplicatedColumns) as (keyof typeof deduplicatedColumns)[]).forEach(
         (k) => {
@@ -102,7 +127,6 @@ export function PipelineTab({ filters }: Props) {
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params, filters.sources]);
 
   useEffect(() => {

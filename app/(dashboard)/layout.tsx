@@ -8,6 +8,7 @@ import Sidebar from "@/components/Layout/Sidebar";
 import Header from "@/components/Layout/Header";
 import AssistantWizard from "@/components/Assistant/AssistantWizard";
 import EnableNotificationsPage from "@/components/Assistant/EnableNotificationsPage";
+import Footer from "@/components/site/Footer";
 
 export default function DashboardLayout({
   children,
@@ -19,7 +20,6 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   const [showNotifications, setShowNotifications] = useState(false);
@@ -31,14 +31,6 @@ export default function DashboardLayout({
       setIsCollapsed(savedState === "true");
     }
   }, []);
-
-  useEffect(() => {
-    setIsNavigating(true);
-    const timer = setTimeout(() => {
-      setIsNavigating(false);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [pathname]);
 
   useEffect(() => {
     const handleSidebarToggle = (event: Event) => {
@@ -89,17 +81,9 @@ export default function DashboardLayout({
     return null;
   }
 
-  if (isLoading || isNavigating) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
-          <p className="text-gray-500 text-sm font-medium animate-pulse">
-            Loading...
-          </p>
-        </div>
-      </div>
-    );
+  // ⭐ Removed the "isNavigating" loading screen completely
+  if (isLoading) {
+    return null; // Gracefully wait for auth without a massive spinner
   }
 
   if (!isAuthenticated) {

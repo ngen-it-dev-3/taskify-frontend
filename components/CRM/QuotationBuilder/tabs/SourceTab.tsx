@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Trash2, Pencil, Check, X, RefreshCw, ArrowUpCircle } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Trash2, Check, X, RefreshCw, ArrowUpCircle } from 'lucide-react';
 import type { QuotationLineItem, QuotationSourceData, QuotationMeta } from '../types';
 import { CURRENCIES } from '../constants';
 import SourceDetailsModal from './SourceDetailsModal';
@@ -53,7 +53,7 @@ export default function SourceTab({
     const [editingId, setEditingId] = useState<string | null>(null);
     const [draft, setDraft] = useState<EditDraft | null>(null);
     const [syncingKey, setSyncingKey] = useState<string | null>(null);
-
+    const [isDirty, setIsDirty] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [activeModalSource, setActiveModalSource] = useState<{
         lineId: string;
@@ -61,8 +61,10 @@ export default function SourceTab({
         data: QuotationSourceData;
     } | null>(null);
 
-    // State for the Price Selection Modal
     const [selectingLine, setSelectingLine] = useState<QuotationLineItem | null>(null);
+
+    // Ref to track if a save is currently in progress to prevent double-saves
+    const isSavingRef = useRef(false);
 
     const displayLines = lines.filter(
         (l) => l.type !== 'fixed' && l.name.trim() !== ''
@@ -83,6 +85,7 @@ export default function SourceTab({
 
     const territoryCurrency = meta.currency || 'BDT';
 
+    // Auto-edit on new line creation
     useEffect(() => {
         if (!autoEditLineId) return;
         const target = lines.find((l) => l.id === autoEditLineId);
@@ -99,8 +102,11 @@ export default function SourceTab({
         onAutoEditConsumed?.();
     }, [autoEditLineId, territoryCurrency, lines]);
 
+    // ⭐ Start editing when a row is clicked
     const startEdit = (l: QuotationLineItem) => {
+        if (editingId === l.id) return; // Already editing this row
         setEditingId(l.id);
+        setIsDirty(false);
         setDraft({
             name: l.name === 'New Item' ? '' : l.name,
             source1: toSourceData(l.source1, territoryCurrency),
@@ -112,10 +118,12 @@ export default function SourceTab({
     const cancelEdit = () => {
         setEditingId(null);
         setDraft(null);
+        setIsDirty(false);
     };
 
     const saveEdit = () => {
-        if (!editingId || !draft) return;
+        if (!editingId || !draft || isSavingRef.current) return;
+        isSavingRef.current = true;
 
         const clean = (v: string) => v.trim();
         const finalName = clean(draft.name) || 'New Item';
@@ -143,6 +151,29 @@ export default function SourceTab({
 
         setEditingId(null);
         setDraft(null);
+        setIsDirty(false);
+
+        // Release lock after a brief tick
+        setTimeout(() => {
+            isSavingRef.current = false;
+        }, 100);
+    };
+
+    const handleRowBlur = (e: React.FocusEvent<HTMLTableRowElement>) => {
+        // 1. If it's not dirty, don't save.
+        if (!isDirty) return;
+
+        // 2. If the newly focused element is still INSIDE the same row, don't save.
+        const currentRow = e.currentTarget;
+        const nextFocused = e.relatedTarget as HTMLElement;
+        if (nextFocused && currentRow.contains(nextFocused)) {
+            return;
+        }
+
+        // 3. Add a tiny delay to ensure state is settled
+        setTimeout(() => {
+            saveEdit();
+        }, 50);
     };
 
     const updateDraft = (
@@ -151,7 +182,7 @@ export default function SourceTab({
         value: any
     ) => {
         if (!draft) return;
-        
+        setIsDirty(true);
         const updatedSource = { ...draft[key], [field]: value };
         if (field === 'currency') {
             updatedSource.manualRate = undefined;
@@ -169,13 +200,13 @@ export default function SourceTab({
             alert(`Source currency is already ${territoryCurrency}. No conversion needed.`);
             return;
         }
-        
+
         setSyncingKey(sourceKey);
         try {
             const res = await fetch(`https://open.er-api.com/v6/latest/${currencyCode}`);
             if (!res.ok) throw new Error('API Error');
             const data = await res.json();
-            
+
             const liveRate = data.rates[territoryCurrency];
             if (!liveRate) throw new Error('Rate not found');
 
@@ -186,7 +217,7 @@ export default function SourceTab({
                     manualRate: Number(liveRate.toFixed(4))
                 }
             });
-            
+
         } catch (error) {
             console.error(error);
             alert(`Could not fetch live rate for ${currencyCode} to ${territoryCurrency}`);
@@ -195,32 +226,30 @@ export default function SourceTab({
         }
     };
 
-    const calcConverted = (priceStr: string | number | undefined, fromCurrency: string = 'BDT', manualRate?: number) => {
+        const calcConverted = (priceStr: string | number | undefined, fromCurrency: string = 'BDT', manualRate?: number) => {
         const price = parseFloat(String(priceStr || '0'));
         if (isNaN(price) || price <= 0) return { value: 0, symbol: '' };
 
         const targetCurrencyData = CURRENCIES.find(c => c.code === territoryCurrency);
         const symbol = targetCurrencyData?.symbol || territoryCurrency;
 
+        // If the currency is already the same as the territory, no conversion needed
         if (fromCurrency === territoryCurrency) {
             return { value: price, symbol };
         }
 
+        // ⭐ If the user clicked Sync or typed a manual rate, use that
         if (manualRate && manualRate > 0) {
             const finalValue = price * manualRate;
             return { value: finalValue, symbol };
         }
 
-        const sourceCurrencyData = CURRENCIES.find(c => c.code === fromCurrency);
-        const sourceRateToBDT = sourceCurrencyData?.rateToBDT || 1;
-        const bdtAmount = price * sourceRateToBDT;
-        const targetRateToBDT = CURRENCIES.find(c => c.code === territoryCurrency)?.rateToBDT || 1;
-        const finalValue = bdtAmount / targetRateToBDT;
-
-        return { value: finalValue, symbol };
+        // ⭐ If no manual rate is provided, return 0 (prevents auto-calculation)
+        return { value: 0, symbol };
     };
 
-    const openSourceModal = (lineId: string, sourceKey: 'source1' | 'source2' | 'source3', data: any) => {
+    const openSourceModal = (e: React.MouseEvent, lineId: string, sourceKey: 'source1' | 'source2' | 'source3', data: any) => {
+        e.stopPropagation(); // Prevent triggering the row click
         if (!data || !data.name) return;
         setActiveModalSource({ lineId, sourceKey, data });
         setModalOpen(true);
@@ -245,22 +274,22 @@ export default function SourceTab({
                     <colgroup>
                         <col className="w-[40px]" />
                         <col className="w-[160px]" />
-                        
+
                         <col className="w-[120px]" />
                         <col className="w-[180px]" />
                         <col className="w-[80px]" />
                         <col className="w-[90px]" />
-                        
+
                         <col className="w-[120px]" />
                         <col className="w-[180px]" />
                         <col className="w-[80px]" />
                         <col className="w-[90px]" />
-                        
+
                         <col className="w-[120px]" />
                         <col className="w-[180px]" />
                         <col className="w-[80px]" />
                         <col className="w-[90px]" />
-                        
+
                         <col className="w-[100px]" />
                     </colgroup>
 
@@ -278,12 +307,12 @@ export default function SourceTab({
                             <th className="px-2 py-2">Price (Orig.)</th>
                             <th className="px-2 py-2 text-center text-[#A06126]">Rate</th>
                             <th className="px-2 py-2 text-right border-r border-[#F0EBE3]">Total ({territoryCurrency})</th>
-                            
+
                             <th className="px-2 py-2">Source</th>
                             <th className="px-2 py-2">Price (Orig.)</th>
                             <th className="px-2 py-2 text-center text-[#A06126]">Rate</th>
                             <th className="px-2 py-2 text-right border-r border-[#F0EBE3]">Total ({territoryCurrency})</th>
-                            
+
                             <th className="px-2 py-2">Source</th>
                             <th className="px-2 py-2">Price (Orig.)</th>
                             <th className="px-2 py-2 text-center text-[#A06126]">Rate</th>
@@ -300,7 +329,12 @@ export default function SourceTab({
                                 const s3 = calcConverted(draft.source3.price, draft.source3.currency, draft.source3.manualRate);
 
                                 return (
-                                    <tr key={l.id} className="bg-[#FAF6EE]/70">
+                                    // ⭐ Added onBlur to the row
+                                    <tr
+                                        key={l.id}
+                                        className="bg-[#FAF6EE]/70"
+                                        onBlur={handleRowBlur}
+                                    >
                                         <td className="px-2 py-2 font-mono text-slate-500 text-center">{i + 1}</td>
                                         <td className="px-2 py-2">
                                             <input
@@ -315,7 +349,7 @@ export default function SourceTab({
                                                 }}
                                             />
                                         </td>
-                                        
+
                                         {/* Source 1 */}
                                         <td className="px-2 py-2">
                                             <input
@@ -329,11 +363,15 @@ export default function SourceTab({
                                             <div className="flex gap-1">
                                                 <div className="flex flex-1 rounded border border-[#A06126] overflow-hidden bg-white">
                                                     <select
-                                                        value={draft.source1.currency}
-                                                        onChange={(e) => updateDraft('source1', 'currency', e.target.value)}
-                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] px-1 focus:outline-none cursor-pointer"
+                                                        value={draft.source2.currency}
+                                                        onChange={(e) => updateDraft('source2', 'currency', e.target.value)}
+                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
                                                     >
-                                                        {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+                                                        {CURRENCIES.map((c, idx) => (
+                                                            <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
+                                                                {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
+                                                            </option>
+                                                        ))}
                                                     </select>
                                                     <input
                                                         type="number"
@@ -368,7 +406,7 @@ export default function SourceTab({
                                         <td className="px-2 py-2 text-right font-mono text-[#0F2D4A] font-semibold border-r border-[#F0EBE3]">
                                             {s1.symbol}{s1.value.toFixed(2)}
                                         </td>
-                                        
+
                                         {/* Source 2 */}
                                         <td className="px-2 py-2">
                                             <input
@@ -384,9 +422,13 @@ export default function SourceTab({
                                                     <select
                                                         value={draft.source2.currency}
                                                         onChange={(e) => updateDraft('source2', 'currency', e.target.value)}
-                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] px-1 focus:outline-none cursor-pointer"
+                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
                                                     >
-                                                        {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+                                                        {CURRENCIES.map((c, idx) => (
+                                                            <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
+                                                                {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
+                                                            </option>
+                                                        ))}
                                                     </select>
                                                     <input
                                                         type="number"
@@ -437,9 +479,13 @@ export default function SourceTab({
                                                     <select
                                                         value={draft.source3.currency}
                                                         onChange={(e) => updateDraft('source3', 'currency', e.target.value)}
-                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] px-1 focus:outline-none cursor-pointer"
+                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
                                                     >
-                                                        {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.code}</option>)}
+                                                        {CURRENCIES.map((c, idx) => (
+                                                            <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
+                                                                {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
+                                                            </option>
+                                                        ))}
                                                     </select>
                                                     <input
                                                         type="number"
@@ -482,10 +528,10 @@ export default function SourceTab({
                                             <button type="button" onClick={cancelEdit} className="w-7 h-7 rounded border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 inline-flex items-center justify-center transition" title="Cancel">
                                                 <X className="w-3.5 h-3.5" />
                                             </button>
-                                            <button 
-                                                type="button" 
+                                            <button
+                                                type="button"
                                                 onClick={() => setSelectingLine(l)}
-                                                className="w-7 h-7 rounded border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 inline-flex items-center justify-center transition ml-1" 
+                                                className="w-7 h-7 rounded border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 inline-flex items-center justify-center transition ml-1"
                                                 title="Select which price to send to Cost of Goods"
                                             >
                                                 <ArrowUpCircle className="w-3.5 h-3.5 text-[#A06126]" />
@@ -505,13 +551,18 @@ export default function SourceTab({
                             const v3 = calcConverted(l.source3?.price, l.source3?.currency, (l.source3 as any)?.manualRate);
 
                             return (
-                                <tr key={l.id} className="hover:bg-[#FDFBF7] group">
+                                // ⭐ Click anywhere on the row to edit
+                                <tr
+                                    key={l.id}
+                                    className="hover:bg-[#FDFBF7] cursor-pointer group transition-colors"
+                                    onClick={() => startEdit(l)}
+                                >
                                     <td className="px-2 py-2 font-mono text-slate-500 text-center">{i + 1}</td>
                                     <td className="px-2 py-2 font-medium text-slate-800">{l.name}</td>
-                                    
+
                                     <td className="px-2 py-2 text-slate-700">
                                         {l.source1?.name ? (
-                                            <button onClick={() => openSourceModal(l.id, 'source1', l.source1)} className="text-[#A06126] hover:underline font-semibold text-left">
+                                            <button onClick={(e) => openSourceModal(e, l.id, 'source1', l.source1)} className="text-[#A06126] hover:underline font-semibold text-left">
                                                 {l.source1.name}
                                             </button>
                                         ) : <span className="italic text-rose-400">None</span>}
@@ -530,7 +581,7 @@ export default function SourceTab({
 
                                     <td className="px-2 py-2 text-slate-700">
                                         {l.source2?.name ? (
-                                            <button onClick={() => openSourceModal(l.id, 'source2', l.source2)} className="text-[#A06126] hover:underline font-semibold text-left">
+                                            <button onClick={(e) => openSourceModal(e, l.id, 'source2', l.source2)} className="text-[#A06126] hover:underline font-semibold text-left">
                                                 {l.source2.name}
                                             </button>
                                         ) : <span className="italic text-rose-400">None</span>}
@@ -549,7 +600,7 @@ export default function SourceTab({
 
                                     <td className="px-2 py-2 text-slate-700">
                                         {l.source3?.name ? (
-                                            <button onClick={() => openSourceModal(l.id, 'source3', l.source3)} className="text-[#A06126] hover:underline font-semibold text-left">
+                                            <button onClick={(e) => openSourceModal(e, l.id, 'source3', l.source3)} className="text-[#A06126] hover:underline font-semibold text-left">
                                                 {l.source3.name}
                                             </button>
                                         ) : <span className="italic text-rose-400">None</span>}
@@ -568,16 +619,13 @@ export default function SourceTab({
 
                                     <td className="px-2 py-2 text-center whitespace-nowrap">
                                         <div className="inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                                            <button type="button" onClick={() => startEdit(l)} className="w-7 h-7 rounded border border-[#E2DBD1] hover:bg-slate-50 inline-flex items-center justify-center text-slate-600 transition" title="Edit sources">
-                                                <Pencil className="w-3 h-3" />
-                                            </button>
-                                            <button type="button" onClick={() => onRemoveLine?.(l.id)} className="w-7 h-7 rounded border border-[#E2DBD1] hover:bg-rose-50 hover:border-rose-200 inline-flex items-center justify-center text-rose-500 transition" title="Remove this item">
+                                            <button type="button" onClick={(e) => { e.stopPropagation(); onRemoveLine?.(l.id); }} className="w-7 h-7 rounded border border-[#E2DBD1] hover:bg-rose-50 hover:border-rose-200 inline-flex items-center justify-center text-rose-500 transition" title="Remove this item">
                                                 <Trash2 className="w-3.5 h-3.5" />
                                             </button>
-                                            <button 
-                                                type="button" 
-                                                onClick={() => setSelectingLine(l)}
-                                                className="w-7 h-7 rounded border border-[#A06126] bg-[#F9F1E2] hover:bg-[#F0E6D2] inline-flex items-center justify-center text-[#A06126] transition ml-1" 
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); setSelectingLine(l); }}
+                                                className="w-7 h-7 rounded border border-[#A06126] bg-[#F9F1E2] hover:bg-[#F0E6D2] inline-flex items-center justify-center text-[#A06126] transition ml-1"
                                                 title="Send price to Cost of Good"
                                             >
                                                 <ArrowUpCircle className="w-3.5 h-3.5" />

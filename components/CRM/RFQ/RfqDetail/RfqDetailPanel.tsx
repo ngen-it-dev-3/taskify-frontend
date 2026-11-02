@@ -6,6 +6,7 @@ import type { RFQItem, RFQProduct } from '../types';
 import StepperTimeline from './StepperTimeline';
 import ClientInfoPanel from './ClientInfoPanel';
 import ProductInfoTable from './ProductInfoTable';
+import RFQDetailsModal from './RFQDetailsModal'; // ⭐ Ensure this is imported
 import { DeleteConfirmModal } from '@/components/modals/DeleteConfirmModal';
 
 type ActionType =
@@ -83,6 +84,9 @@ export default function RfqDetailPanel({
 }: Props) {
   const [busy, setBusy] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ActionType>(null);
+  
+  // ⭐ State to control the new product list modal
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const isArchived = rfq.stage === 'archived';
   const isAlreadyQuoted = rfq.stage === 'quoted';
@@ -190,8 +194,23 @@ export default function RfqDetailPanel({
 
         <StepperTimeline rfq={rfq} />
         <ClientInfoPanel info={rfq.clientInfo} onDetails={onClientDetails} />
-        <ProductInfoTable products={rfq.products} onDetails={onProductDetails} />
+        
+        {/* ⭐ Passed the new onViewAllDetails trigger to open the modal */}
+        <ProductInfoTable 
+          products={rfq.products} 
+          onDetails={onProductDetails} 
+          onViewAllDetails={() => setIsDetailsModalOpen(true)} 
+        />
       </div>
+
+      {/* ⭐ Render the Modal */}
+      <RFQDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => setIsDetailsModalOpen(false)}
+        rfqNumber={rfq.rfqNumber}
+        products={rfq.products}
+        onProductDetails={onProductDetails}
+      />
 
       {config && (
         <DeleteConfirmModal
