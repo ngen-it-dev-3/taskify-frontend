@@ -19,12 +19,6 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  /* ------------------------------------------------
-   * Proxy /uploads/* to the backend so downloads
-   * become same-origin. Same-origin is required for
-   * `<a download>` to actually save files instead of
-   * opening a new tab.
-   * ------------------------------------------------ */
   async rewrites() {
     // ✅ Using your official backend on HTTPS
     const backendOrigin = (
