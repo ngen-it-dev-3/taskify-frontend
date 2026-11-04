@@ -1,4 +1,5 @@
 "use client";
+import { ChevronDown, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 function SearchableEmployeeSelect({
