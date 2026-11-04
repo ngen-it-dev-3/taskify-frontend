@@ -9,57 +9,52 @@ const API_BASE = '/clients';
 const CACHE_TTL_MS = 30_000; // 30 seconds
 
 type CacheEntry<T> = {
-  data: T;
-  ts: number;
+    data: T;
+    ts: number;
 };
 
 const cache = new Map<string, CacheEntry<any>>();
 const inflight = new Map<string, Promise<any>>();
 
 function cacheKey(prefix: string, params?: Record<string, any>): string {
-  if (!params) return prefix;
-  // Stable stringify — sort keys so order doesn't matter
-  const sorted = Object.keys(params)
-    .filter((k) => params[k] !== undefined && params[k] !== '' && params[k] !== 'all')
-    .sort()
-    .map((k) => `${k}=${params[k]}`)
-    .join('&');
-  return `${prefix}?${sorted}`;
+    if (!params) return prefix;
+    const sorted = Object.keys(params)
+        .filter((k) => params[k] !== undefined && params[k] !== '' && params[k] !== 'all')
+        .sort()
+        .map((k) => `${k}=${params[k]}`)
+        .join('&');
+    return `${prefix}?${sorted}`;
 }
 
 async function withCache<T>(
-  key: string,
-  fetcher: () => Promise<T>
+    key: string,
+    fetcher: () => Promise<T>
 ): Promise<T> {
-  const now = Date.now();
-  const hit = cache.get(key);
+    const now = Date.now();
+    const hit = cache.get(key);
 
-  // 1. Return fresh cache immediately
-  if (hit && now - hit.ts < CACHE_TTL_MS) {
-    return hit.data as T;
-  }
+    if (hit && now - hit.ts < CACHE_TTL_MS) {
+        return hit.data as T;
+    }
 
-  // 2. Dedupe concurrent identical requests
-  const pending = inflight.get(key);
-  if (pending) return pending as Promise<T>;
+    const pending = inflight.get(key);
+    if (pending) return pending as Promise<T>;
 
-  // 3. Fetch, store in cache, dedupe
-  const promise = fetcher()
-    .then((data) => {
-      cache.set(key, { data, ts: Date.now() });
-      return data;
-    })
-    .finally(() => {
-      inflight.delete(key);
-    });
+    const promise = fetcher()
+        .then((data) => {
+            cache.set(key, { data, ts: Date.now() });
+            return data;
+        })
+        .finally(() => {
+            inflight.delete(key);
+        });
 
-  inflight.set(key, promise);
-  return promise;
+    inflight.set(key, promise);
+    return promise;
 }
 
-// ⭐ Allow caller to bust cache (e.g. after a mutation)
 export function invalidateClientCache() {
-  cache.clear();
+    cache.clear();
 }
 
 // ============================================================
@@ -257,7 +252,7 @@ export const Client360Api = {
 
     async create(payload: Partial<Client360>): Promise<Client360> {
         const res = await api.post(`${API_BASE}`, payload);
-        invalidateClientCache();   // ⭐ bust cache after create
+        invalidateClientCache();
         return res.data.data as Client360;
     },
 
@@ -266,13 +261,13 @@ export const Client360Api = {
         payload: Partial<Client360>
     ): Promise<Client360> {
         const res = await api.patch(`${API_BASE}/${id}`, payload);
-        invalidateClientCache();   // ⭐ bust cache after update
+        invalidateClientCache();
         return res.data.data as Client360;
     },
 
     async remove(id: string): Promise<{ id: string }> {
         const res = await api.delete(`${API_BASE}/${id}`);
-        invalidateClientCache();   // ⭐ bust cache after delete
+        invalidateClientCache();
         return res.data.data as { id: string };
     },
 
@@ -281,7 +276,7 @@ export const Client360Api = {
         contact: Partial<ClientContact>
     ): Promise<Client360> {
         const res = await api.post(`${API_BASE}/${clientId}/contacts`, contact);
-        invalidateClientCache();   // ⭐ bust cache
+        invalidateClientCache();
         return res.data.data as Client360;
     },
 
@@ -294,7 +289,7 @@ export const Client360Api = {
             `${API_BASE}/${clientId}/contacts/${contactId}`,
             updates
         );
-        invalidateClientCache();   // ⭐ bust cache
+        invalidateClientCache();
         return res.data.data as Client360;
     },
 
@@ -305,7 +300,7 @@ export const Client360Api = {
         const res = await api.delete(
             `${API_BASE}/${clientId}/contacts/${contactId}`
         );
-        invalidateClientCache();   // ⭐ bust cache
+        invalidateClientCache();
         return res.data.data as Client360;
     },
 
@@ -314,7 +309,33 @@ export const Client360Api = {
         entry: Partial<CommEntry>
     ): Promise<Client360> {
         const res = await api.post(`${API_BASE}/${clientId}/communications`, entry);
-        invalidateClientCache();   // ⭐ bust cache
+        invalidateClientCache();
+        return res.data.data as Client360;
+    },
+
+    // ⭐ NEW: Update an existing communication log
+    async updateCommunication(
+        clientId: string,
+        logId: string,
+        updates: Partial<CommEntry>
+    ): Promise<Client360> {
+        const res = await api.patch(
+            `${API_BASE}/${clientId}/communications/${logId}`,
+            updates
+        );
+        invalidateClientCache();
+        return res.data.data as Client360;
+    },
+
+    // ⭐ NEW: Delete a communication log
+    async deleteCommunication(
+        clientId: string,
+        logId: string
+    ): Promise<Client360> {
+        const res = await api.delete(
+            `${API_BASE}/${clientId}/communications/${logId}`
+        );
+        invalidateClientCache();
         return res.data.data as Client360;
     },
 
@@ -328,11 +349,62 @@ export const Client360Api = {
     },
 
     async constants(): Promise<ClientConstants> {
-        // Constants are static — cache for a long time
         const key = cacheKey('client-constants');
         return withCache(key, async () => {
             const res = await api.get(`${API_BASE}/constants`);
             return res.data.data as ClientConstants;
         });
+    },
+    // ⭐ QUOTES
+    async addQuote(
+        clientId: string,
+        quote: Partial<ClientQuote>
+    ): Promise<Client360> {
+        const res = await api.post(`${API_BASE}/${clientId}/quotes`, quote);
+        invalidateClientCache();
+        return res.data.data as Client360;
+    },
+
+    async updateQuote(
+        clientId: string,
+        quoteId: string,
+        updates: Partial<ClientQuote>
+    ): Promise<Client360> {
+        const res = await api.patch(`${API_BASE}/${clientId}/quotes/${quoteId}`, updates);
+        invalidateClientCache();
+        return res.data.data as Client360;
+    },
+
+    // ⭐ CONTRACTS
+    async addContract(
+        clientId: string,
+        contract: Partial<ClientContract>
+    ): Promise<Client360> {
+        const res = await api.post(`${API_BASE}/${clientId}/contracts`, contract);
+        invalidateClientCache();
+        return res.data.data as Client360;
+    },
+
+    async updateContract(
+        clientId: string,
+        contractId: string,
+        updates: Partial<ClientContract>
+    ): Promise<Client360> {
+        const res = await api.patch(`${API_BASE}/${clientId}/contracts/${contractId}`, updates);
+        invalidateClientCache();
+        return res.data.data as Client360;
+    },
+    // ⭐ QUOTE DELETE
+    async deleteQuote(clientId: string, quoteId: string): Promise<Client360> {
+        const res = await api.delete(`${API_BASE}/${clientId}/quotes/${quoteId}`);
+        invalidateClientCache();
+        return res.data.data as Client360;
+    },
+
+    // ⭐ CONTRACT DELETE
+    async deleteContract(clientId: string, contractId: string): Promise<Client360> {
+        const res = await api.delete(`${API_BASE}/${clientId}/contracts/${contractId}`);
+        invalidateClientCache();
+        return res.data.data as Client360;
     },
 };

@@ -3,7 +3,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { Plus, ExternalLink, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import {
@@ -42,6 +42,10 @@ export default function DmarPage() {
     const [selectedActivity, setSelectedActivity] = useState<DmarActivity | null>(null);
     const [editingActivity, setEditingActivity] = useState<DmarActivity | null>(null);
     const [logOpen, setLogOpen] = useState(false);
+
+    // ⭐ Delete State
+    const [deletingActivity, setDeletingActivity] = useState<DmarActivity | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const [filters, setFilters] = useState<DmarFilters>({
         search: '',
@@ -145,15 +149,25 @@ export default function DmarPage() {
         }
     };
 
-    const handleDelete = async (a: DmarActivity) => {
-        if (!confirm(`Delete activity for "${a.company}"?`)) return;
+    // ⭐ Open custom modal instead of window.confirm
+    const handleDelete = (a: DmarActivity) => {
+        setDeletingActivity(a);
+    };
+
+    // ⭐ Actual deletion logic
+    const confirmDelete = async () => {
+        if (!deletingActivity) return;
         try {
-            await DmarApi.remove(a.id);
+            setIsDeleting(true);
+            await DmarApi.remove(deletingActivity.id);
             toast.success('Activity deleted');
-            if (selectedActivity?.id === a.id) setSelectedActivity(null);
+            if (selectedActivity?.id === deletingActivity.id) setSelectedActivity(null);
+            setDeletingActivity(null);
             await load();
         } catch (e: any) {
             toast.error(e.message || 'Failed to delete');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -271,6 +285,17 @@ export default function DmarPage() {
                     onSaved={handleSaved}
                 />
             )}
+
+            {/* ⭐ Custom Delete Modal */}
+            {deletingActivity && (
+                <DeleteConfirmModal
+                    title="Delete Activity"
+                    message={`Are you sure you want to delete the activity for "${deletingActivity.company}"? This action cannot be undone.`}
+                    onClose={() => setDeletingActivity(null)}
+                    onConfirm={confirmDelete}
+                    loading={isDeleting}
+                />
+            )}
         </main>
     );
 }
@@ -349,6 +374,66 @@ function DetailRow({ label, value }: { label: string; value: string }) {
         <div className="grid grid-cols-[180px_1fr] items-start">
             <div className="py-2.5 text-slate-500">{label}</div>
             <div className="py-2.5 font-semibold text-slate-800">{value}</div>
+        </div>
+    );
+}
+
+/* =========================================================
+   DELETE CONFIRM MODAL
+   ========================================================= */
+function DeleteConfirmModal({
+    title,
+    message,
+    onClose,
+    onConfirm,
+    loading,
+}: {
+    title: string;
+    message: string;
+    onClose: () => void;
+    onConfirm: () => void;
+    loading?: boolean;
+}) {
+    return (
+        <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm animate-in fade-in duration-150"
+            onClick={onClose}
+        >
+            <div
+                className="w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl animate-in zoom-in-95 duration-150"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="p-6">
+                    <div className="mb-4 flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                            <AlertTriangle className="h-5 w-5" />
+                        </div>
+                        <h3 className="font-serif text-lg font-bold text-[#0F2D4A]">
+                            {title}
+                        </h3>
+                    </div>
+                    <p className="text-sm leading-relaxed text-slate-600">
+                        {message}
+                    </p>
+                </div>
+                <div className="flex items-center justify-end gap-2 border-t border-slate-100 bg-slate-50 px-6 py-3">
+                    <button
+                        onClick={onClose}
+                        disabled={loading}
+                        className="rounded-lg border border-[#E2DBD1] bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={onConfirm}
+                        disabled={loading}
+                        className="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-rose-700 disabled:opacity-60"
+                    >
+                        {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                        {loading ? 'Deleting…' : 'Delete'}
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }

@@ -42,33 +42,52 @@ export function PipelineTab({ filters }: Props) {
       if (!data) setLoading(true);
       const res = await SalesCrmApi.unifiedPipeline(params);
 
-      // ⭐ FIX: Deduplicate RFQs that have already been converted to Quotations
       const allCards = Object.values(res.columns).flat();
 
-      // 1. Get all RFQ IDs that have an associated Quotation
+      // 1. Find all RFQ IDs that ALREADY have a Quotation
       const quotedRfqIds = new Set(
         allCards
           .filter((c) => c.source === 'quotation')
           .map((c) => (c.raw as Quotation).rfqId)
-          .filter(Boolean) // Remove null/undefined
+          .filter(Boolean)
       );
 
-      // 2. Filter the columns to remove the original RFQ if a Quote exists
+      // 2. Deduplicate (Remove raw RFQs if a Quote exists)
+      const seenDeals = new Set<string>();
+
       const deduplicatedColumns = Object.fromEntries(
-        Object.entries(res.columns).map(([stage, cards]) => [
-          stage,
-          cards.filter((c) => {
-            // Keep everything EXCEPT RFQs that are in the quotedRfqIds list
-            if (c.source === 'rfq') {
-              const rfq = c.raw as RFQItem;
-              return !quotedRfqIds.has(rfq.id);
-            }
-            return true;
-          }),
-        ])
+        Object.entries(res.columns).map(([stage, cards]) => {
+
+          // Force Forecasts to appear before Tenders so we keep the Forecast card
+          const sortedCards = [...cards].sort((a, b) => {
+            if (a.source === 'forecast' && b.source === 'tender') return -1;
+            if (a.source === 'tender' && b.source === 'forecast') return 1;
+            return 0;
+          });
+
+          return [
+            stage,
+            sortedCards.filter((c) => {
+              if (c.source === 'rfq') {
+                const rfq = c.raw as RFQItem;
+                if (quotedRfqIds.has(rfq.id)) return false;
+              }
+
+              // ⭐ Cast c.raw to any to fix TypeScript errors
+              const title = ((c as any).title || (c.raw as any)?.title || (c.raw as any)?.name || 'Untitled').trim().toLowerCase();
+              const value = c.value || 0;
+              const signature = `${title}-${value}`;
+
+              if (seenDeals.has(signature)) {
+                return false;
+              }
+              seenDeals.add(signature);
+              return true;
+            }),
+          ];
+        })
       ) as typeof res.columns;
 
-      // Recalculate counts for the new deduplicated columns
       const deduplicatedCounts = { ...res.counts };
       (Object.keys(deduplicatedColumns) as (keyof typeof deduplicatedColumns)[]).forEach(
         (k) => {
@@ -76,38 +95,66 @@ export function PipelineTab({ filters }: Props) {
         }
       );
 
-      // Apply Source Filters (ALL, RFQ, QUOTE, etc.)
-      const activeSources = filters.sources || [];
-      if (activeSources.length === 0) {
-        setData({ ...res, columns: deduplicatedColumns, counts: deduplicatedCounts });
-      } else {
-        const filteredColumns = Object.fromEntries(
-          Object.entries(deduplicatedColumns).map(([stage, cards]) => [
-            stage,
-            cards.filter((c) => activeSources.includes(c.source)),
-          ])
-        ) as typeof res.columns;
-
-        const filteredCounts = { ...deduplicatedCounts };
-        (Object.keys(filteredColumns) as (keyof typeof filteredColumns)[]).forEach(
-          (k) => {
-            filteredCounts[k] = filteredColumns[k].length;
-          }
-        );
-
-        setData({ ...res, columns: filteredColumns, counts: filteredCounts });
-      }
+      setData({ ...res, columns: deduplicatedColumns, counts: deduplicatedCounts });
     } catch (e: any) {
       toast.error(e.message || 'Failed to load pipeline');
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params, filters.sources]);
+  }, [params]);
 
   useEffect(() => {
     load();
   }, [load]);
+
+  // ⭐ 3. CLIENT-SIDE FILTERING (Salesperson & Source)
+  const filteredData = useMemo(() => {
+    if (!data) return null;
+
+    const hasOwnerFilter = filters.owner.trim().length > 0;
+    const activeSources = filters.sources || [];
+    const hasSourceFilter = activeSources.length > 0;
+
+    // If no filters are active, return the original data
+    if (!hasOwnerFilter && !hasSourceFilter) return data;
+
+    const searchOwner = filters.owner.trim().toLowerCase();
+
+    const newColumns = Object.fromEntries(
+      Object.entries(data.columns).map(([stage, cards]) => [
+        stage,
+        cards.filter((card) => {
+          // Source Filter
+          if (hasSourceFilter && !activeSources.includes(card.source)) {
+            return false;
+          }
+
+          // Salesperson Filter
+          if (hasOwnerFilter) {
+            const ownerName = (
+              (card as any).owner ||
+              (card as any).salesman ||
+              (card.raw as any)?.salesman ||
+              (card.raw as any)?.assignedTo ||
+              (card.raw as any)?.crmManager ||
+              ''
+            ).toLowerCase();
+
+            if (!ownerName.includes(searchOwner)) return false;
+          }
+
+          return true;
+        }),
+      ])
+    ) as typeof data.columns;
+
+    const newCounts = { ...data.counts };
+    (Object.keys(newColumns) as (keyof typeof newColumns)[]).forEach((k) => {
+      newCounts[k] = newColumns[k].length;
+    });
+
+    return { ...data, columns: newColumns, counts: newCounts };
+  }, [data, filters.owner, filters.sources]);
 
   const handleCardClick = (card: UnifiedCard) => {
     const goToSource = () => {
@@ -145,7 +192,7 @@ export function PipelineTab({ filters }: Props) {
     goToSource();
   };
 
-  if (loading || !data) return <PipelineSkeleton />;
+  if (loading || !filteredData) return <PipelineSkeleton />;
 
   return (
     <>
@@ -158,7 +205,8 @@ export function PipelineTab({ filters }: Props) {
         }}
       >
         {STAGES.map(({ key, label }) => {
-          const cards = data.columns[key] || [];
+          // ⭐ Using filteredData here instead of data
+          const cards = filteredData.columns[key] || [];
           return (
             <div
               key={key}

@@ -645,6 +645,9 @@ function ProcurementFileModal({
 /* =========================================================
    CHECKLIST MODAL — View Checklist
    ========================================================= */
+/* =========================================================
+   CHECKLIST MODAL — Now includes Logistics & Customs status
+   ========================================================= */
 function ChecklistModal({
   order,
   onClose,
@@ -657,16 +660,17 @@ function ChecklistModal({
   // Pre-populate from order.logisticsChecklist
   const [checked, setChecked] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
-    const existing = (order.logisticsChecklist || {}) as Record<
-      string,
-      string
-    >;
+    const existing = (order.logisticsChecklist || {}) as Record<string, string>;
     for (const item of DEFAULT_CHECKLIST) {
       const val = existing[item.id];
       initial[item.id] = !!val && val === item.doneValue;
     }
     return initial;
   });
+
+  // ⭐ State for Logistics Mode & Customs Status
+  const [logisticsMode, setLogisticsMode] = useState(order.logisticsMode || '');
+  const [customs, setCustoms] = useState(order.customs || 'Not Started');
   const [saving, setSaving] = useState(false);
 
   const toggle = (id: string) => {
@@ -683,8 +687,11 @@ function ChecklistModal({
 
       await SalesOrderApi.update(order.id, {
         logisticsChecklist: payload,
+        logisticsMode: logisticsMode || undefined, // ⭐ Save mode
+        customs: customs || undefined,             // ⭐ Save customs
       } as any);
-      toast.success('Checklist saved');
+
+      toast.success('Checklist & Status updated');
       await onSaved();
     } catch (e: any) {
       toast.error(e.message || 'Failed to save checklist');
@@ -698,12 +705,45 @@ function ChecklistModal({
   const pct = Math.round((doneCount / total) * 100);
 
   return (
-    <ModalShell
-      onClose={onClose}
-      title="Logistics & Customs Checklist"
-      width="md"
-    >
-      {/* Progress */}
+    <ModalShell onClose={onClose} title="Logistics & Customs Checklist" width="md">
+
+      {/* ⭐ NEW: Logistics & Customs Dropdowns at the top */}
+      <div className="mb-5 grid grid-cols-2 gap-3 rounded-lg border border-[#E2DBD1] bg-slate-50 p-3">
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+            Logistics Mode
+          </label>
+          <select
+            value={logisticsMode}
+            onChange={(e) => setLogisticsMode(e.target.value)}
+            className="w-full rounded-lg border border-[#E2DBD1] bg-white px-3 py-2 text-[11.5px] text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#A06126]"
+          >
+            <option value="">Select mode…</option>
+            <option value="Air">Air</option>
+            <option value="Sea">Sea</option>
+            <option value="Road">Road</option>
+            <option value="Digital">Digital</option>
+            <option value="Courier">Courier</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+            Customs Status
+          </label>
+          <select
+            value={customs}
+            onChange={(e) => setCustoms(e.target.value)}
+            className="w-full rounded-lg border border-[#E2DBD1] bg-white px-3 py-2 text-[11.5px] text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#A06126]"
+          >
+            <option value="Not Started">Not Started</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Cleared">Cleared</option>
+            <option value="N/A">N/A</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Progress Bar */}
       <div className="mb-4 flex items-center gap-3">
         <div className="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
           <div
@@ -716,7 +756,7 @@ function ChecklistModal({
         </span>
       </div>
 
-      {/* Items */}
+      {/* Checklist Items */}
       <div className="space-y-2">
         {DEFAULT_CHECKLIST.map((item) => {
           const on = !!checked[item.id];
@@ -724,8 +764,8 @@ function ChecklistModal({
             <label
               key={item.id}
               className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 cursor-pointer transition ${on
-                ? 'border-emerald-200 bg-emerald-50/40'
-                : 'border-[#E2DBD1] bg-white hover:bg-slate-50'
+                  ? 'border-emerald-200 bg-emerald-50/40'
+                  : 'border-[#E2DBD1] bg-white hover:bg-slate-50'
                 }`}
             >
               <input
@@ -775,7 +815,7 @@ function ChecklistModal({
           ) : (
             <Check className="w-3.5 h-3.5" />
           )}
-          {saving ? 'Saving…' : 'Save Checklist'}
+          {saving ? 'Saving…' : 'Save Changes'}
         </button>
       </div>
     </ModalShell>

@@ -50,7 +50,10 @@ export default function Client360Page() {
     const [editClientOpen, setEditClientOpen] = useState(false);
     const [contactModalOpen, setContactModalOpen] = useState(false);
     const [editingContact, setEditingContact] = useState<ClientContact | null>(null);
+
+    // Communication Modal State
     const [commModalOpen, setCommModalOpen] = useState(false);
+    const [editingLog, setEditingLog] = useState<any | null>(null);
 
     const [filters, setFilters] = useState<{
         sector: string;
@@ -116,7 +119,7 @@ export default function Client360Page() {
             setLoading(true);
 
             const params: ClientListParams = {
-                limit: 500,   // ⭐ fetch more so pagination is fully client-side
+                limit: 500,
                 page: 1,
             };
             if (filters.sector !== 'all') params.sector = filters.sector;
@@ -141,8 +144,7 @@ export default function Client360Page() {
     }, [topTab, loadList]);
 
     // ============================================================
-    // AGGREGATES (stats + sector) — load only when tab opens
-    //                      not on every filter change
+    // AGGREGATES
     // ============================================================
     const loadAggregates = useCallback(async () => {
         try {
@@ -164,8 +166,6 @@ export default function Client360Page() {
     // ============================================================
     // HANDLERS
     // ============================================================
-
-    // ⭐ Fast save — updates local state, no full refetch
     const handleSaveContact = async (
         client: Client360,
         contact: ClientContact,
@@ -175,14 +175,11 @@ export default function Client360Page() {
         try {
             const contactId = contact._id;
             if (!contactId) {
-                throw new Error(
-                    'Contact has no _id — cannot update. Try reloading.'
-                );
+                throw new Error('Contact has no _id — cannot update. Try reloading.');
             }
 
             await Client360Api.updateContact(client.id, contactId, updated);
 
-            // ⭐ Local merge — instant UI update
             setClients((prev) =>
                 prev.map((c) => {
                     if (c.id !== client.id) return c;
@@ -208,15 +205,6 @@ export default function Client360Page() {
         router.push('/crm/client-360');
     };
 
-    const handleNewQuotation = () => {
-        const rfqId = selected?.sourceRefs?.rfqId;
-        if (rfqId) {
-            router.push(`/crm/quotation-builder/${rfqId}`);
-            return;
-        }
-        router.push('/crm/rfq');
-    };
-
     const handleEdit = () => {
         setEditClientOpen(true);
     };
@@ -226,7 +214,7 @@ export default function Client360Page() {
         setEditClientOpen(false);
     };
 
-    // ---- Contacts (modal based) ----
+    // ---- Contacts ----
     const handleAddContact = () => {
         setEditingContact(null);
         setContactModalOpen(true);
@@ -253,11 +241,31 @@ export default function Client360Page() {
 
     // ---- Communication ----
     const handleAddCommunication = () => {
+        setEditingLog(null);
         setCommModalOpen(true);
+    };
+
+    const handleEditCommunication = (log: any) => {
+        setEditingLog(log);
+        setCommModalOpen(true);
+    };
+
+    const handleDeleteCommunication = async (logId: string) => {
+        if (!selectedId) return;
+        try {
+            await Client360Api.deleteCommunication(selectedId, logId);
+            toast.success('Communication log deleted');
+            const c = await Client360Api.getById(selectedId);
+            setSelected(c);
+        } catch (e: any) {
+            toast.error(e.message || 'Failed to delete log');
+            throw e;
+        }
     };
 
     const handleCommSaved = async () => {
         setCommModalOpen(false);
+        setEditingLog(null);
 
         if (selectedId) {
             try {
@@ -332,15 +340,24 @@ export default function Client360Page() {
                     <>
                         <ClientHeader
                             client={selected}
-                            onNewQuotation={handleNewQuotation}
                             onEdit={handleEdit}
                         />
                         <KpiStrip client={selected} />
+
                         <ProfileTabs
                             client={selected}
                             onAddContact={handleAddContact}
                             onEditContact={handleEditContact}
                             onAddCommunication={handleAddCommunication}
+                            onEditCommunication={handleEditCommunication}
+                            onDeleteCommunication={handleDeleteCommunication}
+                            // ⭐ মডাল থেকে সেভ হলেই পেজ রিফ্রেশ হবে
+                            onRefreshClient={async () => {
+                                if (selectedId) {
+                                    const c = await Client360Api.getById(selectedId);
+                                    setSelected(c);
+                                }
+                            }}
                         />
                     </>
                 )}
@@ -419,7 +436,11 @@ export default function Client360Page() {
             {commModalOpen && selected && (
                 <CommunicationModal
                     clientId={selected.id}
-                    onClose={() => setCommModalOpen(false)}
+                    initialData={editingLog}
+                    onClose={() => {
+                        setCommModalOpen(false);
+                        setEditingLog(null);
+                    }}
                     onSaved={handleCommSaved}
                 />
             )}
@@ -439,9 +460,8 @@ function TopTabBtn({
     return (
         <button
             onClick={onClick}
-            className={`pb-3 font-semibold relative transition ${
-                active ? 'text-[#A06126]' : 'text-slate-500 hover:text-slate-700'
-            }`}
+            className={`pb-3 font-semibold relative transition ${active ? 'text-[#A06126]' : 'text-slate-500 hover:text-slate-700'
+                }`}
         >
             {children}
             {active && (

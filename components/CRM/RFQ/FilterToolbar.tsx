@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import { Search, ChevronDown, Archive, ListFilter, XCircle } from 'lucide-react';
 import type { FilterState, RFQItem, RFQViewMode } from './types';
+import Link from 'next/link';
 
 interface Props {
   filters: FilterState;
@@ -158,9 +159,13 @@ export default function FilterToolbar({
       </div>
 
       <div className="flex items-center gap-3 text-xs text-slate-500 font-medium">
-        <span className="hover:text-[#A06126] cursor-pointer">Sales CRM</span>
+        <Link href="/crm/sales-crm" className="hover:text-[#A06126] cursor-pointer">
+          Sales CRM
+        </Link>
         <span className="text-slate-300">|</span>
-        <span className="hover:text-[#A06126] cursor-pointer">Online CRM</span>
+        <Link href="/crm/online-crm" className="hover:text-[#A06126] cursor-pointer">
+          Online CRM
+        </Link>
       </div>
     </div>
   );

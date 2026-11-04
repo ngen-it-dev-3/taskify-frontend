@@ -11,6 +11,7 @@ interface Props {
   clientId: string;
   onClose: () => void;
   onSaved: () => void;
+  initialData?: CommEntry | null; // ⭐ Added for Edit mode
 }
 
 const KINDS: { value: CommEntry['kind']; label: string }[] = [
@@ -22,11 +23,22 @@ const KINDS: { value: CommEntry['kind']; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
-export function CommunicationModal({ clientId, onClose, onSaved }: Props) {
-  const [kind, setKind] = useState<CommEntry['kind']>('call');
-  const [summary, setSummary] = useState('');
-  const [body, setBody] = useState('');
-  const [at, setAt] = useState(new Date().toISOString().slice(0, 16)); // yyyy-MM-ddTHH:mm
+export function CommunicationModal({ clientId, onClose, onSaved, initialData }: Props) {
+  // ⭐ Use initialData if provided, otherwise default to empty/new
+  const isEdit = !!initialData;
+
+  const [kind, setKind] = useState<CommEntry['kind']>(initialData?.kind || 'call');
+  const [summary, setSummary] = useState(initialData?.summary || '');
+  const [body, setBody] = useState(initialData?.body || '');
+  const [at, setAt] = useState(() => {
+    if (initialData?.at) {
+      // Convert ISO string to local datetime-local format (yyyy-MM-ddTHH:mm)
+      const d = new Date(initialData.at);
+      const tzOffset = d.getTimezoneOffset() * 60000;
+      return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+    }
+    return new Date().toISOString().slice(0, 16);
+  });
   const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
@@ -38,17 +50,26 @@ export function CommunicationModal({ clientId, onClose, onSaved }: Props) {
     try {
       setSaving(true);
 
-      await Client360Api.addCommunication(clientId, {
+      const payload = {
         kind,
         summary: summary.trim(),
         body: body.trim(),
         at: at ? new Date(at).toISOString() : new Date().toISOString(),
-      });
+      };
 
-      toast.success('Communication logged');
+      if (isEdit && initialData?._id) {
+        // ⭐ Update existing log
+        await Client360Api.updateCommunication(clientId, initialData._id, payload);
+        toast.success('Communication updated');
+      } else {
+        // ⭐ Create new log
+        await Client360Api.addCommunication(clientId, payload);
+        toast.success('Communication logged');
+      }
+
       onSaved();
     } catch (e: any) {
-      toast.error(e.message || 'Failed to log');
+      toast.error(e.message || 'Failed to save');
     } finally {
       setSaving(false);
     }
@@ -66,10 +87,12 @@ export function CommunicationModal({ clientId, onClose, onSaved }: Props) {
         <div className="mb-5 flex items-start justify-between">
           <div>
             <h2 className="font-serif text-xl font-bold text-[#0F2D4A]">
-              Log Communication
+              {isEdit ? 'Edit Communication' : 'Log Communication'}
             </h2>
             <p className="mt-1 text-[11px] text-slate-500">
-              Add a new entry to this client's communication log.
+              {isEdit
+                ? 'Update the details of this communication log.'
+                : "Add a new entry to this client's communication log."}
             </p>
           </div>
           <button
@@ -150,7 +173,7 @@ export function CommunicationModal({ clientId, onClose, onSaved }: Props) {
             disabled={saving}
             className="rounded-lg bg-[#A06126] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60 transition"
           >
-            {saving ? 'Saving…' : 'Log Communication'}
+            {saving ? 'Saving…' : isEdit ? 'Save Changes' : 'Log Communication'}
           </button>
         </div>
       </div>

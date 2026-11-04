@@ -182,12 +182,11 @@ export default function RFQDashboardPage() {
     setShowAssignModal(false);
   };
 
-  const submitRfq = async (data: any) => {
+    const submitRfq = async (data: any) => {
     try {
       if (editingRfqId) {
         const itemsArray = data.items || data.products || [];
 
-        // ⭐ Flattening the payload to match the Mongoose Schema exactly
         await update(editingRfqId, {
           company: data.companyName || data.company,
           country: data.country,
@@ -218,17 +217,15 @@ export default function RFQDashboardPage() {
         } as any);
 
         toast.success('RFQ updated successfully');
-
-        // Force the UI to stay on the updated item
         setSelectedRFQId(editingRfqId);
 
       } else {
-        // Create flow
+        // ⭐ FIX: Use data.products instead of data.items
         await create({
           ...data,
           company: data.companyName || data.company,
-          products: (data.items || []).map((p: any) => ({
-            name: p.product || p.name,
+          products: (data.products || []).map((p: any) => ({
+            name: p.name || p.product, // p.name because it comes from AddRfqModal mapped payload
             qty: p.qty,
             sku: p.sku,
             modelNo: p.modelNo,
