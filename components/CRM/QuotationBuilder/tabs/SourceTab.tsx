@@ -163,7 +163,7 @@ export default function SourceTab({
             const results = await Promise.all(updatedLinesPromises);
 
             if (isMounted && onUpdateLine) {
-                results.forEach(res => {
+                results.forEach((res: any) => {
                     if (res) onUpdateLine(res.id, res.patch);
                 });
             }
