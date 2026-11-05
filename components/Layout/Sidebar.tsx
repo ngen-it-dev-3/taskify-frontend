@@ -231,9 +231,11 @@ export default function Sidebar({ isMobileOpen, onClose, onCollapseChange }: Sid
         return items.map((item) => {
           const children = getSubMenuItems(item.name, userRole);
           if (children.length > 0) {
-            return { ...item, children: attachChildren(children, level + 1) };
+            // ⭐ এখানে as NavItem যুক্ত করুন
+            return { ...item, children: attachChildren(children, level + 1) } as NavItem;
           }
-          return item;
+          // ⭐ এখানেও as NavItem যুক্ত করুন
+          return item as NavItem;
         });
       };
 
