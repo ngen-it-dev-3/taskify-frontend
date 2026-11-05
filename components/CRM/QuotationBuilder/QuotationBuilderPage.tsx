@@ -5,7 +5,6 @@ import toast from 'react-hot-toast';
 
 import Header from './Header';
 import QuoteInfoCard from './QuoteInfoCard';
-import ClientTypeBar from './ClientTypeBar';
 import ThresholdBanner from './ThresholdBanner';
 
 import QuotationTab from './tabs/QuotationTab';
