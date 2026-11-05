@@ -8,7 +8,7 @@ import { OnlineCrmApi } from './onlineCrm.service';
 /* =========================================================
    Filters & types
 ========================================================= */
-export type DimensionKey = 'Territory' | 'Industry' | 'Product'
+export type DimensionKey = 'Territory' | 'Industry' | 'Product' | 'Country';
 export type TimeKey = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'FY26';
 
 export interface SalesDashboardFilters {
@@ -68,11 +68,13 @@ export interface SalesDashboardData {
 /* =========================================================
    Currency
 ========================================================= */
-export type CurrencyCode = 'BDT' | 'USD' | 'EUR' | 'GBP' | 'AED';
+export type CurrencyCode = 'BDT' | 'USD' | 'GBP' | 'AED' | 'EUR';
 
 export const CURRENCY_META: Record<CurrencyCode, { symbol: string; rate: number }> = {
-    TK: { symbol: '৳', rate: 1 },
+    BDT: { symbol: '৳', rate: 1 },
     USD: { symbol: '$', rate: 0.0091 },
+    GBP: { symbol: '£', rate: 0.0076 },
+    AED: { symbol: 'د.إ', rate: 0.0334 },
     EUR: { symbol: '€', rate: 0.0084 },
 };
 
@@ -82,7 +84,7 @@ export function convertFromBDT(amountBDT: number, currency: CurrencyCode): numbe
 }
 
 export function formatCurrency(amountBDT: number, currency: CurrencyCode): string {
-    const { symbol } = CURRENCY_META[currency] || CURRENCY_META.TK;
+    const { symbol } = CURRENCY_META[currency] || CURRENCY_META.BDT;
     const v = convertFromBDT(amountBDT, currency);
     return `${symbol}${v.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
@@ -138,7 +140,7 @@ export const SalesDashboardApi = {
     async get(filters: SalesDashboardFilters = {}): Promise<SalesDashboardData> {
         const {
             country,
-            currency = 'TK',
+            currency = 'BDT',
             time = 'Q1',
             dimension = 'Country',
         } = filters;
@@ -354,7 +356,7 @@ export const SalesDashboardApi = {
         ========================================================= */
         let bars: Array<{ name: string; value: number; color: string }> = [];
 
-                if (dimension === 'Country') {
+        if (dimension === 'Country') {
             const countryMap = new Map<string, number>();
 
             // 1. First priority: Use the Sales Forecast breakdown (matches the KPI)
@@ -366,8 +368,8 @@ export const SalesDashboardApi = {
                         countryMap.set(entry.key, entry.value || 0);
                     }
                 });
-            } 
-            
+            }
+
             // 2. Fallback: If forecast is completely empty, use the pipeline cards
             if (countryMap.size === 0) {
                 filteredCards.forEach((c) => {
@@ -383,7 +385,7 @@ export const SalesDashboardApi = {
                 (rfqStats.byCountry || []).forEach((c: any) => {
                     if (c.country) {
                         if (!countryParam || sameCountry(c.country, countryParam)) {
-                             countryMap.set(c.country, c.count || 1); 
+                            countryMap.set(c.country, c.count || 1);
                         }
                     }
                 });
@@ -391,7 +393,7 @@ export const SalesDashboardApi = {
 
             // 4. If there is STILL nothing, add a placeholder so the chart doesn't break
             if (countryMap.size === 0) {
-                 countryMap.set(countryParam || 'No Data', 0);
+                countryMap.set(countryParam || 'No Data', 0);
             }
 
             // 5. Map to bars
