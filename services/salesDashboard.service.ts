@@ -68,7 +68,7 @@ export interface SalesDashboardData {
 /* =========================================================
    Currency
 ========================================================= */
-export type CurrencyCode = 'TK' | 'USD' | 'EUR';
+export type CurrencyCode = 'BDT' | 'USD' | 'EUR' | 'GBP' | 'AED';
 
 export const CURRENCY_META: Record<CurrencyCode, { symbol: string; rate: number }> = {
     TK: { symbol: '৳', rate: 1 },

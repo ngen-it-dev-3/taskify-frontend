@@ -29,7 +29,7 @@ export type ExpenseCategory =
     | "personal"
     | "other";
 
-export type CurrencyCode = "BDT" | "SAR" | "USD" | "AED" | "INR" | "EUR" | "GBP";
+export type CurrencyCode = 'BDT' | 'USD' | 'EUR' | 'GBP' | 'AED';
 
 export interface GeoCoordinates {
     lat: number;
@@ -77,14 +77,12 @@ const CURRENCY_OPTIONS: {
     symbol: string;
     label: string;
 }[] = [
-        { value: "BDT", symbol: "৳", label: "BDT — Bangladeshi Taka" },
-        { value: "SAR", symbol: "﷼", label: "SAR — Saudi Riyal" },
-        { value: "USD", symbol: "$", label: "USD — US Dollar" },
-        { value: "AED", symbol: "د.إ", label: "AED — UAE Dirham" },
-        { value: "INR", symbol: "₹", label: "INR — Indian Rupee" },
-        { value: "EUR", symbol: "€", label: "EUR — Euro" },
-        { value: "GBP", symbol: "£", label: "GBP — British Pound" },
-    ];
+    { value: "BDT", symbol: "৳", label: "BDT — Bangladeshi Taka" },
+    { value: "USD", symbol: "$", label: "USD — Singapore Dollar" }, // ⭐ সিঙ্গাপুরের জন্য USD
+    { value: "GBP", symbol: "£", label: "GBP — British Pound" },
+    { value: "AED", symbol: "د.إ", label: "AED — UAE Dirham" },
+    { value: "EUR", symbol: "€", label: "EUR — Euro" },
+];
 
 const MAX_FILE_SIZE_MB = 3;
 const MAX_PAYLOAD_BYTES = 8 * 1024 * 1024; // 8 MB safety threshold for base64
