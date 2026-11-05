@@ -588,7 +588,7 @@ export default function BulkUploadPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading...</p>
         </div>
       </div>
@@ -661,7 +661,7 @@ export default function BulkUploadPage() {
             <select
               value={selectedProject}
               onChange={(e) => setSelectedProject(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition cursor-pointer appearance-none"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition cursor-pointer appearance-none"
             >
               <option value="">No Project (Unassigned)</option>
               {projects.map((project) => (
@@ -681,8 +681,8 @@ export default function BulkUploadPage() {
         {!showPreview && !showSuccess && (
           <div
             className={`border-2 border-dashed rounded-xl p-8 md:p-12 text-center transition-all ${dragActive
-                ? "border-indigo-400 bg-indigo-50 scale-[1.02]"
-                : "border-gray-300 bg-white hover:border-indigo-300 hover:bg-indigo-50/30"
+                ? "border-green-400 bg-green-50 scale-[1.02]"
+                : "border-gray-300 bg-white hover:border-green-300 hover:bg-green-50/30"
               }`}
             onDragEnter={() => setDragActive(true)}
             onDragLeave={() => setDragActive(false)}
@@ -751,7 +751,7 @@ export default function BulkUploadPage() {
             {/* <div className="flex justify-center gap-3">
               <button
                 onClick={() => router.push("/tasks/tasks-board")}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm"
+                className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition shadow-sm"
               >
                 View Tasks
               </button>
@@ -858,7 +858,7 @@ export default function BulkUploadPage() {
                                       prev ? { ...prev, title: e.target.value } : null
                                     )
                                   }
-                                  className="text-black w-full min-w-[150px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                  className="text-black w-full min-w-[150px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                   placeholder="Task title"
                                   autoFocus
                                 />
@@ -884,7 +884,7 @@ export default function BulkUploadPage() {
                                       prev ? { ...prev, description: e.target.value } : null
                                     )
                                   }
-                                  className="text-black w-full min-w-[200px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                  className="text-black w-full min-w-[200px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                   placeholder="Description"
                                 />
                               ) : (
@@ -906,7 +906,7 @@ export default function BulkUploadPage() {
                                       prev ? { ...prev, assignedTo: e.target.value } : null
                                     )
                                   }
-                                  className="text-black w-full min-w-[150px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                  className="text-black w-full min-w-[150px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                 >
                                   <option value="">Select user</option>
                                   {users.map((u) => (
@@ -943,7 +943,7 @@ export default function BulkUploadPage() {
                                       prev ? { ...prev, deadline: e.target.value } : null
                                     )
                                   }
-                                  className="text-black w-full min-w-[130px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                  className="text-black w-full min-w-[130px] px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                 />
                               ) : (
                                 <div className="flex items-center gap-2 text-sm">
@@ -974,7 +974,7 @@ export default function BulkUploadPage() {
                                         : null
                                     )
                                   }
-                                  className="text-black w-full px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                  className="text-black w-full px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                 >
                                   {PRIORITY_OPTIONS.map((p) => (
                                     <option key={p.value} value={p.value}>
@@ -1009,7 +1009,7 @@ export default function BulkUploadPage() {
                                         : null
                                     )
                                   }
-                                  className="text-black w-20 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                  className="text-black w-20 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                   step="0.5"
                                   min="0"
                                 />

@@ -230,7 +230,7 @@ export default function UserManagementReportPage() {
                     <nav className="flex min-w-0 flex-1 items-center gap-1 text-xs">
                         <Link
                             href="/management-report"
-                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-indigo-600"
+                            className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-green-600"
                         >
                             <ArrowLeft className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Management Report</span>
@@ -239,7 +239,7 @@ export default function UserManagementReportPage() {
 
                         <ChevronRight className="h-3 w-3 shrink-0 text-slate-300" />
 
-                        <div className="flex min-w-0 items-center gap-1.5 rounded-lg bg-indigo-50 px-2 py-1 font-semibold text-indigo-700">
+                        <div className="flex min-w-0 items-center gap-1.5 rounded-lg bg-green-50 px-2 py-1 font-semibold text-green-700">
                             <UserCircle className="h-3.5 w-3.5 shrink-0" />
                             <span className="truncate max-w-[160px]">{employeeName}</span>
                         </div>
@@ -277,7 +277,7 @@ export default function UserManagementReportPage() {
                         {canEdit && (
                             <Link
                                 href={`/management-report/${userId}/settings`}
-                                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm shadow-indigo-500/20 transition hover:from-indigo-700 hover:to-purple-700 hover:shadow-md"
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-purple-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm shadow-green-500/20 transition hover:from-green-700 hover:to-purple-700 hover:shadow-md"
                             >
                                 <Settings2 className="h-3.5 w-3.5" />
                                 <span className="hidden sm:inline">Employee Settings</span>

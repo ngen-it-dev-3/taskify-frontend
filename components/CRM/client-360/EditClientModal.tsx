@@ -19,8 +19,11 @@ interface Props {
 }
 
 const COUNTRIES = [
-    'Bangladesh', 'Singapore', 'India', 'Pakistan', 'Egypt',
-    'Middle East', 'Hungary', 'Nigeria', 'United Kingdom', 'United States',
+  'Bangladesh',
+  'Singapore',
+  'Middle East',
+  'United Kingdom',
+  'Portugal',
 ];
 
 const STAGES = ['hot', 'warm', 'won', 'cold'];

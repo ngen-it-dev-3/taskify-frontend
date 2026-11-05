@@ -188,8 +188,8 @@ export default function EditExpenseModal({
                         {/* Header */}
                         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-                                    <Receipt className="w-5 h-5 text-indigo-600" />
+                                <div className="w-10 h-10 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center">
+                                    <Receipt className="w-5 h-5 text-green-600" />
                                 </div>
                                 <div>
                                     <h2 className="text-base font-bold text-gray-900">
@@ -218,7 +218,7 @@ export default function EditExpenseModal({
                                     type="text"
                                     value={title}
                                     onChange={(e) => setTitle(e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     maxLength={200}
                                 />
                             </div>
@@ -231,7 +231,7 @@ export default function EditExpenseModal({
                                     <select
                                         value={category}
                                         onChange={(e) => setCategory(e.target.value)}
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     >
                                         {CATEGORIES.map((c) => (
                                             <option key={c.value} value={c.value}>
@@ -251,7 +251,7 @@ export default function EditExpenseModal({
                                         onChange={(e) => setAmount(e.target.value)}
                                         min="0"
                                         step="0.01"
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     />
                                 </div>
                             </div>
@@ -266,7 +266,7 @@ export default function EditExpenseModal({
                                         value={guests}
                                         onChange={(e) => setGuests(e.target.value)}
                                         min="0"
-                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     />
                                 </div>
                             )}
@@ -280,7 +280,7 @@ export default function EditExpenseModal({
                                     value={expenseDate}
                                     onChange={(e) => setExpenseDate(e.target.value)}
                                     max={new Date().toISOString().split("T")[0]}
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition"
                                 />
                             </div>
 
@@ -292,7 +292,7 @@ export default function EditExpenseModal({
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     rows={3}
-                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 resize-none focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     maxLength={1000}
                                 />
                             </div>
@@ -307,7 +307,7 @@ export default function EditExpenseModal({
                                         value={locationLabel}
                                         onChange={(e) => setLocationLabel(e.target.value)}
                                         placeholder="e.g. DPDC Head Office, Dhaka"
-                                        className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                        className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 focus:border-green-500 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     />
                                     <button
                                         type="button"
@@ -382,7 +382,7 @@ export default function EditExpenseModal({
                                         type="button"
                                         onClick={() => fileInputRef.current?.click()}
                                         disabled={uploading}
-                                        className="w-full py-3 border-2 border-dashed border-gray-200 hover:border-indigo-300 rounded-xl text-sm text-gray-500 hover:text-indigo-600 transition flex items-center justify-center gap-2"
+                                        className="w-full py-3 border-2 border-dashed border-gray-200 hover:border-green-300 rounded-xl text-sm text-gray-500 hover:text-green-600 transition flex items-center justify-center gap-2"
                                     >
                                         {uploading ? (
                                             <Loader2 size={14} className="animate-spin" />
@@ -417,7 +417,7 @@ export default function EditExpenseModal({
                             <button
                                 onClick={handleSubmit}
                                 disabled={submitting || !title.trim() || !amount}
-                                className="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="flex-1 py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition text-sm shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {submitting && <Loader2 size={14} className="animate-spin" />}
                                 Save Changes

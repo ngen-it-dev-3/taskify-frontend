@@ -88,7 +88,7 @@ const roles = [
     id: "line_manager",
     name: "Line Manager",
     icon: UserCheck,
-    color: "from-indigo-600 to-purple-600",
+    color: "from-green-600 to-purple-600",
     description: "Team management access",
     permissions: [
       "Assign daily tasks",

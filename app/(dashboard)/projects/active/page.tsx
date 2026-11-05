@@ -201,7 +201,7 @@ export default function ProjectsPage() {
 
   const borderColors = [
     "border-l-amber-500",
-    "border-l-indigo-500",
+    "border-l-green-500",
     "border-l-emerald-500",
     "border-l-rose-500",
     "border-l-sky-500",
@@ -734,7 +734,7 @@ export default function ProjectsPage() {
     }
 
     const colors = [
-      'bg-indigo-500', 'bg-emerald-500', 'bg-amber-500',
+      'bg-green-500', 'bg-emerald-500', 'bg-amber-500',
       'bg-rose-500', 'bg-blue-500', 'bg-purple-500',
       'bg-cyan-500', 'bg-pink-500', 'bg-orange-500',
       'bg-teal-500', 'bg-violet-500', 'bg-fuchsia-500'
@@ -792,7 +792,7 @@ export default function ProjectsPage() {
           <motion.div
             className={`h-2 rounded-full ${isComplete
               ? "bg-emerald-500"
-              : "bg-linear-to-r from-indigo-500 to-purple-600"
+              : "bg-linear-to-r from-green-500 to-purple-600"
               }`}
             initial={{ width: 0 }}
             animate={{
@@ -846,7 +846,7 @@ export default function ProjectsPage() {
           </p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm"
           >
             Go to Dashboard
           </button>
@@ -884,13 +884,13 @@ export default function ProjectsPage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <FolderKanban className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   Projects
                 </h1>
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {stats.total}
                 </span>
               </div>
@@ -916,7 +916,7 @@ export default function ProjectsPage() {
                     resetForm();
                     setShowCreateModal(true);
                   }}
-                  className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-indigo-500/20"
+                  className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-green-500/20"
                 >
                   <Plus size={16} />
                   Create Project
@@ -971,7 +971,7 @@ export default function ProjectsPage() {
                   </p>
                   <p className="text-xs text-gray-500">Total</p>
                 </div>
-                <FolderKanban className="w-8 h-8 text-indigo-400 opacity-50" />
+                <FolderKanban className="w-8 h-8 text-green-400 opacity-50" />
               </div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
@@ -1046,13 +1046,13 @@ export default function ProjectsPage() {
                 placeholder="Search projects by name, code or description..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="all">All Status</option>
               <option value="planning">Planning</option>
@@ -1065,7 +1065,7 @@ export default function ProjectsPage() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="all">All Priority</option>
               <option value="low">Low</option>
@@ -1077,7 +1077,7 @@ export default function ProjectsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               >
                 <option value="name">Sort by Name</option>
                 <option value="progress">Sort by Progress</option>
@@ -1117,7 +1117,7 @@ export default function ProjectsPage() {
                 setStatusFilter("all"); // Keep as "all" for active projects
               }}
               className={`px-3 py-1.5 text-sm rounded-lg transition ${!showArchived
-                ? "bg-indigo-600 text-white shadow-sm"
+                ? "bg-green-600 text-white shadow-sm"
                 : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
@@ -1129,7 +1129,7 @@ export default function ProjectsPage() {
                 setStatusFilter("archived"); // 🔥 CHANGE THIS to "archived"
               }}
               className={`px-3 py-1.5 text-sm rounded-lg transition flex items-center gap-2 ${showArchived
-                ? "bg-indigo-600 text-white shadow-sm"
+                ? "bg-green-600 text-white shadow-sm"
                 : "text-gray-600 hover:bg-gray-100"
                 }`}
             >
@@ -1149,7 +1149,7 @@ export default function ProjectsPage() {
           {/* Projects Display */}
           {loading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
           ) : filteredProjects.length === 0 ? (
             <motion.div
@@ -1181,7 +1181,7 @@ export default function ProjectsPage() {
                     resetForm();
                     setShowCreateModal(true);
                   }}
-                  className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
+                  className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm"
                 >
                   <Plus size={16} className="inline mr-2" />
                   Create Project
@@ -1219,7 +1219,7 @@ export default function ProjectsPage() {
                               ? "bg-gray-100"
                               : isComplete
                                 ? "bg-emerald-50"
-                                : "bg-indigo-50"
+                                : "bg-green-50"
                               }`}
                           >
                             {project.status === "archived" ? (
@@ -1227,7 +1227,7 @@ export default function ProjectsPage() {
                             ) : isComplete ? (
                               <CheckCircle className="w-5 h-5 text-emerald-500" />
                             ) : (
-                              <FolderKanban className="w-5 h-5 text-indigo-500" />
+                              <FolderKanban className="w-5 h-5 text-green-500" />
                             )}
                           </div>
                           <div>
@@ -1236,7 +1236,7 @@ export default function ProjectsPage() {
                                 ? "text-gray-500"
                                 : isComplete
                                   ? "text-emerald-700"
-                                  : "text-gray-800 group-hover:text-indigo-600"
+                                  : "text-gray-800 group-hover:text-green-600"
                                 }`}
                             >
                               {project.name}
@@ -1317,7 +1317,7 @@ export default function ProjectsPage() {
                           <motion.div
                             className={`h-1.5 rounded-full ${isComplete
                               ? "bg-emerald-500"
-                              : "bg-linear-to-r from-indigo-500 to-purple-600"
+                              : "bg-linear-to-r from-green-500 to-purple-600"
                               }`}
                             initial={{ width: 0 }}
                             animate={{
@@ -1409,7 +1409,7 @@ export default function ProjectsPage() {
                               {canManage && (
                                 <button
                                   onClick={() => router.push(`/projects/${project._id}/edit`)}
-                                  className="p-1 cursor-pointer text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                  className="p-1 cursor-pointer text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                 >
                                   <Edit2 size={14} />
                                 </button>
@@ -1512,7 +1512,7 @@ export default function ProjectsPage() {
                                   ? "text-gray-500"
                                   : isComplete
                                     ? "text-emerald-700"
-                                    : "text-gray-800 group-hover:text-indigo-600"
+                                    : "text-gray-800 group-hover:text-green-600"
                                   }`}
                               >
                                 {project.name}
@@ -1581,7 +1581,7 @@ export default function ProjectsPage() {
                                   <motion.div
                                     className={`h-2 rounded-full ${isComplete
                                       ? "bg-emerald-500"
-                                      : "bg-linear-to-r from-indigo-500 to-purple-600"
+                                      : "bg-linear-to-r from-green-500 to-purple-600"
                                       }`}
                                     initial={{ width: 0 }}
                                     animate={{
@@ -1651,7 +1651,7 @@ export default function ProjectsPage() {
                               {/* View - everyone */}
                               <button
                                 onClick={() => openViewModal(project)}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                 title="View Details"
                               >
                                 <Eye size={16} />
@@ -1762,7 +1762,7 @@ export default function ProjectsPage() {
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
                       className={`px-3 py-2 rounded-lg text-sm transition ${currentPage === pageNum
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-green-600 text-white shadow-sm"
                         : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                         }`}
                     >
@@ -1795,7 +1795,7 @@ export default function ProjectsPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-2xl bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50 to-purple-50 sticky top-0">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50 to-purple-50 sticky top-0">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">
                     {editingProject ? "Edit Project" : "Create New Project"}
@@ -1834,7 +1834,7 @@ export default function ProjectsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, name: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       placeholder="Enter project name"
                       required
                     />
@@ -1852,7 +1852,7 @@ export default function ProjectsPage() {
                           code: e.target.value.toUpperCase(),
                         })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition font-mono"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition font-mono"
                       placeholder="e.g., PRJ-001"
                       required
                     />
@@ -1869,7 +1869,7 @@ export default function ProjectsPage() {
                       setFormData({ ...formData, description: e.target.value })
                     }
                     rows={3}
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                     placeholder="Describe the project goals and objectives..."
                   />
                 </div>
@@ -1887,7 +1887,7 @@ export default function ProjectsPage() {
                           departmentId: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="">Select Department</option>
                       {departments.map((dept) => (
@@ -1906,7 +1906,7 @@ export default function ProjectsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, managerId: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="">Select Manager</option>
                       {users
@@ -1937,7 +1937,7 @@ export default function ProjectsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, priority: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="low">Low</option>
                       <option value="normal">Normal</option>
@@ -1960,7 +1960,7 @@ export default function ProjectsPage() {
                             allocatedBudget: parseInt(e.target.value) || 0,
                           })
                         }
-                        className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         placeholder="0"
                         min="0"
                       />
@@ -1979,7 +1979,7 @@ export default function ProjectsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, startDate: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       required
                     />
                   </div>
@@ -1993,7 +1993,7 @@ export default function ProjectsPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, endDate: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       required
                     />
                   </div>
@@ -2003,7 +2003,7 @@ export default function ProjectsPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+                    className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
                   >
                     {submitting ? (
                       <Loader2 size={16} className="animate-spin" />
@@ -2041,10 +2041,10 @@ export default function ProjectsPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-4xl bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
-              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50 to-purple-50 sticky top-0">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50 to-purple-50 sticky top-0">
                 <div>
                   <div className="flex items-center gap-2">
-                    <FolderKanban size={20} className="text-indigo-500" />
+                    <FolderKanban size={20} className="text-green-500" />
                     <h2 className="text-lg font-semibold text-gray-800">
                       {selectedProject.name}
                     </h2>
@@ -2071,37 +2071,37 @@ export default function ProjectsPage() {
                 <button
                   onClick={() => setActiveTab("overview")}
                   className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "overview"
-                    ? "text-indigo-600"
+                    ? "text-green-600"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
                   Overview
                   {activeTab === "overview" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab("tasks")}
                   className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "tasks"
-                    ? "text-indigo-600"
+                    ? "text-green-600"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
                   Tasks ({selectedProject.tasksCount})
                   {activeTab === "tasks" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />
                   )}
                 </button>
                 <button
                   onClick={() => setActiveTab("team")}
                   className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "team"
-                    ? "text-indigo-600"
+                    ? "text-green-600"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
                   Team ({selectedProject.teamMembers?.length || 0})
                   {activeTab === "team" && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />
                   )}
                 </button>
               </div>
@@ -2137,7 +2137,7 @@ export default function ProjectsPage() {
                                 ? "bg-emerald-500"
                                 : selectedProject.status === "archived"
                                   ? "bg-gray-400"
-                                  : "bg-linear-to-r from-indigo-500 to-purple-600"
+                                  : "bg-linear-to-r from-green-500 to-purple-600"
                                 }`}
                               initial={{ width: 0 }}
                               animate={{
@@ -2199,7 +2199,7 @@ export default function ProjectsPage() {
                       <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                         <p className="text-xs text-gray-500 mb-1">Timeline</p>
                         <div className="flex items-center gap-2 text-gray-800 text-sm">
-                          <Calendar size={14} className="text-indigo-500" />
+                          <Calendar size={14} className="text-green-500" />
                           <span>
                             {formatDate(selectedProject.startDate)} -{" "}
                             {formatDate(selectedProject.endDate)}
@@ -2276,7 +2276,7 @@ export default function ProjectsPage() {
                   <div className="text-center py-8">
                     <Link
                       href={`/tasks/my`}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-sm"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-sm"
                     >
                       View All Tasks
                       <ArrowRight size={16} />
@@ -2294,8 +2294,8 @@ export default function ProjectsPage() {
                           className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                         >
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center">
-                              <User size={18} className="text-indigo-500" />
+                            <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
+                              <User size={18} className="text-green-500" />
                             </div>
                             <div>
                               <p className="text-gray-800 font-medium">
@@ -2348,7 +2348,7 @@ export default function ProjectsPage() {
                           setShowViewModal(false);
                           openEditModal(selectedProject);
                         }}
-                        className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
+                        className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
                       >
                         <Edit2 size={16} />
                         Edit Project
@@ -2378,7 +2378,7 @@ export default function ProjectsPage() {
                 )}
                 <button
                   onClick={() => setShowViewModal(false)}
-                  className={`${canManage ? "flex-1" : "w-[100px]"} bg-indigo-500 text-white border border-gray-200 hover:bg-gray-50 hover:text-black  py-2.5 rounded-lg transition`}
+                  className={`${canManage ? "flex-1" : "w-[100px]"} bg-green-500 text-white border border-gray-200 hover:bg-gray-50 hover:text-black  py-2.5 rounded-lg transition`}
                 >
                   Close
                 </button>

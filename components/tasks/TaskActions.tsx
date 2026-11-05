@@ -47,7 +47,7 @@ export function TaskActions(props: Props) {
             className="bg-white rounded-2xl p-6 top-6 pb-0"
         >
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-indigo-500" />
+                <Zap className="w-5 h-5 text-green-500" />
                 Actions
             </h3>
 
@@ -55,12 +55,12 @@ export function TaskActions(props: Props) {
                 {/* Dependencies */}
                 <button
                     onClick={onOpenDependencyEditor}
-                    className="w-full py-2.5 mb-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl transition flex items-center justify-center gap-2 shadow-sm border border-indigo-200"
+                    className="w-full py-2.5 mb-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl transition flex items-center justify-center gap-2 shadow-sm border border-green-200"
                 >
                     <Link2 size={16} />
                     Manage Dependencies
                     {task.dependencies && task.dependencies.length > 0 && (
-                        <span className="bg-indigo-200 text-indigo-800 text-xs px-2 py-0.5 rounded-full">
+                        <span className="bg-green-200 text-green-800 text-xs px-2 py-0.5 rounded-full">
                             {task.dependencies.length}
                         </span>
                     )}
@@ -72,7 +72,7 @@ export function TaskActions(props: Props) {
                         <button
                             onClick={() => onUpdateStatus("in_progress")}
                             disabled={updating}
-                            className="col-span-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
+                            className="col-span-2 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
                         >
                             {updating ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
                             Start Task

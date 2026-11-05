@@ -38,7 +38,7 @@ export function TaskBadges({ task, attachments, hasSubmittedEvidence }: Props) {
             ) : null}
 
             {task.dependencies && task.dependencies.length > 0 && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-600 text-[10px] font-semibold">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 border border-green-200 text-green-600 text-[10px] font-semibold">
                     <Link2 className="w-3 h-3" />
                     {task.dependencies.length} dependencies
                 </span>

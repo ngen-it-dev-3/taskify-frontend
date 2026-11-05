@@ -105,8 +105,8 @@ const ToggleSwitch = ({
       onClick={onChange}
       className={`
         relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 ease-in-out
-        ${enabled ? "bg-indigo-600" : "bg-gray-200"}
-        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+        ${enabled ? "bg-green-600" : "bg-gray-200"}
+        focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
       `}
     >
       <span
@@ -373,7 +373,7 @@ export default function OnboardingWizard() {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+          <Loader2 className="w-10 h-10 text-green-500 animate-spin" />
           <p className="text-slate-400 text-sm font-medium">Preparing your workspace...</p>
         </div>
       </div>
@@ -391,7 +391,7 @@ export default function OnboardingWizard() {
           <p className="text-slate-400 text-sm mb-6">
             Your preferences have been saved successfully. Setting up your custom workspace...
           </p>
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-xs font-medium border border-indigo-500/20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-400 rounded-full text-xs font-medium border border-green-500/20">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
             Redirecting to Dashboard
           </div>
@@ -401,15 +401,15 @@ export default function OnboardingWizard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 relative selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 relative selection:bg-green-500 selection:text-white">
       {/* Background ambient lighting */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-indigo-900/20 via-purple-900/10 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-green-900/20 via-purple-900/10 to-transparent blur-3xl pointer-events-none" />
 
       <div className="max-w-2xl mx-auto relative z-10">
 
         {/* Header Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 mb-3 shadow-inner">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-green-600/10 border border-green-500/20 text-green-400 mb-3 shadow-inner">
             <Sparkles className="w-6 h-6" />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-white">Setup Your Profile</h1>
@@ -429,7 +429,7 @@ export default function OnboardingWizard() {
               <div className="flex items-center gap-2">
                 <div
                   className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold transition-all duration-300 ${currentStep === s.num
-                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 ring-4 ring-indigo-600/20"
+                      ? "bg-green-600 text-white shadow-lg shadow-green-600/30 ring-4 ring-green-600/20"
                       : currentStep > s.num
                         ? "bg-emerald-600/20 border border-emerald-500/30 text-emerald-400"
                         : "bg-slate-800 text-slate-500 border border-slate-700"
@@ -444,7 +444,7 @@ export default function OnboardingWizard() {
               {s.num < 3 && (
                 <div className="flex-1 h-0.5 bg-slate-800 mx-2">
                   <div
-                    className="h-full bg-indigo-600 transition-all duration-500"
+                    className="h-full bg-green-600 transition-all duration-500"
                     style={{ width: currentStep > s.num ? "100%" : "0%" }}
                   />
                 </div>
@@ -461,7 +461,7 @@ export default function OnboardingWizard() {
             <div className="space-y-6 animate-fade-in">
               <div className="flex flex-col items-center pb-2">
                 <div className="relative group">
-                  <div className="w-24 h-24 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden shadow-inner group-hover:border-indigo-500/50 transition-all">
+                  <div className="w-24 h-24 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden shadow-inner group-hover:border-green-500/50 transition-all">
                     {profilePhotoPreview ? (
                       <img src={profilePhotoPreview} alt="Profile" className="w-full h-full object-cover" />
                     ) : user?.profilePhoto ? (
@@ -470,7 +470,7 @@ export default function OnboardingWizard() {
                       <User className="w-10 h-10 text-slate-500" />
                     )}
                   </div>
-                  <label className="absolute -bottom-2 -right-2 w-9 h-9 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl flex items-center justify-center cursor-pointer shadow-lg transition-transform hover:scale-105 active:scale-95">
+                  <label className="absolute -bottom-2 -right-2 w-9 h-9 bg-green-600 hover:bg-green-500 text-white rounded-xl flex items-center justify-center cursor-pointer shadow-lg transition-transform hover:scale-105 active:scale-95">
                     <Camera className="w-4 h-4" />
                     <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
                   </label>
@@ -487,7 +487,7 @@ export default function OnboardingWizard() {
                     type="text"
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
                     placeholder="e.g. Alex Morgan"
                   />
                 </div>
@@ -509,7 +509,7 @@ export default function OnboardingWizard() {
                   <select
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
                   >
                     <option value="" disabled>Select Department</option>
                     {departments.map((dept) => (
@@ -527,7 +527,7 @@ export default function OnboardingWizard() {
                     type="text"
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
                     placeholder="e.g. Senior Frontend Engineer"
                   />
                 </div>
@@ -539,7 +539,7 @@ export default function OnboardingWizard() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
                     placeholder="+1 (555) 019-2834"
                   />
                 </div>
@@ -551,7 +551,7 @@ export default function OnboardingWizard() {
                     type="text"
                     value={formData.employeeId}
                     onChange={(e) => setFormData({ ...formData, employeeId: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
                     placeholder="EMP-10492"
                   />
                 </div>
@@ -565,7 +565,7 @@ export default function OnboardingWizard() {
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                   rows={2}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none"
+                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all resize-none"
                   placeholder="A few words about yourself..."
                 />
               </div>
@@ -589,7 +589,7 @@ export default function OnboardingWizard() {
                     onChange={(e) =>
                       setFormData({ ...formData, dailyHoursTarget: parseFloat(e.target.value) || 8 })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   />
                 </div>
                 <div>
@@ -605,7 +605,7 @@ export default function OnboardingWizard() {
                     onChange={(e) =>
                       setFormData({ ...formData, weeklyHoursTarget: parseFloat(e.target.value) || 40 })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   />
                 </div>
               </div>
@@ -619,7 +619,7 @@ export default function OnboardingWizard() {
                     type="time"
                     value={formData.startTime}
                     onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   />
                 </div>
                 <div>
@@ -630,7 +630,7 @@ export default function OnboardingWizard() {
                     type="time"
                     value={formData.endTime}
                     onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   />
                 </div>
                 <div>
@@ -644,7 +644,7 @@ export default function OnboardingWizard() {
                     onChange={(e) =>
                       setFormData({ ...formData, breakDuration: parseInt(e.target.value) || 60 })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   />
                 </div>
               </div>
@@ -662,7 +662,7 @@ export default function OnboardingWizard() {
                         type="button"
                         onClick={() => toggleWorkDay(day.value)}
                         className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 border ${isSelected
-                            ? "bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-600/20"
+                            ? "bg-green-600 border-green-500 text-white shadow-md shadow-green-600/20"
                             : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700"
                           }`}
                       >
@@ -681,7 +681,7 @@ export default function OnboardingWizard() {
                   <select
                     value={formData.timezone}
                     onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   >
                     {TIMEZONES.map((tz) => (
                       <option key={tz.value} value={tz.value} className="bg-slate-900 text-white">
@@ -701,7 +701,7 @@ export default function OnboardingWizard() {
                     onChange={(e) =>
                       setFormData({ ...formData, overtimeThreshold: parseFloat(e.target.value) || 2 })
                     }
-                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
                   />
                 </div>
               </div>
@@ -731,12 +731,12 @@ export default function OnboardingWizard() {
                         })
                       }
                       className={`p-4 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between group ${isEnabled
-                          ? "bg-indigo-950/20 border-indigo-500/30"
+                          ? "bg-green-950/20 border-green-500/30"
                           : "bg-slate-950/40 border-slate-800/80 hover:border-slate-700"
                         }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className={`p-2.5 rounded-xl ${isEnabled ? "bg-indigo-600/20 text-indigo-400" : "bg-slate-800 text-slate-500"}`}>
+                        <div className={`p-2.5 rounded-xl ${isEnabled ? "bg-green-600/20 text-green-400" : "bg-slate-800 text-slate-500"}`}>
                           <item.icon className="w-4 h-4" />
                         </div>
                         <div>
@@ -769,7 +769,7 @@ export default function OnboardingWizard() {
             {currentStep < 3 ? (
               <button
                 onClick={handleNext}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-indigo-600/25 flex items-center gap-2 active:scale-95"
+                className="px-6 py-2.5 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-green-600/25 flex items-center gap-2 active:scale-95"
               >
                 Continue
                 <ArrowRight className="w-4 h-4" />

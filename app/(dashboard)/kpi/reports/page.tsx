@@ -648,7 +648,7 @@ export default function KPIReportsPage() {
           <p className="text-slate-500 text-sm mb-6">You lack administrative clearance to view analytics reports.</p>
           <Link
             href="/dashboard"
-            className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20"
+            className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20"
           >
             Return to Dashboard
           </Link>
@@ -678,7 +678,7 @@ export default function KPIReportsPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-tr from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-linear-to-tr from-green-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <FileText className="w-6 h-6" />
               </div>
               <div>
@@ -693,7 +693,7 @@ export default function KPIReportsPage() {
               <button
                 onClick={() => setShowExportMenu(!showExportMenu)}
                 disabled={!reportData || exportLoading}
-                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-indigo-600/20 cursor-pointer disabled:opacity-40"
+                className="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-green-600/20 cursor-pointer disabled:opacity-40"
               >
                 {exportLoading ? <Loader2 size={14} className="animate-spin" /> : <FileDown size={14} />}
                 Export Report <ChevronDown size={13} />
@@ -705,7 +705,7 @@ export default function KPIReportsPage() {
                     onClick={() => { handleExportCSV(); setShowExportMenu(false); }}
                     className="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition cursor-pointer"
                   >
-                    <FileText size={14} className="text-indigo-600" /> Export as CSV
+                    <FileText size={14} className="text-green-600" /> Export as CSV
                   </button>
                   <button
                     onClick={() => { exportToPDF(); setShowExportMenu(false); }}
@@ -723,7 +723,7 @@ export default function KPIReportsPage() {
               title="Refresh Analytics"
               className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-xs cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-indigo-600" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-green-600" : ""}`} />
             </button>
           </div>
         </motion.div>
@@ -738,7 +738,7 @@ export default function KPIReportsPage() {
             <button
               key={tab.type}
               onClick={() => setReportType(tab.type as ReportType)}
-              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${reportType === tab.type ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20" : "text-slate-600 hover:bg-slate-50"
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${reportType === tab.type ? "bg-green-600 text-white shadow-md shadow-green-600/20" : "text-slate-600 hover:bg-slate-50"
                 }`}
             >
               {tab.label}
@@ -812,7 +812,7 @@ export default function KPIReportsPage() {
             <button
               onClick={fetchReportData}
               disabled={loading}
-              className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-2xl transition shadow-lg shadow-indigo-600/20 flex items-center gap-2 cursor-pointer disabled:opacity-40"
+              className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-2xl transition shadow-lg shadow-green-600/20 flex items-center gap-2 cursor-pointer disabled:opacity-40"
             >
               {loading && <Loader2 size={14} className="animate-spin" />} Generate Analytics
             </button>
@@ -822,7 +822,7 @@ export default function KPIReportsPage() {
         {/* Report Display */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
             <p className="text-sm font-medium text-slate-400">Synthesizing live performance metrics...</p>
           </div>
         ) : error ? (
@@ -837,7 +837,7 @@ export default function KPIReportsPage() {
             {/* Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
-                { label: "Total Workforce", val: reportData.totalEmployees, icon: Users, color: "text-indigo-600", bg: "bg-indigo-50" },
+                { label: "Total Workforce", val: reportData.totalEmployees, icon: Users, color: "text-green-600", bg: "bg-green-50" },
                 { label: "Unit Average Score", val: `${reportData.averageScore}%`, icon: Target, color: "text-blue-600", bg: "bg-blue-50" },
                 { label: "Elite Performers", val: reportData.distribution.excellent, icon: Crown, color: "text-amber-600", bg: "bg-amber-50" },
                 { label: "Needs Support", val: reportData.distribution.needs_improvement, icon: AlertCircle, color: "text-rose-600", bg: "bg-rose-50" },
@@ -860,7 +860,7 @@ export default function KPIReportsPage() {
               {/* Distribution Chart */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs space-y-4">
                 <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <FileText size={16} className="text-indigo-600" /> Tier Distribution Matrix
+                  <FileText size={16} className="text-green-600" /> Tier Distribution Matrix
                 </h3>
                 <div className="w-full h-64">
                   <ResponsiveContainer width="100%" height="100%">
@@ -903,7 +903,7 @@ export default function KPIReportsPage() {
               {/* Component Averages */}
               <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs space-y-4">
                 <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-                  <Target size={16} className="text-indigo-600" /> Evaluation Parameter Breakdowns
+                  <Target size={16} className="text-green-600" /> Evaluation Parameter Breakdowns
                 </h3>
                 <div className="space-y-3.5 pt-2">
                   {Object.entries(reportData.componentAverages).map(([key, val]) => {
@@ -916,14 +916,14 @@ export default function KPIReportsPage() {
                       <div key={key} className="space-y-1">
                         <div className="flex justify-between text-xs font-bold text-slate-700">
                           <span>{labels[key] || key}</span>
-                          <span className="text-indigo-600">{val}%</span>
+                          <span className="text-green-600">{val}%</span>
                         </div>
                         <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${val}%` }}
                             transition={{ duration: 0.6 }}
-                            className="h-full bg-indigo-600 rounded-full"
+                            className="h-full bg-green-600 rounded-full"
                           />
                         </div>
                       </div>

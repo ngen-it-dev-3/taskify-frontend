@@ -629,7 +629,7 @@ export default function KPIManagementPage() {
           </p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700 transition"
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition"
           >
             Go to Dashboard
           </button>
@@ -642,7 +642,7 @@ export default function KPIManagementPage() {
   // RENDER
   // ============================================================
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50/30">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-green-50/30">
       <div className="p-4 md:p-6 lg:p-8">
         <div className="container mx-auto space-y-6">
           {/* Breadcrumb */}
@@ -670,7 +670,7 @@ export default function KPIManagementPage() {
           >
             <div>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                <div className="w-12 h-12 bg-linear-to-br from-green-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25">
                   <BarChart3 className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -722,7 +722,7 @@ export default function KPIManagementPage() {
                 <select
                   value={selectedDepartment}
                   onChange={(e) => setSelectedDepartment(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   {departments.map((dept) => (
                     <option key={dept._id} value={dept._id}>
@@ -738,7 +738,7 @@ export default function KPIManagementPage() {
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   {months.map((month) => (
                     <option key={month} value={month}>
@@ -754,7 +754,7 @@ export default function KPIManagementPage() {
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   {[2023, 2024, 2025, 2026].map((year) => (
                     <option key={year} value={year}>
@@ -787,27 +787,27 @@ export default function KPIManagementPage() {
             <button
               onClick={() => setActiveTab("weights")}
               className={`px-4 py-3 text-sm font-medium transition-all duration-200 relative ${activeTab === "weights"
-                ? "text-indigo-600"
+                ? "text-green-600"
                 : "text-gray-500 hover:text-gray-700"
                 }`}
             >
               <Settings size={16} className="inline mr-2" />
               Weights Configuration
               {activeTab === "weights" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-indigo-500 to-purple-500" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-green-500 to-purple-500" />
               )}
             </button>
             <button
               onClick={() => setActiveTab("report")}
               className={`px-4 py-3 text-sm font-medium transition-all duration-200 relative ${activeTab === "report"
-                ? "text-indigo-600"
+                ? "text-green-600"
                 : "text-gray-500 hover:text-gray-700"
                 }`}
             >
               <BarChart3 size={16} className="inline mr-2" />
               Monthly Report
               {activeTab === "report" && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-indigo-500 to-purple-500" />
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-green-500 to-purple-500" />
               )}
             </button>
           </motion.div>
@@ -934,7 +934,7 @@ function WeightsTab({
         </div>
         <button
           onClick={() => setShowWeightEditor(!showWeightEditor)}
-          className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md shadow-indigo-500/20"
+          className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md shadow-green-500/20"
         >
           {showWeightEditor ? <X size={16} /> : <Edit2 size={16} />}
           {showWeightEditor ? "Cancel" : "Edit Weights"}
@@ -943,7 +943,7 @@ function WeightsTab({
 
       {loading ? (
         <div className="flex justify-center py-8">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+          <Loader2 className="w-8 h-8 animate-spin text-green-500" />
         </div>
       ) : showWeightEditor ? (
         <div className="space-y-4">
@@ -956,8 +956,8 @@ function WeightsTab({
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-                      <Icon size={16} className="text-indigo-500" />
+                    <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                      <Icon size={16} className="text-green-500" />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
@@ -977,7 +977,7 @@ function WeightsTab({
                       onChange={(e) =>
                         handleWeightChange(key, parseInt(e.target.value))
                       }
-                      className="w-48 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-48 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"
                     />
                     <input
                       type="number"
@@ -987,7 +987,7 @@ function WeightsTab({
                       onChange={(e) =>
                         handleWeightChange(key, parseInt(e.target.value) || 0)
                       }
-                      className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-center text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-16 px-2 py-1 border border-gray-200 rounded-lg text-center text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                     <span className="text-sm text-gray-400">%</span>
                   </div>
@@ -995,7 +995,7 @@ function WeightsTab({
                 <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
                   <div
                     className={`h-1.5 rounded-full transition-all ${editingWeights[key] > 0
-                      ? "bg-linear-to-r from-indigo-500 to-purple-500"
+                      ? "bg-linear-to-r from-green-500 to-purple-500"
                       : "bg-gray-300"
                       }`}
                     style={{
@@ -1033,7 +1033,7 @@ function WeightsTab({
                 <button
                   onClick={handleSaveWeights}
                   disabled={savingWeights || !isValid}
-                  className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md shadow-indigo-500/20 disabled:opacity-50"
+                  className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md shadow-green-500/20 disabled:opacity-50"
                 >
                   {savingWeights ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -1059,8 +1059,8 @@ function WeightsTab({
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Icon size={18} className="text-indigo-500" />
+                      <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Icon size={18} className="text-green-500" />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-700">
@@ -1071,13 +1071,13 @@ function WeightsTab({
                         </p>
                       </div>
                     </div>
-                    <span className="text-2xl font-bold text-indigo-600">
+                    <span className="text-2xl font-bold text-green-600">
                       {value}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-1.5 mt-3">
                     <div
-                      className="h-1.5 rounded-full bg-linear-to-r from-indigo-500 to-purple-500"
+                      className="h-1.5 rounded-full bg-linear-to-r from-green-500 to-purple-500"
                       style={{ width: `${value}%` }}
                     />
                   </div>
@@ -1094,13 +1094,13 @@ function WeightsTab({
             </div>
           )}
           {kpiWeights && (
-            <div className="col-span-3 bg-linear-to-r from-indigo-50/80 to-purple-50/80 rounded-xl p-4 border border-indigo-200">
+            <div className="col-span-3 bg-linear-to-r from-green-50/80 to-purple-50/80 rounded-xl p-4 border border-green-200">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-indigo-700 font-medium flex items-center gap-2">
+                <span className="text-green-700 font-medium flex items-center gap-2">
                   <Shield size={14} />
                   Version {kpiWeights.version}
                 </span>
-                <span className="text-indigo-600">
+                <span className="text-green-600">
                   Total: {kpiWeights.totalWeight}%
                 </span>
                 <span className="text-gray-500 text-xs">
@@ -1223,7 +1223,7 @@ function ReportTab({
       <div className="flex justify-center py-12">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-12 h-12 border-4 border-indigo-200 rounded-full animate-spin border-t-indigo-600"></div>
+            <div className="w-12 h-12 border-4 border-green-200 rounded-full animate-spin border-t-green-600"></div>
           </div>
           <p className="text-gray-500 text-sm font-medium animate-pulse">
             Loading report...
@@ -1264,8 +1264,8 @@ function ReportTab({
             label: "Total Employees",
             value: filteredScores.length,
             icon: Users,
-            color: "text-indigo-600",
-            bg: "bg-indigo-50",
+            color: "text-green-600",
+            bg: "bg-green-50",
           },
           {
             label: "Average Score",
@@ -1322,7 +1322,7 @@ function ReportTab({
 
       {/* Department Name Header */}
       <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-        <Building2 size={14} className="text-indigo-500" />
+        <Building2 size={14} className="text-green-500" />
         <span>
           Showing results for:{" "}
           <strong className="text-gray-800">{departmentName}</strong>
@@ -1451,13 +1451,13 @@ function ReportTab({
               placeholder={`Search employees in ${departmentName}...`}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
             />
           </div>
           <select
             value={selectedPerformanceLevel}
             onChange={(e) => setSelectedPerformanceLevel(e.target.value)}
-            className="px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+            className="px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
           >
             {performanceLevels.map((level) => (
               <option key={level.value} value={level.value}>
@@ -1468,7 +1468,7 @@ function ReportTab({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as "score" | "name")}
-            className="px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+            className="px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
           >
             <option value="score">Sort by Score</option>
             <option value="name">Sort by Name</option>
@@ -1516,7 +1516,7 @@ function ReportTab({
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
                           {score.userId.fullName.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -1568,7 +1568,7 @@ function ReportTab({
                           e.stopPropagation();
                           onViewEmployee(score.userId._id);
                         }}
-                        className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                        className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                       >
                         <Eye size={16} />
                       </button>

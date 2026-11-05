@@ -649,7 +649,7 @@ export default function KPITrendsPage() {
           </p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm"
           >
             Go to Dashboard
           </button>
@@ -662,7 +662,7 @@ export default function KPITrendsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading KPI trends...</p>
         </div>
       </div>
@@ -705,7 +705,7 @@ export default function KPITrendsPage() {
           >
             <div>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                <div className="w-12 h-12 bg-linear-to-br from-green-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25">
                   <LineChart className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -758,12 +758,12 @@ export default function KPITrendsPage() {
                   </p>
                   <p className="text-xs text-gray-500">Total Employees</p>
                 </div>
-                <Users className="w-8 h-8 text-indigo-400 opacity-50" />
+                <Users className="w-8 h-8 text-green-400 opacity-50" />
               </div>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
               <div>
-                <p className="text-2xl font-bold text-indigo-600">
+                <p className="text-2xl font-bold text-green-600">
                   {stats.selectedCount}
                 </p>
                 <p className="text-xs text-gray-500">Selected</p>
@@ -822,7 +822,7 @@ export default function KPITrendsPage() {
                     initialFetchDone.current = false;
                     setIsFirstLoad(true);
                   }}
-                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   <option value={3}>3 Months</option>
                   <option value={6}>6 Months</option>
@@ -841,7 +841,7 @@ export default function KPITrendsPage() {
                     initialFetchDone.current = false;
                     setIsFirstLoad(true);
                   }}
-                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   {[2023, 2024, 2025, 2026].map((year) => (
                     <option key={year} value={year}>
@@ -857,7 +857,7 @@ export default function KPITrendsPage() {
                 <select
                   value={departmentFilter}
                   onChange={(e) => setDepartmentFilter(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   <option value="all">All Departments</option>
                   {departments.map((dept) => (
@@ -877,7 +877,7 @@ export default function KPITrendsPage() {
                   placeholder="Search by name, email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 />
               </div>
               <button
@@ -905,7 +905,7 @@ export default function KPITrendsPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <LineChart size={16} className="text-indigo-500" />
+                  <LineChart size={16} className="text-green-500" />
                   Performance Trends
                 </h3>
                 <p className="text-xs text-gray-400 mt-0.5">
@@ -920,7 +920,7 @@ export default function KPITrendsPage() {
                 )}
                 <button
                   onClick={selectAllVisible}
-                  className="px-3 py-1.5 text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg transition"
+                  className="px-3 py-1.5 text-xs bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition"
                 >
                   Select All
                 </button>
@@ -1068,7 +1068,7 @@ export default function KPITrendsPage() {
             <div className="p-4 border-b border-gray-200 flex items-center justify-between flex-wrap gap-2">
               <div>
                 <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <Users size={16} className="text-indigo-500" />
+                  <Users size={16} className="text-green-500" />
                   Employee Trends
                 </h3>
                 <p className="text-xs text-gray-400">
@@ -1084,7 +1084,7 @@ export default function KPITrendsPage() {
                     onClick={() => setSortBy("name")}
                     className={`px-2 py-1 text-xs rounded-md transition ${
                       sortBy === "name"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-green-600 text-white"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -1094,7 +1094,7 @@ export default function KPITrendsPage() {
                     onClick={() => setSortBy("average")}
                     className={`px-2 py-1 text-xs rounded-md transition ${
                       sortBy === "average"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-green-600 text-white"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -1104,7 +1104,7 @@ export default function KPITrendsPage() {
                     onClick={() => setSortBy("trend")}
                     className={`px-2 py-1 text-xs rounded-md transition ${
                       sortBy === "trend"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-green-600 text-white"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
@@ -1122,7 +1122,7 @@ export default function KPITrendsPage() {
                 {filteredEmployees.length > 10 && (
                   <button
                     onClick={() => setShowAllEmployees(!showAllEmployees)}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 transition"
+                    className="text-xs text-green-600 hover:text-green-800 transition"
                   >
                     {showAllEmployees ? "Show Less" : "Show All"}
                   </button>
@@ -1151,7 +1151,7 @@ export default function KPITrendsPage() {
                               clearSelection();
                             }
                           }}
-                          className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                         />
                       </th>
                       <th className="text-left py-2 px-3 font-medium">
@@ -1192,7 +1192,7 @@ export default function KPITrendsPage() {
                         <tr
                           key={employee.userId}
                           className={`hover:bg-gray-50 transition cursor-pointer ${
-                            isSelected ? "bg-indigo-50/50" : ""
+                            isSelected ? "bg-green-50/50" : ""
                           }`}
                           onClick={() => toggleEmployee(employee.userId)}
                         >
@@ -1204,12 +1204,12 @@ export default function KPITrendsPage() {
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => toggleEmployee(employee.userId)}
-                              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                             />
                           </td>
                           <td className="py-3 px-3">
                             <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                                 {employee.fullName.charAt(0).toUpperCase()}
                               </div>
                               <div>

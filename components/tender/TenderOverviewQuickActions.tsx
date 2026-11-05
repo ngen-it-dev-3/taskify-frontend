@@ -23,7 +23,7 @@ const ACTIONS: Action[] = [
     icon: Layers,
     title: "Manage Tenders",
     desc: "Track active participation & docs",
-    accent: "from-indigo-500 to-purple-500",
+    accent: "from-green-500 to-purple-500",
   },
   {
     href: "/tenders/submissions",

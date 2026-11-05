@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Trash2, Check, X, RefreshCw, ArrowUpCircle } from 'lucide-react';
+import { Trash2, Check, X, ArrowUpCircle } from 'lucide-react';
 import type { QuotationLineItem, QuotationSourceData, QuotationMeta } from '../types';
 import { CURRENCIES } from '../constants';
 import SourceDetailsModal from './SourceDetailsModal';
@@ -52,7 +52,6 @@ export default function SourceTab({
 }: Props) {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [draft, setDraft] = useState<EditDraft | null>(null);
-    const [syncingKey, setSyncingKey] = useState<string | null>(null);
     const [isDirty, setIsDirty] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [activeModalSource, setActiveModalSource] = useState<{
@@ -63,8 +62,8 @@ export default function SourceTab({
 
     const [selectingLine, setSelectingLine] = useState<QuotationLineItem | null>(null);
 
-    // Ref to track if a save is currently in progress to prevent double-saves
     const isSavingRef = useRef(false);
+    const fetchedRatesCache = useRef<Record<string, number>>({});
 
     const displayLines = lines.filter(
         (l) => l.type !== 'fixed' && l.name.trim() !== ''
@@ -84,8 +83,129 @@ export default function SourceTab({
     });
 
     const territoryCurrency = meta.currency || 'BDT';
+    const targetCurrencyData = CURRENCIES.find(c => c.code === territoryCurrency);
+    const targetSymbol = targetCurrencyData?.symbol || territoryCurrency;
 
-    // Auto-edit on new line creation
+    const fetchLiveRate = async (fromCode: string, toCode: string) => {
+        if (fromCode === toCode) return 1;
+
+        const cacheKey = `${fromCode}_${toCode}`;
+        if (fetchedRatesCache.current[cacheKey]) {
+            return fetchedRatesCache.current[cacheKey];
+        }
+
+        try {
+            const res = await fetch(`https://open.er-api.com/v6/latest/${fromCode}`);
+            if (!res.ok) throw new Error('API Error');
+            const data = await res.json();
+
+            const rate = data.rates[toCode];
+            if (!rate) throw new Error('Rate not found');
+
+            fetchedRatesCache.current[cacheKey] = rate;
+            return rate;
+        } catch (error) {
+            console.error("Rate fetch failed:", error);
+            return null;
+        }
+    };
+
+    // ⭐ Auto-fetch new rates when top header currency changes 
+    // (Works in BOTH Edit mode and Read-only mode)
+    useEffect(() => {
+        let isMounted = true;
+
+        const autoUpdateAllRates = async () => {
+            const updatedLinesPromises = lines.map(async (line) => {
+                if (line.type === 'fixed' || !line.name.trim()) return null;
+
+                let hasChanges = false;
+                const newSource1 = { ...line.source1 };
+                const newSource2 = { ...line.source2 };
+                const newSource3 = { ...line.source3 };
+
+                const processSource = async (source: any) => {
+                    if (!source || !source.price || parseFloat(source.price) <= 0) return;
+                    const srcCurr = source.currency || 'BDT';
+
+                    if (srcCurr !== territoryCurrency) {
+                        // Fetch the new rate if it's missing or if we are forcing an update
+                        const rate = await fetchLiveRate(srcCurr, territoryCurrency);
+                        if (rate && source.manualRate !== Number(rate.toFixed(4))) {
+                            source.manualRate = Number(rate.toFixed(4));
+                            hasChanges = true;
+                        }
+                    } else {
+                        if (source.manualRate) {
+                            source.manualRate = undefined;
+                            hasChanges = true;
+                        }
+                    }
+                };
+
+                await processSource(newSource1);
+                await processSource(newSource2);
+                await processSource(newSource3);
+
+                if (hasChanges) {
+                    return {
+                        id: line.id,
+                        patch: {
+                            source1: newSource1,
+                            source2: newSource2,
+                            source3: newSource3
+                        }
+                    };
+                }
+                return null;
+            });
+
+            const results = await Promise.all(updatedLinesPromises);
+
+            if (isMounted && onUpdateLine) {
+                results.forEach(res => {
+                    if (res) onUpdateLine(res.id, res.patch);
+                });
+            }
+        };
+
+        autoUpdateAllRates();
+
+        // Also update the current draft if we are in edit mode
+        if (draft) {
+            const updateDraftRates = async () => {
+                let needsUpdate = false;
+                const newDraft = { ...draft };
+
+                const processDraftSource = async (key: 'source1' | 'source2' | 'source3') => {
+                    const sourceCurr = newDraft[key].currency || 'BDT';
+                    if (sourceCurr !== territoryCurrency) {
+                        const rate = await fetchLiveRate(sourceCurr, territoryCurrency);
+                        if (rate && newDraft[key].manualRate !== Number(rate.toFixed(4))) {
+                            newDraft[key].manualRate = Number(rate.toFixed(4));
+                            needsUpdate = true;
+                        }
+                    } else if (newDraft[key].manualRate) {
+                        newDraft[key].manualRate = undefined;
+                        needsUpdate = true;
+                    }
+                };
+
+                await processDraftSource('source1');
+                await processDraftSource('source2');
+                await processDraftSource('source3');
+
+                if (needsUpdate && isMounted) {
+                    setDraft(newDraft);
+                    setIsDirty(true);
+                }
+            };
+            updateDraftRates();
+        }
+
+        return () => { isMounted = false; };
+    }, [territoryCurrency, lines.length]); // Triggers when top currency changes
+
     useEffect(() => {
         if (!autoEditLineId) return;
         const target = lines.find((l) => l.id === autoEditLineId);
@@ -102,9 +222,8 @@ export default function SourceTab({
         onAutoEditConsumed?.();
     }, [autoEditLineId, territoryCurrency, lines]);
 
-    // ⭐ Start editing when a row is clicked
     const startEdit = (l: QuotationLineItem) => {
-        if (editingId === l.id) return; // Already editing this row
+        if (editingId === l.id) return;
         setEditingId(l.id);
         setIsDirty(false);
         setDraft({
@@ -153,39 +272,50 @@ export default function SourceTab({
         setDraft(null);
         setIsDirty(false);
 
-        // Release lock after a brief tick
         setTimeout(() => {
             isSavingRef.current = false;
         }, 100);
     };
 
     const handleRowBlur = (e: React.FocusEvent<HTMLTableRowElement>) => {
-        // 1. If it's not dirty, don't save.
         if (!isDirty) return;
-
-        // 2. If the newly focused element is still INSIDE the same row, don't save.
         const currentRow = e.currentTarget;
         const nextFocused = e.relatedTarget as HTMLElement;
-        if (nextFocused && currentRow.contains(nextFocused)) {
-            return;
-        }
+        if (nextFocused && currentRow.contains(nextFocused)) return;
 
-        // 3. Add a tiny delay to ensure state is settled
-        setTimeout(() => {
-            saveEdit();
-        }, 50);
+        setTimeout(() => saveEdit(), 50);
     };
 
-    const updateDraft = (
+    const handleUpdateSource = async (
         key: 'source1' | 'source2' | 'source3',
         field: keyof SourceData,
         value: any
     ) => {
         if (!draft) return;
         setIsDirty(true);
-        const updatedSource = { ...draft[key], [field]: value };
+
+        let updatedSource = { ...draft[key], [field]: value };
+
         if (field === 'currency') {
             updatedSource.manualRate = undefined;
+            const newCurr = value;
+
+            if (newCurr !== territoryCurrency) {
+                const rate = await fetchLiveRate(newCurr, territoryCurrency);
+                if (rate) {
+                    updatedSource.manualRate = Number(rate.toFixed(4));
+                }
+            }
+        }
+
+        if (field === 'price' && value && !updatedSource.manualRate) {
+            const curr = updatedSource.currency || 'BDT';
+            if (curr !== territoryCurrency) {
+                const rate = await fetchLiveRate(curr, territoryCurrency);
+                if (rate) {
+                    updatedSource.manualRate = Number(rate.toFixed(4));
+                }
+            }
         }
 
         setDraft({
@@ -194,62 +324,44 @@ export default function SourceTab({
         });
     };
 
-    const handleSyncSource = async (currencyCode: string, sourceKey: 'source1' | 'source2' | 'source3') => {
+    const handleTotalBlur = (
+        key: 'source1' | 'source2' | 'source3',
+        newTotal: string
+    ) => {
         if (!draft) return;
-        if (currencyCode === territoryCurrency) {
-            alert(`Source currency is already ${territoryCurrency}. No conversion needed.`);
-            return;
-        }
+        const totalNum = parseFloat(newTotal);
+        const priceNum = parseFloat(draft[key].price);
 
-        setSyncingKey(sourceKey);
-        try {
-            const res = await fetch(`https://open.er-api.com/v6/latest/${currencyCode}`);
-            if (!res.ok) throw new Error('API Error');
-            const data = await res.json();
-
-            const liveRate = data.rates[territoryCurrency];
-            if (!liveRate) throw new Error('Rate not found');
-
-            setDraft({
-                ...draft,
-                [sourceKey]: {
-                    ...draft[sourceKey],
-                    manualRate: Number(liveRate.toFixed(4))
+        if (!isNaN(totalNum) && !isNaN(priceNum) && priceNum > 0) {
+            const newRate = totalNum / priceNum;
+            setDraft(prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    [key]: { ...prev[key], manualRate: Number(newRate.toFixed(4)) }
                 }
             });
-
-        } catch (error) {
-            console.error(error);
-            alert(`Could not fetch live rate for ${currencyCode} to ${territoryCurrency}`);
-        } finally {
-            setSyncingKey(null);
+            setIsDirty(true);
         }
     };
 
-        const calcConverted = (priceStr: string | number | undefined, fromCurrency: string = 'BDT', manualRate?: number) => {
+    const calcConverted = (priceStr: string | number | undefined, fromCurrency: string = 'BDT', manualRate?: number) => {
         const price = parseFloat(String(priceStr || '0'));
-        if (isNaN(price) || price <= 0) return { value: 0, symbol: '' };
+        if (isNaN(price) || price <= 0) return { value: 0, symbol: targetSymbol };
 
-        const targetCurrencyData = CURRENCIES.find(c => c.code === territoryCurrency);
-        const symbol = targetCurrencyData?.symbol || territoryCurrency;
-
-        // If the currency is already the same as the territory, no conversion needed
         if (fromCurrency === territoryCurrency) {
-            return { value: price, symbol };
+            return { value: price, symbol: targetSymbol };
         }
 
-        // ⭐ If the user clicked Sync or typed a manual rate, use that
         if (manualRate && manualRate > 0) {
-            const finalValue = price * manualRate;
-            return { value: finalValue, symbol };
+            return { value: price * manualRate, symbol: targetSymbol };
         }
 
-        // ⭐ If no manual rate is provided, return 0 (prevents auto-calculation)
-        return { value: 0, symbol };
+        return { value: 0, symbol: targetSymbol };
     };
 
     const openSourceModal = (e: React.MouseEvent, lineId: string, sourceKey: 'source1' | 'source2' | 'source3', data: any) => {
-        e.stopPropagation(); // Prevent triggering the row click
+        e.stopPropagation();
         if (!data || !data.name) return;
         setActiveModalSource({ lineId, sourceKey, data });
         setModalOpen(true);
@@ -259,12 +371,51 @@ export default function SourceTab({
         if (!activeModalSource) return;
         const { lineId, sourceKey } = activeModalSource;
 
-        onUpdateLine?.(lineId, {
-            [sourceKey]: updatedData
-        } as any);
-
+        onUpdateLine?.(lineId, { [sourceKey]: updatedData } as any);
         setModalOpen(false);
         setActiveModalSource(null);
+    };
+
+    const RateInput = ({ sourceKey, value }: { sourceKey: 'source1' | 'source2' | 'source3', value: number | undefined }) => (
+        <input
+            type="number"
+            step="0.0001"
+            value={value || ''}
+            onChange={(e) => handleUpdateSource(sourceKey, 'manualRate', Number(e.target.value) || undefined)}
+            onBlur={(e) => {
+                const val = Number(e.target.value);
+                if (val) handleTotalBlur(sourceKey, String((parseFloat(draft?.[sourceKey].price || '0') * val)));
+            }}
+            placeholder="Rate"
+            className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px] text-center font-mono text-[#A06126] focus:outline-none"
+            title={`1 ${draft?.[sourceKey].currency} = ? ${territoryCurrency}`}
+        />
+    );
+
+    const TotalInput = ({ sourceKey, calculated }: { sourceKey: 'source1' | 'source2' | 'source3', calculated: any }) => {
+        const [localTotal, setLocalTotal] = useState(calculated.value ? calculated.value.toFixed(2) : '');
+
+        useEffect(() => {
+            setLocalTotal(calculated.value ? calculated.value.toFixed(2) : '');
+        }, [calculated.value]);
+
+        return (
+            <div className="relative">
+                <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-bold">{targetSymbol}</span>
+                <input
+                    type="number"
+                    value={localTotal}
+                    onChange={(e) => setLocalTotal(e.target.value)}
+                    onBlur={(e) => {
+                        if (e.target.value !== (calculated.value ? calculated.value.toFixed(2) : '')) {
+                            handleTotalBlur(sourceKey, e.target.value);
+                        }
+                    }}
+                    className="w-full bg-white border border-transparent hover:border-[#A06126] focus:border-[#A06126] rounded px-1 pl-5 py-1 text-right font-mono font-semibold text-[#0F2D4A] focus:outline-none transition-colors"
+                    title="Type a target total to reverse-calculate the rate"
+                />
+            </div>
+        );
     };
 
     return (
@@ -274,22 +425,18 @@ export default function SourceTab({
                     <colgroup>
                         <col className="w-[40px]" />
                         <col className="w-[160px]" />
-
                         <col className="w-[120px]" />
                         <col className="w-[180px]" />
                         <col className="w-[80px]" />
                         <col className="w-[90px]" />
-
                         <col className="w-[120px]" />
                         <col className="w-[180px]" />
                         <col className="w-[80px]" />
                         <col className="w-[90px]" />
-
                         <col className="w-[120px]" />
                         <col className="w-[180px]" />
                         <col className="w-[80px]" />
                         <col className="w-[90px]" />
-
                         <col className="w-[100px]" />
                     </colgroup>
 
@@ -307,12 +454,10 @@ export default function SourceTab({
                             <th className="px-2 py-2">Price (Orig.)</th>
                             <th className="px-2 py-2 text-center text-[#A06126]">Rate</th>
                             <th className="px-2 py-2 text-right border-r border-[#F0EBE3]">Total ({territoryCurrency})</th>
-
                             <th className="px-2 py-2">Source</th>
                             <th className="px-2 py-2">Price (Orig.)</th>
                             <th className="px-2 py-2 text-center text-[#A06126]">Rate</th>
                             <th className="px-2 py-2 text-right border-r border-[#F0EBE3]">Total ({territoryCurrency})</th>
-
                             <th className="px-2 py-2">Source</th>
                             <th className="px-2 py-2">Price (Orig.)</th>
                             <th className="px-2 py-2 text-center text-[#A06126]">Rate</th>
@@ -329,12 +474,7 @@ export default function SourceTab({
                                 const s3 = calcConverted(draft.source3.price, draft.source3.currency, draft.source3.manualRate);
 
                                 return (
-                                    // ⭐ Added onBlur to the row
-                                    <tr
-                                        key={l.id}
-                                        className="bg-[#FAF6EE]/70"
-                                        onBlur={handleRowBlur}
-                                    >
+                                    <tr key={l.id} className="bg-[#FAF6EE]/70" onBlur={handleRowBlur}>
                                         <td className="px-2 py-2 font-mono text-slate-500 text-center">{i + 1}</td>
                                         <td className="px-2 py-2">
                                             <input
@@ -350,175 +490,115 @@ export default function SourceTab({
                                             />
                                         </td>
 
-                                        {/* Source 1 */}
                                         <td className="px-2 py-2">
                                             <input
                                                 value={draft.source1.name}
-                                                onChange={(e) => updateDraft('source1', 'name', e.target.value)}
+                                                onChange={(e) => handleUpdateSource('source1', 'name', e.target.value)}
                                                 placeholder="Supplier…"
                                                 className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px]"
                                             />
                                         </td>
                                         <td className="px-2 py-2">
-                                            <div className="flex gap-1">
-                                                <div className="flex flex-1 rounded border border-[#A06126] overflow-hidden bg-white">
-                                                    <select
-                                                        value={draft.source2.currency}
-                                                        onChange={(e) => updateDraft('source2', 'currency', e.target.value)}
-                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
-                                                    >
-                                                        {CURRENCIES.map((c, idx) => (
-                                                            <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
-                                                                {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    <input
-                                                        type="number"
-                                                        value={draft.source1.price}
-                                                        onChange={(e) => updateDraft('source1', 'price', e.target.value)}
-                                                        placeholder="0.00"
-                                                        className="w-full min-w-0 px-2 py-1.5 text-[12px] text-right font-mono focus:outline-none"
-                                                    />
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSyncSource(draft.source1.currency || 'BDT', 'source1')}
-                                                    disabled={syncingKey === 'source1'}
-                                                    className="w-7 shrink-0 bg-[#F9F1E2] hover:bg-[#F0E6D2] border border-[#A06126] rounded text-[#A06126] flex items-center justify-center transition"
-                                                    title={`Sync 1 ${draft.source1.currency} to ${territoryCurrency}`}
+                                            <div className="flex flex-1 rounded border border-[#A06126] overflow-hidden bg-white">
+                                                <select
+                                                    value={draft.source1.currency}
+                                                    onChange={(e) => handleUpdateSource('source1', 'currency', e.target.value)}
+                                                    className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
                                                 >
-                                                    <RefreshCw className={`w-3 h-3 ${syncingKey === 'source1' ? 'animate-spin' : ''}`} />
-                                                </button>
+                                                    {CURRENCIES.map((c, idx) => (
+                                                        <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
+                                                            {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <input
+                                                    type="number"
+                                                    value={draft.source1.price}
+                                                    onChange={(e) => handleUpdateSource('source1', 'price', e.target.value)}
+                                                    placeholder="0.00"
+                                                    className="w-full min-w-0 px-2 py-1.5 text-[12px] text-right font-mono focus:outline-none"
+                                                />
                                             </div>
                                         </td>
                                         <td className="px-2 py-2 text-center">
-                                            <input
-                                                type="number"
-                                                step="0.0001"
-                                                value={draft.source1.manualRate || ''}
-                                                onChange={(e) => updateDraft('source1', 'manualRate', Number(e.target.value) || undefined)}
-                                                placeholder="Rate"
-                                                className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px] text-center font-mono text-[#A06126] focus:outline-none"
-                                                title={`1 ${draft.source1.currency} = ? ${territoryCurrency}`}
-                                            />
+                                            <RateInput sourceKey="source1" value={draft.source1.manualRate} />
                                         </td>
-                                        <td className="px-2 py-2 text-right font-mono text-[#0F2D4A] font-semibold border-r border-[#F0EBE3]">
-                                            {s1.symbol}{s1.value.toFixed(2)}
+                                        <td className="px-2 py-2 text-right border-r border-[#F0EBE3]">
+                                            <TotalInput sourceKey="source1" calculated={s1} />
                                         </td>
 
-                                        {/* Source 2 */}
                                         <td className="px-2 py-2">
                                             <input
                                                 value={draft.source2.name}
-                                                onChange={(e) => updateDraft('source2', 'name', e.target.value)}
+                                                onChange={(e) => handleUpdateSource('source2', 'name', e.target.value)}
                                                 placeholder="Supplier…"
                                                 className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px]"
                                             />
                                         </td>
                                         <td className="px-2 py-2">
-                                            <div className="flex gap-1">
-                                                <div className="flex flex-1 rounded border border-[#A06126] overflow-hidden bg-white">
-                                                    <select
-                                                        value={draft.source2.currency}
-                                                        onChange={(e) => updateDraft('source2', 'currency', e.target.value)}
-                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
-                                                    >
-                                                        {CURRENCIES.map((c, idx) => (
-                                                            <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
-                                                                {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    <input
-                                                        type="number"
-                                                        value={draft.source2.price}
-                                                        onChange={(e) => updateDraft('source2', 'price', e.target.value)}
-                                                        placeholder="0.00"
-                                                        className="w-full min-w-0 px-2 py-1.5 text-[12px] text-right font-mono focus:outline-none"
-                                                    />
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSyncSource(draft.source2.currency || 'BDT', 'source2')}
-                                                    disabled={syncingKey === 'source2'}
-                                                    className="w-7 shrink-0 bg-[#F9F1E2] hover:bg-[#F0E6D2] border border-[#A06126] rounded text-[#A06126] flex items-center justify-center transition"
-                                                    title={`Sync 1 ${draft.source2.currency} to ${territoryCurrency}`}
+                                            <div className="flex flex-1 rounded border border-[#A06126] overflow-hidden bg-white">
+                                                <select
+                                                    value={draft.source2.currency}
+                                                    onChange={(e) => handleUpdateSource('source2', 'currency', e.target.value)}
+                                                    className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
                                                 >
-                                                    <RefreshCw className={`w-3 h-3 ${syncingKey === 'source2' ? 'animate-spin' : ''}`} />
-                                                </button>
+                                                    {CURRENCIES.map((c, idx) => (
+                                                        <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
+                                                            {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <input
+                                                    type="number"
+                                                    value={draft.source2.price}
+                                                    onChange={(e) => handleUpdateSource('source2', 'price', e.target.value)}
+                                                    placeholder="0.00"
+                                                    className="w-full min-w-0 px-2 py-1.5 text-[12px] text-right font-mono focus:outline-none"
+                                                />
                                             </div>
                                         </td>
                                         <td className="px-2 py-2 text-center">
-                                            <input
-                                                type="number"
-                                                step="0.0001"
-                                                value={draft.source2.manualRate || ''}
-                                                onChange={(e) => updateDraft('source2', 'manualRate', Number(e.target.value) || undefined)}
-                                                placeholder="Rate"
-                                                className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px] text-center font-mono text-[#A06126] focus:outline-none"
-                                                title={`1 ${draft.source2.currency} = ? ${territoryCurrency}`}
-                                            />
+                                            <RateInput sourceKey="source2" value={draft.source2.manualRate} />
                                         </td>
-                                        <td className="px-2 py-2 text-right font-mono text-[#0F2D4A] font-semibold border-r border-[#F0EBE3]">
-                                            {s2.symbol}{s2.value.toFixed(2)}
+                                        <td className="px-2 py-2 text-right border-r border-[#F0EBE3]">
+                                            <TotalInput sourceKey="source2" calculated={s2} />
                                         </td>
 
-                                        {/* Source 3 */}
                                         <td className="px-2 py-2">
                                             <input
                                                 value={draft.source3.name}
-                                                onChange={(e) => updateDraft('source3', 'name', e.target.value)}
+                                                onChange={(e) => handleUpdateSource('source3', 'name', e.target.value)}
                                                 placeholder="Supplier…"
                                                 className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px]"
                                             />
                                         </td>
                                         <td className="px-2 py-2">
-                                            <div className="flex gap-1">
-                                                <div className="flex flex-1 rounded border border-[#A06126] overflow-hidden bg-white">
-                                                    <select
-                                                        value={draft.source3.currency}
-                                                        onChange={(e) => updateDraft('source3', 'currency', e.target.value)}
-                                                        className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
-                                                    >
-                                                        {CURRENCIES.map((c, idx) => (
-                                                            <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
-                                                                {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    <input
-                                                        type="number"
-                                                        value={draft.source3.price}
-                                                        onChange={(e) => updateDraft('source3', 'price', e.target.value)}
-                                                        placeholder="0.00"
-                                                        className="w-full min-w-0 px-2 py-1.5 text-[12px] text-right font-mono focus:outline-none"
-                                                    />
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSyncSource(draft.source3.currency || 'BDT', 'source3')}
-                                                    disabled={syncingKey === 'source3'}
-                                                    className="w-7 shrink-0 bg-[#F9F1E2] hover:bg-[#F0E6D2] border border-[#A06126] rounded text-[#A06126] flex items-center justify-center transition"
-                                                    title={`Sync 1 ${draft.source3.currency} to ${territoryCurrency}`}
+                                            <div className="flex flex-1 rounded border border-[#A06126] overflow-hidden bg-white">
+                                                <select
+                                                    value={draft.source3.currency}
+                                                    onChange={(e) => handleUpdateSource('source3', 'currency', e.target.value)}
+                                                    className="bg-slate-50 text-[11px] font-medium border-r border-[#A06126] w-[50px] px-1 focus:outline-none cursor-pointer"
                                                 >
-                                                    <RefreshCw className={`w-3 h-3 ${syncingKey === 'source3' ? 'animate-spin' : ''}`} />
-                                                </button>
+                                                    {CURRENCIES.map((c, idx) => (
+                                                        <option key={`${c.code}-${c.country}-${idx}`} value={c.code}>
+                                                            {c.code} {c.code === 'USD' && c.country !== 'United States' ? `(${c.country})` : ''}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <input
+                                                    type="number"
+                                                    value={draft.source3.price}
+                                                    onChange={(e) => handleUpdateSource('source3', 'price', e.target.value)}
+                                                    placeholder="0.00"
+                                                    className="w-full min-w-0 px-2 py-1.5 text-[12px] text-right font-mono focus:outline-none"
+                                                />
                                             </div>
                                         </td>
                                         <td className="px-2 py-2 text-center">
-                                            <input
-                                                type="number"
-                                                step="0.0001"
-                                                value={draft.source3.manualRate || ''}
-                                                onChange={(e) => updateDraft('source3', 'manualRate', Number(e.target.value) || undefined)}
-                                                placeholder="Rate"
-                                                className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px] text-center font-mono text-[#A06126] focus:outline-none"
-                                                title={`1 ${draft.source3.currency} = ? ${territoryCurrency}`}
-                                            />
+                                            <RateInput sourceKey="source3" value={draft.source3.manualRate} />
                                         </td>
-                                        <td className="px-2 py-2 text-right font-mono text-[#0F2D4A] font-semibold border-r border-[#F0EBE3]">
-                                            {s3.symbol}{s3.value.toFixed(2)}
+                                        <td className="px-2 py-2 text-right border-r border-[#F0EBE3]">
+                                            <TotalInput sourceKey="source3" calculated={s3} />
                                         </td>
 
                                         <td className="px-2 py-2 text-center whitespace-nowrap">
@@ -541,7 +621,6 @@ export default function SourceTab({
                                 );
                             }
 
-                            // Read-only view
                             const hasS1 = (l.source1?.name && l.source1.name.trim() !== '') || (l.source1?.price && parseFloat(l.source1.price) > 0);
                             const hasS2 = (l.source2?.name && l.source2.name.trim() !== '') || (l.source2?.price && parseFloat(l.source2.price) > 0);
                             const hasS3 = (l.source3?.name && l.source3.name.trim() !== '') || (l.source3?.price && parseFloat(l.source3.price) > 0);
@@ -551,7 +630,6 @@ export default function SourceTab({
                             const v3 = calcConverted(l.source3?.price, l.source3?.currency, (l.source3 as any)?.manualRate);
 
                             return (
-                                // ⭐ Click anywhere on the row to edit
                                 <tr
                                     key={l.id}
                                     className="hover:bg-[#FDFBF7] cursor-pointer group transition-colors"
@@ -573,10 +651,10 @@ export default function SourceTab({
                                             : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-center font-mono text-slate-500">
-                                        {(l.source1 as any)?.manualRate || '—'}
+                                        {hasS1 ? ((l.source1 as any)?.manualRate || '—') : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-right font-mono font-bold text-[#0F2D4A] border-r border-[#F0EBE3]">
-                                        {hasS1 ? <>{v1.symbol}{v1.value.toFixed(2)}</> : '0.00'}
+                                        {hasS1 ? <>{v1.symbol}{v1.value.toFixed(2)}</> : `${targetSymbol}0.00`}
                                     </td>
 
                                     <td className="px-2 py-2 text-slate-700">
@@ -592,10 +670,10 @@ export default function SourceTab({
                                             : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-center font-mono text-slate-500">
-                                        {(l.source2 as any)?.manualRate || '—'}
+                                        {hasS2 ? ((l.source2 as any)?.manualRate || '—') : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-right font-mono font-bold text-[#0F2D4A] border-r border-[#F0EBE3]">
-                                        {hasS2 ? <>{v2.symbol}{v2.value.toFixed(2)}</> : '0.00'}
+                                        {hasS2 ? <>{v2.symbol}{v2.value.toFixed(2)}</> : `${targetSymbol}0.00`}
                                     </td>
 
                                     <td className="px-2 py-2 text-slate-700">
@@ -611,10 +689,10 @@ export default function SourceTab({
                                             : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-center font-mono text-slate-500">
-                                        {(l.source3 as any)?.manualRate || '—'}
+                                        {hasS3 ? ((l.source3 as any)?.manualRate || '—') : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-right font-mono font-bold text-[#0F2D4A] border-r border-[#F0EBE3]">
-                                        {hasS3 ? <>{v3.symbol}{v3.value.toFixed(2)}</> : '0.00'}
+                                        {hasS3 ? <>{v3.symbol}{v3.value.toFixed(2)}</> : `${targetSymbol}0.00`}
                                     </td>
 
                                     <td className="px-2 py-2 text-center whitespace-nowrap">
@@ -653,7 +731,6 @@ export default function SourceTab({
                 />
             )}
 
-            {/* Modal for Selecting Source Price */}
             {selectingLine && (
                 <SelectSourcePriceModal
                     line={selectingLine}

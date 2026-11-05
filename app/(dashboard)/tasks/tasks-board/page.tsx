@@ -812,7 +812,7 @@ export default function TasksBoardPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-green-600" />
           <p className="text-xs font-medium text-slate-400">Loading your tasks workspace...</p>
         </div>
       </div>
@@ -835,9 +835,9 @@ export default function TasksBoardPage() {
 
         {/* Department Info Banner */}
         {isDepartmentManager && departmentInfo && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-r from-indigo-50/80 via-purple-50/80 to-pink-50/80 backdrop-blur-sm border border-indigo-200/50 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-gradient-to-r from-green-50/80 via-purple-50/80 to-pink-50/80 backdrop-blur-sm border border-green-200/50 rounded-2xl p-4 flex items-center justify-between shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-md text-white">
+              <div className="p-2.5 bg-gradient-to-br from-green-500 to-purple-600 rounded-xl shadow-md text-white">
                 <Building2 size={18} />
               </div>
               <div>
@@ -849,7 +849,7 @@ export default function TasksBoardPage() {
                 </p>
               </div>
             </div>
-            <span className="text-xs font-bold px-3 py-1 bg-white rounded-full border border-indigo-200 text-indigo-700 shadow-xs">
+            <span className="text-xs font-bold px-3 py-1 bg-white rounded-full border border-green-200 text-green-700 shadow-xs">
               {isProjectManager ? "Project Manager View" : "Department Manager View"}
             </span>
           </motion.div>
@@ -859,13 +859,13 @@ export default function TasksBoardPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-gradient-to-tr from-green-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <CheckSquare className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Tasks Board</h1>
-                  <span className="px-2.5 py-0.5 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                  <span className="px-2.5 py-0.5 text-xs font-bold bg-green-50 text-green-700 rounded-full border border-green-100">
                     {stats.total} total
                   </span>
                 </div>
@@ -890,7 +890,7 @@ export default function TasksBoardPage() {
               </button>
             </div>
             {canManage && (
-              <button onClick={() => setShowCreateModal(true)} className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20 flex items-center gap-2 cursor-pointer">
+              <button onClick={() => setShowCreateModal(true)} className="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20 flex items-center gap-2 cursor-pointer">
                 <Plus size={15} /> Create Task
               </button>
             )}
@@ -928,13 +928,13 @@ export default function TasksBoardPage() {
         <div className="flex items-center gap-2 border-b border-slate-200">
           <button
             onClick={() => setActiveTab("tasks")}
-            className={`px-5 py-3 text-xs font-bold transition-all relative cursor-pointer ${activeTab === "tasks" ? "text-indigo-600" : "text-slate-500 hover:text-slate-700"}`}
+            className={`px-5 py-3 text-xs font-bold transition-all relative cursor-pointer ${activeTab === "tasks" ? "text-green-600" : "text-slate-500 hover:text-slate-700"}`}
           >
             <div className="flex items-center gap-2">
               <CheckSquare size={15} /> Tasks Directory
               <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded-full">{stats.total}</span>
             </div>
-            {activeTab === "tasks" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600" />}
+            {activeTab === "tasks" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600" />}
           </button>
 
           <button
@@ -943,7 +943,7 @@ export default function TasksBoardPage() {
               fetchAllExtensionRequests();
               fetchMyExtensionRequests();
             }}
-            className={`px-5 py-3 text-xs font-bold transition-all relative cursor-pointer ${activeTab === "extensions" ? "text-indigo-600" : "text-slate-500 hover:text-slate-700"}`}
+            className={`px-5 py-3 text-xs font-bold transition-all relative cursor-pointer ${activeTab === "extensions" ? "text-green-600" : "text-slate-500 hover:text-slate-700"}`}
           >
             <div className="flex items-center gap-2">
               <CalendarClock size={15} /> Extension Requests
@@ -958,7 +958,7 @@ export default function TasksBoardPage() {
                 </span>
               )}
             </div>
-            {activeTab === "extensions" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600" />}
+            {activeTab === "extensions" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600" />}
           </button>
         </div>
 
@@ -974,12 +974,12 @@ export default function TasksBoardPage() {
                   placeholder="Search your tasks..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition shadow-sm"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition shadow-sm"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className={`px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm transition-all shadow-sm ${showFilters ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white" : "bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 hover:text-gray-800"
+                className={`px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm transition-all shadow-sm ${showFilters ? "bg-gradient-to-r from-green-600 to-purple-600 text-white" : "bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 hover:text-gray-800"
                   }`}
               >
                 <Filter className="w-4 h-4" />
@@ -993,7 +993,7 @@ export default function TasksBoardPage() {
                 <select
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition"
+                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition"
                 >
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
@@ -1006,7 +1006,7 @@ export default function TasksBoardPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition"
+                  className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition"
                 >
                   <option value="createdAt">Sort by Date</option>
                   <option value="deadline">Sort by Deadline</option>
@@ -1036,7 +1036,7 @@ export default function TasksBoardPage() {
                 <h3 className="text-base font-bold text-slate-800 mb-1">No tasks discovered</h3>
                 <p className="text-slate-400 text-xs max-w-sm mx-auto">Adjust your active filter parameters or create a new task assignment.</p>
                 {canManage && (
-                  <button onClick={() => setShowCreateModal(true)} className="mt-4 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-md cursor-pointer inline-flex items-center gap-2">
+                  <button onClick={() => setShowCreateModal(true)} className="mt-4 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-md cursor-pointer inline-flex items-center gap-2">
                     <Plus size={14} /> Create Task
                   </button>
                 )}
@@ -1070,7 +1070,7 @@ export default function TasksBoardPage() {
                         <button onClick={() => openEditModal(task)} className="p-1 text-gray-400 hover:text-blue-600">
                           <Edit2 size={12} />
                         </button>
-                        <button onClick={() => setSelectedTask(task)} className="p-1 text-gray-400 hover:text-indigo-600">
+                        <button onClick={() => setSelectedTask(task)} className="p-1 text-gray-400 hover:text-green-600">
                           <Eye size={12} />
                         </button>
                         {task.status === "pending" && (
@@ -1149,7 +1149,7 @@ export default function TasksBoardPage() {
                           <td className="px-4 py-3 text-sm text-gray-600">{formatDate(task.deadline)}</td>
                           <td className="px-4 py-3">
                             <div className="flex items-center justify-center gap-1">
-                              <button onClick={() => setSelectedTask(task)} className="p-1 text-gray-400 hover:text-indigo-600">
+                              <button onClick={() => setSelectedTask(task)} className="p-1 text-gray-400 hover:text-green-600">
                                 <Eye size={14} />
                               </button>
                               <button onClick={() => openEditModal(task)} className="p-1 text-gray-400 hover:text-blue-600">
@@ -1182,9 +1182,9 @@ export default function TasksBoardPage() {
         {activeTab === "extensions" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-4 border border-indigo-200 shadow-sm">
+              <div className="bg-gradient-to-br from-green-50 to-purple-50 rounded-2xl p-4 border border-green-200 shadow-sm">
                 <p className="text-xs text-gray-500 font-medium">Total Requests</p>
-                <p className="text-2xl font-bold text-indigo-700">
+                <p className="text-2xl font-bold text-green-700">
                   {canManageExtensions ? extensionStats.total : myExtensionStats.total}
                 </p>
               </div>
@@ -1301,7 +1301,7 @@ export default function TasksBoardPage() {
                 rows={4}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                 placeholder="Explain why this task is being rejected..."
               />
             </div>
@@ -1387,7 +1387,7 @@ export default function TasksBoardPage() {
                       {getStatusConfig(selectedTask.status).icon} {selectedTask.status.replace("_", " ").toUpperCase()}
                     </span>
                     {selectedTask.projectId && (
-                      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-indigo-50 text-indigo-700 border-indigo-200">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full border bg-green-50 text-green-700 border-green-200">
                         {selectedTask.projectId.name}
                       </span>
                     )}
@@ -1443,7 +1443,7 @@ export default function TasksBoardPage() {
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-indigo-600 hover:text-indigo-800 underline"
+                          className="text-xs text-green-600 hover:text-green-800 underline"
                         >
                           📎 Evidence {idx + 1}
                         </a>
@@ -1467,7 +1467,7 @@ export default function TasksBoardPage() {
                     setSelectedTask(null);
                     openEditModal(task);
                   }}
-                  className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center justify-center gap-2"
                 >
                   <Edit2 size={16} />
                   Edit Task
@@ -1519,7 +1519,7 @@ export default function TasksBoardPage() {
                     type="text"
                     value={editFormData.title}
                     onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
-                    className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     required
                   />
                 </div>
@@ -1530,7 +1530,7 @@ export default function TasksBoardPage() {
                     value={editFormData.description}
                     onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                    className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                   />
                 </div>
 
@@ -1540,7 +1540,7 @@ export default function TasksBoardPage() {
                     <select
                       value={editFormData.priority}
                       onChange={(e) => setEditFormData({ ...editFormData, priority: e.target.value as any })}
-                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="low">Low</option>
                       <option value="normal">Normal</option>
@@ -1553,7 +1553,7 @@ export default function TasksBoardPage() {
                     <select
                       value={editFormData.status}
                       onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value as any })}
-                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="pending">Pending</option>
                       <option value="in_progress">In Progress</option>
@@ -1572,7 +1572,7 @@ export default function TasksBoardPage() {
                       type="date"
                       value={editFormData.deadline}
                       onChange={(e) => setEditFormData({ ...editFormData, deadline: e.target.value })}
-                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                   </div>
                   <div>
@@ -1581,7 +1581,7 @@ export default function TasksBoardPage() {
                       type="number"
                       value={editFormData.estimatedHours}
                       onChange={(e) => setEditFormData({ ...editFormData, estimatedHours: parseFloat(e.target.value) || 0 })}
-                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       min="0"
                       step="0.5"
                     />
@@ -1595,7 +1595,7 @@ export default function TasksBoardPage() {
                       <select
                         value={editFormData.assignedTo}
                         onChange={(e) => setEditFormData({ ...editFormData, assignedTo: e.target.value })}
-                        className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       >
                         <option value="">Select User</option>
                         {users.map((u) => (
@@ -1608,7 +1608,7 @@ export default function TasksBoardPage() {
                       <select
                         value={editFormData.projectId}
                         onChange={(e) => setEditFormData({ ...editFormData, projectId: e.target.value })}
-                        className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2 border text-black border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       >
                         <option value="">Select Project</option>
                         {projects.map((p) => (
@@ -1622,7 +1622,7 @@ export default function TasksBoardPage() {
                 <div className="flex gap-3 pt-4 border-t border-gray-100">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center justify-center gap-2"
                   >
                     <Check size={16} />
                     Update Task

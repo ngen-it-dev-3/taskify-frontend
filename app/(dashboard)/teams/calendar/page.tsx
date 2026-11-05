@@ -386,7 +386,7 @@ export default function TeamCalendarPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading your calendar...</p>
         </div>
       </div>
@@ -402,8 +402,8 @@ export default function TeamCalendarPage() {
       <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100/80">
-            <div className="w-20 h-20 bg-linear-to-br from-indigo-50 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CalendarIcon className="w-10 h-10 text-indigo-400" />
+            <div className="w-20 h-20 bg-linear-to-br from-green-50 to-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CalendarIcon className="w-10 h-10 text-green-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900">
               You're not in any team yet
@@ -413,7 +413,7 @@ export default function TeamCalendarPage() {
             </p>
             <button
               onClick={() => router.push("/teams/all-teams")}
-              className="mt-6 px-6 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all font-medium shadow-lg shadow-indigo-500/25"
+              className="mt-6 px-6 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all font-medium shadow-lg shadow-green-500/25"
             >
               Browse All Teams
             </button>
@@ -432,17 +432,17 @@ export default function TeamCalendarPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <CalendarIcon className="w-7 h-7 text-indigo-500" />
+              <CalendarIcon className="w-7 h-7 text-green-500" />
               Team Calendar
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               View and manage your team's task deadlines
             </p>
           </div>
           <button
             onClick={goToToday}
-            className="px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all font-medium shadow-lg shadow-indigo-500/25 text-sm flex items-center gap-2"
+            className="px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all font-medium shadow-lg shadow-green-500/25 text-sm flex items-center gap-2"
           >
             <CalendarDaysIcon className="w-4 h-4" />
             Today
@@ -460,7 +460,7 @@ export default function TeamCalendarPage() {
               }}
               className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${
                 selectedTeamId === team._id
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
+                  ? "bg-green-600 text-white shadow-lg shadow-green-500/25"
                   : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
               }`}
             >
@@ -539,7 +539,7 @@ export default function TeamCalendarPage() {
                       onClick={() => setViewMode("month")}
                       className={`px-3 py-1.5 rounded-lg transition-all duration-200 text-sm flex items-center gap-1.5 ${
                         viewMode === "month"
-                          ? "bg-white shadow-sm text-indigo-600"
+                          ? "bg-white shadow-sm text-green-600"
                           : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
@@ -550,7 +550,7 @@ export default function TeamCalendarPage() {
                       onClick={() => setViewMode("week")}
                       className={`px-3 py-1.5 rounded-lg transition-all duration-200 text-sm flex items-center gap-1.5 ${
                         viewMode === "week"
-                          ? "bg-white shadow-sm text-indigo-600"
+                          ? "bg-white shadow-sm text-green-600"
                           : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
@@ -561,7 +561,7 @@ export default function TeamCalendarPage() {
                       onClick={() => setViewMode("day")}
                       className={`px-3 py-1.5 rounded-lg transition-all duration-200 text-sm flex items-center gap-1.5 ${
                         viewMode === "day"
-                          ? "bg-white shadow-sm text-indigo-600"
+                          ? "bg-white shadow-sm text-green-600"
                           : "text-gray-500 hover:text-gray-700"
                       }`}
                     >
@@ -575,7 +575,7 @@ export default function TeamCalendarPage() {
                       showFilters ||
                       filterStatus !== "all" ||
                       filterPriority !== "all"
-                        ? "bg-indigo-100 text-indigo-600"
+                        ? "bg-green-100 text-green-600"
                         : "hover:bg-gray-100 text-gray-600"
                     }`}
                   >
@@ -590,7 +590,7 @@ export default function TeamCalendarPage() {
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
+                    className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
                   >
                     <option value="all">All Status</option>
                     {Object.entries(statusLabels).map(([key, label]) => (
@@ -602,7 +602,7 @@ export default function TeamCalendarPage() {
                   <select
                     value={filterPriority}
                     onChange={(e) => setFilterPriority(e.target.value)}
-                    className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
+                    className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
                   >
                     <option value="all">All Priority</option>
                     <option value="urgent">Urgent</option>
@@ -663,8 +663,8 @@ export default function TeamCalendarPage() {
                           className={`
                             min-h-[80px] p-2 rounded-xl cursor-pointer transition-all
                             ${isCurrentMonth ? "hover:bg-gray-50" : "opacity-40"}
-                            ${isTodayDate ? "ring-2 ring-indigo-500 ring-offset-2" : ""}
-                            ${isSelectedDate ? "bg-indigo-50" : ""}
+                            ${isTodayDate ? "ring-2 ring-green-500 ring-offset-2" : ""}
+                            ${isSelectedDate ? "bg-green-50" : ""}
                             ${hasTasks ? "hover:shadow-sm" : ""}
                           `}
                         >
@@ -672,14 +672,14 @@ export default function TeamCalendarPage() {
                             <span
                               className={`
                                 text-sm font-medium
-                                ${isTodayDate ? "text-indigo-600" : "text-gray-700"}
+                                ${isTodayDate ? "text-green-600" : "text-gray-700"}
                                 ${!isCurrentMonth ? "text-gray-400" : ""}
                               `}
                             >
                               {date.getDate()}
                             </span>
                             {hasTasks && (
-                              <span className="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full">
+                              <span className="text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full">
                                 {dayTasks.length}
                               </span>
                             )}
@@ -729,8 +729,8 @@ export default function TeamCalendarPage() {
                             onClick={() => setSelectedDate(date)}
                             className={`
                               text-center py-2 rounded-xl cursor-pointer transition-all
-                              ${isTodayDate ? "bg-indigo-50" : "hover:bg-gray-50"}
-                              ${isSelectedDate ? "bg-indigo-100" : ""}
+                              ${isTodayDate ? "bg-green-50" : "hover:bg-gray-50"}
+                              ${isSelectedDate ? "bg-green-100" : ""}
                             `}
                           >
                             <div className="text-xs text-gray-500">
@@ -741,7 +741,7 @@ export default function TeamCalendarPage() {
                             <div
                               className={`
                                 text-lg font-semibold
-                                ${isTodayDate ? "text-indigo-600" : "text-gray-700"}
+                                ${isTodayDate ? "text-green-600" : "text-gray-700"}
                               `}
                             >
                               {date.getDate()}
@@ -886,7 +886,7 @@ export default function TeamCalendarPage() {
                                 </span>
                                 {task.assignedTo && (
                                   <div className="flex items-center gap-1.5">
-                                    <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-medium">
+                                    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-medium">
                                       {getInitials(
                                         getUserDisplayName(task.assignedTo),
                                       )}
@@ -998,7 +998,7 @@ export default function TeamCalendarPage() {
                                 Assigned To
                               </h3>
                               <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-medium">
+                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-medium">
                                   {getInitials(
                                     getUserDisplayName(task.assignedTo),
                                   )}
@@ -1048,7 +1048,7 @@ export default function TeamCalendarPage() {
                             onClick={() => {
                               router.push(`/dashboard/tasks/${task._id}`);
                             }}
-                            className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors font-medium shadow-lg shadow-indigo-500/25"
+                            className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors font-medium shadow-lg shadow-green-500/25"
                           >
                             View Details
                           </button>

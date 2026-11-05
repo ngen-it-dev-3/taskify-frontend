@@ -35,10 +35,10 @@ export default function QuickActions({ hasRole, userRole }: QuickActionsProps) {
         description: "Create new employee account",
         icon: Users,
         onClick: () => router.push("/dashboard/users"),
-        color: "from-indigo-500 to-purple-500",
-        gradient: "from-indigo-50 to-purple-50",
-        borderColor: "border-indigo-200",
-        textColor: "text-indigo-600",
+        color: "from-green-500 to-purple-500",
+        gradient: "from-green-50 to-purple-50",
+        borderColor: "border-green-200",
+        textColor: "text-green-600",
       });
     }
 
@@ -174,7 +174,7 @@ export default function QuickActions({ hasRole, userRole }: QuickActionsProps) {
 
             {/* Icon */}
             <div
-              className={`relative w-9 h-9 rounded-xl bg-linear-to-r ${action.color} flex items-center justify-center mb-3 shadow-md shadow-indigo-500/20`}
+              className={`relative w-9 h-9 rounded-xl bg-linear-to-r ${action.color} flex items-center justify-center mb-3 shadow-md shadow-green-500/20`}
             >
               <action.icon className="w-4 h-4 text-white" />
             </div>

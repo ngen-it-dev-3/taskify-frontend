@@ -8,7 +8,7 @@ import { OnlineCrmApi } from './onlineCrm.service';
 /* =========================================================
    Filters & types
 ========================================================= */
-export type DimensionKey = 'Country' | 'Industry' | 'Product';
+export type DimensionKey = 'Territory' | 'Industry' | 'Product'
 export type TimeKey = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'FY26';
 
 export interface SalesDashboardFilters {

@@ -456,7 +456,7 @@ export default function EmployeeDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+        <Loader2 className="w-10 h-10 animate-spin text-green-600" />
       </div>
     );
   }
@@ -975,7 +975,7 @@ export default function EmployeeDashboard() {
 
                 {selectedTask.assignedTo && (
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">
+                    <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-xs">
                       {selectedTask.assignedTo.fullName?.charAt(0) || "U"}
                     </div>
                     <div>
@@ -1000,7 +1000,7 @@ export default function EmployeeDashboard() {
               <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-2">
                 <Link
                   href={`/tasks/${selectedTask._id}`}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition"
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-semibold transition"
                 >
                   Open Full View
                 </Link>
@@ -1029,7 +1029,7 @@ export default function EmployeeDashboard() {
               <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-5 flex justify-between items-center">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Text className="w-5 h-5 text-indigo-500" />
+                    <Text className="w-5 h-5 text-green-500" />
                     Submit Evidence
                   </h2>
                   <p className="text-xs text-gray-500">
@@ -1070,7 +1070,7 @@ export default function EmployeeDashboard() {
                     onChange={(e) => setEvidenceText(e.target.value)}
                     rows={6}
                     placeholder={`Enter evidence details or URLs...\n\nExample:\n- https://drive.google.com/file/evidence1\n- https://docs.google.com/document/evidence2\n- Source code: https://github.com/...`}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none text-gray-800 placeholder:text-gray-400 font-mono text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none text-gray-800 placeholder:text-gray-400 font-mono text-sm"
                   />
                   <p className="text-xs text-gray-400 mt-1.5">
                     Enter one URL or detail per line.{" "}
@@ -1082,7 +1082,7 @@ export default function EmployeeDashboard() {
                   <button
                     onClick={handleSubmitWithEvidence}
                     disabled={submittingEvidence || !evidenceText.trim()}
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submittingEvidence ? (
                       <>

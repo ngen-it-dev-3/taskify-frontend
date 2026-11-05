@@ -288,14 +288,14 @@ export default function PermissionsPage() {
       "Line Manager": "bg-emerald-50 text-emerald-700 border-emerald-200",
       Employee: "bg-slate-100 text-slate-700 border-slate-200",
     };
-    return colors[roleName] || "bg-indigo-50 text-indigo-700 border-indigo-200";
+    return colors[roleName] || "bg-green-50 text-green-700 border-green-200";
   };
 
   const getRoleBgColor = (roleName: string) => {
     if (roleName.includes("Super")) return "bg-purple-50 text-purple-600";
     if (roleName.includes("Admin")) return "bg-rose-50 text-rose-600";
     if (roleName.includes("HR")) return "bg-pink-50 text-pink-600";
-    return "bg-indigo-50 text-indigo-600";
+    return "bg-green-50 text-green-600";
   };
 
   if (!canManagePermissions) return null;
@@ -303,7 +303,7 @@ export default function PermissionsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
         <p className="text-xs font-medium text-slate-400">Loading access control lists...</p>
       </div>
     );
@@ -321,13 +321,13 @@ export default function PermissionsPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <Key className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Permission Management</h1>
-                  <span className="px-2.5 py-0.5 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                  <span className="px-2.5 py-0.5 text-xs font-bold bg-green-50 text-green-700 rounded-full border border-green-100">
                     {stats.totalUsers}
                   </span>
                 </div>
@@ -340,7 +340,7 @@ export default function PermissionsPage() {
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "grid" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "grid" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <Grid className="w-3.5 h-3.5" />
@@ -348,7 +348,7 @@ export default function PermissionsPage() {
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -369,7 +369,7 @@ export default function PermissionsPage() {
         {/* Analytics Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
           {[
-            { label: "Total Accounts", val: stats.totalUsers, icon: Users, color: "text-indigo-600", bg: "bg-indigo-50" },
+            { label: "Total Accounts", val: stats.totalUsers, icon: Users, color: "text-green-600", bg: "bg-green-50" },
             { label: "Active Clearance", val: stats.activeUsers, icon: UserCheck, color: "text-emerald-600", bg: "bg-emerald-50" },
             { label: "Role Registry", val: stats.totalRoles, icon: Shield, color: "text-blue-600", bg: "bg-blue-50" },
             { label: "Multi-Role", val: stats.usersWithMultipleRoles, icon: Layers, color: "text-amber-600", bg: "bg-amber-50" },
@@ -396,7 +396,7 @@ export default function PermissionsPage() {
               placeholder="Filter by name, email, or employee ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs"
             />
           </div>
 
@@ -404,7 +404,7 @@ export default function PermissionsPage() {
             <select
               value={filterRole}
               onChange={(e) => setFilterRole(e.target.value)}
-              className="px-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-700 text-sm font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs cursor-pointer"
+              className="px-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-700 text-sm font-medium focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs cursor-pointer"
             >
               <option value="all">All Security Roles</option>
               {roles.map((r) => (
@@ -415,7 +415,7 @@ export default function PermissionsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-700 text-sm font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs cursor-pointer"
+              className="px-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-700 text-sm font-medium focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs cursor-pointer"
             >
               <option value="name">Sort by Name</option>
               <option value="email">Sort by Email</option>
@@ -449,7 +449,7 @@ export default function PermissionsPage() {
                   <div className="p-6 space-y-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3.5">
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm shadow-xs group-hover:bg-indigo-600 group-hover:text-white transition duration-300">
+                        <div className="w-12 h-12 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm shadow-xs group-hover:bg-green-600 group-hover:text-white transition duration-300">
                           {u.fullName.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -487,7 +487,7 @@ export default function PermissionsPage() {
                   <div className="px-6 py-4 bg-slate-50/60 border-t border-slate-100 flex items-center justify-between">
                     <button
                       onClick={() => setShowUserDetail(u)}
-                      className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 transition"
+                      className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1.5 transition"
                     >
                       <Eye size={14} />
                       Inspect Profile
@@ -499,7 +499,7 @@ export default function PermissionsPage() {
                         setSelectedRoles(userRoles.map((r) => r._id));
                         setPrimaryRole(userRoles[0]?._id || "");
                       }}
-                      className="px-3.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs"
+                      className="px-3.5 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs"
                     >
                       <UserPlus size={13} />
                       Configure Roles
@@ -532,7 +532,7 @@ export default function PermissionsPage() {
                       <tr key={u._id} className="hover:bg-slate-50/50 transition">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
+                            <div className="w-9 h-9 rounded-xl bg-green-50 text-green-600 font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
                               {u.fullName.charAt(0).toUpperCase()}
                             </div>
                             <div>
@@ -562,7 +562,7 @@ export default function PermissionsPage() {
                           <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => setShowUserDetail(u)}
-                              className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+                              className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition"
                               title="View Details"
                             >
                               <Eye size={16} />
@@ -624,7 +624,7 @@ export default function PermissionsPage() {
               <div className="p-6 space-y-6">
                 {/* User Snapshot */}
                 <div className="flex items-center gap-3.5 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
+                  <div className="w-12 h-12 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
                     {selectedUser.fullName.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -652,11 +652,11 @@ export default function PermissionsPage() {
                               if (!primaryRole) setPrimaryRole(role._id);
                             }
                           }}
-                          className={`p-3.5 rounded-2xl border transition cursor-pointer flex items-center justify-between ${isChecked ? "bg-indigo-50/60 border-indigo-300 shadow-xs" : "bg-white border-slate-200/80 hover:border-slate-300"
+                          className={`p-3.5 rounded-2xl border transition cursor-pointer flex items-center justify-between ${isChecked ? "bg-green-50/60 border-green-300 shadow-xs" : "bg-white border-slate-200/80 hover:border-slate-300"
                             }`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition ${isChecked ? "bg-indigo-600 border-indigo-600 text-white" : "border-slate-300 bg-white"
+                            <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition ${isChecked ? "bg-green-600 border-green-600 text-white" : "border-slate-300 bg-white"
                               }`}>
                               {isChecked && <CheckCircle className="w-3.5 h-3.5" />}
                             </div>
@@ -690,7 +690,7 @@ export default function PermissionsPage() {
                   <button
                     onClick={handleAssignRoles}
                     disabled={assigningRole}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20 text-sm flex items-center justify-center gap-2"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-green-600/20 text-sm flex items-center justify-center gap-2"
                   >
                     {assigningRole && <Loader2 size={16} className="animate-spin" />}
                     Save Security Permissions
@@ -730,7 +730,7 @@ export default function PermissionsPage() {
 
               <div className="p-6 space-y-6 overflow-y-auto flex-1">
                 <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white font-bold flex items-center justify-center text-lg shadow-xs shrink-0">
+                  <div className="w-14 h-14 rounded-2xl bg-green-600 text-white font-bold flex items-center justify-center text-lg shadow-xs shrink-0">
                     {showUserDetail.fullName.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -748,7 +748,7 @@ export default function PermissionsPage() {
 
                 <div className="space-y-3">
                   <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                    <Shield size={14} className="text-indigo-600" />
+                    <Shield size={14} className="text-green-600" />
                     Assigned Clearances ({getUserRoles(showUserDetail).length})
                   </h4>
 
@@ -759,7 +759,7 @@ export default function PermissionsPage() {
                       return (
                         <div key={role._id} className="p-3.5 bg-slate-50/80 rounded-2xl border border-slate-100 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-indigo-600 font-bold text-xs shadow-xs">
+                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-green-600 font-bold text-xs shadow-xs">
                               {role.level}
                             </div>
                             <div>
@@ -785,7 +785,7 @@ export default function PermissionsPage() {
                             {!isPrimary && (
                               <button
                                 onClick={() => handleSetPrimaryRole(showUserDetail._id, role._id)}
-                                className="px-2.5 py-1 text-[10px] font-bold bg-white text-indigo-600 border border-slate-200 hover:bg-indigo-50 rounded-lg transition shadow-xs"
+                                className="px-2.5 py-1 text-[10px] font-bold bg-white text-green-600 border border-slate-200 hover:bg-green-50 rounded-lg transition shadow-xs"
                               >
                                 Make Primary
                               </button>

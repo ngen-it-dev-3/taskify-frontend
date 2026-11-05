@@ -123,7 +123,7 @@ export default function AssistantWizard() {
           label: "Users",
           icon: <Users className="h-4 w-4" />,
           href: "/users",
-          color: "bg-indigo-500",
+          color: "bg-green-500",
         });
       }
       if (user.role === "admin" || user.role === "super_admin") {
@@ -340,17 +340,17 @@ export default function AssistantWizard() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.6, y: 15 }}
             transition={spring}
-            className="fixed bottom-2 right-3 z-50 origin-bottom-right"
+            className="fixed bottom-2 right-2 z-50 origin-bottom-right"
           >
             <div className="relative">
               {/* Soft halo */}
-              <span className="pointer-events-none absolute -inset-2 rounded-full bg-indigo-400/25 blur-xl" />
+              <span className="pointer-events-none absolute -inset-2 rounded-full bg-green-400/25 blur-xl" />
 
               {/* Pulsing ring for unread items */}
               {showPing && (
                 <span
                   aria-hidden
-                  className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-indigo-500 opacity-30"
+                  className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-green-500 opacity-30"
                 />
               )}
 
@@ -365,7 +365,7 @@ export default function AssistantWizard() {
                 onMouseLeave={() => setIsHovered(false)}
                 whileHover={prefersReducedMotion ? undefined : { scale: 1.08 }}
                 whileTap={{ scale: 0.94 }}
-                className="relative flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-2 border-white/90 bg-gradient-to-tr from-indigo-500 via-indigo-500 to-purple-600 text-white shadow-[0_10px_30px_-8px_rgba(99,102,241,0.65)] ring-1 ring-black/5 transition-shadow hover:shadow-[0_14px_36px_-8px_rgba(99,102,241,0.8)] focus:outline-none focus-visible:ring-4 focus-visible:ring-indigo-300/60"
+                className="relative flex h-14 w-14 cursor-pointer items-center justify-center rounded-full border-2 border-white/90 bg-gradient-to-tr from-green-500 via-green-500 to-purple-600 text-white shadow-[0_10px_30px_-8px_rgba(99,102,241,0.65)] ring-1 ring-black/5 transition-shadow hover:shadow-[0_14px_36px_-8px_rgba(99,102,241,0.8)] focus:outline-none focus-visible:ring-4 focus-visible:ring-green-300/60"
                 aria-label={
                   showBadge
                     ? `Open assistant (${unreadCount} unread)`
@@ -407,7 +407,7 @@ export default function AssistantWizard() {
                     className="pointer-events-none absolute bottom-full right-0 mb-3 whitespace-nowrap rounded-xl border border-white/10 bg-slate-900/95 px-3 py-1.5 text-xs text-white shadow-xl backdrop-blur-md"
                   >
                     <span className="flex items-center gap-1.5 font-medium">
-                      <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+                      <Sparkles className="h-3.5 w-3.5 text-green-400" />
                       Assistant
                       {showBadge && (
                         <span className="ml-1 rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[10px] font-bold text-rose-300">
@@ -436,17 +436,17 @@ export default function AssistantWizard() {
               transition: { duration: 0.18, ease: "easeIn" },
             }}
             transition={spring}
-            className="fixed bottom-20 right-4 z-50 flex max-h-[80vh] w-[380px] max-w-[calc(100vw-2rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/95 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.45)] ring-1 ring-black/5 backdrop-blur-xl"
+            className="fixed bottom-2 right-2 z-50 flex max-h-[80vh] w-[380px] max-w-[calc(100vw-2rem)] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-white/60 bg-white/95 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.45)] ring-1 ring-black/5 backdrop-blur-xl"
           >
             {/* Header */}
-            <div className="relative shrink-0 overflow-hidden bg-gradient-to-r from-indigo-500 via-indigo-500 to-purple-600 px-4 py-3 text-white">
+            <div className="relative shrink-0 overflow-hidden bg-gradient-to-r from-green-500 via-green-500 to-purple-600 px-4 py-3 text-white">
               <span className="pointer-events-none absolute -top-8 right-0 h-24 w-24 rounded-full bg-white/15 blur-2xl" />
 
               <div className="relative flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/25 backdrop-blur-sm">
                     <Sparkles className="h-4 w-4" />
-                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-indigo-500 bg-emerald-400" />
+                    <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-green-500 bg-emerald-400" />
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold leading-tight">
@@ -506,9 +506,9 @@ export default function AssistantWizard() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.02 }}
-                className="flex items-center gap-3 rounded-2xl border border-white/60 bg-gradient-to-r from-white to-indigo-50/60 p-3 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.08)]"
+                className="flex items-center gap-3 rounded-2xl border border-white/60 bg-gradient-to-r from-white to-green-50/60 p-3 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.08)]"
               >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 shadow-md ring-2 ring-white/80">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-purple-600 shadow-md ring-2 ring-white/80">
                   <span className="text-sm font-bold text-white">
                     {data?.user.fullName?.charAt(0) || "U"}
                   </span>
@@ -546,33 +546,30 @@ export default function AssistantWizard() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.04 + i * 0.03 }}
-                    className={`rounded-xl border p-3 text-center shadow-[0_2px_10px_-4px_rgba(15,23,42,0.06)] ${
-                      s.tone === "blue"
-                        ? "border-blue-100 bg-blue-50/70"
-                        : s.tone === "emerald"
+                    className={`rounded-xl border p-3 text-center shadow-[0_2px_10px_-4px_rgba(15,23,42,0.06)] ${s.tone === "blue"
+                      ? "border-blue-100 bg-blue-50/70"
+                      : s.tone === "emerald"
                         ? "border-emerald-100 bg-emerald-50/70"
                         : "border-amber-100 bg-amber-50/70"
-                    }`}
+                      }`}
                   >
                     <p
-                      className={`text-lg font-bold leading-none ${
-                        s.tone === "blue"
-                          ? "text-blue-600"
-                          : s.tone === "emerald"
+                      className={`text-lg font-bold leading-none ${s.tone === "blue"
+                        ? "text-blue-600"
+                        : s.tone === "emerald"
                           ? "text-emerald-600"
                           : "text-amber-600"
-                      }`}
+                        }`}
                     >
                       {s.value}
                     </p>
                     <p
-                      className={`mt-1 text-[9px] font-medium ${
-                        s.tone === "blue"
-                          ? "text-blue-500"
-                          : s.tone === "emerald"
+                      className={`mt-1 text-[9px] font-medium ${s.tone === "blue"
+                        ? "text-blue-500"
+                        : s.tone === "emerald"
                           ? "text-emerald-500"
                           : "text-amber-500"
-                      }`}
+                        }`}
                     >
                       {s.label}
                     </p>
@@ -583,7 +580,7 @@ export default function AssistantWizard() {
               {/* Performance */}
               <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-3 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.06)]">
                 <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-700">
-                  <TrendingUp className="h-3 w-3 text-indigo-500" />
+                  <TrendingUp className="h-3 w-3 text-green-500" />
                   Performance
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
@@ -646,7 +643,7 @@ export default function AssistantWizard() {
                 <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-3 shadow-[0_2px_10px_-4px_rgba(15,23,42,0.06)]">
                   <div className="mb-2 flex items-center justify-between">
                     <h4 className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                      <Bell className="h-3 w-3 text-indigo-500" />
+                      <Bell className="h-3 w-3 text-green-500" />
                       Recent Notifications
                     </h4>
                     {data.notifications.unread > 0 && (
@@ -659,16 +656,14 @@ export default function AssistantWizard() {
                     {data.notifications.latest.slice(0, 3).map((notif) => (
                       <div
                         key={notif._id}
-                        className={`flex items-start gap-2 rounded-lg p-2 transition ${
-                          !notif.isRead
-                            ? "border border-indigo-100 bg-indigo-50/50"
-                            : "bg-slate-50/60"
-                        }`}
+                        className={`flex items-start gap-2 rounded-lg p-2 transition ${!notif.isRead
+                          ? "border border-green-100 bg-green-50/50"
+                          : "bg-slate-50/60"
+                          }`}
                       >
                         <div
-                          className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
-                            !notif.isRead ? "bg-indigo-500" : "bg-slate-300"
-                          }`}
+                          className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${!notif.isRead ? "bg-green-500" : "bg-slate-300"
+                            }`}
                         />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-xs font-medium text-slate-800">
@@ -687,7 +682,7 @@ export default function AssistantWizard() {
                   {data.notifications.unread > 0 && (
                     <Link
                       href="/notifications"
-                      className="mt-2 block text-center text-[10px] font-medium text-indigo-500 transition hover:text-indigo-600"
+                      className="mt-2 block text-center text-[10px] font-medium text-green-500 transition hover:text-green-600"
                     >
                       View all notifications →
                     </Link>
@@ -698,7 +693,7 @@ export default function AssistantWizard() {
               {/* Task Status */}
               <div>
                 <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-700">
-                  <Briefcase className="h-3 w-3 text-indigo-500" />
+                  <Briefcase className="h-3 w-3 text-green-500" />
                   Task Status
                 </h4>
                 <div className="space-y-2">
@@ -741,7 +736,7 @@ export default function AssistantWizard() {
               {data?.quickActions && data.quickActions.length > 0 && (
                 <div>
                   <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold text-slate-700">
-                    <Zap className="h-3 w-3 text-indigo-500" />
+                    <Zap className="h-3 w-3 text-green-500" />
                     Quick Actions
                   </h4>
                   <div className="grid grid-cols-2 gap-2">

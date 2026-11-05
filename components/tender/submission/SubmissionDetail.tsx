@@ -977,7 +977,7 @@ export function SubmissionDetail({
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:underline"
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 hover:underline"
                 >
                   {data.info.tenderLink} <ExternalLink className="h-3 w-3" />
                 </a>
@@ -1040,7 +1040,7 @@ export function SubmissionDetail({
                             href={fullFileUrl(f.url)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-[10px] font-semibold text-indigo-600 hover:underline"
+                            className="text-[10px] font-semibold text-green-600 hover:underline"
                           >
                             View
                           </a>

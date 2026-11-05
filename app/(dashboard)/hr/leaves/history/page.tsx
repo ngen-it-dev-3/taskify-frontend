@@ -178,7 +178,7 @@ const leaveTypeColors: Record<LeaveType, string> = {
   paternity: "bg-purple-100 text-purple-700 border-purple-200",
   bereavement: "bg-gray-100 text-gray-700 border-gray-200",
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
-  earned: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  earned: "bg-green-100 text-green-700 border-green-200",
   other: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
@@ -530,7 +530,7 @@ export default function LeaveHistoryPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading employee leave data...</p>
         </div>
       </div>
@@ -572,14 +572,14 @@ export default function LeaveHistoryPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Users className="w-7 h-7 text-indigo-500" />
+              <Users className="w-7 h-7 text-green-500" />
               Employee Leave History
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               View and manage employee leave balances and history
               {refreshing && (
-                <span className="text-xs text-indigo-500 animate-pulse ml-2">
+                <span className="text-xs text-green-500 animate-pulse ml-2">
                   <Loader2 className="w-3 h-3 inline animate-spin mr-1" />
                   Updating...
                 </span>
@@ -599,7 +599,7 @@ export default function LeaveHistoryPage() {
             </button>
             <button
               onClick={() => toast.success("Exporting employee leave data...")}
-              className="px-4 py-2 bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-indigo-500/25 flex items-center gap-2"
+              className="px-4 py-2 bg-linear-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-green-500/25 flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
               Export
@@ -625,8 +625,8 @@ export default function LeaveHistoryPage() {
                   Total Employees
                 </p>
               </div>
-              <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-                <Users className="w-4 h-4 text-indigo-600" />
+              <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                <Users className="w-4 h-4 text-green-600" />
               </div>
             </div>
           </motion.div>
@@ -707,14 +707,14 @@ export default function LeaveHistoryPage() {
                 placeholder="Search employees by name, email, ID, or department..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
               />
             </div>
             <div className="flex gap-3 flex-wrap">
               <select
                 value={filterDepartment}
                 onChange={(e) => setFilterDepartment(e.target.value)}
-                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[160px]"
+                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[160px]"
               >
                 <option value="all">All Departments</option>
                 {departments.map((dept) => (
@@ -757,7 +757,7 @@ export default function LeaveHistoryPage() {
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   {/* Employee Info */}
                   <div className="flex items-start gap-4 min-w-[200px]">
-                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-base font-bold shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-base font-bold shrink-0">
                       {getInitials(employee.employeeName)}
                     </div>
                     <div>
@@ -841,7 +841,7 @@ export default function LeaveHistoryPage() {
                             title={`${getLeaveTypeLabel(type)}: ${balance.remaining} remaining`}
                           >
                             <Icon
-                              className={`w-3 h-3 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-indigo-500"}`}
+                              className={`w-3 h-3 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-green-500"}`}
                             />
                             <span
                               className={`text-xs font-medium ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-gray-700"}`}
@@ -858,7 +858,7 @@ export default function LeaveHistoryPage() {
                         setSelectedEmployee(employee);
                         setShowDetailsModal(true);
                       }}
-                      className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-colors text-sm font-medium flex items-center gap-2"
+                      className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl transition-colors text-sm font-medium flex items-center gap-2"
                     >
                       <Eye className="w-4 h-4" />
                       View Details
@@ -899,7 +899,7 @@ export default function LeaveHistoryPage() {
             >
               <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-5 flex justify-between items-start z-10">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-lg font-bold">
+                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-lg font-bold">
                     {getInitials(selectedEmployee.employeeName)}
                   </div>
                   <div>
@@ -943,7 +943,7 @@ export default function LeaveHistoryPage() {
                 {/* Leave Balance Summary */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <PieChart className="w-4 h-4 text-indigo-500" />
+                    <PieChart className="w-4 h-4 text-green-500" />
                     Leave Balances
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -966,7 +966,7 @@ export default function LeaveHistoryPage() {
                         >
                           <div className="flex items-center gap-2 mb-1">
                             <Icon
-                              className={`w-3.5 h-3.5 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-indigo-500"}`}
+                              className={`w-3.5 h-3.5 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-green-500"}`}
                             />
                             <span className="text-[10px] font-medium text-gray-500 uppercase truncate">
                               {label}
@@ -984,7 +984,7 @@ export default function LeaveHistoryPage() {
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
                             <div
-                              className={`h-1 rounded-full transition-all ${isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-indigo-500"}`}
+                              className={`h-1 rounded-full transition-all ${isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-green-500"}`}
                               style={{ width: `${Math.min(percentage, 100)}%` }}
                             />
                           </div>
@@ -1000,7 +1000,7 @@ export default function LeaveHistoryPage() {
                 {/* Leave History */}
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-indigo-500" />
+                    <FileText className="w-4 h-4 text-green-500" />
                     Leave History
                   </h3>
                   {selectedEmployee.leaveHistory &&

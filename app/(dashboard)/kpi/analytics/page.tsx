@@ -429,7 +429,7 @@ export default function KPIAnalyticsPage() {
           </div>
           <h2 className="text-xl font-bold text-slate-800 mb-1">Access Restricted</h2>
           <p className="text-slate-500 text-sm mb-6">You lack administrative clearance to view analytics matrices.</p>
-          <Link href="/dashboard" className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20">
+          <Link href="/dashboard" className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20">
             Return to Dashboard
           </Link>
         </motion.div>
@@ -454,7 +454,7 @@ export default function KPIAnalyticsPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-linear-to-tr from-green-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <Brain className="w-6 h-6" />
               </div>
               <div>
@@ -502,7 +502,7 @@ export default function KPIAnalyticsPage() {
               title="Refresh Analytics"
               className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-xs cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-indigo-600" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-green-600" : ""}`} />
             </button>
 
             <button
@@ -520,7 +520,7 @@ export default function KPIAnalyticsPage() {
         {analyticsData && (
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {[
-              { label: "Total Workforce", val: analyticsData.summary.totalEmployees, icon: Users, color: "text-indigo-600", bg: "bg-indigo-50" },
+              { label: "Total Workforce", val: analyticsData.summary.totalEmployees, icon: Users, color: "text-green-600", bg: "bg-green-50" },
               { label: "Unit Average", val: `${analyticsData.summary.averageScore}%`, icon: Target, color: "text-blue-600", bg: "bg-blue-50" },
               { label: "Top Score", val: `${analyticsData.summary.maxScore}%`, icon: Crown, color: "text-amber-600", bg: "bg-amber-50" },
               { label: "Lowest Score", val: `${analyticsData.summary.minScore}%`, icon: AlertCircle, color: "text-rose-600", bg: "bg-rose-50" },
@@ -550,7 +550,7 @@ export default function KPIAnalyticsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${activeTab === tab.id ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20" : "text-slate-600 hover:bg-slate-50"
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${activeTab === tab.id ? "bg-green-600 text-white shadow-md shadow-green-600/20" : "text-slate-600 hover:bg-slate-50"
                 }`}
             >
               <tab.icon size={15} /> {tab.label}
@@ -561,7 +561,7 @@ export default function KPIAnalyticsPage() {
         {/* Tab Panel Viewport */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
             <p className="text-sm font-medium text-slate-400">Synthesizing analytical matrix...</p>
           </div>
         ) : (

@@ -26,13 +26,11 @@ const PRIORITIES = [
 
 // ⭐ Only country names, no currency data needed
 const WORLD_TERRITORIES = [
-  'Afghanistan', 'Albania', 'Algeria', 'Argentina', 'Australia', 'Austria', 'Bahrain',
-  'Bangladesh', 'Belgium', 'Bhutan', 'Brazil', 'Canada', 'China', 'Denmark', 'Egypt',
-  'France', 'Germany', 'Hong Kong', 'India', 'Indonesia', 'Italy', 'Japan', 'Kuwait',
-  'Malaysia', 'Maldives', 'Nepal', 'Netherlands', 'Nigeria', 'Oman', 'Pakistan',
-  'Philippines', 'Qatar', 'Saudi Arabia', 'Singapore', 'South Africa', 'South Korea',
-  'Spain', 'Sri Lanka', 'Sweden', 'Switzerland', 'Thailand', 'Turkey', 'United Arab Emirates',
-  'United Kingdom', 'United States', 'Vietnam', 'Global'
+  'Bangladesh',
+  'Singapore',
+  'Middle East',
+  'United Kingdom',
+  'Portugal',
 ].sort();
 
 export default function AssignRfqModal({ rfq, onClose, onConfirm }: Props) {

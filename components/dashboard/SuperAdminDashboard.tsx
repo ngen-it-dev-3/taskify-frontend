@@ -834,7 +834,7 @@ export default function SuperAdminDashboard() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`bg-white/80 backdrop-blur-md rounded-2xl border border-white/60 hover:border-indigo-300 transition-all duration-300 ${
+        className={`bg-white/80 backdrop-blur-md rounded-2xl border border-white/60 hover:border-green-300 transition-all duration-300 ${
           compact ? "p-3" : "p-4"
         } shadow-sm hover:shadow-md`}
       >
@@ -892,7 +892,7 @@ export default function SuperAdminDashboard() {
           </div>
           <button
             onClick={() => setExpandedTask(isExpanded ? null : task._id)}
-            className="text-slate-400 hover:text-indigo-600 transition p-1"
+            className="text-slate-400 hover:text-green-600 transition p-1"
           >
             <Eye size={14} />
           </button>
@@ -915,7 +915,7 @@ export default function SuperAdminDashboard() {
               <div className="flex flex-wrap gap-2">
                 <Link
                   href={`/tasks/${task._id}`}
-                  className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow-sm"
+                  className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition flex items-center gap-1 shadow-sm"
                 >
                   <ExternalLink size={12} />
                   View Details
@@ -937,7 +937,7 @@ export default function SuperAdminDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[70vh]">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+          <Loader2 className="w-8 h-8 text-green-600 animate-spin" />
           <p className="text-sm font-medium text-slate-500">
             Loading Command Center...
           </p>
@@ -987,7 +987,7 @@ export default function SuperAdminDashboard() {
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
+          className="text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
         >
           <RefreshCw
             className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`}
@@ -1000,10 +1000,10 @@ export default function SuperAdminDashboard() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-linear-to-r from-indigo-900 via-slate-900 to-indigo-950 p-6 rounded-3xl border border-indigo-500/20 shadow-xl text-white"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-linear-to-r from-green-900 via-slate-900 to-green-950 p-6 rounded-3xl border border-green-500/20 shadow-xl text-white"
       >
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-indigo-300 shadow-inner border border-white/20">
+          <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-green-300 shadow-inner border border-white/20">
             <Crown className="w-7 h-7" />
           </div>
           <div>
@@ -1016,7 +1016,7 @@ export default function SuperAdminDashboard() {
                 Live System
               </span>
             </div>
-            <p className="text-sm text-indigo-200/80 mt-0.5">
+            <p className="text-sm text-green-200/80 mt-0.5">
               Welcome back, {user?.fullName || "Administrator"}. Comprehensive
               real-time operational dashboard.
             </p>
@@ -1031,8 +1031,8 @@ export default function SuperAdminDashboard() {
                 onClick={() => setSelectedTimeRange(range)}
                 className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition capitalize ${
                   selectedTimeRange === range
-                    ? "bg-white text-indigo-950 shadow-md"
-                    : "text-indigo-200 hover:text-white"
+                    ? "bg-white text-green-950 shadow-md"
+                    : "text-green-200 hover:text-white"
                 }`}
               >
                 {range}
@@ -1054,7 +1054,7 @@ export default function SuperAdminDashboard() {
             onClick={() =>
               toast.success("Exporting full system diagnostics report...")
             }
-            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs rounded-xl shadow-lg shadow-indigo-600/30 transition border border-indigo-400/30"
+            className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white font-medium text-xs rounded-xl shadow-lg shadow-green-600/30 transition border border-green-400/30"
           >
             <Download className="w-4 h-4" /> Export Analytics
           </button>
@@ -1077,8 +1077,8 @@ export default function SuperAdminDashboard() {
             value: stats.activeSessions,
             sub: "Concurrent users",
             icon: Users,
-            bg: "bg-indigo-500/10 border-indigo-200/40 text-indigo-700",
-            iconBg: "bg-indigo-600 text-white",
+            bg: "bg-green-500/10 border-green-200/40 text-green-700",
+            iconBg: "bg-green-600 text-white",
           },
           {
             label: "Pending Approvals",
@@ -1143,8 +1143,8 @@ export default function SuperAdminDashboard() {
             value: stats.totalUsers,
             change: `+${stats.newUsersThisMonth} new this month`,
             icon: Users,
-            accent: "from-indigo-500/20 to-blue-500/10 border-indigo-200",
-            iconBg: "bg-indigo-600 text-white",
+            accent: "from-green-500/20 to-blue-500/10 border-green-200",
+            iconBg: "bg-green-600 text-white",
           },
           {
             title: "Task Completion Rate",
@@ -1303,18 +1303,18 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* Upcoming Tasks Card */}
-        <div className="bg-linear-to-b from-indigo-500/5 to-white p-6 rounded-2xl border border-indigo-200/60 backdrop-blur-md shadow-sm">
+        <div className="bg-linear-to-b from-green-500/5 to-white p-6 rounded-2xl border border-green-200/60 backdrop-blur-md shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <CalendarIcon className="w-4 h-4 text-indigo-500" />
+                <CalendarIcon className="w-4 h-4 text-green-500" />
                 Upcoming Deadlines
               </h3>
               <p className="text-[10px] text-slate-400">
                 Tasks approaching their due dates
               </p>
             </div>
-            <span className="text-xs font-bold text-indigo-700 bg-indigo-100/80 px-2.5 py-1 rounded-lg">
+            <span className="text-xs font-bold text-green-700 bg-green-100/80 px-2.5 py-1 rounded-lg">
               {stats.upcomingTasks?.length || 0}
             </span>
           </div>
@@ -1329,10 +1329,10 @@ export default function SuperAdminDashboard() {
               </div>
             )}
           </div>
-          <div className="mt-4 pt-3 border-t border-indigo-200/40">
+          <div className="mt-4 pt-3 border-t border-green-200/40">
             <Link
               href="/tasks/my"
-              className="text-xs text-indigo-800 hover:text-indigo-900 font-bold flex items-center gap-1"
+              className="text-xs text-green-800 hover:text-green-900 font-bold flex items-center gap-1"
             >
               View All Tasks <ChevronRight className="w-3.5 h-3.5" />
             </Link>
@@ -1391,7 +1391,7 @@ export default function SuperAdminDashboard() {
           </div>
           <Link
             href="/projects/active"
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+            className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1"
           >
             Manage All Projects <ChevronRight className="w-3.5 h-3.5" />
           </Link>
@@ -1401,11 +1401,11 @@ export default function SuperAdminDashboard() {
           {stats.projectPipelines.map((proj, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-2xl bg-linear-to-b from-slate-50 to-indigo-50/20 border border-slate-200/60 flex flex-col justify-between shadow-xs"
+              className="p-4 rounded-2xl bg-linear-to-b from-slate-50 to-green-50/20 border border-slate-200/60 flex flex-col justify-between shadow-xs"
             >
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 uppercase">
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-green-100 text-green-700 uppercase">
                     {proj.status}
                   </span>
                   <span className="text-xs font-bold text-slate-700">
@@ -1421,7 +1421,7 @@ export default function SuperAdminDashboard() {
               </div>
               <div className="w-full bg-slate-200 rounded-full h-1.5 mt-4 overflow-hidden">
                 <div
-                  className="bg-linear-to-r from-indigo-500 to-purple-600 h-1.5 rounded-full transition-all duration-500"
+                  className="bg-linear-to-r from-green-500 to-purple-600 h-1.5 rounded-full transition-all duration-500"
                   style={{ width: `${proj.progress}%` }}
                 />
               </div>
@@ -1514,7 +1514,7 @@ export default function SuperAdminDashboard() {
                 Creation vs. Completion throughput over the past 7 days
               </p>
             </div>
-            <span className="text-xs font-semibold text-indigo-300 bg-indigo-500/20 px-3 py-1 rounded-lg border border-indigo-500/30">
+            <span className="text-xs font-semibold text-green-300 bg-green-500/20 px-3 py-1 rounded-lg border border-green-500/30">
               Live Sync
             </span>
           </div>
@@ -1643,7 +1643,7 @@ export default function SuperAdminDashboard() {
               </h3>
               <Link
                 href="/kpi/leaderboard"
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+                className="text-xs font-bold text-green-600 hover:text-green-700"
               >
                 View All →
               </Link>
@@ -1675,7 +1675,7 @@ export default function SuperAdminDashboard() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-extrabold text-indigo-600">
+                    <span className="text-xs font-extrabold text-green-600">
                       {performer.score}%
                     </span>
                   </div>
@@ -1706,7 +1706,7 @@ export default function SuperAdminDashboard() {
             </div>
             <Link
               href="/departments"
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+              className="text-xs font-bold text-green-600 hover:text-green-700"
             >
               Manage Units →
             </Link>
@@ -1766,7 +1766,7 @@ export default function SuperAdminDashboard() {
                     onClick={() => setActivityFilter(filter)}
                     className={`px-2.5 py-1 text-[10px] font-bold rounded-lg uppercase transition ${
                       activityFilter === filter
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-green-600 text-white shadow-sm"
                         : "text-slate-500 hover:text-slate-900"
                     }`}
                   >
@@ -1786,7 +1786,7 @@ export default function SuperAdminDashboard() {
                     className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-xs ${
                       act.type === "auth"
                         ? "bg-purple-100 text-purple-700"
-                        : "bg-indigo-100 text-indigo-700"
+                        : "bg-green-100 text-green-700"
                     }`}
                   >
                     {act.type === "auth" ? (
@@ -1832,7 +1832,7 @@ export default function SuperAdminDashboard() {
             icon: Users,
             href: "/users",
             color: "indigo",
-            accent: "hover:border-indigo-300 hover:bg-indigo-50/30",
+            accent: "hover:border-green-300 hover:bg-green-50/30",
           },
           {
             title: "Departments",

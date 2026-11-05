@@ -261,7 +261,7 @@ export default function EditProjectPage() {
           </p>
           <button
             onClick={() => router.push("/projects")}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm"
           >
             Back to Projects
           </button>
@@ -274,7 +274,7 @@ export default function EditProjectPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading project...</p>
         </div>
       </div>
@@ -294,7 +294,7 @@ export default function EditProjectPage() {
           <p className="text-gray-600 mb-4">{error || "Project not found"}</p>
           <button
             onClick={fetchProject}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
+            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
           >
             Retry
           </button>
@@ -342,7 +342,7 @@ export default function EditProjectPage() {
               {project.name}
             </Link>
             <ChevronRight size={14} className="text-gray-300" />
-            <span className="text-indigo-600 font-medium">Edit</span>
+            <span className="text-green-600 font-medium">Edit</span>
           </motion.div>
 
           {/* Header */}
@@ -360,7 +360,7 @@ export default function EditProjectPage() {
               </Link>
               <div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                     <FolderKanban className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -430,7 +430,7 @@ export default function EditProjectPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     placeholder="Enter project name"
                   />
                 </div>
@@ -447,7 +447,7 @@ export default function EditProjectPage() {
                         code: e.target.value.toUpperCase(),
                       })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition font-mono"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition font-mono"
                     placeholder="e.g., PRJ-001"
                   />
                 </div>
@@ -464,7 +464,7 @@ export default function EditProjectPage() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   rows={4}
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                   placeholder="Describe the project goals and objectives..."
                 />
               </div>
@@ -484,7 +484,7 @@ export default function EditProjectPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, departmentId: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="">Select Department</option>
                     {departments.map((dept) => (
@@ -504,7 +504,7 @@ export default function EditProjectPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, managerId: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="">Select Manager</option>
                     {availableManagers.map((u) => (
@@ -528,7 +528,7 @@ export default function EditProjectPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, status: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="planning">Planning</option>
                     <option value="active">Active</option>
@@ -551,7 +551,7 @@ export default function EditProjectPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, priority: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="low">Low</option>
                     <option value="normal">Normal</option>
@@ -574,7 +574,7 @@ export default function EditProjectPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, startDate: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   />
                 </div>
                 <div>
@@ -588,7 +588,7 @@ export default function EditProjectPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, endDate: e.target.value })
                     }
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   />
                 </div>
                 <div>
@@ -610,7 +610,7 @@ export default function EditProjectPage() {
                           allocatedBudget: parseInt(e.target.value) || 0,
                         })
                       }
-                      className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       placeholder="0"
                       min="0"
                     />
@@ -656,7 +656,7 @@ export default function EditProjectPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20"
+                  className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-md shadow-green-500/20"
                 >
                   {saving ? (
                     <>

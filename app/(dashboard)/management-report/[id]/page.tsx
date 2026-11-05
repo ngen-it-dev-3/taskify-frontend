@@ -260,9 +260,9 @@ export default function EmployeeSettingsPage() {
     // -------------------------------------------------------------------------
     if (loadingEmployee || !settings) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-white to-green-50">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <Loader2 className="h-8 w-8 animate-spin text-green-600" />
                     <p className="text-sm text-slate-600">Loading settings…</p>
                 </div>
             </div>
@@ -272,7 +272,7 @@ export default function EmployeeSettingsPage() {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/40 pb-24">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/40 pb-24">
             {/* ==================== HEADER ==================== */}
             <div className="sticky top-0 z-30 border-b border-slate-200/60 bg-white/85 backdrop-blur-xl">
                 <div className="mx-auto flex max-w-[1400px] flex-wrap items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
@@ -285,7 +285,7 @@ export default function EmployeeSettingsPage() {
                     </Link>
 
                     <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-sm">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-purple-600 text-white shadow-sm">
                             <Settings2 className="h-4 w-4" />
                         </div>
                         <div>
@@ -302,9 +302,9 @@ export default function EmployeeSettingsPage() {
                     <div className="relative ml-auto">
                         <button
                             onClick={() => setShowMonthPicker(!showMonthPicker)}
-                            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-indigo-300"
+                            className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-green-300"
                         >
-                            <CalendarDays className="h-3.5 w-3.5 text-indigo-600" />
+                            <CalendarDays className="h-3.5 w-3.5 text-green-600" />
                             {MONTH_FULL[month]} {year}
                             <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
                         </button>
@@ -348,7 +348,7 @@ export default function EmployeeSettingsPage() {
                                                         setShowMonthPicker(false);
                                                     }}
                                                     className={`rounded-lg px-2 py-1.5 text-xs font-semibold transition ${month === i
-                                                        ? "bg-indigo-600 text-white"
+                                                        ? "bg-green-600 text-white"
                                                         : "text-slate-600 hover:bg-slate-100"
                                                         }`}
                                                 >
@@ -372,7 +372,7 @@ export default function EmployeeSettingsPage() {
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-purple-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm transition hover:from-green-700 hover:to-purple-700 disabled:opacity-50"
                     >
                         {saving ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -390,7 +390,7 @@ export default function EmployeeSettingsPage() {
                             }
                             handleSave();
                         }}
-                        className={`inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-purple-700 ${saving ? "pointer-events-none opacity-50" : ""
+                        className={`inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-purple-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm transition hover:from-green-700 hover:to-purple-700 ${saving ? "pointer-events-none opacity-50" : ""
                             }`}
                     >
                         {saving ? (
@@ -412,7 +412,7 @@ export default function EmployeeSettingsPage() {
                 {/* ==================== EMPLOYEE SUMMARY ==================== */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     {/* Employee card */}
-                    <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 p-5 text-white shadow-lg lg:col-span-1">
+                    <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-green-600 via-green-700 to-purple-700 p-5 text-white shadow-lg lg:col-span-1">
                         <div className="flex items-center gap-4">
                             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-xl font-bold ring-2 ring-white/30">
                                 {(employee?.fullName || "?")
@@ -426,20 +426,20 @@ export default function EmployeeSettingsPage() {
                                 <p className="truncate text-base font-bold">
                                     {employee?.fullName || "Unknown"}
                                 </p>
-                                <p className="truncate text-xs text-indigo-100">
+                                <p className="truncate text-xs text-green-100">
                                     {employee?.position || "—"}
                                 </p>
                             </div>
                         </div>
                         <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-4 text-[11px]">
                             <div>
-                                <p className="text-indigo-200">Employee ID</p>
+                                <p className="text-green-200">Employee ID</p>
                                 <p className="font-semibold">
                                     {employee?.employeeId || "—"}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-indigo-200">Department</p>
+                                <p className="text-green-200">Department</p>
                                 <p className="truncate font-semibold">
                                     {typeof employee?.department === "string"
                                         ? employee.department
@@ -451,7 +451,7 @@ export default function EmployeeSettingsPage() {
 
                     {/* Overall score preview */}
                     <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
-                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-indigo-500/10 to-purple-500/10 blur-2xl" />
+                        <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gradient-to-br from-green-500/10 to-purple-500/10 blur-2xl" />
                         <div className="relative flex flex-wrap items-center justify-between gap-4">
                             <div>
                                 <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
@@ -513,7 +513,7 @@ export default function EmployeeSettingsPage() {
                     action={
                         <button
                             onClick={addMetric}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700 transition hover:bg-green-100"
                         >
                             <Plus className="h-3.5 w-3.5" />
                             Add Metric
@@ -623,7 +623,7 @@ export default function EmployeeSettingsPage() {
                         }
                         placeholder="E.g. Employee on 2-week training, reduced KPI weight for this month..."
                         rows={3}
-                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     />
                 </Section>
             </div>
@@ -633,7 +633,7 @@ export default function EmployeeSettingsPage() {
                 <div className="mx-auto flex max-w-[1400px] items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-3 text-xs">
                         <div className="flex items-center gap-1.5 text-slate-500">
-                            <Zap className="h-3.5 w-3.5 text-indigo-500" />
+                            <Zap className="h-3.5 w-3.5 text-green-500" />
                             Changes are stored locally per user + month
                         </div>
                     </div>
@@ -647,7 +647,7 @@ export default function EmployeeSettingsPage() {
                         <button
                             onClick={handleSave}
                             disabled={saving}
-                            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-green-600 to-purple-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:from-green-700 hover:to-purple-700 disabled:opacity-50"
                         >
                             {saving ? (
                                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -683,7 +683,7 @@ function Section({
     children: React.ReactNode;
 }) {
     const accentMap: Record<string, string> = {
-        indigo: "bg-indigo-50 text-indigo-600",
+        indigo: "bg-green-50 text-green-600",
         purple: "bg-purple-50 text-purple-600",
         rose: "bg-rose-50 text-rose-600",
         slate: "bg-slate-100 text-slate-600",
@@ -725,7 +725,7 @@ function MetricRow({
     onRemove?: () => void;
 }) {
     const colorMap: Record<string, string> = {
-        indigo: "bg-indigo-500",
+        indigo: "bg-green-500",
         emerald: "bg-emerald-500",
         rose: "bg-rose-500",
         amber: "bg-amber-500",
@@ -748,7 +748,7 @@ function MetricRow({
             {/* Color chip */}
             <div className="col-span-1">
                 <div
-                    className={`h-8 w-8 rounded-lg ${colorMap[metric.color] || "bg-indigo-500"} shadow-sm`}
+                    className={`h-8 w-8 rounded-lg ${colorMap[metric.color] || "bg-green-500"} shadow-sm`}
                 />
             </div>
 
@@ -758,7 +758,7 @@ function MetricRow({
                     type="text"
                     value={metric.label}
                     onChange={(e) => onChange({ label: e.target.value })}
-                    className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                    className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-green-300 focus:ring-2 focus:ring-green-100"
                 />
             </div>
 
@@ -778,7 +778,7 @@ function MetricRow({
                                 ),
                             })
                         }
-                        className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 pr-7 text-sm font-semibold text-slate-800 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                        className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 pr-7 text-sm font-semibold text-slate-800 outline-none transition focus:border-green-300 focus:ring-2 focus:ring-green-100"
                     />
                     <Percent className="absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
                 </div>
@@ -800,7 +800,7 @@ function MetricRow({
                                 ),
                             })
                         }
-                        className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 pr-7 text-sm font-semibold text-slate-800 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                        className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 pr-7 text-sm font-semibold text-slate-800 outline-none transition focus:border-green-300 focus:ring-2 focus:ring-green-100"
                     />
                     <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">
                         wt%
@@ -879,7 +879,7 @@ function ThresholdRow({
                             ),
                         })
                     }
-                    className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                    className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-green-300 focus:ring-2 focus:ring-green-100"
                 />
             </div>
 
@@ -901,7 +901,7 @@ function ThresholdRow({
                             ),
                         })
                     }
-                    className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                    className="w-full rounded-lg border border-transparent bg-white px-2.5 py-1.5 text-sm font-semibold text-slate-800 outline-none transition focus:border-green-300 focus:ring-2 focus:ring-green-100"
                 />
             </div>
 
@@ -969,9 +969,9 @@ function OffDaysPanel({
         custom: {
             icon: <CalendarDays className="h-3.5 w-3.5" />,
             label: "Custom Off",
-            bg: "bg-indigo-100",
-            text: "text-indigo-700",
-            ring: "ring-indigo-200",
+            bg: "bg-green-100",
+            text: "text-green-700",
+            ring: "ring-green-200",
         },
         leave: {
             icon: <Palmtree className="h-3.5 w-3.5" />,
@@ -998,7 +998,7 @@ function OffDaysPanel({
                         onChange={(e) => setDay(e.target.value)}
                         placeholder={`1-${daysInMonth}`}
                         onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     />
                 </div>
                 <div className="col-span-3">
@@ -1010,7 +1010,7 @@ function OffDaysPanel({
                         onChange={(e) =>
                             setType(e.target.value as "gov" | "custom" | "leave")
                         }
-                        className="w-full rounded-lg border border-slate-200 px-2 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        className="w-full rounded-lg border border-slate-200 px-2 py-2 text-sm text-slate-800 outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     >
                         <option value="gov">Gov. Holiday</option>
                         <option value="custom">Custom Off</option>
@@ -1027,13 +1027,13 @@ function OffDaysPanel({
                         onChange={(e) => setLabel(e.target.value)}
                         placeholder="E.g. Independence Day"
                         onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                        className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-100"
                     />
                 </div>
                 <div className="col-span-2 flex items-end">
                     <button
                         onClick={handleAdd}
-                        className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-700"
+                        className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-green-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-green-700"
                     >
                         <Plus className="h-3.5 w-3.5" />
                         Add
@@ -1106,10 +1106,10 @@ function thresholdClasses(color: string) {
             badge: "bg-sky-100 text-sky-700 ring-sky-200",
         },
         indigo: {
-            card: "border-indigo-200 bg-indigo-50",
-            icon: "text-indigo-600",
-            label: "text-indigo-700",
-            badge: "bg-indigo-100 text-indigo-700 ring-indigo-200",
+            card: "border-green-200 bg-green-50",
+            icon: "text-green-600",
+            label: "text-green-700",
+            badge: "bg-green-100 text-green-700 ring-green-200",
         },
         amber: {
             card: "border-amber-200 bg-amber-50",

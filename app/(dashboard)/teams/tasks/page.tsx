@@ -398,7 +398,7 @@ export default function TeamTasksPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading your tasks...</p>
         </div>
       </div>
@@ -414,8 +414,8 @@ export default function TeamTasksPage() {
       <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100/80">
-            <div className="w-20 h-20 bg-linear-to-br from-indigo-50 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-10 h-10 text-indigo-400" />
+            <div className="w-20 h-20 bg-linear-to-br from-green-50 to-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="w-10 h-10 text-green-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900">
               You're not in any team yet
@@ -425,7 +425,7 @@ export default function TeamTasksPage() {
             </p>
             <button
               onClick={() => router.push("/teams/all-teams")}
-              className="mt-6 px-6 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all font-medium shadow-lg shadow-indigo-500/25"
+              className="mt-6 px-6 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all font-medium shadow-lg shadow-green-500/25"
             >
               Browse All Teams
             </button>
@@ -444,17 +444,17 @@ export default function TeamTasksPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <GanttChart className="w-7 h-7 text-indigo-500" />
+              <GanttChart className="w-7 h-7 text-green-500" />
               Team Tasks
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               Manage and track tasks across your teams
             </p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="group flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all duration-200 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 font-medium"
+            className="group flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 font-medium"
           >
             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
             Create Task
@@ -472,7 +472,7 @@ export default function TeamTasksPage() {
                 fetchUserTasks();
               }}
               className={`px-4 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ${selectedTeamId === team._id
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
+                ? "bg-green-600 text-white shadow-lg shadow-green-500/25"
                 : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
                 }`}
             >
@@ -503,14 +503,14 @@ export default function TeamTasksPage() {
                     placeholder="Search tasks..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
                   />
                 </div>
                 <div className="flex gap-3 flex-wrap">
                   <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                    className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
                   >
                     <option value="all">All Status</option>
                     {Object.entries(statusMapping).map(([key, { label }]) => (
@@ -522,7 +522,7 @@ export default function TeamTasksPage() {
                   <select
                     value={filterPriority}
                     onChange={(e) => setFilterPriority(e.target.value)}
-                    className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                    className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
                   >
                     <option value="all">All Priority</option>
                     <option value="urgent">Urgent</option>
@@ -544,7 +544,7 @@ export default function TeamTasksPage() {
                     <button
                       onClick={() => setViewMode("list")}
                       className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${viewMode === "list"
-                        ? "bg-white shadow-sm text-indigo-600"
+                        ? "bg-white shadow-sm text-green-600"
                         : "text-gray-500 hover:text-gray-700"
                         }`}
                     >
@@ -553,7 +553,7 @@ export default function TeamTasksPage() {
                     <button
                       onClick={() => setViewMode("kanban")}
                       className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${viewMode === "kanban"
-                        ? "bg-white shadow-sm text-indigo-600"
+                        ? "bg-white shadow-sm text-green-600"
                         : "text-gray-500 hover:text-gray-700"
                         }`}
                     >
@@ -606,7 +606,7 @@ export default function TeamTasksPage() {
                           return (
                             <tr
                               key={task._id}
-                              className="hover:bg-indigo-50/30 transition-colors group cursor-pointer"
+                              className="hover:bg-green-50/30 transition-colors group cursor-pointer"
                               onClick={() => {
                                 setSelectedTaskId(task._id);
                                 setShowTaskDetail(true);
@@ -644,7 +644,7 @@ export default function TeamTasksPage() {
                               <td className="px-6 py-4">
                                 {task.assignedTo ? (
                                   <div className="flex items-center gap-2">
-                                    <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-medium">
+                                    <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-medium">
                                       {getInitials(
                                         getUserDisplayName(task.assignedTo),
                                       )}
@@ -679,7 +679,7 @@ export default function TeamTasksPage() {
                                         e.target.value as Task["status"],
                                       )
                                     }
-                                    className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-gray-50 hover:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    className="text-xs border border-gray-200 rounded-lg px-2 py-1 bg-gray-50 hover:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
                                   >
                                     {Object.entries(statusMapping).map(
                                       ([key, { label }]) => (
@@ -765,7 +765,7 @@ export default function TeamTasksPage() {
                                   <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
                                     {task.assignedTo ? (
                                       <div className="flex items-center gap-1.5">
-                                        <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-medium">
+                                        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-medium">
                                           {getInitials(
                                             getUserDisplayName(task.assignedTo),
                                           )}
@@ -815,7 +815,7 @@ export default function TeamTasksPage() {
                 </p>
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+                  className="mt-4 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
                 >
                   Create Task
                 </button>
@@ -858,7 +858,7 @@ export default function TeamTasksPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, title: e.target.value })
                       }
-                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
                     />
                   </div>
 
@@ -875,7 +875,7 @@ export default function TeamTasksPage() {
                           description: e.target.value,
                         })
                       }
-                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none"
+                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none"
                       rows={3}
                     />
                   </div>
@@ -890,7 +890,7 @@ export default function TeamTasksPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, assignedTo: e.target.value })
                       }
-                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
                     >
                       <option value="">Select Team Member</option>
                       {selectedTeam &&
@@ -917,7 +917,7 @@ export default function TeamTasksPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, deadline: e.target.value })
                       }
-                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
                     />
                   </div>
 
@@ -933,7 +933,7 @@ export default function TeamTasksPage() {
                           status: e.target.value as Task["status"],
                         })
                       }
-                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                      className="text-black w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
                     >
                       {Object.entries(statusMapping).map(([key, { label }]) => (
                         <option key={key} value={key}>
@@ -947,7 +947,7 @@ export default function TeamTasksPage() {
                 <div className="flex gap-3 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors font-medium shadow-lg shadow-indigo-500/25"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors font-medium shadow-lg shadow-green-500/25"
                   >
                     Create Task
                   </button>
@@ -1042,7 +1042,7 @@ export default function TeamTasksPage() {
                           Assigned To
                         </h3>
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-medium">
+                          <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-medium">
                             {getInitials(getUserDisplayName(task.assignedTo))}
                           </div>
                           <div>
@@ -1086,7 +1086,7 @@ export default function TeamTasksPage() {
                         setShowTaskDetail(false);
                         setSelectedTaskId(null);
                       }}
-                      className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                      className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
                     >
                       {Object.entries(statusMapping).map(([key, { label }]) => (
                         <option key={key} value={key}>

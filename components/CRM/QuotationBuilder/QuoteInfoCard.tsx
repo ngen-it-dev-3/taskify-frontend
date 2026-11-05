@@ -23,37 +23,40 @@ interface Props {
 type DocType = 'quote' | 'pq';
 
 /* -----------------------------------------------------------
-   Country presets
+   Country presets (for Numbering Modal) — Strictly 5
+   ⭐ Labels match constants.ts CURRENCIES[].country exactly
 ----------------------------------------------------------- */
 const COUNTRY_CODES = [
-  { code: 'NG', label: 'NG — Nigeria' },
   { code: 'SG', label: 'SG — Singapore' },
-  { code: 'EU', label: 'EU — Europe' },
-  { code: 'BD', label: 'BD — Bangladesh' },
-  { code: 'US', label: 'US — United States' },
   { code: 'GB', label: 'GB — United Kingdom' },
-  { code: 'IN', label: 'IN — India' },
-  { code: 'AE', label: 'AE — UAE' },
-  { code: 'ZA', label: 'ZA — South Africa' },
-  { code: 'KE', label: 'KE — Kenya' },
-  { code: 'GH', label: 'GH — Ghana' },
+  { code: 'BD', label: 'BD — Bangladesh' },
+  { code: 'AE', label: 'AE — Middle East' },
+  { code: 'PT', label: 'PT — Portugal' },
   { code: 'other', label: 'Other (type manually)…' },
 ];
 
 /* -----------------------------------------------------------
-   ⭐ Region / Branch presets
+   Region / Branch presets (for Numbering Modal) — Strictly 5
 ----------------------------------------------------------- */
 const REGION_CODES = [
-  { code: 'BD', label: 'BD — Bangladesh' },
   { code: 'SG', label: 'SG — Singapore' },
-  { code: 'EU', label: 'EU — Europe' },
-  { code: 'NG', label: 'NG — Nigeria' },
-  { code: 'IN', label: 'IN — India' },
-  { code: 'AE', label: 'AE — UAE' },
-  { code: 'UK', label: 'UK — United Kingdom' },
-  { code: 'US', label: 'US — United States' },
+  { code: 'GB', label: 'GB — United Kingdom' },
+  { code: 'BD', label: 'BD — Bangladesh' },
+  { code: 'AE', label: 'AE — Middle East' },
+  { code: 'PT', label: 'PT — Portugal' },
   { code: 'other', label: 'Other (type manually)…' },
 ];
+
+/* -----------------------------------------------------------
+   Country flags (keep in sync with constants.ts)
+----------------------------------------------------------- */
+const COUNTRY_FLAGS: Record<string, string> = {
+  Singapore: '🇸🇬',
+  'United Kingdom': '🇬🇧',
+  Bangladesh: '🇧🇩',
+  'Middle East': '🇦🇪',
+  Portugal: '🇵🇹',
+};
 
 /* -----------------------------------------------------------
    Date conversion helpers
@@ -88,22 +91,26 @@ export default function QuoteInfoCard({
 }: Props) {
   const [numberingOpen, setNumberingOpen] = useState(false);
   const [territoryOpen, setTerritoryOpen] = useState(false);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
   const [countrySearch, setCountrySearch] = useState('');
 
   const territoryRef = useRef<HTMLDivElement>(null);
+  const currencyRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Close dropdown on outside click
+  // Close dropdowns on outside click
   useEffect(() => {
-    if (!territoryOpen) return;
     const handleClickOutside = (e: MouseEvent) => {
       if (territoryRef.current && !territoryRef.current.contains(e.target as Node)) {
         setTerritoryOpen(false);
       }
+      if (currencyRef.current && !currencyRef.current.contains(e.target as Node)) {
+        setCurrencyOpen(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [territoryOpen]);
+  }, []);
 
   // Reset search when closing, auto-focus when opening
   useEffect(() => {
@@ -120,16 +127,15 @@ export default function QuoteInfoCard({
   );
 
   const handleTerritoryChange = (newTerritory: string) => {
-    // Extract company name from title (e.g. "Samsung — Vietnam" -> "Samsung")
-    const companyName = meta.title.split('—')[0].trim() || meta.client?.company || 'Client';
+    const companyName =
+      meta.title.split('—')[0].trim() || meta.client?.company || 'Client';
     const newTitle = `${companyName} — ${newTerritory}`;
 
     // ⭐ Look up the currency directly from your CURRENCIES array
     const currencyData = CURRENCIES.find((c) => c.country === newTerritory);
 
-    // Fallback if not found
     const newCurrency = currencyData?.code || meta.currency;
-    const newRate = newCurrency === 'BDT' ? 1 : (currencyData?.rateToBDT || 1);
+    const newRate = newCurrency === 'BDT' ? 1 : currencyData?.rateToBDT || 1;
 
     onChange({
       ...meta,
@@ -143,6 +149,50 @@ export default function QuoteInfoCard({
 
     setTerritoryOpen(false);
   };
+
+  const handleCurrencyChange = (newCurrencyCode: string) => {
+    const currencyData = CURRENCIES.find((c) => c.code === newCurrencyCode);
+    const newRate =
+      newCurrencyCode === 'BDT' ? 1 : currencyData?.rateToBDT || 1;
+
+    onChange({
+      ...meta,
+      currency: newCurrencyCode,
+      currencySymbol: currencyData?.symbol || meta.currencySymbol,
+      exchangeRate: newRate,
+    });
+
+    setCurrencyOpen(false);
+  };
+
+  // Deduplicate currencies for the dropdown
+  const uniqueCurrencies = Array.from(new Set(CURRENCIES.map((c) => c.code)))
+    .map((code) => CURRENCIES.find((c) => c.code === code))
+    .filter(Boolean) as typeof CURRENCIES;
+
+  // ⭐ Always derive the symbol from the array to prevent stale state
+  const activeCurrency = CURRENCIES.find((c) => c.code === meta.currency);
+  const displaySymbol = activeCurrency?.symbol || meta.currencySymbol;
+
+  // Discuss button: prefer handler, fall back to Link
+  const DiscussButton = onDiscuss ? (
+    <button
+      type="button"
+      onClick={onDiscuss}
+      className="inline-flex items-center gap-1.5 px-2.5 py-2 text-slate-700 text-xs font-semibold hover:bg-slate-50 rounded-lg transition"
+    >
+      <MessageCircle className="w-3.5 h-3.5 text-[#A06126]" />
+      Discuss
+    </button>
+  ) : (
+    <Link
+      href="/team-chat"
+      className="inline-flex items-center gap-1.5 px-2.5 py-2 text-slate-700 text-xs font-semibold hover:bg-slate-50 rounded-lg transition"
+    >
+      <MessageCircle className="w-3.5 h-3.5 text-[#A06126]" />
+      Discuss
+    </Link>
+  );
 
   return (
     <>
@@ -169,13 +219,7 @@ export default function QuoteInfoCard({
           </div>
 
           <div className="flex items-center gap-2 shrink-0 self-center">
-            <Link
-              href="/team-chat"
-              className="inline-flex items-center gap-1.5 px-2.5 py-2 text-slate-700 text-xs font-semibold hover:bg-slate-50 rounded-lg transition"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-[#A06126]" />
-              Discuss
-            </Link>
+            {DiscussButton}
 
             <button
               type="button"
@@ -204,7 +248,7 @@ export default function QuoteInfoCard({
           </div>
         </div>
 
-        <div className="px-5 pb-4 flex flex-wrap items-center gap-x-10 gap-y-2 relative">
+        <div className="px-5 pb-4 flex flex-wrap items-center gap-x-8 gap-y-4 relative border-t border-[#F0EBE3] pt-4">
           {/* Clickable Territory Dropdown */}
           <div className="relative" ref={territoryRef}>
             <div
@@ -212,15 +256,19 @@ export default function QuoteInfoCard({
               className="leading-tight cursor-pointer group"
             >
               <div className="text-[10px] font-bold tracking-[0.08em] text-slate-400 uppercase flex items-center gap-1">
-                TERRITORY <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-[#A06126]" />
+                TERRITORY{' '}
+                <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-[#A06126]" />
               </div>
-              <div className="text-[12.5px] font-semibold text-[#0F2D4A] mt-0.5 group-hover:text-[#A06126] transition">
-                {meta.territory || 'Unassigned'}
+              <div className="text-[12.5px] font-semibold text-[#0F2D4A] mt-0.5 group-hover:text-[#A06126] transition flex items-center gap-1.5">
+                {meta.territory && COUNTRY_FLAGS[meta.territory] && (
+                  <span>{COUNTRY_FLAGS[meta.territory]}</span>
+                )}
+                <span>{meta.territory || 'Unassigned'}</span>
               </div>
             </div>
 
             {territoryOpen && (
-              <div className="absolute z-20 top-full left-0 mt-1 w-60 bg-white border border-[#EBE6DF] shadow-lg rounded-lg overflow-hidden">
+              <div className="absolute z-20 top-full left-0 mt-1 w-64 bg-white border border-[#EBE6DF] shadow-lg rounded-lg overflow-hidden">
                 {/* Search box */}
                 <div className="p-2 border-b border-[#EBE6DF] bg-slate-50/60 sticky top-0">
                   <div className="relative">
@@ -256,7 +304,8 @@ export default function QuoteInfoCard({
                   </div>
                   {countrySearch && (
                     <div className="mt-1 text-[10px] text-slate-400 px-0.5">
-                      {filteredCountries.length} result{filteredCountries.length !== 1 ? 's' : ''}
+                      {filteredCountries.length} result
+                      {filteredCountries.length !== 1 ? 's' : ''}
                     </div>
                   )}
                 </div>
@@ -268,17 +317,18 @@ export default function QuoteInfoCard({
                       <div
                         key={c}
                         onClick={() => handleTerritoryChange(c)}
-                        className={`px-3 py-2 text-xs cursor-pointer font-medium transition ${c === meta.territory
-                          ? 'bg-[#FFF7E8] text-[#A06126]'
-                          : 'text-slate-700 hover:bg-slate-50'
+                        className={`px-3 py-2 text-xs cursor-pointer font-medium transition flex items-center gap-2 ${c === meta.territory
+                            ? 'bg-[#FFF7E8] text-[#A06126]'
+                            : 'text-slate-700 hover:bg-slate-50'
                           }`}
                       >
-                        {c}
+                        {COUNTRY_FLAGS[c] && <span>{COUNTRY_FLAGS[c]}</span>}
+                        <span>{c}</span>
                       </div>
                     ))
                   ) : (
                     <div className="px-3 py-4 text-center text-xs text-slate-400">
-                      No countries match “{countrySearch}”
+                      No countries match "{countrySearch}"
                     </div>
                   )}
                 </div>
@@ -288,12 +338,96 @@ export default function QuoteInfoCard({
 
           <MetaItem label="Assigned To" value={meta.crmManager} />
           <MetaItem label="STAGE" value={meta.stage} />
-          <MetaItem label="CURRENCY" value={meta.currency} />
+
+          {/* ⭐ Clickable Currency Dropdown */}
+          <div className="relative" ref={currencyRef}>
+            <div
+              onClick={() => setCurrencyOpen(!currencyOpen)}
+              className="leading-tight cursor-pointer group"
+            >
+              <div className="text-[10px] font-bold tracking-[0.08em] text-slate-400 uppercase flex items-center gap-1">
+                CURRENCY{' '}
+                <ChevronDown className="w-3 h-3 text-slate-400 group-hover:text-[#A06126]" />
+              </div>
+              <div className="text-[12.5px] font-semibold text-[#0F2D4A] mt-0.5 group-hover:text-[#A06126] transition">
+                {meta.currency} ({displaySymbol})
+              </div>
+            </div>
+
+            {currencyOpen && (
+              <div className="absolute z-20 top-full left-0 mt-1 w-64 bg-white border border-[#EBE6DF] shadow-lg rounded-lg overflow-hidden">
+                <div className="max-h-60 overflow-y-auto">
+                  {uniqueCurrencies.map((c) => (
+                    <div
+                      key={c.code}
+                      onClick={() => handleCurrencyChange(c.code)}
+                      className={`px-3 py-2 text-xs cursor-pointer font-medium transition flex items-center justify-between gap-2 ${c.code === meta.currency
+                          ? 'bg-[#FFF7E8] text-[#A06126]'
+                          : 'text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                      <div className="flex flex-col min-w-0">
+                        <span className="truncate">{c.code}</span>
+                        <span className="text-[10px] text-slate-400 truncate">
+                          {c.label}
+                        </span>
+                      </div>
+                      <span className="text-slate-500 shrink-0">{c.symbol}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ⭐ Client Type, VAT, and Discount Toggles */}
+          <div className="flex items-center gap-6 text-[11px] font-medium text-slate-700 bg-slate-50/50 px-4 py-2 rounded-xl border border-slate-100 shadow-sm ml-auto">
+            {/* VAT Toggle */}
+            <label className="flex items-center gap-2.5 cursor-pointer group">
+              <div className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={meta.vatEnabled}
+                  onChange={(e) =>
+                    onChange({ ...meta, vatEnabled: e.target.checked })
+                  }
+                />
+                <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-[#A06126] group-hover:after:shadow-md transition-colors duration-300"></div>
+              </div>
+              <span className="group-hover:text-slate-900 transition-colors">
+                VAT / GST
+              </span>
+            </label>
+
+            <div className="w-px h-4 bg-slate-200 mx-1"></div>
+
+            {/* Discount Toggle */}
+            <label className="flex items-center gap-2.5 cursor-pointer group">
+              <div className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={meta.discountEnabled}
+                  onChange={(e) =>
+                    onChange({ ...meta, discountEnabled: e.target.checked })
+                  }
+                />
+                <div className="w-8 h-4.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-[#A06126] group-hover:after:shadow-md transition-colors duration-300"></div>
+              </div>
+              <span className="group-hover:text-slate-900 transition-colors">
+                Special Discount
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 
       {numberingOpen && (
-        <NumberingSettingsModal onClose={() => setNumberingOpen(false)} onSaved={onNumberingSaved} />
+        <NumberingSettingsModal
+          onClose={() => setNumberingOpen(false)}
+          onSaved={onNumberingSaved}
+        />
       )}
     </>
   );
@@ -333,7 +467,7 @@ function NumberingSettingsModal({
   });
 
   const [pqState, setPqState] = useState({
-    countryCode: 'NG',
+    countryCode: 'SG',
     regionCode: 'BD',
     entityCode: 'EGCB',
     docTypeCode: 'RV',
@@ -477,8 +611,8 @@ function NumberingSettingsModal({
               type="button"
               onClick={() => setDocType(t)}
               className={`px-4 py-1.5 text-[11px] font-semibold rounded-md transition ${docType === t
-                ? 'bg-white text-[#0F2D4A] shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
+                  ? 'bg-white text-[#0F2D4A] shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700'
                 }`}
             >
               {t === 'quote' ? 'Quotation' : 'Purchase Quotation'}
@@ -565,8 +699,8 @@ function NumberingSettingsModal({
                       type="button"
                       onClick={() => updateQuote('resetCycle', o.v)}
                       className={`flex-1 px-2 py-1.5 text-[11px] font-semibold rounded-md transition ${quoteState.resetCycle === o.v
-                        ? 'bg-white text-[#0F2D4A] shadow-sm'
-                        : 'text-slate-500 hover:text-slate-700'
+                          ? 'bg-white text-[#0F2D4A] shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
                         }`}
                     >
                       {o.l}
@@ -654,7 +788,10 @@ function NumberingSettingsModal({
                 <input
                   value={pqState.entityCode}
                   onChange={(e) =>
-                    updatePq('entityCode', e.target.value.toUpperCase().slice(0, 12))
+                    updatePq(
+                      'entityCode',
+                      e.target.value.toUpperCase().slice(0, 12)
+                    )
                   }
                   className="w-full rounded-lg border border-[#E2DBD1] bg-white px-3 py-2 text-[12px] text-slate-800 font-mono uppercase focus:outline-none focus:ring-1 focus:ring-[#A06126]"
                 />
@@ -664,7 +801,10 @@ function NumberingSettingsModal({
                 <input
                   value={pqState.docTypeCode}
                   onChange={(e) =>
-                    updatePq('docTypeCode', e.target.value.toUpperCase().slice(0, 6))
+                    updatePq(
+                      'docTypeCode',
+                      e.target.value.toUpperCase().slice(0, 6)
+                    )
                   }
                   className="w-full rounded-lg border border-[#E2DBD1] bg-white px-3 py-2 text-[12px] text-slate-800 font-mono uppercase focus:outline-none focus:ring-1 focus:ring-[#A06126]"
                 />
@@ -694,8 +834,8 @@ function NumberingSettingsModal({
                     type="button"
                     onClick={() => updatePq('useTodayDate', !pqState.useTodayDate)}
                     className={`shrink-0 rounded-lg border px-3 py-2 text-[11px] font-semibold transition ${pqState.useTodayDate
-                      ? 'border-[#A06126] bg-[#FFF7E8] text-[#A06126]'
-                      : 'border-[#E2DBD1] bg-white text-slate-500 hover:bg-slate-50'
+                        ? 'border-[#A06126] bg-[#FFF7E8] text-[#A06126]'
+                        : 'border-[#E2DBD1] bg-white text-slate-500 hover:bg-slate-50'
                       }`}
                   >
                     {pqState.useTodayDate ? 'Auto (Today)' : 'Manual'}
@@ -707,7 +847,9 @@ function NumberingSettingsModal({
                 <input
                   type="number"
                   value={pqState.nextSeq}
-                  onChange={(e) => updatePq('nextSeq', Number(e.target.value) || 0)}
+                  onChange={(e) =>
+                    updatePq('nextSeq', Number(e.target.value) || 0)
+                  }
                   className="w-full rounded-lg border border-[#E2DBD1] bg-white px-3 py-2 text-[12px] text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-[#A06126]"
                 />
               </Field>
@@ -737,8 +879,8 @@ function NumberingSettingsModal({
                       type="button"
                       onClick={() => updatePq('resetCycle', o.v)}
                       className={`flex-1 px-2 py-1.5 text-[11px] font-semibold rounded-md transition ${pqState.resetCycle === o.v
-                        ? 'bg-white text-[#0F2D4A] shadow-sm'
-                        : 'text-slate-500 hover:text-slate-700'
+                          ? 'bg-white text-[#0F2D4A] shadow-sm'
+                          : 'text-slate-500 hover:text-slate-700'
                         }`}
                     >
                       {o.l}

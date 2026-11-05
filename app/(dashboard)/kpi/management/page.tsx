@@ -432,7 +432,7 @@ export default function KPIManagementPage() {
     toast((t) => (
       <div className="space-y-3">
         <p className="text-sm font-semibold text-slate-800">
-          Calculate KPI scores for <span className="text-indigo-600">{deptName}</span> ({selectedMonth} {selectedYear})?
+          Calculate KPI scores for <span className="text-green-600">{deptName}</span> ({selectedMonth} {selectedYear})?
         </p>
         <div className="flex gap-2 justify-end">
           <button
@@ -510,7 +510,7 @@ export default function KPIManagementPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-linear-to-tr from-green-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <BarChart3 className="w-6 h-6" />
               </div>
               <div>
@@ -530,7 +530,7 @@ export default function KPIManagementPage() {
               disabled={loadingReport}
               className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-xs cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${loadingReport ? "animate-spin text-indigo-600" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${loadingReport ? "animate-spin text-green-600" : ""}`} />
             </button>
           </div>
         </motion.div>
@@ -594,14 +594,14 @@ export default function KPIManagementPage() {
         <div className="flex bg-white p-1.5 rounded-2xl border border-slate-100 shadow-xs max-w-sm">
           <button
             onClick={() => setActiveTab("weights")}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${activeTab === "weights" ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20" : "text-slate-600 hover:bg-slate-50"
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${activeTab === "weights" ? "bg-green-600 text-white shadow-md shadow-green-600/20" : "text-slate-600 hover:bg-slate-50"
               }`}
           >
             <Settings size={14} /> Weight Config
           </button>
           <button
             onClick={() => setActiveTab("report")}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${activeTab === "report" ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20" : "text-slate-600 hover:bg-slate-50"
+            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer ${activeTab === "report" ? "bg-green-600 text-white shadow-md shadow-green-600/20" : "text-slate-600 hover:bg-slate-50"
               }`}
           >
             <BarChart3 size={14} /> Monthly Report
@@ -618,7 +618,7 @@ export default function KPIManagementPage() {
               </div>
               <button
                 onClick={() => setShowWeightEditor(!showWeightEditor)}
-                className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs rounded-xl transition flex items-center gap-2 self-start cursor-pointer"
+                className="px-4 py-2 bg-green-50 text-green-700 hover:bg-green-100 font-bold text-xs rounded-xl transition flex items-center gap-2 self-start cursor-pointer"
               >
                 {showWeightEditor ? <X size={14} /> : <Edit2 size={14} />}
                 {showWeightEditor ? "Close Editor" : "Modify Weights"}
@@ -626,7 +626,7 @@ export default function KPIManagementPage() {
             </div>
 
             {loadingWeights ? (
-              <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-indigo-600" /></div>
+              <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-green-600" /></div>
             ) : showWeightEditor ? (
               <div className="space-y-4 pt-4 border-t border-slate-100">
                 {(Object.keys(editingWeights) as Array<keyof KPIWeights>).map((key) => {
@@ -635,7 +635,7 @@ export default function KPIManagementPage() {
                     <div key={key} className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-indigo-600 shadow-xs">
+                          <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center text-green-600 shadow-xs">
                             <Icon size={16} />
                           </div>
                           <div>
@@ -661,7 +661,7 @@ export default function KPIManagementPage() {
                         max="100"
                         value={editingWeights[key]}
                         onChange={(e) => setEditingWeights({ ...editingWeights, [key]: Number(e.target.value) })}
-                        className="w-full accent-indigo-600 cursor-pointer"
+                        className="w-full accent-green-600 cursor-pointer"
                       />
                     </div>
                   );
@@ -676,7 +676,7 @@ export default function KPIManagementPage() {
                   <button
                     onClick={handleSaveWeights}
                     disabled={savingWeights || Object.values(editingWeights).reduce((a, b) => a + b, 0) !== 100}
-                    className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20 disabled:opacity-40 cursor-pointer flex items-center gap-2"
+                    className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20 disabled:opacity-40 cursor-pointer flex items-center gap-2"
                   >
                     {savingWeights ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save size={14} />} Save Configurations
                   </button>
@@ -691,10 +691,10 @@ export default function KPIManagementPage() {
                     return (
                       <div key={key} className="bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-3">
                         <div className="flex items-center justify-between">
-                          <div className="w-9 h-9 rounded-xl bg-white text-indigo-600 flex items-center justify-center shadow-xs">
+                          <div className="w-9 h-9 rounded-xl bg-white text-green-600 flex items-center justify-center shadow-xs">
                             <Icon size={16} />
                           </div>
-                          <span className="text-lg font-extrabold text-indigo-600">{val}%</span>
+                          <span className="text-lg font-extrabold text-green-600">{val}%</span>
                         </div>
                         <div>
                           <p className="font-bold text-slate-900 text-xs">{WEIGHT_LABELS[key]}</p>
@@ -715,7 +715,7 @@ export default function KPIManagementPage() {
         {activeTab === "report" && (
           <div className="space-y-6">
             {loadingReport ? (
-              <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>
+              <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 animate-spin text-green-600" /></div>
             ) : !monthlyReport || monthlyReport.totalEmployees === 0 ? (
               <div className="bg-white rounded-3xl p-16 text-center border border-slate-100 shadow-xs max-w-lg mx-auto space-y-3">
                 <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
@@ -734,7 +734,7 @@ export default function KPIManagementPage() {
                   </div>
                   <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Unit Average</span>
-                    <p className="text-2xl font-extrabold text-indigo-600 mt-1">{formatScore(monthlyReport.overallAverage)}%</p>
+                    <p className="text-2xl font-extrabold text-green-600 mt-1">{formatScore(monthlyReport.overallAverage)}%</p>
                   </div>
                   <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Top Performers</span>
@@ -768,7 +768,7 @@ export default function KPIManagementPage() {
                               <tr key={score._id || Math.random()} className="hover:bg-slate-50/50 transition">
                                 <td className="px-6 py-4">
                                   <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xs shadow-xs">
+                                    <div className="w-9 h-9 rounded-xl bg-green-50 text-green-600 font-bold flex items-center justify-center text-xs shadow-xs">
                                       {score.userId?.fullName ? score.userId.fullName.charAt(0).toUpperCase() : "?"}
                                     </div>
                                     <div>
@@ -802,7 +802,7 @@ export default function KPIManagementPage() {
                                   {score.userId?._id ? (
                                     <button
                                       onClick={() => router.push(`/kpi/employee/${score.userId._id}`)}
-                                      className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition inline-block cursor-pointer"
+                                      className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition inline-block cursor-pointer"
                                       title="View Details"
                                     >
                                       <Eye size={16} />

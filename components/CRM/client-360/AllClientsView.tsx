@@ -29,24 +29,9 @@ import { AutoAddedBadge } from './AutoAddedBadge';
 const COUNTRIES = [
   'Bangladesh',
   'Singapore',
-  'Malaysia',
-  'Indonesia',
-  'Vietnam',
-  'Thailand',
-  'Philippines',
-  'UAE',
-  'United Arab Emirates',
-  'Saudi Arabia',
-  'Qatar',
-  'Kuwait',
-  'Oman',
-  'UK',
+  'Middle East',
   'United Kingdom',
   'Portugal',
-  'Germany',
-  'France',
-  'Netherlands',
-  'Nepal',
 ];
 
 interface ContactDraft {
@@ -401,7 +386,7 @@ export function AllClientsView({
           )}
         </select>
 
-        <select
+        {/* <select
           value={activeFilter.country}
           onChange={(e) =>
             onFilterChange({ ...activeFilter, country: e.target.value })
@@ -414,7 +399,7 @@ export function AllClientsView({
               {c}
             </option>
           ))}
-        </select>
+        </select> */}
 
         <div className="relative min-w-[260px] flex-1">
           <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />

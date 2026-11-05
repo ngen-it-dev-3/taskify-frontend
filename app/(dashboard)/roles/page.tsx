@@ -272,7 +272,7 @@ export default function RolesPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
         <p className="text-xs font-medium text-slate-400">Loading access control lists...</p>
       </div>
     );
@@ -290,13 +290,13 @@ export default function RolesPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <Shield className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Role Management</h1>
-                  <span className="px-2.5 py-0.5 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                  <span className="px-2.5 py-0.5 text-xs font-bold bg-green-50 text-green-700 rounded-full border border-green-100">
                     {stats.totalRoles}
                   </span>
                 </div>
@@ -309,7 +309,7 @@ export default function RolesPage() {
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "grid" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "grid" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <Grid className="w-3.5 h-3.5" />
@@ -317,7 +317,7 @@ export default function RolesPage() {
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -327,7 +327,7 @@ export default function RolesPage() {
 
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-indigo-600/20 active:scale-95"
+              className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-green-600/20 active:scale-95"
             >
               <Plus className="w-4 h-4" />
               New Custom Role
@@ -346,7 +346,7 @@ export default function RolesPage() {
         {/* Analytics Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Total Roles", val: stats.totalRoles, icon: Shield, color: "text-indigo-600", bg: "bg-indigo-50" },
+            { label: "Total Roles", val: stats.totalRoles, icon: Shield, color: "text-green-600", bg: "bg-green-50" },
             { label: "Permanent System", val: stats.permanentRoles, icon: Crown, color: "text-amber-600", bg: "bg-amber-50" },
             { label: "Custom Roles", val: stats.customRoles, icon: Layers, color: "text-emerald-600", bg: "bg-emerald-50" },
             { label: "System Users", val: stats.totalUsers, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
@@ -371,7 +371,7 @@ export default function RolesPage() {
             placeholder="Search roles by name or system code..."
             value={searchRoleTerm}
             onChange={(e) => setSearchRoleTerm(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs"
+            className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs"
           />
         </div>
 
@@ -389,12 +389,12 @@ export default function RolesPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.03 }}
                   onClick={() => setSelectedRole(role._id)}
-                  className={`bg-white rounded-3xl border transition duration-300 flex flex-col justify-between cursor-pointer overflow-hidden group ${isSelected ? "border-indigo-500 ring-4 ring-indigo-500/10 shadow-lg" : "border-slate-100 shadow-xs hover:border-slate-200"
+                  className={`bg-white rounded-3xl border transition duration-300 flex flex-col justify-between cursor-pointer overflow-hidden group ${isSelected ? "border-green-500 ring-4 ring-green-500/10 shadow-lg" : "border-slate-100 shadow-xs hover:border-slate-200"
                     }`}
                 >
                   <div className="p-6 space-y-4">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition duration-300 shadow-xs">
+                      <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition duration-300 shadow-xs">
                         <IconComp className="w-6 h-6" />
                       </div>
                       <div className="flex items-center gap-2">
@@ -416,7 +416,7 @@ export default function RolesPage() {
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs font-semibold text-slate-600">
-                      <span className="font-mono text-[11px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">{role.code}</span>
+                      <span className="font-mono text-[11px] text-green-600 bg-green-50 px-2 py-0.5 rounded-md">{role.code}</span>
                       <span>Level {role.level}</span>
                     </div>
                   </div>
@@ -434,7 +434,7 @@ export default function RolesPage() {
                           setEditingRole(role);
                           setShowEditModal(true);
                         }}
-                        className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+                        className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition"
                         title="Edit Role"
                       >
                         <Edit2 size={14} />
@@ -482,7 +482,7 @@ export default function RolesPage() {
                       className="hover:bg-slate-50/50 transition cursor-pointer"
                     >
                       <td className="px-6 py-4 font-bold text-slate-900">{role.name}</td>
-                      <td className="px-6 py-4 font-mono text-xs text-indigo-600">{role.code}</td>
+                      <td className="px-6 py-4 font-mono text-xs text-green-600">{role.code}</td>
                       <td className="px-6 py-4 text-xs text-slate-500 max-w-xs truncate">{role.description || "-"}</td>
                       <td className="px-6 py-4 text-center font-bold text-slate-800">{role.level}</td>
                       <td className="px-6 py-4 text-center font-bold text-slate-800">{role.userCount || 0}</td>
@@ -500,7 +500,7 @@ export default function RolesPage() {
                               setEditingRole(role);
                               setShowEditModal(true);
                             }}
-                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition"
                           >
                             <Edit2 size={14} />
                           </button>
@@ -535,7 +535,7 @@ export default function RolesPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
               <div>
                 <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                  <Users className="w-5 h-5 text-indigo-600" />
+                  <Users className="w-5 h-5 text-green-600" />
                   Members Assigned to {selectedRoleData.name}
                 </h3>
                 <p className="text-xs text-slate-400 font-medium">Full directory of active accounts holding this security clearance.</p>
@@ -553,7 +553,7 @@ export default function RolesPage() {
                   className="p-4 bg-slate-50/70 hover:bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between transition group"
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
+                    <div className="w-10 h-10 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
                       {user.fullName.charAt(0).toUpperCase()}
                     </div>
                     <div>
@@ -565,7 +565,7 @@ export default function RolesPage() {
                     <span className="text-xs font-mono bg-white px-2.5 py-1 rounded-lg border border-slate-200/60 text-slate-600 font-bold">
                       {getUserRoleNames(user)}
                     </span>
-                    <Eye size={16} className="text-slate-400 group-hover:text-indigo-600 transition" />
+                    <Eye size={16} className="text-slate-400 group-hover:text-green-600 transition" />
                   </div>
                 </Link>
               ))}
@@ -608,7 +608,7 @@ export default function RolesPage() {
                     type="text"
                     value={newRole.name}
                     onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition"
                     placeholder="e.g., Regional Lead"
                   />
                 </div>
@@ -618,7 +618,7 @@ export default function RolesPage() {
                     type="text"
                     value={newRole.code}
                     onChange={(e) => setNewRole({ ...newRole, code: e.target.value.toUpperCase().replace(/\s/g, "_") })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-mono focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm font-mono focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition"
                     placeholder="e.g., REGIONAL_LEAD"
                   />
                 </div>
@@ -628,14 +628,14 @@ export default function RolesPage() {
                     value={newRole.description}
                     onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none resize-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none resize-none transition"
                     placeholder="Explain the scope of this role..."
                   />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Security Tier Level</label>
-                    <span className="text-xs font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Level {newRole.level}</span>
+                    <span className="text-xs font-mono font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">Level {newRole.level}</span>
                   </div>
                   <input
                     type="range"
@@ -643,7 +643,7 @@ export default function RolesPage() {
                     max="100"
                     value={newRole.level}
                     onChange={(e) => setNewRole({ ...newRole, level: parseInt(e.target.value) })}
-                    className="w-full accent-indigo-600 cursor-pointer"
+                    className="w-full accent-green-600 cursor-pointer"
                   />
                 </div>
 
@@ -651,7 +651,7 @@ export default function RolesPage() {
                   <button
                     onClick={handleCreateRole}
                     disabled={creatingRole}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20 text-sm flex items-center justify-center gap-2"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-green-600/20 text-sm flex items-center justify-center gap-2"
                   >
                     {creatingRole && <Loader2 size={16} className="animate-spin" />}
                     Create Role
@@ -696,7 +696,7 @@ export default function RolesPage() {
                     type="text"
                     value={editingRole.name}
                     onChange={(e) => setEditingRole({ ...editingRole, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition"
                   />
                 </div>
                 <div>
@@ -705,13 +705,13 @@ export default function RolesPage() {
                     value={editingRole.description}
                     onChange={(e) => setEditingRole({ ...editingRole, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none resize-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none resize-none transition"
                   />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Security Tier Level</label>
-                    <span className="text-xs font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">Level {editingRole.level}</span>
+                    <span className="text-xs font-mono font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">Level {editingRole.level}</span>
                   </div>
                   <input
                     type="range"
@@ -719,14 +719,14 @@ export default function RolesPage() {
                     max="100"
                     value={editingRole.level}
                     onChange={(e) => setEditingRole({ ...editingRole, level: parseInt(e.target.value) })}
-                    className="w-full accent-indigo-600 cursor-pointer"
+                    className="w-full accent-green-600 cursor-pointer"
                   />
                 </div>
 
                 <div className="flex gap-3 pt-4 border-t border-slate-100">
                   <button
                     onClick={handleUpdateRole}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20 text-sm"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-green-600/20 text-sm"
                   >
                     Save Changes
                   </button>

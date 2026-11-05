@@ -286,7 +286,7 @@ export default function HierarchyPage() {
       <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="relative">
         <div
           className={`flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group ${level === 0
-            ? "bg-linear-to-r from-indigo-50/60 to-purple-50/60 border-indigo-100 shadow-xs"
+            ? "bg-linear-to-r from-green-50/60 to-purple-50/60 border-green-100 shadow-xs"
             : "bg-white border-slate-100 hover:border-slate-200 shadow-xs hover:shadow-md"
             }`}
           style={{ marginLeft: `${level * 24}px` }}
@@ -304,7 +304,7 @@ export default function HierarchyPage() {
               <span className="text-blue-600"><ArrowBigRight size={14} /></span>
             )}
 
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${level === 0 ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-600"
+            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs ${level === 0 ? "bg-green-600 text-white" : "bg-slate-100 text-slate-600"
               }`}>
               <Building2 className="w-5 h-5" />
             </div>
@@ -312,7 +312,7 @@ export default function HierarchyPage() {
             <div className="min-w-0 space-y-0.5">
               <div className="flex items-center gap-2.5 flex-wrap">
                 <span className="font-bold text-slate-900 text-sm">{dept.name}</span>
-                <span className="text-[11px] font-mono font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                <span className="text-[11px] font-mono font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">
                   {dept.code}
                 </span>
                 <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${dept.isActive ? "bg-emerald-50 text-emerald-700 border border-emerald-200/60" : "bg-rose-50 text-rose-700 border border-rose-200/60"
@@ -332,7 +332,7 @@ export default function HierarchyPage() {
           <div className="flex items-center gap-6 shrink-0">
             <div className="hidden sm:flex items-center gap-6 text-xs text-slate-500 font-medium">
               <div className="flex items-center gap-1.5">
-                <Users size={14} className="text-indigo-500" />
+                <Users size={14} className="text-green-500" />
                 <span className="font-bold text-slate-800">{totalEmployees}</span> Staff
               </div>
               {dept.budget && (
@@ -345,7 +345,7 @@ export default function HierarchyPage() {
 
             <Link
               href={`/departments/${dept._id}`}
-              className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+              className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition"
               title="Inspect Unit"
             >
               <Eye size={16} />
@@ -355,7 +355,7 @@ export default function HierarchyPage() {
 
         {/* Recursive Children Container */}
         {hasChildren && isExpanded && (
-          <div className="mt-2 space-y-2 border-l-2 border-indigo-100 ml-6 pl-3">
+          <div className="mt-2 space-y-2 border-l-2 border-green-100 ml-6 pl-3">
             {dept.children?.map((child) => (
               <DepartmentNode key={child._id} dept={child} level={level + 1} />
             ))}
@@ -397,13 +397,13 @@ export default function HierarchyPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <FolderTree className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Department Tree & Analytics</h1>
-                  <span className="px-2.5 py-0.5 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                  <span className="px-2.5 py-0.5 text-xs font-bold bg-green-50 text-green-700 rounded-full border border-green-100">
                     {stats.totalDepartments}
                   </span>
                 </div>
@@ -416,7 +416,7 @@ export default function HierarchyPage() {
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button
                 onClick={() => setViewMode("tree")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "tree" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "tree" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <Grid className="w-3.5 h-3.5" />
@@ -424,7 +424,7 @@ export default function HierarchyPage() {
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -432,7 +432,7 @@ export default function HierarchyPage() {
               </button>
               <button
                 onClick={() => setViewMode("compare")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "compare" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "compare" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <GitCompare className="w-3.5 h-3.5" />
@@ -445,7 +445,7 @@ export default function HierarchyPage() {
               title="Refresh Tree"
               className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-xs cursor-pointer"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-indigo-600" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-green-600" : ""}`} />
             </button>
           </div>
         </motion.div>
@@ -453,7 +453,7 @@ export default function HierarchyPage() {
         {/* Global Statistics Summary */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Total Units", val: stats.totalDepartments, icon: Building2, color: "text-indigo-600", bg: "bg-indigo-50" },
+            { label: "Total Units", val: stats.totalDepartments, icon: Building2, color: "text-green-600", bg: "bg-green-50" },
             { label: "Top Level", val: stats.topLevelDepartments, icon: Crown, color: "text-amber-600", bg: "bg-amber-50" },
             { label: "Total Workforce", val: stats.totalEmployees, icon: Users, color: "text-emerald-600", bg: "bg-emerald-50" },
             { label: "Operational", val: stats.activeDepartments, icon: TrendingUp, color: "text-purple-600", bg: "bg-purple-50" },
@@ -479,7 +479,7 @@ export default function HierarchyPage() {
               placeholder="Filter department hierarchy by name or code..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs"
             />
           </div>
         )}
@@ -487,7 +487,7 @@ export default function HierarchyPage() {
         {/* Main Content Area */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
             <p className="text-sm font-medium text-slate-400">Constructing hierarchy tree...</p>
           </div>
         ) : viewMode === "compare" ? (
@@ -495,17 +495,17 @@ export default function HierarchyPage() {
           <div className="space-y-6">
             <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-xs space-y-6">
               <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <ArrowRightLeft className="w-5 h-5 text-indigo-600" />
+                <ArrowRightLeft className="w-5 h-5 text-green-600" />
                 Comparative Unit Analysis
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Department A</label>
+                  <label className="block text-xs font-bold text-green-600 uppercase tracking-wider mb-2">Department A</label>
                   <select
                     value={deptAId}
                     onChange={(e) => setDeptAId(e.target.value)}
-                    className="w-full px-4 py-3 bg-indigo-50/50 border border-indigo-200 rounded-2xl text-slate-800 text-sm font-semibold outline-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-green-50/50 border border-green-200 rounded-2xl text-slate-800 text-sm font-semibold outline-none cursor-pointer"
                   >
                     {allDepartments.map((d) => (
                       <option key={`a-${d._id}`} value={d._id}>{d.name} ({d.code})</option>
@@ -539,11 +539,11 @@ export default function HierarchyPage() {
                     return (
                       <div className="space-y-2">
                         <div className="flex justify-between text-xs font-bold text-slate-600">
-                          <span className="text-indigo-600">{selectedDeptA.name}: {empA} Staff ({pctA}%)</span>
+                          <span className="text-green-600">{selectedDeptA.name}: {empA} Staff ({pctA}%)</span>
                           <span className="text-purple-600">{selectedDeptB.name}: {empB} Staff ({pctB}%)</span>
                         </div>
                         <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
-                          <div style={{ width: `${pctA}%` }} className="bg-indigo-600 h-full transition-all duration-500" />
+                          <div style={{ width: `${pctA}%` }} className="bg-green-600 h-full transition-all duration-500" />
                           <div style={{ width: `${pctB}%` }} className="bg-purple-600 h-full transition-all duration-500" />
                         </div>
                       </div>
@@ -553,11 +553,11 @@ export default function HierarchyPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {[selectedDeptA, selectedDeptB].map((dept, idx) => (
-                    <div key={dept._id} className={`bg-white rounded-3xl border-2 p-6 sm:p-8 shadow-xs space-y-4 ${idx === 0 ? "border-indigo-100" : "border-purple-100"
+                    <div key={dept._id} className={`bg-white rounded-3xl border-2 p-6 sm:p-8 shadow-xs space-y-4 ${idx === 0 ? "border-green-100" : "border-purple-100"
                       }`}>
                       <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                         <div>
-                          <span className={`text-xs font-bold uppercase tracking-wider ${idx === 0 ? "text-indigo-600" : "text-purple-600"}`}>
+                          <span className={`text-xs font-bold uppercase tracking-wider ${idx === 0 ? "text-green-600" : "text-purple-600"}`}>
                             Department {idx === 0 ? "A" : "B"}
                           </span>
                           <h3 className="text-xl font-extrabold text-slate-900">{dept.name}</h3>
@@ -622,7 +622,7 @@ export default function HierarchyPage() {
                     <tr key={dept._id} className="hover:bg-slate-50/50 transition">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3" style={{ paddingLeft: `${dept.level * 20}px` }}>
-                          <div className="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold shrink-0 shadow-xs">
+                          <div className="w-8 h-8 rounded-xl bg-green-50 text-green-600 flex items-center justify-center font-bold shrink-0 shadow-xs">
                             <Building2 className="w-4 h-4" />
                           </div>
                           <div>
@@ -631,7 +631,7 @@ export default function HierarchyPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 font-mono text-xs text-indigo-600 font-bold">{dept.code}</td>
+                      <td className="px-6 py-4 font-mono text-xs text-green-600 font-bold">{dept.code}</td>
                       <td className="px-6 py-4 text-xs font-semibold text-slate-600">{dept.headOfDepartment?.fullName || "Unassigned"}</td>
                       <td className="px-6 py-4 text-center font-bold text-slate-900">{getTotalEmployees(dept)}</td>
                       <td className="px-6 py-4 text-center text-xs font-bold text-slate-500">Level {dept.level}</td>
@@ -644,7 +644,7 @@ export default function HierarchyPage() {
                       <td className="px-6 py-4 text-right">
                         <Link
                           href={`/departments/${dept._id}`}
-                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition inline-block"
+                          className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition inline-block"
                         >
                           <Eye size={16} />
                         </Link>

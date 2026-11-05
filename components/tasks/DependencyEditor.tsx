@@ -257,10 +257,10 @@ export default function DependencyEditor({
                 className="w-full max-w-2xl bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
             >
                 {/* Header */}
-                <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50/80 to-purple-50/80">
+                <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50/80 to-purple-50/80">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-indigo-100 rounded-xl">
-                            <GitBranch className="w-5 h-5 text-indigo-600" />
+                        <div className="p-2 bg-green-100 rounded-xl">
+                            <GitBranch className="w-5 h-5 text-green-600" />
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-gray-800">
@@ -312,7 +312,7 @@ export default function DependencyEditor({
                     {/* Add Dependency */}
                     <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <p className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                            <Plus className="w-4 h-4 text-indigo-600" />
+                            <Plus className="w-4 h-4 text-green-600" />
                             Add Dependency
                         </p>
 
@@ -329,7 +329,7 @@ export default function DependencyEditor({
                                         placeholder="Search tasks..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full pl-9 text-black pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                        className="w-full pl-9 text-black pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     />
                                 </div>
                                 <div className="relative mt-2">
@@ -337,7 +337,7 @@ export default function DependencyEditor({
                                     <select
                                         value={selectedTaskId}
                                         onChange={(e) => setSelectedTaskId(e.target.value)}
-                                        className="w-full pl-9 text-black pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition appearance-none cursor-pointer"
+                                        className="w-full pl-9 text-black pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition appearance-none cursor-pointer"
                                         disabled={loading}
                                     >
                                         <option value="">{loading ? "Loading tasks..." : "Select a task..."}</option>
@@ -370,7 +370,7 @@ export default function DependencyEditor({
                                     <select
                                         value={selectedType}
                                         onChange={(e) => setSelectedType(e.target.value as any)}
-                                        className="w-full px-4 text-black py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                        className="w-full px-4 text-black py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     >
                                         {DEPENDENCY_TYPES.map((type) => (
                                             <option key={type.value} value={type.value}>
@@ -389,7 +389,7 @@ export default function DependencyEditor({
                                         max="365"
                                         value={lag}
                                         onChange={(e) => setLag(parseInt(e.target.value) || 0)}
-                                        className="w-full text-black px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                        className="w-full text-black px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                     />
                                 </div>
                             </div>
@@ -402,7 +402,7 @@ export default function DependencyEditor({
                             <button
                                 onClick={handleAddDependency}
                                 disabled={!selectedTaskId || adding}
-                                className="w-full px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
+                                className="w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
                             >
                                 {adding ? (
                                     <>
@@ -450,11 +450,11 @@ export default function DependencyEditor({
                                             key={dep._id || dep.taskId._id}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
-                                            className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl hover:border-indigo-200 transition"
+                                            className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-xl hover:border-green-200 transition"
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                                                    <GitBranch className="w-4 h-4 text-indigo-600" />
+                                                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                                                    <GitBranch className="w-4 h-4 text-green-600" />
                                                 </div>
                                                 <div className="min-w-0">
                                                     <p className="text-sm font-medium text-gray-800 truncate">

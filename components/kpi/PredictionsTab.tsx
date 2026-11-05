@@ -63,16 +63,16 @@ export default function PredictionsTab({
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-            <TrendingUp size={16} className="text-indigo-500" />
+            <TrendingUp size={16} className="text-green-500" />
             Performance Predictions
           </h3>
           <div className="flex items-center gap-4 text-xs">
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-indigo-500 rounded-full" />
+              <div className="w-3 h-3 bg-green-500 rounded-full" />
               <span className="text-gray-600">Predicted</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-indigo-200 rounded-full border border-indigo-300" />
+              <div className="w-3 h-3 bg-green-200 rounded-full border border-green-300" />
               <span className="text-gray-600">Confidence Range</span>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function PredictionsTab({
           >
             <div className="text-center">
               <p className="text-xs text-gray-500">{pred.month}</p>
-              <p className="text-2xl font-bold text-indigo-600">
+              <p className="text-2xl font-bold text-green-600">
                 {pred.predictedScore}%
               </p>
               <div className="flex items-center justify-center gap-1 mt-1">
@@ -144,10 +144,10 @@ export default function PredictionsTab({
       </div>
 
       {/* Summary */}
-      <div className="bg-linear-to-r from-indigo-50/80 to-purple-50/80 rounded-2xl p-4 border border-indigo-200 text-center text-sm">
+      <div className="bg-linear-to-r from-green-50/80 to-purple-50/80 rounded-2xl p-4 border border-green-200 text-center text-sm">
         <p className="text-gray-600">
           Based on historical data, the predicted performance trend is{" "}
-          <span className="font-semibold text-indigo-600">
+          <span className="font-semibold text-green-600">
             {analyticsData.predictions[analyticsData.predictions.length - 1]
               ?.trend === "up"
               ? "improving"
@@ -157,7 +157,7 @@ export default function PredictionsTab({
                 : "stable"}
           </span>{" "}
           with a confidence level of{" "}
-          <span className="font-semibold text-indigo-600">
+          <span className="font-semibold text-green-600">
             {
               analyticsData.predictions[analyticsData.predictions.length - 1]
                 ?.confidence

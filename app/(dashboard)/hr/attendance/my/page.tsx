@@ -377,7 +377,7 @@ export default function MyAttendancePage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading your attendance...</p>
         </div>
       </div>
@@ -425,14 +425,14 @@ export default function MyAttendancePage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Calendar className="w-7 h-7 text-indigo-500" />
+              <Calendar className="w-7 h-7 text-green-500" />
               My Attendance
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               Track your daily attendance
               {refreshing && (
-                <span className="text-xs text-indigo-500 animate-pulse ml-2">
+                <span className="text-xs text-green-500 animate-pulse ml-2">
                   <Loader2 className="w-3 h-3 inline animate-spin mr-1" />
                   Updating...
                 </span>
@@ -452,7 +452,7 @@ export default function MyAttendancePage() {
             </button>
             <button
               onClick={goToToday}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-indigo-500/25 flex items-center gap-2"
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-green-500/25 flex items-center gap-2"
             >
               <Calendar className="w-4 h-4" />
               Today
@@ -466,8 +466,8 @@ export default function MyAttendancePage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-4 hover:shadow-md transition-all">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-50 rounded-xl">
-                <CalendarDays className="w-5 h-5 text-indigo-600" />
+              <div className="p-2.5 bg-green-50 rounded-xl">
+                <CalendarDays className="w-5 h-5 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Days</p>
@@ -542,7 +542,7 @@ export default function MyAttendancePage() {
               </div>
             </div>
           </div>
-          <div className="bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-md p-4 text-white">
+          <div className="bg-linear-to-br from-green-600 to-purple-600 rounded-2xl shadow-md p-4 text-white">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-white/20 rounded-xl">
                 <Activity className="w-5 h-5" />
@@ -666,7 +666,7 @@ export default function MyAttendancePage() {
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleDateClick(date)}
                   className={`aspect-square p-1 rounded-xl transition-all duration-200 relative
-                    ${isToday ? "ring-2 ring-indigo-500 ring-offset-2" : ""}
+                    ${isToday ? "ring-2 ring-green-500 ring-offset-2" : ""}
                     ${isWeekend ? "bg-gray-50/50 cursor-not-allowed opacity-60" : "hover:bg-gray-50"}
                     ${hasRecord ? "cursor-pointer" : "cursor-pointer"}
                   `}
@@ -674,7 +674,7 @@ export default function MyAttendancePage() {
                 >
                   <div className="flex flex-col items-center justify-center h-full">
                     <span
-                      className={`text-sm font-medium ${isToday ? "text-indigo-600" : "text-gray-700"}`}
+                      className={`text-sm font-medium ${isToday ? "text-green-600" : "text-gray-700"}`}
                     >
                       {day}
                     </span>
@@ -749,7 +749,7 @@ export default function MyAttendancePage() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-indigo-100 rounded-xl text-indigo-600">
+                    <div className="p-2.5 bg-green-100 rounded-xl text-green-600">
                       <Calendar className="w-6 h-6" />
                     </div>
                     <div>
@@ -876,7 +876,7 @@ export default function MyAttendancePage() {
                     onClick={() => {
                       toast.success("Attendance report downloaded");
                     }}
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors font-medium shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors font-medium shadow-lg shadow-green-500/25 flex items-center justify-center gap-2"
                   >
                     <FileText className="w-4 h-4" />
                     Download Report

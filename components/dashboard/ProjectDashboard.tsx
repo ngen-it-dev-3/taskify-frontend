@@ -433,7 +433,7 @@ export default function ProjectDashboard() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading dashboard data...</p>
         </div>
       </div>
@@ -451,7 +451,7 @@ export default function ProjectDashboard() {
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+          <div className="w-10 h-10 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
             <Building2 className="w-5 h-5 text-white" />
           </div>
           <div>
@@ -475,10 +475,10 @@ export default function ProjectDashboard() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-linear-to-r from-indigo-50/80 via-purple-50/80 to-pink-50/80 border border-indigo-200/50 rounded-xl p-4 flex items-center justify-between shadow-sm"
+        className="bg-linear-to-r from-green-50/80 via-purple-50/80 to-pink-50/80 border border-green-200/50 rounded-xl p-4 flex items-center justify-between shadow-sm"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-md shadow-indigo-500/25">
+          <div className="p-2 bg-linear-to-br from-green-500 to-purple-600 rounded-xl shadow-md shadow-green-500/25">
             <Building2 size={18} className="text-white" />
           </div>
           <div>
@@ -496,7 +496,7 @@ export default function ProjectDashboard() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium px-3 py-1 bg-white/80 rounded-full border border-indigo-200 text-indigo-700 shadow-sm">
+          <span className="text-xs font-medium px-3 py-1 bg-white/80 rounded-full border border-green-200 text-green-700 shadow-sm">
             {isProjectManager ? "Project Manager" : "Department Overview"}
           </span>
         </div>
@@ -511,7 +511,7 @@ export default function ProjectDashboard() {
         <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <p className="text-2xl font-bold text-gray-800">{stats.totalTasks}</p>
-            <CheckSquare className="w-5 h-5 text-indigo-500" />
+            <CheckSquare className="w-5 h-5 text-green-500" />
           </div>
           <p className="text-xs text-gray-500 mt-0.5">Total Tasks</p>
           <div className="flex gap-2 mt-1 flex-wrap">
@@ -616,7 +616,7 @@ export default function ProjectDashboard() {
         transition={{ delay: 0.2 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-3"
       >
-        <Link href="/projects/create" className="bg-linear-to-r from-indigo-500 to-purple-600 rounded-xl p-3 text-white shadow-lg hover:shadow-xl transition group">
+        <Link href="/projects/create" className="bg-linear-to-r from-green-500 to-purple-600 rounded-xl p-3 text-white shadow-lg hover:shadow-xl transition group">
           <div className="flex items-center gap-2">
             <Plus className="w-5 h-5" />
             <div>
@@ -661,7 +661,7 @@ export default function ProjectDashboard() {
             key={tab}
             onClick={() => setActiveTab(tab as any)}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition capitalize ${activeTab === tab
-              ? "bg-indigo-600 text-white shadow-md"
+              ? "bg-green-600 text-white shadow-md"
               : "text-gray-600 hover:bg-gray-100"
               }`}
           >
@@ -695,7 +695,7 @@ export default function ProjectDashboard() {
                   </div>
                   <button
                     onClick={() => setActiveTab("tasks")}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                    className="text-xs text-green-600 hover:text-green-800 font-medium"
                   >
                     View All →
                   </button>
@@ -721,7 +721,7 @@ export default function ProjectDashboard() {
                             📅 {formatDate(task.deadline)}
                           </span>
                         )}
-                        <Link href={`/tasks/${task._id}`} className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                        <Link href={`/tasks/${task._id}`} className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition">
                           <Eye size={16} />
                         </Link>
                       </div>
@@ -744,7 +744,7 @@ export default function ProjectDashboard() {
                   </div>
                   <button
                     onClick={() => setActiveTab("team")}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                    className="text-xs text-green-600 hover:text-green-800 font-medium"
                   >
                     View All →
                   </button>
@@ -752,7 +752,7 @@ export default function ProjectDashboard() {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2 p-3">
                   {departmentUsers.slice(0, 6).map((member) => (
                     <div key={member._id} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                      <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center">
                         <span className="text-white text-xs font-bold">
                           {getInitials(member.fullName)}
                         </span>
@@ -785,7 +785,7 @@ export default function ProjectDashboard() {
                     key={filter}
                     onClick={() => setTaskFilter(filter as any)}
                     className={`px-2.5 py-1 text-[10px] rounded-full transition capitalize ${taskFilter === filter
-                      ? "bg-indigo-600 text-white"
+                      ? "bg-green-600 text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                       }`}
                   >
@@ -801,7 +801,7 @@ export default function ProjectDashboard() {
                     placeholder="Search tasks..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition w-40"
+                    className="pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition w-40"
                   />
                 </div>
                 <span className="text-xs text-gray-400">{filteredTasks.length} tasks</span>
@@ -845,7 +845,7 @@ export default function ProjectDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 ml-2">
-                      <Link href={`/tasks/${task._id}`} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                      <Link href={`/tasks/${task._id}`} className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition">
                         <Eye size={14} />
                       </Link>
                     </div>
@@ -867,15 +867,15 @@ export default function ProjectDashboard() {
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-indigo-600" />
+                  <Users className="w-5 h-5 text-green-600" />
                   <h3 className="font-semibold text-gray-800">Team Members</h3>
-                  <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                     {departmentUsers.length}
                   </span>
                 </div>
                 <button
                   onClick={() => setShowAllUsers(!showAllUsers)}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                  className="text-xs text-green-600 hover:text-green-800 font-medium"
                 >
                   {showAllUsers ? "Show Less" : "View All"}
                 </button>
@@ -884,7 +884,7 @@ export default function ProjectDashboard() {
                 {departmentUsers.map((member) => (
                   <div key={member._id} className="p-3 hover:bg-gray-50 transition flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                         <span className="text-white text-sm font-bold">
                           {getInitials(member.fullName)}
                         </span>
@@ -949,14 +949,14 @@ export default function ProjectDashboard() {
               <div className="col-span-2 bg-white rounded-xl p-8 text-center border border-gray-200">
                 <Briefcase className="w-12 h-12 mx-auto text-gray-300 mb-2" />
                 <p className="text-gray-500">No projects found</p>
-                <Link href="/projects/create" className="mt-2 inline-block text-sm text-indigo-600 hover:text-indigo-800">
+                <Link href="/projects/create" className="mt-2 inline-block text-sm text-green-600 hover:text-green-800">
                   Create your first project →
                 </Link>
               </div>
             ) : (
               projects.map((project) => (
                 <div key={project._id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition overflow-hidden">
-                  <div className="p-4 border-b border-gray-200 bg-linear-to-r from-gray-50 to-indigo-50/30">
+                  <div className="p-4 border-b border-gray-200 bg-linear-to-r from-gray-50 to-green-50/30">
                     <div className="flex items-start justify-between">
                       <div>
                         <h4 className="font-semibold text-gray-800">{project.name}</h4>
@@ -984,7 +984,7 @@ export default function ProjectDashboard() {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div
-                        className="bg-indigo-500 h-1.5 rounded-full transition-all duration-500"
+                        className="bg-green-500 h-1.5 rounded-full transition-all duration-500"
                         style={{ width: `${project.progress || 0}%` }}
                       />
                     </div>
@@ -994,7 +994,7 @@ export default function ProjectDashboard() {
                       </span>
                       <Link
                         href={`/projects/${project._id}`}
-                        className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                        className="text-xs text-green-600 hover:text-green-800 font-medium flex items-center gap-1"
                       >
                         View Details <ArrowRight size={12} />
                       </Link>

@@ -48,7 +48,7 @@ export function MenuItemWithBadge({
   const getBadgeColor = () => {
     if (item.badgeColor) return item.badgeColor;
     if ("isNew" in item && item.isNew)
-      return "bg-linear-to-r from-indigo-500 to-purple-500";
+      return "bg-linear-to-r from-green-500 to-purple-500";
     return "bg-red-500"; // Default color
   };
 
@@ -67,7 +67,7 @@ export function MenuItemWithBadge({
         transition-all duration-200 relative
         ${
           isItemActive
-            ? "bg-indigo-50 text-indigo-700 shadow-sm"
+            ? "bg-green-50 text-green-700 shadow-sm"
             : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
         }
         ${isCollapsed ? "justify-center" : ""}
@@ -77,7 +77,7 @@ export function MenuItemWithBadge({
       <item.icon
         className={`
           w-5 h-5 shrink-0
-          ${isItemActive ? "text-indigo-600" : "text-gray-400 group-hover:text-gray-600"}
+          ${isItemActive ? "text-green-600" : "text-gray-400 group-hover:text-gray-600"}
           transition-colors duration-200
         `}
       />

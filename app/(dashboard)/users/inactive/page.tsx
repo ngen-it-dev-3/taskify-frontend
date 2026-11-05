@@ -366,13 +366,13 @@ export default function InactiveUsersPage() {
                 placeholder="Search by name, email, or employee ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               {roles.map((role) => (
                 <option key={role.value} value={role.value}>
@@ -395,7 +395,7 @@ export default function InactiveUsersPage() {
           {/* Inactive Users List */}
           {loading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
           ) : inactiveUsers.length === 0 ? (
             <motion.div
@@ -533,7 +533,7 @@ export default function InactiveUsersPage() {
                                     setSelectedUser(user);
                                     setShowUserDetails(true);
                                   }}
-                                  className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                  className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                   title="View Details"
                                 >
                                   <Eye size={16} />
@@ -605,7 +605,7 @@ export default function InactiveUsersPage() {
                           onClick={() => setCurrentPage(pageNum)}
                           className={`px-3 py-2 rounded-lg text-sm transition ${
                             currentPage === pageNum
-                              ? "bg-indigo-600 text-white shadow-sm"
+                              ? "bg-green-600 text-white shadow-sm"
                               : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                           }`}
                         >

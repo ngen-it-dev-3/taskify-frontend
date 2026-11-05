@@ -203,7 +203,7 @@ function RejectionReasonModal({
           <div className="flex gap-3">
             <button
               onClick={onRework}
-              className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
+              className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
             >
               <RefreshCw size={14} />
               Send for Rework
@@ -1440,7 +1440,7 @@ export default function TaskDetailPage() {
     if (!task?.dependencies || task.dependencies.length === 0) return null;
 
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-100 border border-indigo-200 text-indigo-600 text-[10px] font-semibold">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100 border border-green-200 text-green-600 text-[10px] font-semibold">
         <Link2 className="w-3 h-3" />
         {task.dependencies.length} dependencies
       </span>
@@ -1509,17 +1509,17 @@ export default function TaskDetailPage() {
     if (!task?.dependencies || task.dependencies.length === 0) return null;
 
     return (
-      <div className="mt-4 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
+      <div className="mt-4 p-4 bg-green-50/50 rounded-xl border border-green-100">
         <div className="flex items-center gap-2 mb-3">
-          <Link2 className="w-4 h-4 text-indigo-600" />
-          <p className="text-sm font-medium text-indigo-800">Dependencies ({task.dependencies.length})</p>
+          <Link2 className="w-4 h-4 text-green-600" />
+          <p className="text-sm font-medium text-green-800">Dependencies ({task.dependencies.length})</p>
         </div>
         <div className="space-y-2">
           {task.dependencies.map((dep, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-white rounded-lg border border-indigo-100">
+            <div key={index} className="flex items-center justify-between p-2 bg-white rounded-lg border border-green-100">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-700">Task {dep.taskId}</span>
-                <span className="text-xs font-medium bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                   {dep.type || "FS"}
                 </span>
                 {dep.lag > 0 && (
@@ -1537,7 +1537,7 @@ export default function TaskDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading task details...</p>
         </div>
       </div>
@@ -1566,7 +1566,7 @@ export default function TaskDetailPage() {
               </p>
               <Link
                 href="/tasks/my"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition shadow-sm"
               >
                 <ArrowLeft size={16} />
                 Return to Tasks
@@ -1609,7 +1609,7 @@ export default function TaskDetailPage() {
               {/* 🆕 Dependencies Button */}
               <button
                 onClick={() => setShowDependencyEditor(true)}
-                className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                 title="Manage Dependencies"
               >
                 <Link2 size={18} />
@@ -1638,7 +1638,7 @@ export default function TaskDetailPage() {
               {canManage && (
                 <button
                   onClick={() => router.push(`/tasks/${id}/edit`)}
-                  className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                  className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                   title="Edit"
                 >
                   <Edit2 size={18} />
@@ -1794,13 +1794,13 @@ export default function TaskDetailPage() {
                     <div className="mt-4 pt-4 border-t border-gray-200">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
-                          <TimerIcon size={16} className="text-indigo-500" />
+                          <TimerIcon size={16} className="text-green-500" />
                           <span className="text-sm font-medium text-gray-700">Time Tracking</span>
                         </div>
                         <div className="flex-1">
                           {isTimerActive ? (
                             <div className="flex items-center gap-2">
-                              <span className="text-lg font-mono font-semibold text-indigo-700 tabular-nums">
+                              <span className="text-lg font-mono font-semibold text-green-700 tabular-nums">
                                 {formatTime(timerState.elapsedSeconds)}
                               </span>
                               <span
@@ -1815,7 +1815,7 @@ export default function TaskDetailPage() {
                                 </span>
                               )}
                               {isTimerRunningForTask && (
-                                <span className="text-[10px] text-indigo-500 ml-2">
+                                <span className="text-[10px] text-green-500 ml-2">
                                   Total: {((task.actualMinutes || 0) + (timerState.elapsedSeconds / 60)).toFixed(2)}m
                                 </span>
                               )}
@@ -1857,7 +1857,7 @@ export default function TaskDetailPage() {
                           ) : (
                             <button
                               onClick={handleStartTimer}
-                              className="px-3 py-1.5 bg-indigo-500 hover:bg-indigo-600 text-white text-sm rounded-lg transition flex items-center gap-1 shadow-sm"
+                              className="px-3 py-1.5 bg-green-500 hover:bg-green-600 text-white text-sm rounded-lg transition flex items-center gap-1 shadow-sm"
                               disabled={activeTimerTaskId !== null && activeTimerTaskId !== task._id}
                             >
                               <Play size={14} />
@@ -1879,7 +1879,7 @@ export default function TaskDetailPage() {
                 className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm"
               >
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <Info className="w-5 h-5 text-indigo-500" />
+                  <Info className="w-5 h-5 text-green-500" />
                   Task Information
                 </h3>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -1949,7 +1949,7 @@ export default function TaskDetailPage() {
                   className="w-full p-5 flex items-center justify-between hover:bg-gray-50 transition"
                 >
                   <div className="flex items-center gap-3">
-                    <MessageSquare className="w-5 h-5 text-indigo-500" />
+                    <MessageSquare className="w-5 h-5 text-green-500" />
                     <h3 className="text-lg font-semibold text-gray-800">Comments ({comments.length})</h3>
                   </div>
                   {showComments ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
@@ -1958,7 +1958,7 @@ export default function TaskDetailPage() {
                 {showComments && (
                   <div className="p-5 pt-0 space-y-5">
                     <div className="flex gap-3">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
                         <span className="text-white text-sm font-bold">
                           {getInitials(user?.fullName || "?")}
                         </span>
@@ -1969,13 +1969,13 @@ export default function TaskDetailPage() {
                           onChange={(e) => setNewComment(e.target.value)}
                           placeholder="Write a comment..."
                           rows={3}
-                          className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                          className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                         />
                         <div className="flex justify-end mt-2">
                           <button
                             onClick={handleAddComment}
                             disabled={submittingComment || !newComment.trim()}
-                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center gap-2 disabled:opacity-50 shadow-sm"
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 disabled:opacity-50 shadow-sm"
                           >
                             {submittingComment ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                             Post Comment
@@ -2017,7 +2017,7 @@ export default function TaskDetailPage() {
                   className="w-full p-5 flex items-center justify-between hover:bg-gray-50 transition"
                 >
                   <div className="flex items-center gap-3">
-                    <Paperclip className="w-5 h-5 text-indigo-500" />
+                    <Paperclip className="w-5 h-5 text-green-500" />
                     <h3 className="text-lg font-semibold text-gray-800">
                       Attachments ({attachments.length})
                       {task?.evidenceRequired && task?.status === "in_progress" && (
@@ -2055,10 +2055,10 @@ export default function TaskDetailPage() {
                       />
                       <label
                         htmlFor="file-upload"
-                        className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30 transition bg-gray-50"
+                        className="flex items-center justify-center gap-2 w-full p-4 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-green-400 hover:bg-green-50/30 transition bg-gray-50"
                       >
                         {uploadingFiles ? (
-                          <Loader2 size={20} className="animate-spin text-indigo-500" />
+                          <Loader2 size={20} className="animate-spin text-green-500" />
                         ) : (
                           <>
                             <Upload size={20} className="text-gray-400" />
@@ -2079,7 +2079,7 @@ export default function TaskDetailPage() {
                         {attachments.map((attachment) => (
                           <div
                             key={attachment._id}
-                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-indigo-200 transition group"
+                            className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-green-200 transition group"
                           >
                             {attachment.mimeType?.startsWith("image/") ? (
                               <div
@@ -2104,7 +2104,7 @@ export default function TaskDetailPage() {
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                               <button
                                 onClick={() => handleDownloadAttachment(attachment)}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                 title="Download"
                               >
                                 <Download size={14} />
@@ -2140,7 +2140,7 @@ export default function TaskDetailPage() {
                     className="w-full p-5 flex items-center justify-between hover:bg-gray-50 transition"
                   >
                     <div className="flex items-center gap-3">
-                      <Award className="w-5 h-5 text-indigo-500" />
+                      <Award className="w-5 h-5 text-green-500" />
                       <h3 className="text-lg font-semibold text-gray-800">Reviews ({reviews.length})</h3>
                       {reviewStats.averageRating > 0 && (
                         <div className="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-lg">
@@ -2192,8 +2192,8 @@ export default function TaskDetailPage() {
                           </div>
                           <p className="text-gray-700 text-sm">{review.comment}</p>
                           {review.response && (
-                            <div className="mt-3 pl-4 border-l-2 border-indigo-400">
-                              <p className="text-indigo-600 text-xs font-medium">
+                            <div className="mt-3 pl-4 border-l-2 border-green-400">
+                              <p className="text-green-600 text-xs font-medium">
                                 Response from {review.response.respondedBy?.fullName}
                               </p>
                               <p className="text-gray-600 text-sm mt-1">{review.response.content}</p>
@@ -2216,19 +2216,19 @@ export default function TaskDetailPage() {
                 className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sticky top-6"
               >
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-indigo-500" />
+                  <Zap className="w-5 h-5 text-green-500" />
                   Actions
                 </h3>
                 <div className="space-y-3">
                   {/* 🆕 Dependencies Button */}
                   <button
                     onClick={() => setShowDependencyEditor(true)}
-                    className="w-full py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl transition flex items-center justify-center gap-2 shadow-sm border border-indigo-200"
+                    className="w-full py-2.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl transition flex items-center justify-center gap-2 shadow-sm border border-green-200"
                   >
                     <Link2 size={16} />
                     Manage Dependencies
                     {task.dependencies && task.dependencies.length > 0 && (
-                      <span className="bg-indigo-200 text-indigo-800 text-xs px-2 py-0.5 rounded-full">
+                      <span className="bg-green-200 text-green-800 text-xs px-2 py-0.5 rounded-full">
                         {task.dependencies.length}
                       </span>
                     )}
@@ -2238,7 +2238,7 @@ export default function TaskDetailPage() {
                     <button
                       onClick={() => updateTaskStatus("in_progress")}
                       disabled={updating}
-                      className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
+                      className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50 shadow-sm"
                     >
                       {updating ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
                       Start Task
@@ -2419,12 +2419,12 @@ export default function TaskDetailPage() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className={`bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl border p-6 shadow-sm ${isTimerRunningForTask ? "border-indigo-300" : "border-gray-200"
+                className={`bg-linear-to-br from-green-50 to-purple-50 rounded-2xl border p-6 shadow-sm ${isTimerRunningForTask ? "border-green-300" : "border-gray-200"
                   }`}
               >
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <TimerIcon size={16} className="text-indigo-600" />
+                    <TimerIcon size={16} className="text-green-600" />
                     Timer Status
                   </h3>
                   {isTimerActive && (
@@ -2440,7 +2440,7 @@ export default function TaskDetailPage() {
                 <div className="text-center py-4">
                   {isTimerActive ? (
                     <>
-                      <div className="text-3xl font-mono font-bold text-indigo-700 tabular-nums">
+                      <div className="text-3xl font-mono font-bold text-green-700 tabular-nums">
                         {formatTime(timerState.elapsedSeconds)}
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
@@ -2451,7 +2451,7 @@ export default function TaskDetailPage() {
                           </span>
                         )}
                         {isTimerRunningForTask && (
-                          <span className="text-[10px] text-indigo-500 ml-2">
+                          <span className="text-[10px] text-green-500 ml-2">
                             Total: {((task.actualMinutes || 0) + (timerState.elapsedSeconds / 60)).toFixed(2)}m
                           </span>
                         )}
@@ -2622,7 +2622,7 @@ export default function TaskDetailPage() {
               <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-5 flex justify-between items-center">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Text className="w-5 h-5 text-indigo-500" />
+                    <Text className="w-5 h-5 text-green-500" />
                     Submit Evidence
                   </h2>
                   <p className="text-xs text-gray-500">Evidence is required to submit this task</p>
@@ -2658,7 +2658,7 @@ export default function TaskDetailPage() {
                     onChange={(e) => setEvidenceText(e.target.value)}
                     rows={6}
                     placeholder="Enter evidence details or URLs...\n\nExample:\n- https://drive.google.com/file/evidence1\n- https://docs.google.com/document/evidence2\n- Screenshots attached in comments\n- Source code: https://github.com/..."
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none text-gray-800 placeholder:text-gray-400 font-mono text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none text-gray-800 placeholder:text-gray-400 font-mono text-sm"
                   />
                   <p className="text-xs text-gray-400 mt-1.5">
                     Enter one URL or detail per line.{" "}
@@ -2670,7 +2670,7 @@ export default function TaskDetailPage() {
                   <button
                     onClick={handleSubmitWithEvidence}
                     disabled={submittingEvidence || !evidenceText.trim()}
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {submittingEvidence ? (
                       <>
@@ -2783,7 +2783,7 @@ export default function TaskDetailPage() {
                     placeholder={
                       pendingAction === "approve" ? "Enter approval feedback..." : "Enter rejection reason..."
                     }
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                   />
                 </div>
 
@@ -2868,7 +2868,7 @@ export default function TaskDetailPage() {
                     value={reviewComment}
                     onChange={(e) => setReviewComment(e.target.value)}
                     placeholder="Share your thoughts about this task..."
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   />
                 </div>
 
@@ -3009,7 +3009,7 @@ function CommentItem({
     <div className={`${depth > 0 ? "ml-8 mt-3" : "mb-4"}`}>
       <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
             <span className="text-white text-xs font-bold">{getInitials(comment.author?.fullName)}</span>
           </div>
           <div className="flex-1 min-w-0">
@@ -3027,7 +3027,7 @@ function CommentItem({
                         setEditingComment(comment._id);
                         setEditContent(comment.content);
                       }}
-                      className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                      className="p-1 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                     >
                       <Edit2 size={12} />
                     </button>
@@ -3047,13 +3047,13 @@ function CommentItem({
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   rows={2}
                 />
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={() => handleUpdateComment(comment._id)}
-                    className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-lg transition shadow-sm"
+                    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition shadow-sm"
                   >
                     Save
                   </button>
@@ -3075,7 +3075,7 @@ function CommentItem({
             <div className="flex items-center gap-4 mt-2">
               <button
                 onClick={() => handleLikeComment(comment._id)}
-                className={`flex items-center gap-1 text-xs transition ${isLiked ? "text-indigo-600" : "text-gray-400 hover:text-indigo-600"
+                className={`flex items-center gap-1 text-xs transition ${isLiked ? "text-green-600" : "text-gray-400 hover:text-green-600"
                   }`}
               >
                 <ThumbsUp size={12} />
@@ -3083,7 +3083,7 @@ function CommentItem({
               </button>
               <button
                 onClick={() => setShowReply(!showReply)}
-                className="flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-600 transition"
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-green-600 transition"
               >
                 <Reply size={12} />
                 Reply
@@ -3101,7 +3101,7 @@ function CommentItem({
               onChange={(e) => setLocalReplyContent(e.target.value)}
               placeholder="Write a reply..."
               rows={2}
-              className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+              className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
             />
             <button
               onClick={async () => {
@@ -3121,7 +3121,7 @@ function CommentItem({
                   toast.error(error.response?.data?.message || "Failed to add reply");
                 }
               }}
-              className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm"
+              className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition shadow-sm"
             >
               <Send size={14} />
             </button>

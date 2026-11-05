@@ -242,7 +242,7 @@ export default function TaskDetailPage() {
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+        <Loader2 className="w-10 h-10 animate-spin text-green-600" />
       </div>
     );
   }
@@ -280,7 +280,7 @@ export default function TaskDetailPage() {
               <ArrowLeft size={18} /> Back to Tasks
             </Link>
             <div className="flex items-center gap-2 flex-wrap">
-              <button onClick={() => setShowDependencyEditor(true)} className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg" title="Dependencies">
+              <button onClick={() => setShowDependencyEditor(true)} className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg" title="Dependencies">
                 <Link2 size={18} />
               </button>
               <button onClick={handleCopyLink} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg" title="Copy link">

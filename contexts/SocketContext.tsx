@@ -167,18 +167,15 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
         const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || "https://taskify-server-5gat.onrender.com";
 
-
-
         const socketInstance = io(SOCKET_URL, {
             auth: { token },
             query: { token },
-            transports: ["websocket", "polling"],
+            transports: ["polling", "websocket"], // ⭐ polling কে আগে দিন
             reconnection: true,
             reconnectionAttempts: 10,
             reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            timeout: 30000,
             forceNew: true,
+            withCredentials: true, // ⭐ CORS Credentials
         });
 
         socketRef.current = socketInstance;

@@ -848,7 +848,7 @@ useEffect(() => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading tasks...</p>
         </div>
       </div>
@@ -884,13 +884,13 @@ useEffect(() => {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <LayoutGrid className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   Task Board
                 </h1>
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {stats.total}
                 </span>
               </div>
@@ -905,7 +905,7 @@ useEffect(() => {
                   if (bulkMode) setSelectedTaskIds(new Set());
                 }}
                 className={`px-3 py-2 rounded-lg transition text-sm flex items-center gap-2 shadow-sm ${bulkMode
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-white border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                   }`}
               >
@@ -941,7 +941,7 @@ useEffect(() => {
               <button
                 onClick={() => setShowColumnSettings(!showColumnSettings)}
                 className={`px-3 py-2 rounded-lg transition text-sm flex items-center gap-2 shadow-sm ${showColumnSettings
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-white border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                   }`}
               >
@@ -952,7 +952,7 @@ useEffect(() => {
                 <button
                   onClick={() => setView("kanban")}
                   className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition-all ${view === "kanban"
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-green-600 text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
@@ -962,7 +962,7 @@ useEffect(() => {
                 <button
                   onClick={() => setView("list")}
                   className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition-all ${view === "list"
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-green-600 text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
@@ -980,7 +980,7 @@ useEffect(() => {
                   </Link>
                   <button
                     onClick={() => setShowCreateModal(true)}
-                    className="px-3 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm rounded-lg flex items-center gap-2 transition shadow-sm shadow-indigo-500/20"
+                    className="px-3 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white text-sm rounded-lg flex items-center gap-2 transition shadow-sm shadow-green-500/20"
                   >
                     <Plus size={14} />
                     <span>Create</span>
@@ -1004,18 +1004,18 @@ useEffect(() => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-indigo-50 border border-indigo-200 rounded-xl p-3 mb-4 flex items-center justify-between"
+              className="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
-                <CheckSquare className="w-5 h-5 text-indigo-600" />
-                <span className="text-sm text-indigo-800">
+                <CheckSquare className="w-5 h-5 text-green-600" />
+                <span className="text-sm text-green-800">
                   {selectedTaskIds.size} task
                   {selectedTaskIds.size !== 1 ? "s" : ""} selected
                 </span>
                 {selectedTaskIds.size > 0 && (
                   <button
                     onClick={() => setSelectedTaskIds(new Set())}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+                    className="text-xs text-green-600 hover:text-green-800 font-medium"
                   >
                     Clear All
                   </button>
@@ -1055,7 +1055,7 @@ useEffect(() => {
               >
                 <div className="p-4 border-b border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Columns size={16} className="text-indigo-500" />
+                    <Columns size={16} className="text-green-500" />
                     <h3 className="font-semibold text-gray-800">
                       Column Settings
                     </h3>
@@ -1092,7 +1092,7 @@ useEffect(() => {
                             onBlur={(e) => {
                               handleRenameColumn(col.id, e.target.value);
                             }}
-                            className="flex-1 px-2 py-1 border border-indigo-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="flex-1 px-2 py-1 border border-green-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                             autoFocus
                           />
                         ) : (
@@ -1109,7 +1109,7 @@ useEffect(() => {
                       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                         <button
                           onClick={() => setEditingColumnId(col.id)}
-                          className="p-1 text-gray-400 hover:text-indigo-600 rounded"
+                          className="p-1 text-gray-400 hover:text-green-600 rounded"
                         >
                           <Edit2 size={12} />
                         </button>
@@ -1145,13 +1145,13 @@ useEffect(() => {
                   ))}
 
                   {isAddingColumn ? (
-                    <div className="flex items-center gap-2 p-2 border-2 border-dashed border-indigo-300 rounded-lg">
+                    <div className="flex items-center gap-2 p-2 border-2 border-dashed border-green-300 rounded-lg">
                       <input
                         type="text"
                         value={newColumnTitle}
                         onChange={(e) => setNewColumnTitle(e.target.value)}
                         placeholder="Enter column name..."
-                        className="flex-1 px-2 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="flex-1 px-2 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                         autoFocus
                         onKeyDown={(e) => {
                           if (e.key === "Enter") handleAddColumn();
@@ -1163,7 +1163,7 @@ useEffect(() => {
                       />
                       <button
                         onClick={handleAddColumn}
-                        className="px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition"
+                        className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition"
                       >
                         Add
                       </button>
@@ -1180,7 +1180,7 @@ useEffect(() => {
                   ) : (
                     <button
                       onClick={() => setIsAddingColumn(true)}
-                      className="w-full p-2 border-2 border-dashed border-gray-200 rounded-lg text-sm text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition flex items-center justify-center gap-2"
+                      className="w-full p-2 border-2 border-dashed border-gray-200 rounded-lg text-sm text-gray-500 hover:border-green-300 hover:text-green-600 transition flex items-center justify-center gap-2"
                     >
                       <PlusCircle size={14} />
                       Add Column
@@ -1252,13 +1252,13 @@ useEffect(() => {
                 placeholder="Search tasks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className={`px-4 py-2.5 rounded-xl flex items-center gap-2 transition-all shadow-sm ${showFilters
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "bg-white border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                 }`}
             >
@@ -1276,7 +1276,7 @@ useEffect(() => {
                   <select
                     value={selectedProject}
                     onChange={(e) => setSelectedProject(e.target.value)}
-                    className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                    className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
                   >
                     <option value="">All Projects</option>
                     {projects.map((p) => (
@@ -1288,7 +1288,7 @@ useEffect(() => {
                   <select
                     value={selectedPriority}
                     onChange={(e) => setSelectedPriority(e.target.value)}
-                    className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                    className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
                   >
                     <option value="">All Priority</option>
                     <option value="low">Low</option>
@@ -1299,7 +1299,7 @@ useEffect(() => {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                    className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
                   >
                     <option value="deadline">Sort by Deadline</option>
                     <option value="priority">Sort by Priority</option>
@@ -1391,7 +1391,7 @@ useEffect(() => {
                   }}
                 >
                   {activeId ? (
-                    <div className="bg-white rounded-xl border-2 border-indigo-400 shadow-2xl p-4 w-[320px] opacity-95 scale-105">
+                    <div className="bg-white rounded-xl border-2 border-green-400 shadow-2xl p-4 w-[320px] opacity-95 scale-105">
                       {(() => {
                         const task = getActiveTask();
                         if (!task) return null;
@@ -1418,7 +1418,7 @@ useEffect(() => {
                             </p>
                             <div className="flex items-center justify-between pt-2 border-t border-gray-100">
                               <div className="flex items-center gap-1">
-                                <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                                <div className="w-5 h-5 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center">
                                   <span className="text-white text-[8px] font-bold">
                                     {task.assignedTo?.fullName?.charAt(0) ||
                                       "?"}
@@ -1476,14 +1476,14 @@ useEffect(() => {
                                   : new Set(filteredTasks.map((t) => t._id)),
                               );
                             }}
-                            className="text-gray-400 hover:text-indigo-600"
+                            className="text-gray-400 hover:text-green-600"
                           >
                             {filteredTasks.every((t) =>
                               selectedTaskIds.has(t._id),
                             ) && selectedTaskIds.size > 0 ? (
                               <CheckSquare
                                 size={16}
-                                className="text-indigo-600"
+                                className="text-green-600"
                               />
                             ) : (
                               <Square size={16} />
@@ -1524,12 +1524,12 @@ useEffect(() => {
                                 e.stopPropagation();
                                 toggleTaskSelection(task._id);
                               }}
-                              className="text-gray-400 hover:text-indigo-600"
+                              className="text-gray-400 hover:text-green-600"
                             >
                               {selectedTaskIds.has(task._id) ? (
                                 <CheckSquare
                                   size={16}
-                                  className="text-indigo-600"
+                                  className="text-green-600"
                                 />
                               ) : (
                                 <Square size={16} />
@@ -1579,7 +1579,7 @@ useEffect(() => {
                               );
                               setTimeout(saveQuickEdit, 100);
                             }}
-                            className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getPriorityColor(task.priority)} focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                            className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${getPriorityColor(task.priority)} focus:outline-none focus:ring-2 focus:ring-green-500`}
                             onClick={(e) => e.stopPropagation()}
                           >
                             <option value="low">Low</option>
@@ -1624,7 +1624,7 @@ useEffect(() => {
                               e.stopPropagation();
                               setSelectedTask(task);
                             }}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                           >
                             <Eye size={14} />
                           </button>
@@ -1682,7 +1682,7 @@ useEffect(() => {
                   <select
                     value={bulkTargetStatus || ""}
                     onChange={(e) => setBulkTargetStatus(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="">Select column...</option>
                     {columns.map((col) => (
@@ -1813,7 +1813,7 @@ function DroppableColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`shrink-0 w-[280px] sm:w-[300px] md:w-[320px] h-full flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm transition-all duration-200 ${activeId ? "ring-2 ring-indigo-300" : ""
+      className={`shrink-0 w-[280px] sm:w-[300px] md:w-[320px] h-full flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm transition-all duration-200 ${activeId ? "ring-2 ring-green-300" : ""
         }`}
     >
       {/* Column Header */}
@@ -1825,10 +1825,10 @@ function DroppableColumn({
             {bulkMode && (
               <button
                 onClick={() => toggleAllTasksInColumn(column.id)}
-                className="text-gray-400 hover:text-indigo-600 transition"
+                className="text-gray-400 hover:text-green-600 transition"
               >
                 {allSelected ? (
-                  <CheckSquare size={14} className="text-indigo-600" />
+                  <CheckSquare size={14} className="text-green-600" />
                 ) : (
                   <Square size={14} />
                 )}
@@ -1943,8 +1943,8 @@ function TaskCard({
         }
       }}
       className={`bg-white rounded-lg p-3 border transition-all cursor-grab active:cursor-grabbing hover:shadow-md hover:-translate-y-0.5 group ${isSelected
-          ? "border-indigo-400 ring-2 ring-indigo-200 bg-indigo-50/30"
-          : "border-gray-200 hover:border-indigo-300"
+          ? "border-green-400 ring-2 ring-green-200 bg-green-50/30"
+          : "border-gray-200 hover:border-green-300"
         }`}
     >
       <div className="flex items-center justify-between mb-2">
@@ -1955,10 +1955,10 @@ function TaskCard({
                 e.stopPropagation();
                 toggleTaskSelection(task._id);
               }}
-              className="text-gray-400 hover:text-indigo-600 transition"
+              className="text-gray-400 hover:text-green-600 transition"
             >
               {isSelected ? (
-                <CheckSquare size={14} className="text-indigo-600" />
+                <CheckSquare size={14} className="text-green-600" />
               ) : (
                 <Square size={14} />
               )}
@@ -1990,7 +1990,7 @@ function TaskCard({
         </button>
       </div>
 
-      <h4 className="text-gray-800 text-sm font-medium mb-1 line-clamp-2 group-hover:text-indigo-600 transition">
+      <h4 className="text-gray-800 text-sm font-medium mb-1 line-clamp-2 group-hover:text-green-600 transition">
         {task.title}
       </h4>
       <p className="text-gray-400 text-xs line-clamp-2 mb-2">
@@ -1999,7 +1999,7 @@ function TaskCard({
 
       {task.projectId && (
         <div className="flex items-center gap-1 mb-2">
-          <div className="flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+          <div className="flex items-center gap-0.5 text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200">
             <FolderKanban size={8} />
             <span className="truncate max-w-[80px]">{task.projectId.name}</span>
           </div>
@@ -2008,7 +2008,7 @@ function TaskCard({
 
       <div className="flex items-center justify-between pt-2 border-t border-gray-100">
         <div className="flex items-center gap-1">
-          <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+          <div className="w-5 h-5 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
             <span className="text-white text-[8px] font-bold">
               {task.assignedTo?.fullName?.charAt(0) || "?"}
             </span>
@@ -2069,9 +2069,9 @@ function TaskDetailsModal({
         exit={{ opacity: 0, scale: 0.95 }}
         className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
       >
-        <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50 to-purple-50">
+        <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50 to-purple-50">
           <div className="flex items-center gap-2">
-            <CheckSquare className="w-5 h-5 text-indigo-500" />
+            <CheckSquare className="w-5 h-5 text-green-500" />
             <h2 className="text-lg font-semibold text-gray-800">
               Task Details
             </h2>
@@ -2170,7 +2170,7 @@ function TaskDetailsModal({
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               disabled={updating}
-              className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+              className="flex-1 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
             >
               <option value="pending">Pending</option>
               <option value="in_progress">In Progress</option>
@@ -2181,7 +2181,7 @@ function TaskDetailsModal({
             <button
               onClick={handleStatusUpdate}
               disabled={updating}
-              className="px-4 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
+              className="px-4 py-2.5 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
             >
               {updating ? (
                 <Loader2 size={14} className="animate-spin" />

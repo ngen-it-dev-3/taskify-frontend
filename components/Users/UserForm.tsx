@@ -105,7 +105,7 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onCancel }) 
         <select
           value={formData.role}
           onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
           required
         >
           {roles.map((role) => (
@@ -120,7 +120,7 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onCancel }) 
         <select
           value={formData.departmentId}
           onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
         >
           <option value="">No Department</option>
           {departments.map((dept) => (
@@ -135,7 +135,7 @@ export const UserForm: React.FC<UserFormProps> = ({ user, onSubmit, onCancel }) 
         <select
           value={formData.dailyHoursTarget}
           onChange={(e) => setFormData({ ...formData, dailyHoursTarget: Number(e.target.value) })}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
         >
           <option value={6}>6 hours</option>
           <option value={7}>7 hours</option>

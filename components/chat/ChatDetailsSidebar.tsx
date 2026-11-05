@@ -139,7 +139,7 @@ const getInitials = (name?: string): string => {
 
 const getAvatarColor = (userId: string = "") => {
     const colors = [
-        "bg-indigo-100 text-indigo-700 border-indigo-200",
+        "bg-green-100 text-green-700 border-green-200",
         "bg-rose-100 text-rose-700 border-rose-200",
         "bg-emerald-100 text-emerald-700 border-emerald-200",
         "bg-amber-100 text-amber-700 border-amber-200",
@@ -989,7 +989,7 @@ export default function ChatDetailsSidebar({
                             title={isEditing ? "Save details" : "Edit channel"}
                         >
                             {editingChannel ? (
-                                <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                                <Loader2 className="w-4 h-4 animate-spin text-green-600" />
                             ) : isEditing ? (
                                 <Save className="w-4 h-4 text-emerald-600" />
                             ) : (
@@ -1017,7 +1017,7 @@ export default function ChatDetailsSidebar({
                                 if (!showAddMember) fetchAvailableUsers();
                             }}
                             className={`p-1.5 rounded-lg transition cursor-pointer ${showAddMember
-                                    ? "bg-indigo-50 text-indigo-600"
+                                    ? "bg-green-50 text-green-600"
                                     : "text-slate-500 hover:bg-slate-100 hover:text-slate-800"
                                 }`}
                             title="Add member"
@@ -1058,7 +1058,7 @@ export default function ChatDetailsSidebar({
                                         className="w-12 h-12 rounded-2xl object-cover border border-slate-200 shadow-2xs"
                                     />
                                 ) : (
-                                    <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-2xs">
+                                    <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center text-green-600 shadow-2xs">
                                         <Hash className="w-6 h-6" />
                                     </div>
                                 )}
@@ -1102,14 +1102,14 @@ export default function ChatDetailsSidebar({
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
                                             placeholder="Channel Name"
-                                            className="w-full text-black px-2.5 py-1 text-xs font-normal bg-white border border-slate-200 rounded-lg outline-none focus:border-indigo-500"
+                                            className="w-full text-black px-2.5 py-1 text-xs font-normal bg-white border border-slate-200 rounded-lg outline-none focus:border-green-500"
                                         />
                                         <input
                                             type="text"
                                             value={editDescription}
                                             onChange={(e) => setEditDescription(e.target.value)}
                                             placeholder="Add description..."
-                                            className="w-full px-2.5 text-black py-1 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:border-indigo-500"
+                                            className="w-full px-2.5 text-black py-1 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:border-green-500"
                                         />
                                     </div>
                                 ) : (
@@ -1140,7 +1140,7 @@ export default function ChatDetailsSidebar({
 
                 {/* Add Member Inline Tray */}
                 {!isDirectMessage && isAdmin && showAddMember && (
-                    <div className="p-3 bg-slate-50 border border-indigo-100 rounded-2xl space-y-2">
+                    <div className="p-3 bg-slate-50 border border-green-100 rounded-2xl space-y-2">
                         <div className="relative">
                             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                             <input
@@ -1148,7 +1148,7 @@ export default function ChatDetailsSidebar({
                                 placeholder="Search colleagues to invite..."
                                 value={searchUsers}
                                 onChange={(e) => setSearchUsers(e.target.value)}
-                                className="w-full pl-8 pr-3 text-black py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                                className="w-full pl-8 pr-3 text-black py-1.5 text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
                             />
                         </div>
                         <div className="max-h-36 overflow-y-auto space-y-1">
@@ -1173,7 +1173,7 @@ export default function ChatDetailsSidebar({
                                             type="button"
                                             onClick={() => handleAddMember(u._id)}
                                             disabled={addingUser}
-                                            className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-medium transition disabled:opacity-40 cursor-pointer"
+                                            className="px-2 py-0.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-[11px] font-medium transition disabled:opacity-40 cursor-pointer"
                                         >
                                             Add
                                         </button>
@@ -1204,7 +1204,7 @@ export default function ChatDetailsSidebar({
 
                     {loadingMembers ? (
                         <div className="py-6 flex justify-center">
-                            <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
+                            <Loader2 className="w-5 h-5 text-green-500 animate-spin" />
                         </div>
                     ) : (
                         <div className="space-y-1">
@@ -1257,8 +1257,8 @@ export default function ChatDetailsSidebar({
                                                     )}
 
                                                     {!isCreator && isMemberAdmin && (
-                                                        <span className="text-[9px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-1.5 py-0.2 rounded-full inline-flex items-center gap-0.5">
-                                                            <Shield className="w-2.5 h-2.5 text-indigo-500" /> Admin
+                                                        <span className="text-[9px] font-semibold text-green-700 bg-green-50 border border-green-200/80 px-1.5 py-0.2 rounded-full inline-flex items-center gap-0.5">
+                                                            <Shield className="w-2.5 h-2.5 text-green-500" /> Admin
                                                         </span>
                                                     )}
                                                 </div>
@@ -1271,11 +1271,11 @@ export default function ChatDetailsSidebar({
                                                     type="button"
                                                     onClick={() => handleMakeAdmin(member._id, member.fullName, isMemberAdmin)}
                                                     disabled={makingAdmin === member._id}
-                                                    className="p-1 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition cursor-pointer"
+                                                    className="p-1 text-slate-400 hover:text-green-600 hover:bg-slate-100 rounded-lg transition cursor-pointer"
                                                     title={isMemberAdmin ? "Demote from admin" : "Promote to admin"}
                                                 >
                                                     {makingAdmin === member._id ? (
-                                                        <Loader2 className="w-3 h-3 animate-spin text-indigo-600" />
+                                                        <Loader2 className="w-3 h-3 animate-spin text-green-600" />
                                                     ) : (
                                                         <UserCog className="w-3.5 h-3.5" />
                                                     )}
@@ -1316,7 +1316,7 @@ export default function ChatDetailsSidebar({
 
                     {loadingPinned ? (
                         <div className="py-6 flex justify-center">
-                            <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
+                            <Loader2 className="w-5 h-5 text-green-500 animate-spin" />
                         </div>
                     ) : pinnedItems.length === 0 ? (
                         <div className="p-4 rounded-xl border border-dashed border-slate-200 text-center bg-slate-50/50">
@@ -1371,7 +1371,7 @@ export default function ChatDetailsSidebar({
                                         setTimeout(() => taskSearchInputRef.current?.focus(), 100);
                                     }
                                 }}
-                                className="p-1 text-slate-400 hover:text-indigo-600 rounded-md transition cursor-pointer"
+                                className="p-1 text-slate-400 hover:text-green-600 rounded-md transition cursor-pointer"
                                 title="Link existing task"
                             >
                                 <Plus className="w-3.5 h-3.5" />
@@ -1388,7 +1388,7 @@ export default function ChatDetailsSidebar({
                     </div>
 
                     {showLinkTask && (
-                        <div className="p-3 bg-slate-50 border border-indigo-100 rounded-2xl space-y-2">
+                        <div className="p-3 bg-slate-50 border border-green-100 rounded-2xl space-y-2">
                             <div className="relative">
                                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
                                 <input
@@ -1397,14 +1397,14 @@ export default function ChatDetailsSidebar({
                                     placeholder="Search workspace tasks..."
                                     value={searchTasks}
                                     onChange={(e) => setSearchTasks(e.target.value)}
-                                    className="w-full pl-8 pr-3 py-1.5 text-black text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-indigo-500"
+                                    className="w-full pl-8 pr-3 py-1.5 text-black text-xs bg-white border border-slate-200 rounded-xl outline-none focus:border-green-500"
                                 />
                             </div>
 
                             <div className="max-h-40 overflow-y-auto space-y-1">
                                 {loadingTasksSearch ? (
                                     <div className="py-3 flex justify-center">
-                                        <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+                                        <Loader2 className="w-4 h-4 animate-spin text-green-500" />
                                     </div>
                                 ) : availableTasks.filter((t) => t.title?.toLowerCase().includes(searchTasks.toLowerCase()))
                                     .length === 0 ? (
@@ -1443,7 +1443,7 @@ export default function ChatDetailsSidebar({
                                                         type="button"
                                                         onClick={() => handleLinkTask(task._id, task)}
                                                         disabled={Boolean(linkingTaskId)}
-                                                        className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shrink-0 transition disabled:opacity-40 flex items-center justify-center min-w-[50px] cursor-pointer"
+                                                        className="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold shrink-0 transition disabled:opacity-40 flex items-center justify-center min-w-[50px] cursor-pointer"
                                                     >
                                                         {isLinkingThis ? (
                                                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -1461,7 +1461,7 @@ export default function ChatDetailsSidebar({
 
                     {loadingTasks ? (
                         <div className="py-6 flex justify-center">
-                            <Loader2 className="w-5 h-5 text-indigo-500 animate-spin" />
+                            <Loader2 className="w-5 h-5 text-green-500 animate-spin" />
                         </div>
                     ) : linkedTasks.length === 0 ? (
                         <div className="p-4 rounded-xl border border-dashed border-slate-200 text-center bg-slate-50/50">
@@ -1474,7 +1474,7 @@ export default function ChatDetailsSidebar({
                             {linkedTasks.map((task) => (
                                 <div
                                     key={task._id || task.taskId}
-                                    className="group p-2.5 rounded-xl border border-slate-100 bg-white hover:border-indigo-100 hover:shadow-2xs transition"
+                                    className="group p-2.5 rounded-xl border border-slate-100 bg-white hover:border-green-100 hover:shadow-2xs transition"
                                 >
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="min-w-0 flex-1">
@@ -1519,7 +1519,7 @@ export default function ChatDetailsSidebar({
                                             {task.progress > 0 && (
                                                 <div className="w-full h-1 bg-slate-100 rounded-full mt-2 overflow-hidden">
                                                     <div
-                                                        className="h-full bg-indigo-500 rounded-full transition-all duration-300"
+                                                        className="h-full bg-green-500 rounded-full transition-all duration-300"
                                                         style={{ width: `${Math.min(task.progress, 100)}%` }}
                                                     />
                                                 </div>
@@ -1594,7 +1594,7 @@ export default function ChatDetailsSidebar({
                             <div
                                 className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border ${confirmModal.isDestructive
                                         ? "bg-rose-50 border-rose-100 text-rose-600"
-                                        : "bg-indigo-50 border-indigo-100 text-indigo-600"
+                                        : "bg-green-50 border-green-100 text-green-600"
                                     }`}
                             >
                                 {confirmModal.isDestructive ? <AlertTriangle className="w-5 h-5" /> : <Shield className="w-5 h-5" />}
@@ -1623,7 +1623,7 @@ export default function ChatDetailsSidebar({
                                     await confirmModal.onConfirm();
                                 }}
                                 disabled={confirmModal.isLoading}
-                                className={`flex-1 py-2 text-white rounded-xl text-xs font-semibold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 ${confirmModal.isDestructive ? "bg-rose-600 hover:bg-rose-700" : "bg-indigo-600 hover:bg-indigo-700"
+                                className={`flex-1 py-2 text-white rounded-xl text-xs font-semibold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 ${confirmModal.isDestructive ? "bg-rose-600 hover:bg-rose-700" : "bg-green-600 hover:bg-green-700"
                                     }`}
                             >
                                 {confirmModal.isLoading ? (

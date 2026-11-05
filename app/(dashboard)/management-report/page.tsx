@@ -84,7 +84,7 @@ const roleBadgeColor: Record<string, string> = {
     super_admin: "bg-purple-100 text-purple-700 border-purple-200",
     admin: "bg-red-100 text-red-700 border-red-200",
     hr_manager: "bg-pink-100 text-pink-700 border-pink-200",
-    dept_manager: "bg-indigo-100 text-indigo-700 border-indigo-200",
+    dept_manager: "bg-green-100 text-green-700 border-green-200",
     project_manager: "bg-blue-100 text-blue-700 border-blue-200",
     line_manager: "bg-cyan-100 text-cyan-700 border-cyan-200",
     employee: "bg-slate-100 text-slate-700 border-slate-200",
@@ -148,7 +148,7 @@ function UserAvatar({
 
     return (
         <div
-            className="rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-semibold text-xs shrink-0"
+            className="rounded-full bg-green-100 text-green-700 flex items-center justify-center font-semibold text-xs shrink-0"
             style={{ width: size, height: size }}
             aria-label={name}
         >
@@ -319,7 +319,7 @@ export default function ManagementReportPage() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-bold text-slate-900 flex items-center gap-2">
-                        <Users className="h-7 w-7 text-indigo-600" />
+                        <Users className="h-7 w-7 text-green-600" />
                         Management Report
                     </h1>
                     <p className="text-sm text-slate-500 mt-1">
@@ -340,7 +340,7 @@ export default function ManagementReportPage() {
                     <button
                         onClick={exportCSV}
                         disabled={!filtered.length}
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 disabled:opacity-50"
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 disabled:opacity-50"
                     >
                         <Download className="h-4 w-4" />
                         Export CSV
@@ -350,7 +350,7 @@ export default function ManagementReportPage() {
 
             {/* Stat cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <StatCard icon={<Users className="h-5 w-5" />} label="Total Users" value={users.length} color="text-indigo-600 bg-indigo-50" />
+                <StatCard icon={<Users className="h-5 w-5" />} label="Total Users" value={users.length} color="text-green-600 bg-green-50" />
                 <StatCard icon={<CheckCircle2 className="h-5 w-5" />} label="Active" value={users.filter((u) => u.isActive !== false).length} color="text-emerald-600 bg-emerald-50" />
                 <StatCard icon={<XCircle className="h-5 w-5" />} label="Inactive" value={users.filter((u) => u.isActive === false).length} color="text-rose-600 bg-rose-50" />
                 <StatCard icon={<Building2 className="h-5 w-5" />} label="Departments" value={departments.length} color="text-amber-600 bg-amber-50" />
@@ -362,7 +362,7 @@ export default function ManagementReportPage() {
                     <Filter className="h-4 w-4" />
                     <span className="text-sm font-semibold">Filters</span>
                     {(search || roleFilter !== "all" || deptFilter !== "all" || statusFilter !== "all") && (
-                        <button onClick={clearFilters} className="ml-auto text-xs text-indigo-600 hover:underline">
+                        <button onClick={clearFilters} className="ml-auto text-xs text-green-600 hover:underline">
                             Clear all
                         </button>
                     )}
@@ -375,14 +375,14 @@ export default function ManagementReportPage() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search name, email, employee ID, position…"
-                            className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                            className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/40"
                         />
                     </div>
 
                     <select
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500/40"
                     >
                         <option value="all">All Roles</option>
                         {roles.map((r) => (
@@ -393,7 +393,7 @@ export default function ManagementReportPage() {
                     <select
                         value={deptFilter}
                         onChange={(e) => setDeptFilter(e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                        className="px-3 py-2 rounded-lg border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500/40"
                     >
                         <option value="all">All Departments</option>
                         {departments.map((d) => (
@@ -408,7 +408,7 @@ export default function ManagementReportPage() {
                             key={s}
                             onClick={() => setStatusFilter(s)}
                             className={`px-3 py-1.5 text-xs font-medium rounded-full border transition ${statusFilter === s
-                                ? "bg-indigo-600 text-white border-indigo-600"
+                                ? "bg-green-600 text-white border-green-600"
                                 : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
                                 }`}
                         >
@@ -531,14 +531,14 @@ export default function ManagementReportPage() {
                                                     <Link
                                                         href={`/management-report/${u._id}`}
                                                         title="View Profile"
-                                                        className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500 hover:text-indigo-600 inline-flex items-center"
+                                                        className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500 hover:text-green-600 inline-flex items-center"
                                                     >
                                                         <Eye className="h-4 w-4" />
                                                     </Link>
                                                     <Link
                                                         href={`/management-report/${u._id}/report`}
                                                         title="View Task Report"
-                                                        className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500 hover:text-indigo-600 inline-flex items-center"
+                                                        className="p-1.5 rounded-md hover:bg-slate-100 text-slate-500 hover:text-green-600 inline-flex items-center"
                                                     >
                                                         <BarChart3 className="h-4 w-4" />
                                                     </Link>

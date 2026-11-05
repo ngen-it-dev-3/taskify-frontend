@@ -17,13 +17,13 @@ export function TaskTimerCard({ task, isTimerRunningForTask, isTimerActive, time
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.2 }}
-      className={`bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl border p-6 shadow-sm ${
-        isTimerRunningForTask ? "border-indigo-300" : "border-gray-200"
+      className={`bg-gradient-to-br from-green-50 to-purple-50 rounded-2xl border p-6 shadow-sm ${
+        isTimerRunningForTask ? "border-green-300" : "border-gray-200"
       }`}
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-          <TimerIcon size={16} className="text-indigo-600" />
+          <TimerIcon size={16} className="text-green-600" />
           Timer Status
         </h3>
         {isTimerActive && (
@@ -35,7 +35,7 @@ export function TaskTimerCard({ task, isTimerRunningForTask, isTimerActive, time
 
       <div className="text-center py-4">
         {isTimerActive ? (
-          <div className="text-3xl font-mono font-bold text-indigo-700 tabular-nums">
+          <div className="text-3xl font-mono font-bold text-green-700 tabular-nums">
             {formatTime(timerSeconds)}
           </div>
         ) : (

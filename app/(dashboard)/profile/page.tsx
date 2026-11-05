@@ -182,7 +182,7 @@ export default function ProfilePage() {
       line_manager: "from-emerald-500 to-teal-500",
       employee: "from-gray-400 to-gray-500",
     };
-    return colors[role] || "from-indigo-500 to-purple-500";
+    return colors[role] || "from-green-500 to-purple-500";
   }, []);
 
   const getRoleBadgeColor = useCallback((role: string): string => {
@@ -195,7 +195,7 @@ export default function ProfilePage() {
       line_manager: "bg-emerald-100 text-emerald-800 border-emerald-200",
       employee: "bg-gray-100 text-gray-800 border-gray-200",
     };
-    return colors[role] || "bg-indigo-100 text-indigo-800 border-indigo-200";
+    return colors[role] || "bg-green-100 text-green-800 border-green-200";
   }, []);
 
   const getRoleIcon = useCallback((role: string) => {
@@ -731,14 +731,14 @@ export default function ProfilePage() {
   // ============================================================
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 via-indigo-50/30 to-purple-50/30">
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 via-green-50/30 to-purple-50/30">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="flex flex-col items-center gap-4"
         >
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 animate-pulse" />
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-green-500 to-purple-600 animate-pulse" />
             <Loader2 className="absolute inset-0 w-16 h-16 animate-spin text-white/80 p-3" />
           </div>
           <p className="text-gray-500 text-sm font-medium animate-pulse">
@@ -760,7 +760,7 @@ export default function ProfilePage() {
   const showImage = !imageError && !isUploading && !imageLoading;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-indigo-50/20 to-purple-50/20">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-green-50/20 to-purple-50/20">
       <div className="container mx-auto px-4 py-6 md:py-8 container">
         {/* Header */}
         <motion.div
@@ -776,11 +776,11 @@ export default function ProfilePage() {
               <ArrowLeft size={20} className="text-gray-600" />
             </Link>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl md:text-3xl font-bold bg-linear-to-r from-green-600 to-purple-600 bg-clip-text text-transparent">
                 My Profile
               </h1>
               <p className="text-gray-500 text-sm mt-1 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <Sparkles className="w-4 h-4 text-green-400" />
                 Manage your personal information and preferences
               </p>
             </div>
@@ -798,7 +798,7 @@ export default function ProfilePage() {
               }}
               className={`px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-sm ${isEditing
                 ? "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
-                : "bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg"
+                : "bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white shadow-md hover:shadow-lg"
                 }`}
             >
               {isEditing ? <X size={16} /> : <Edit2 size={16} />}
@@ -824,10 +824,10 @@ export default function ProfilePage() {
                 <div className={`h-24 bg-linear-to-r ${getRoleColor(profile.role)}`} />
                 <div className="absolute -bottom-12 left-1/2 -translate-x-1/2">
                   <div className="relative group">
-                    <div className="w-24 h-24 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-xl overflow-hidden">
+                    <div className="w-24 h-24 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-xl overflow-hidden">
                       {isUploading ? (
                         <div className="flex items-center justify-center w-full h-full bg-gray-100">
-                          <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+                          <Loader2 className="w-6 h-6 animate-spin text-green-600" />
                         </div>
                       ) : showImage ? (
                         <img
@@ -881,7 +881,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       setFormData({ ...formData, fullName: e.target.value })
                     }
-                    className="text-lg font-bold text-gray-800 bg-white border border-gray-200 rounded-lg px-3 py-1 w-full text-center focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                    className="text-lg font-bold text-gray-800 bg-white border border-gray-200 rounded-lg px-3 py-1 w-full text-center focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                   />
                 ) : (
                   <h2 className="text-lg font-bold text-gray-800">
@@ -953,9 +953,9 @@ export default function ProfilePage() {
           >
             {/* Basic Information */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden">
-              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-indigo-50/50 to-purple-50/50">
+              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-green-50/50 to-purple-50/50">
                 <h3 className="text-gray-800 font-semibold flex items-center gap-2">
-                  <User size={18} className="text-indigo-600" />
+                  <User size={18} className="text-green-600" />
                   Basic Information
                 </h3>
               </div>
@@ -969,7 +969,7 @@ export default function ProfilePage() {
                       onChange={(e) =>
                         setFormData({ ...formData, fullName: e.target.value })
                       }
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                     />
                   ) : (
                     <p className="text-gray-800 font-medium">{profile.fullName}</p>
@@ -988,7 +988,7 @@ export default function ProfilePage() {
                       onChange={(e) =>
                         setFormData({ ...formData, phoneNumber: e.target.value })
                       }
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                       placeholder="+1 234 567 8900"
                     />
                   ) : (
@@ -1006,7 +1006,7 @@ export default function ProfilePage() {
                       onChange={(e) =>
                         setFormData({ ...formData, position: e.target.value })
                       }
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                       placeholder="Software Engineer"
                     />
                   ) : (
@@ -1024,7 +1024,7 @@ export default function ProfilePage() {
                       onChange={(e) =>
                         setFormData({ ...formData, location: e.target.value })
                       }
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                       placeholder="New York, USA"
                     />
                   ) : (
@@ -1048,7 +1048,7 @@ export default function ProfilePage() {
                         setFormData({ ...formData, bio: e.target.value })
                       }
                       rows={3}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none resize-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none resize-none"
                       placeholder="Tell us about yourself..."
                     />
                   ) : (
@@ -1060,9 +1060,9 @@ export default function ProfilePage() {
 
             {/* Social Links */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden">
-              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-indigo-50/50 to-purple-50/50">
+              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-green-50/50 to-purple-50/50">
                 <h3 className="text-gray-800 font-semibold flex items-center gap-2">
-                  <Globe size={18} className="text-indigo-600" />
+                  <Globe size={18} className="text-green-600" />
                   Social Links
                 </h3>
               </div>
@@ -1083,7 +1083,7 @@ export default function ProfilePage() {
                         onChange={(e) =>
                           updateSocialLink(social.key as keyof typeof formData.socialLinks, e.target.value)
                         }
-                        className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                        className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                         placeholder={social.placeholder}
                       />
                     ) : (
@@ -1091,7 +1091,7 @@ export default function ProfilePage() {
                         href={(profile.socialLinks as any)?.[social.key] || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`text-gray-600 hover:text-indigo-600 text-sm truncate transition ${!(profile.socialLinks as any)?.[social.key] ? "text-gray-400" : ""
+                        className={`text-gray-600 hover:text-green-600 text-sm truncate transition ${!(profile.socialLinks as any)?.[social.key] ? "text-gray-400" : ""
                           }`}
                       >
                         {(profile.socialLinks as any)?.[social.key] || "Not added"}
@@ -1106,9 +1106,9 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Skills */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden">
-                <div className="p-4 border-b border-gray-200/50 bg-linear-to-r from-indigo-50/50 to-purple-50/50">
+                <div className="p-4 border-b border-gray-200/50 bg-linear-to-r from-green-50/50 to-purple-50/50">
                   <h3 className="text-gray-800 font-semibold flex items-center gap-2">
-                    <Zap size={16} className="text-indigo-600" />
+                    <Zap size={16} className="text-green-600" />
                     Skills
                   </h3>
                 </div>
@@ -1120,7 +1120,7 @@ export default function ProfilePage() {
                       (formData.skills || []).map((skill) => (
                         <span
                           key={skill}
-                          className="px-3 py-1 text-xs rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center gap-1"
+                          className="px-3 py-1 text-xs rounded-full bg-green-50 text-green-700 border border-green-200 flex items-center gap-1"
                         >
                           {skill}
                           {isEditing && (
@@ -1142,12 +1142,12 @@ export default function ProfilePage() {
                         value={newSkill}
                         onChange={(e) => setNewSkill(e.target.value)}
                         onKeyPress={(e) => e.key === "Enter" && addSkill()}
-                        className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                        className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                         placeholder="Add a skill..."
                       />
                       <button
                         onClick={addSkill}
-                        className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg transition text-white"
+                        className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition text-white"
                       >
                         <Plus size={16} />
                       </button>
@@ -1158,9 +1158,9 @@ export default function ProfilePage() {
 
               {/* Languages */}
               <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden">
-                <div className="p-4 border-b border-gray-200/50 bg-linear-to-r from-indigo-50/50 to-purple-50/50">
+                <div className="p-4 border-b border-gray-200/50 bg-linear-to-r from-green-50/50 to-purple-50/50">
                   <h3 className="text-gray-800 font-semibold flex items-center gap-2">
-                    <Globe size={16} className="text-indigo-600" />
+                    <Globe size={16} className="text-green-600" />
                     Languages
                   </h3>
                 </div>
@@ -1194,12 +1194,12 @@ export default function ProfilePage() {
                         value={newLanguage}
                         onChange={(e) => setNewLanguage(e.target.value)}
                         onKeyPress={(e) => e.key === "Enter" && addLanguage()}
-                        className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                        className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                         placeholder="Add a language..."
                       />
                       <button
                         onClick={addLanguage}
-                        className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg transition text-white"
+                        className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition text-white"
                       >
                         <Plus size={16} />
                       </button>
@@ -1211,9 +1211,9 @@ export default function ProfilePage() {
 
             {/* Achievements */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden">
-              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-indigo-50/50 to-purple-50/50">
+              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-green-50/50 to-purple-50/50">
                 <h3 className="text-gray-800 font-semibold flex items-center gap-2">
-                  <Award size={18} className="text-indigo-600" />
+                  <Award size={18} className="text-green-600" />
                   Achievements
                 </h3>
               </div>
@@ -1248,24 +1248,24 @@ export default function ProfilePage() {
                       placeholder="Achievement Title"
                       value={newAchievement.title}
                       onChange={(e) => setNewAchievement({ ...newAchievement, title: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                     />
                     <input
                       type="date"
                       value={newAchievement.date}
                       onChange={(e) => setNewAchievement({ ...newAchievement, date: e.target.value })}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                     />
                     <textarea
                       placeholder="Description"
                       value={newAchievement.description}
                       onChange={(e) => setNewAchievement({ ...newAchievement, description: e.target.value })}
                       rows={2}
-                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none resize-none"
+                      className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none resize-none"
                     />
                     <button
                       onClick={addAchievement}
-                      className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg transition text-white text-sm"
+                      className="w-full py-2 bg-green-600 hover:bg-green-700 rounded-lg transition text-white text-sm"
                     >
                       Add Achievement
                     </button>
@@ -1276,9 +1276,9 @@ export default function ProfilePage() {
 
             {/* Notification Preferences */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden">
-              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-indigo-50/50 to-purple-50/50">
+              <div className="p-6 border-b border-gray-200/50 bg-linear-to-r from-green-50/50 to-purple-50/50">
                 <h3 className="text-gray-800 font-semibold flex items-center gap-2">
-                  <Bell size={18} className="text-indigo-600" />
+                  <Bell size={18} className="text-green-600" />
                   Notification Preferences
                 </h3>
               </div>
@@ -1310,8 +1310,8 @@ export default function ProfilePage() {
                         className={`
               relative inline-flex h-6 w-11 items-center rounded-full 
               transition-colors duration-200 focus:outline-none focus:ring-2 
-              focus:ring-indigo-500 focus:ring-offset-2
-              ${isEnabled ? "bg-indigo-600" : "bg-gray-300"}
+              focus:ring-green-500 focus:ring-offset-2
+              ${isEnabled ? "bg-green-600" : "bg-gray-300"}
             `}
                       >
                         <span
@@ -1340,7 +1340,7 @@ export default function ProfilePage() {
                   <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-3 rounded-xl transition disabled:opacity-50 shadow-md hover:shadow-lg"
+                    className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white font-medium py-3 rounded-xl transition disabled:opacity-50 shadow-md hover:shadow-lg"
                   >
                     {isSaving ? (
                       <Loader2 size={20} className="animate-spin mx-auto" />
@@ -1387,9 +1387,9 @@ export default function ProfilePage() {
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
               >
-                <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50/80 to-purple-50/80">
+                <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50/80 to-purple-50/80">
                   <div className="flex items-center gap-3">
-                    <Lock className="w-5 h-5 text-indigo-600" />
+                    <Lock className="w-5 h-5 text-green-600" />
                     <h2 className="text-lg font-semibold text-gray-800">Change Password</h2>
                   </div>
                   <button
@@ -1406,7 +1406,7 @@ export default function ProfilePage() {
                       type="password"
                       value={passwordData.currentPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                      className="w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                       placeholder="Enter current password"
                     />
                   </div>
@@ -1416,7 +1416,7 @@ export default function ProfilePage() {
                       type="password"
                       value={passwordData.newPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                      className="w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                       placeholder="Enter new password"
                     />
                   </div>
@@ -1426,7 +1426,7 @@ export default function ProfilePage() {
                       type="password"
                       value={passwordData.confirmPassword}
                       onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                      className="w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="w-full px-3 py-2 text-sm text-gray-800 bg-white border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                       placeholder="Confirm new password"
                     />
                   </div>
@@ -1434,7 +1434,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handlePasswordChange}
                       disabled={isSaving}
-                      className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-xl transition disabled:opacity-50 shadow-md hover:shadow-lg"
+                      className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-xl transition disabled:opacity-50 shadow-md hover:shadow-lg"
                     >
                       {isSaving ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Update Password"}
                     </button>

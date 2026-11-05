@@ -140,7 +140,7 @@ export default function UpcomingDeadlines({
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-800 text-sm font-medium truncate group-hover:text-indigo-600 transition-colors">
+                  <p className="text-gray-800 text-sm font-medium truncate group-hover:text-green-600 transition-colors">
                     {task.title}
                   </p>
                   <div className="flex items-center gap-3 mt-1.5">
@@ -160,7 +160,7 @@ export default function UpcomingDeadlines({
                   </div>
                   <ChevronRight
                     size={14}
-                    className="text-gray-300 group-hover:text-indigo-500 transition-colors shrink-0"
+                    className="text-gray-300 group-hover:text-green-500 transition-colors shrink-0"
                   />
                 </div>
               </div>

@@ -102,7 +102,7 @@ export default function RejectTaskModal({
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
                             placeholder="Explain why this task is being rejected..."
-                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                         />
                         <p className="text-xs text-slate-400 mt-1">
                             This feedback will be sent to the assignee.

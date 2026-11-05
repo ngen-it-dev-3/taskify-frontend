@@ -185,9 +185,9 @@ function InsightsTab({
       <div className="flex justify-center py-16">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full animate-spin border-t-indigo-600"></div>
+            <div className="w-16 h-16 border-4 border-green-200 rounded-full animate-spin border-t-green-600"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-indigo-600" />
+              <Sparkles className="w-6 h-6 text-green-600" />
             </div>
           </div>
           <p className="text-gray-500 text-sm font-medium animate-pulse">
@@ -202,8 +202,8 @@ function InsightsTab({
   if (!analyticsData || !hasAnyData) {
     return (
       <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-sm">
-        <div className="w-20 h-20 bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Lightbulb className="w-10 h-10 text-indigo-400" />
+        <div className="w-20 h-20 bg-linear-to-br from-green-50 to-purple-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <Lightbulb className="w-10 h-10 text-green-400" />
         </div>
         <h3 className="text-lg font-semibold text-gray-800 mb-2">
           No Insights Available
@@ -216,7 +216,7 @@ function InsightsTab({
           {onRefresh && (
             <button
               onClick={onRefresh}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
             >
               <RefreshCw size={16} />
               Refresh Data
@@ -245,7 +245,7 @@ function InsightsTab({
             Insights
           </span>
           <span className="flex items-center gap-1">
-            <Target size={14} className="text-indigo-400" />
+            <Target size={14} className="text-green-400" />
             Recommendations
           </span>
           <span className="flex items-center gap-1">
@@ -287,7 +287,7 @@ function InsightsTab({
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-linear-to-r from-indigo-50/80 to-purple-50/80 rounded-2xl border border-indigo-200"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-linear-to-r from-green-50/80 to-purple-50/80 rounded-2xl border border-green-200"
         >
           <div className="text-center">
             <p className="text-2xl font-bold text-gray-800">
@@ -296,7 +296,7 @@ function InsightsTab({
             <p className="text-xs text-gray-500">Total Employees</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-indigo-600">
+            <p className="text-2xl font-bold text-green-600">
               {analyticsData.summary?.averageScore || 0}%
             </p>
             <p className="text-xs text-gray-500">Average Score</p>
@@ -382,7 +382,7 @@ function InsightsTab({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <Target size={16} className="text-indigo-500" />
+              <Target size={16} className="text-green-500" />
               Recommendations
               <span className="text-xs text-gray-400 font-normal ml-2">
                 ({recommendations.length} recommendation{recommendations.length > 1 ? 's' : ''})
@@ -397,11 +397,11 @@ function InsightsTab({
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="p-4 bg-linear-to-r from-indigo-50/80 to-purple-50/80 rounded-xl border border-indigo-200 hover:shadow-md transition-shadow"
+                  className="p-4 bg-linear-to-r from-green-50/80 to-purple-50/80 rounded-xl border border-green-200 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start gap-3">
                     <div className="shrink-0 mt-0.5">
-                      <Target size={20} className="text-indigo-500" />
+                      <Target size={20} className="text-green-500" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -496,7 +496,7 @@ function InsightsTab({
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
                               {anomaly.employeeName.charAt(0).toUpperCase()}
                             </div>
                             <div>
@@ -555,7 +555,7 @@ function InsightsTab({
                               e.stopPropagation();
                               onViewEmployee(anomaly.employeeId);
                             }}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                             title="View employee details"
                           >
                             <Eye size={16} />

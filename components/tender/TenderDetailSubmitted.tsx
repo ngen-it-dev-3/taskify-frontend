@@ -166,7 +166,7 @@ export function TenderDetailSubmitted({
                       href={fullFileUrl(f.url)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="shrink-0 text-[10px] font-semibold text-indigo-600 hover:underline"
+                      className="shrink-0 text-[10px] font-semibold text-green-600 hover:underline"
                     >
                       View
                     </a>

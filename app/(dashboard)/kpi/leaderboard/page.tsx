@@ -432,7 +432,7 @@ export default function KPLeaderboardPage() {
           <p className="text-slate-500 text-sm mb-6">You lack administrative clearance to access KPI leaderboards.</p>
           <Link
             href="/dashboard"
-            className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20"
+            className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20"
           >
             Return to Dashboard
           </Link>
@@ -507,7 +507,7 @@ export default function KPLeaderboardPage() {
 
             <Link
               href="/kpi/management"
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl flex items-center gap-2 transition shadow-lg shadow-indigo-600/20"
+              className="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl flex items-center gap-2 transition shadow-lg shadow-green-600/20"
             >
               <Settings size={14} /> Configure KPI
             </Link>
@@ -518,7 +518,7 @@ export default function KPLeaderboardPage() {
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: "Active Workforce", val: stats.totalEmployees, icon: Users, color: "text-indigo-600", bg: "bg-indigo-50" },
+              { label: "Active Workforce", val: stats.totalEmployees, icon: Users, color: "text-green-600", bg: "bg-green-50" },
               { label: "Unit Average", val: `${stats.averageScore}%`, icon: Crown, color: "text-blue-600", bg: "bg-blue-50" },
               { label: "Top Achiever", val: `${stats.topScore}%`, icon: Crown, color: "text-amber-600", bg: "bg-amber-50" },
               { label: "Elite Tier", val: stats.excellentCount, icon: Award, color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -665,7 +665,7 @@ export default function KPLeaderboardPage() {
               placeholder="Search ranked employee..."
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs"
             />
           </div>
 
@@ -703,7 +703,7 @@ export default function KPLeaderboardPage() {
         {/* Leaderboard Table */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
             <p className="text-sm font-medium text-slate-400">Compiling leaderboard rankings...</p>
           </div>
         ) : filteredScores.length === 0 ? (
@@ -755,13 +755,13 @@ export default function KPLeaderboardPage() {
                                   e.currentTarget.style.display = 'none';
                                   const parent = e.currentTarget.parentElement;
                                   const fallback = document.createElement('div');
-                                  fallback.className = 'w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xs shrink-0 shadow-xs';
+                                  fallback.className = 'w-9 h-9 rounded-xl bg-green-50 text-green-600 font-bold flex items-center justify-center text-xs shrink-0 shadow-xs';
                                   fallback.textContent = score.userId.fullName.charAt(0).toUpperCase();
                                   parent?.appendChild(fallback);
                                 }}
                               />
                             ) : (
-                              <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
+                              <div className="w-9 h-9 rounded-xl bg-green-50 text-green-600 font-bold flex items-center justify-center text-xs shrink-0 shadow-xs">
                                 {score.userId.fullName.charAt(0).toUpperCase()}
                               </div>
                             )}
@@ -784,7 +784,7 @@ export default function KPLeaderboardPage() {
                               e.stopPropagation();
                               router.push(`/kpi/employee/${score.userId._id}`);
                             }}
-                            className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition inline-block"
+                            className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition inline-block"
                             title="Inspect Metrics"
                           >
                             <Eye size={16} />

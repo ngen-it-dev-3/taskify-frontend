@@ -54,8 +54,8 @@ export default function DashboardFactory({}: DashboardFactoryProps) {
   // Fallback for any other role or no role
   return (
     <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm text-center">
-      <div className="w-20 h-20 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-        <LayoutDashboard className="w-10 h-10 text-indigo-400" />
+      <div className="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <LayoutDashboard className="w-10 h-10 text-green-400" />
       </div>
       <h2 className="text-xl font-semibold text-gray-800 mb-2">
         Welcome to Taskify

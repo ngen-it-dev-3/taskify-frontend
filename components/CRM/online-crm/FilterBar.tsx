@@ -57,13 +57,10 @@ const SOURCE_BADGE_COLORS: Record<string, string> = {
 
 const COUNTRIES = [
   'Bangladesh',
-  'Egypt',
   'Singapore',
   'Middle East',
-  'India',
-  'Pakistan',
-  'Hungary',
-  'Nigeria',
+  'United Kingdom',
+  'Portugal',
 ];
 
 // ⭐ Year options — current year and the last 4

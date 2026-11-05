@@ -243,7 +243,7 @@ export default function ExportPage() {
           className="grid grid-cols-2 sm:grid-cols-4 gap-4"
         >
           {[
-            { label: "Total Users", val: stats.totalUsers, icon: Users, color: "text-indigo-600", bg: "bg-indigo-50" },
+            { label: "Total Users", val: stats.totalUsers, icon: Users, color: "text-green-600", bg: "bg-green-50" },
             { label: "Active Users", val: stats.activeUsers, icon: UserCheck, color: "text-emerald-600", bg: "bg-emerald-50" },
             { label: "Inactive Users", val: stats.inactiveUsers, icon: UserX, color: "text-rose-600", bg: "bg-rose-50" },
             { label: "Departments", val: stats.totalDepartments, icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
@@ -281,7 +281,7 @@ export default function ExportPage() {
                   <button
                     onClick={() => setExportType("users")}
                     className={`py-3 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition ${exportType === "users"
-                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                        ? "bg-green-600 text-white shadow-lg shadow-green-600/20"
                         : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
                       }`}
                   >
@@ -291,7 +291,7 @@ export default function ExportPage() {
                   <button
                     onClick={() => setExportType("departments")}
                     className={`py-3 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition ${exportType === "departments"
-                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                        ? "bg-green-600 text-white shadow-lg shadow-green-600/20"
                         : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
                       }`}
                   >
@@ -311,7 +311,7 @@ export default function ExportPage() {
                         key={opt.value}
                         onClick={() => setFormat(opt.value as any)}
                         className={`py-3 px-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition ${format === opt.value
-                            ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20"
+                            ? "bg-green-600 text-white shadow-lg shadow-green-600/20"
                             : "bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100"
                           }`}
                       >
@@ -333,11 +333,11 @@ export default function ExportPage() {
           >
             <div className="flex items-center justify-between">
               <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Filter size={18} className="text-indigo-600" />
+                <Filter size={18} className="text-green-600" />
                 Query Filters
               </h2>
               {getFilterCount > 0 && (
-                <span className="px-2.5 py-0.5 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-green-50 text-green-700 rounded-full border border-green-100">
                   {getFilterCount} active
                 </span>
               )}
@@ -350,7 +350,7 @@ export default function ExportPage() {
                   <select
                     value={filters.role}
                     onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 text-xs font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 text-xs font-semibold focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition"
                   >
                     {userRoles.map((r) => (
                       <option key={r.value} value={r.value}>{r.label}</option>
@@ -364,7 +364,7 @@ export default function ExportPage() {
                 <select
                   value={filters.department}
                   onChange={(e) => setFilters({ ...filters, department: e.target.value })}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 text-xs font-semibold focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-700 text-xs font-semibold focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition"
                 >
                   <option value="">All Departments</option>
                   {departments.map((d) => (
@@ -402,7 +402,7 @@ export default function ExportPage() {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-linear-to-r from-indigo-900 to-violet-900 rounded-3xl p-8 text-center text-white shadow-xl space-y-6"
+          className="bg-linear-to-r from-green-900 to-violet-900 rounded-3xl p-8 text-center text-white shadow-xl space-y-6"
         >
           <div className="max-w-xl mx-auto space-y-2">
             <h3 className="text-xl font-extrabold tracking-tight">Ready to Export Dataset</h3>

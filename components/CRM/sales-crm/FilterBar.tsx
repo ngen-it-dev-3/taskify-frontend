@@ -174,24 +174,7 @@ export function FilterBar({ value, onChange }: Props) {
 
   return (
     <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#EBE6DF] bg-white px-4 py-3">
-      {/* Region */}
-      <div className="flex items-center gap-2">
-        <MapPin className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-          Region
-        </span>
-        <select
-          value={value.region}
-          onChange={(e) => handleRegionChange(e.target.value)}
-          className="rounded-lg border border-[#E2DBD1] bg-[#FDFBF7] px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#A06126] cursor-pointer"
-        >
-          {REGIONS.map((r) => (
-            <option key={r} value={r}>
-              {r}
-            </option>
-          ))}
-        </select>
-      </div>
+      
 
       {/* Territory */}
       <div className="flex items-center gap-2">

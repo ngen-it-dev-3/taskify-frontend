@@ -331,7 +331,7 @@ export default function WorkflowsPage() {
           <div className="flex gap-3">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm rounded-xl flex items-center gap-2 transition"
+              className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm rounded-xl flex items-center gap-2 transition"
             >
               <Plus size={16} />
               Create Workflow
@@ -351,8 +351,8 @@ export default function WorkflowsPage() {
                 <p className="text-2xl font-bold text-white">{stats.total}</p>
                 <p className="text-xs text-slate-400 mt-0.5">Total Workflows</p>
               </div>
-              <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center">
-                <GitBranch className="w-5 h-5 text-indigo-400" />
+              <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                <GitBranch className="w-5 h-5 text-green-400" />
               </div>
             </div>
           </div>
@@ -399,7 +399,7 @@ export default function WorkflowsPage() {
               onClick={() => setSelectedCategory(cat.id === "all" ? "" : cat.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap ${
                 (!selectedCategory && cat.id === "all") || selectedCategory === cat.id
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
               }`}
             >
@@ -418,13 +418,13 @@ export default function WorkflowsPage() {
               placeholder="Search workflows..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 outline-none"
+              className="w-full pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-sm focus:border-green-500 outline-none"
             />
           </div>
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-sm focus:border-indigo-500 outline-none"
+            className="px-4 py-2 bg-slate-800/50 border border-slate-700 rounded-xl text-white text-sm focus:border-green-500 outline-none"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -447,7 +447,7 @@ export default function WorkflowsPage() {
         {/* Workflows Table */}
         {loading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-500" />
           </div>
         ) : (
           <>
@@ -506,7 +506,7 @@ export default function WorkflowsPage() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => setSelectedWorkflow(workflow)}
-                              className="p-1.5 text-slate-400 hover:text-indigo-400 transition"
+                              className="p-1.5 text-slate-400 hover:text-green-400 transition"
                             >
                               <Eye size={16} />
                             </button>
@@ -541,7 +541,7 @@ export default function WorkflowsPage() {
                   <p className="text-slate-400">No workflows found</p>
                   <button
                     onClick={() => setShowCreateModal(true)}
-                    className="mt-4 text-indigo-400 hover:text-indigo-300 text-sm"
+                    className="mt-4 text-green-400 hover:text-green-300 text-sm"
                   >
                     Create your first workflow →
                   </button>
@@ -565,7 +565,7 @@ export default function WorkflowsPage() {
                     onClick={() => setCurrentPage(page)}
                     className={`px-3 py-2 rounded-lg transition ${
                       currentPage === page
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-green-600 text-white"
                         : "bg-slate-800/50 text-slate-400 hover:bg-slate-700"
                     }`}
                   >
@@ -602,7 +602,7 @@ export default function WorkflowsPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   required
                 />
               </div>
@@ -612,7 +612,7 @@ export default function WorkflowsPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -621,7 +621,7 @@ export default function WorkflowsPage() {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   >
                     <option value="automation">Automation</option>
                     <option value="notification">Notification</option>
@@ -634,7 +634,7 @@ export default function WorkflowsPage() {
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   >
                     <option value="low">Low</option>
                     <option value="normal">Normal</option>
@@ -648,7 +648,7 @@ export default function WorkflowsPage() {
                   <select
                     value={formData.triggerType}
                     onChange={(e) => setFormData({ ...formData, triggerType: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   >
                     {triggerTypes.map(t => (
                       <option key={t.value} value={t.value}>{t.label}</option>
@@ -662,7 +662,7 @@ export default function WorkflowsPage() {
                     value={formData.triggerCondition}
                     onChange={(e) => setFormData({ ...formData, triggerCondition: e.target.value })}
                     placeholder="e.g., priority = high"
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   />
                 </div>
               </div>
@@ -672,7 +672,7 @@ export default function WorkflowsPage() {
                   <select
                     value={formData.actionType}
                     onChange={(e) => setFormData({ ...formData, actionType: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   >
                     {actionTypes.map(a => (
                       <option key={a.value} value={a.value}>{a.label}</option>
@@ -686,7 +686,7 @@ export default function WorkflowsPage() {
                     value={formData.actionConfig}
                     onChange={(e) => setFormData({ ...formData, actionConfig: e.target.value })}
                     placeholder="e.g., Notification message"
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   />
                 </div>
               </div>
@@ -694,7 +694,7 @@ export default function WorkflowsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg transition disabled:opacity-50"
+                  className="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg transition disabled:opacity-50"
                 >
                   {submitting ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Create Workflow"}
                 </button>
@@ -728,7 +728,7 @@ export default function WorkflowsPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   required
                 />
               </div>
@@ -738,7 +738,7 @@ export default function WorkflowsPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                  className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -747,7 +747,7 @@ export default function WorkflowsPage() {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   >
                     <option value="automation">Automation</option>
                     <option value="notification">Notification</option>
@@ -760,7 +760,7 @@ export default function WorkflowsPage() {
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:border-green-500 outline-none"
                   >
                     <option value="low">Low</option>
                     <option value="normal">Normal</option>
@@ -772,7 +772,7 @@ export default function WorkflowsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg transition disabled:opacity-50"
+                  className="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg transition disabled:opacity-50"
                 >
                   {submitting ? <Loader2 size={16} className="animate-spin mx-auto" /> : "Update Workflow"}
                 </button>
@@ -841,7 +841,7 @@ export default function WorkflowsPage() {
                     setSelectedWorkflow(null);
                     openEditModal(selectedWorkflow);
                   }}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg transition"
+                  className="flex-1 bg-green-600 hover:bg-green-500 text-white py-2 rounded-lg transition"
                 >
                   Edit Workflow
                 </button>

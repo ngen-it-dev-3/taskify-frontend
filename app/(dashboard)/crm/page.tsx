@@ -9,6 +9,7 @@ import {
   MessageSquare,
   X,
   Loader2,
+  Maximize2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
@@ -21,6 +22,8 @@ import {
   type TimeKey,
 } from '@/services/salesDashboard.service';
 import Link from 'next/link';
+import api from '@/lib/axios'; // ⭐ চ্যাট চ্যানেল লোড করার জন্য
+import ChatMessages from '@/components/chat/ChatMessages'; // ⭐ চ্যাট কম্পোনেন্ট
 
 interface DealItem {
   id: string;
@@ -37,14 +40,14 @@ const fmtPct = (n: number) =>
   `${n >= 0 ? '+' : ''}${Number(n || 0).toFixed(1)}%`;
 
 const TIME_OPTIONS: TimeKey[] = ['Q1', 'Q2', 'Q3', 'Q4', 'FY26'];
-const DIMENSIONS: DimensionKey[] = ['Country', 'Industry', 'Product'];
+const DIMENSIONS: DimensionKey[] = ['Territory', 'Industry', 'Product'];
 
 export default function SalesDashboardPage() {
   /* ---- Filters ---- */
   const [countryFilter, setCountryFilter] = useState<string>('All');
-  const [currencyFilter, setCurrencyFilter] = useState<CurrencyCode>('TK');
+  const [currencyFilter, setCurrencyFilter] = useState<CurrencyCode>('BDT');
   const [timeFilter, setTimeFilter] = useState<TimeKey>('Q1');
-  const [salesByDimension, setSalesByDimension] = useState<DimensionKey>('Country');
+  const [salesByDimension, setSalesByDimension] = useState<DimensionKey>('Territory');
 
   /* ---- Widget UI state ---- */
   const [selectedBarInfo, setSelectedBarInfo] = useState<string | null>(null);
@@ -59,8 +62,14 @@ export default function SalesDashboardPage() {
   const firstLoad = useRef(true);
   const requestIdRef = useRef(0);
 
+  /* ---- Chat Panel State ---- */
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatChannelId, setChatChannelId] = useState<string>("");
+  const [chatChannelName, setChatChannelName] = useState<string>("Team Chat");
+  const [loadingChat, setLoadingChat] = useState(false);
+
   /* ---- Currency ---- */
-  const sym = CURRENCY_META[currencyFilter].symbol;
+  const sym = CURRENCY_META[currencyFilter]?.symbol || '';
   const fmtCurrency = (n: number) => {
     const v = convertFromBDT(n || 0, currencyFilter);
     return `${sym}${v.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
@@ -73,7 +82,7 @@ export default function SalesDashboardPage() {
     return `${sym}${v.toFixed(0)}`;
   };
 
-  /* ---- Load ---- */
+  /* ---- Load Dashboard Data ---- */
   const loadData = useCallback(
     async (opts: { silent?: boolean } = {}) => {
       const myId = ++requestIdRef.current;
@@ -89,7 +98,6 @@ export default function SalesDashboardPage() {
           dimension: salesByDimension,
         });
 
-        /* ⭐ Drop stale responses (user toggled filter again while loading) */
         if (myId !== requestIdRef.current) return;
         setData(d);
       } catch (e: any) {
@@ -115,6 +123,69 @@ export default function SalesDashboardPage() {
     }
   }, [loadData]);
 
+  /* ---- Open Chat Logic ---- */
+  const handleOpenChat = async () => {
+    if (isChatOpen) {
+      setIsChatOpen(false);
+      return;
+    }
+
+    setIsChatOpen(true);
+
+    // চ্যানেল আগে থেকেই লোড থাকলে আবার লোড করবো না
+    if (chatChannelId) return;
+
+    setLoadingChat(true);
+    try {
+      const res = await api.get('/channels');
+      
+      // API রেসপন্স ফরম্যাট চেক করা (res.data.data বা res.data)
+      const channels = res.data?.data || res.data || (Array.isArray(res) ? res : []);
+      
+      let defaultChannel = null;
+
+      if (Array.isArray(channels) && channels.length > 0) {
+        // "General" বা "Team" নামের চ্যানেল খোঁজা, না পেলে প্রথম চ্যানেলটি নেওয়া
+        defaultChannel = channels.find((c: any) => 
+          c.name?.toLowerCase().includes('general') || 
+          c.name?.toLowerCase().includes('team')
+        ) || channels[0];
+      }
+
+      if (defaultChannel && defaultChannel._id) {
+        setChatChannelId(defaultChannel._id);
+        setChatChannelName(defaultChannel.name || "Team Chat");
+      } else {
+        // ⭐ যদি কোনো চ্যানেলই না থাকে, তবে ফ্রন্টএন্ড থেকে চ্যানেল তৈরি করার চেষ্টা করব
+        try {
+          const createRes = await api.post('/channels', {
+            name: 'General',
+            type: 'public',
+            description: 'General team chat'
+          });
+          
+          const newChannel = createRes.data?.data || createRes.data;
+          if (newChannel && newChannel._id) {
+            setChatChannelId(newChannel._id);
+            setChatChannelName(newChannel.name || 'General');
+          } else {
+            throw new Error("Failed to create channel");
+          }
+        } catch (createErr: any) {
+          console.error("Could not create channel:", createErr);
+          toast.error(createErr.response?.data?.message || "No chat channel exists. Please create one from Team Chat.");
+          setIsChatOpen(false);
+        }
+      }
+    } catch (error: any) {
+      console.error("Failed to load chat channel", error);
+      toast.error(error.response?.data?.message || "Failed to open chat.");
+      setIsChatOpen(false);
+    } finally {
+      setLoadingChat(false);
+    }
+  };
+
   /* ---- Derived ---- */
   const kpis = data?.kpis;
   const overview = data?.salesOverview ?? [];
@@ -128,20 +199,20 @@ export default function SalesDashboardPage() {
   const revenueTrend = data?.revenueTrend;
   const availableCountries = data?.availableCountries ?? [];
 
-  /* ---- Donut math ---- */
+  /* ---- Donut math (Fixed) ---- */
   const DONUT_C = 220;
   const donutSegments = useMemo(() => {
-    let offset = 0;
+    let currentOffset = 0;
     return productVsIndustry.map((seg) => {
       const dash = (seg.pct / 100) * DONUT_C;
-      const s = { ...seg, dash, offset };
-      offset += dash;
+      const s = { ...seg, dash, offset: currentOffset };
+      currentOffset += dash;
       return s;
     });
   }, [productVsIndustry]);
 
-  const sourceMixOnlinePct = sourceMix?.online.pct ?? 0;
-  const sourceMixOfflinePct = sourceMix?.offline.pct ?? 0;
+  const sourceMixOnlinePct = sourceMix?.online?.pct ?? 0;
+  const sourceMixOfflinePct = sourceMix?.offline?.pct ?? 0;
 
   /* ---- Export ---- */
   const handleExport = () => {
@@ -206,8 +277,8 @@ export default function SalesDashboardPage() {
 
     lines.push('Source Mix');
     lines.push(['Source', 'Percent', 'Count'].map(esc).join(','));
-    lines.push(['Online', `${sourceMixOnlinePct}%`, sourceMix?.online.count ?? 0].map(esc).join(','));
-    lines.push(['Offline', `${sourceMixOfflinePct}%`, sourceMix?.offline.count ?? 0].map(esc).join(','));
+    lines.push(['Online', `${sourceMixOnlinePct}%`, sourceMix?.online?.count ?? 0].map(esc).join(','));
+    lines.push(['Offline', `${sourceMixOfflinePct}%`, sourceMix?.offline?.count ?? 0].map(esc).join(','));
     lines.push('');
 
     lines.push('By Channel');
@@ -279,7 +350,7 @@ export default function SalesDashboardPage() {
             value={countryFilter}
             onChange={setCountryFilter}
             options={[
-              { value: 'All', label: 'Country: All' },
+              { value: 'All', label: 'Territory: All' },
               ...availableCountries.map((c) => ({ value: c, label: c })),
             ]}
           />
@@ -289,8 +360,10 @@ export default function SalesDashboardPage() {
             value={currencyFilter}
             onChange={(v) => setCurrencyFilter(v as CurrencyCode)}
             options={[
-              { value: 'TK', label: 'Currency: TK' },
+              { value: 'BDT', label: 'Currency: BDT' },
               { value: 'USD', label: 'Currency: USD' },
+              { value: 'GBP', label: 'Currency: GBP' },
+              { value: 'AED', label: 'Currency: AED' },
               { value: 'EUR', label: 'Currency: EUR' },
             ]}
           />
@@ -359,7 +432,6 @@ export default function SalesDashboardPage() {
 
         {/* Card 2 */}
         <div className="relative overflow-hidden bg-white rounded-xl p-5 border border-[#EBE6DF] shadow-2xs flex flex-col justify-between">
-          {/* Blurred content layer */}
           <div className="filter blur-[2px] opacity-40 select-none pointer-events-none flex flex-col justify-between h-full">
             <div>
               <p className="text-xs text-slate-500 font-medium">Sales Target</p>
@@ -382,7 +454,6 @@ export default function SalesDashboardPage() {
             </div>
           </div>
 
-          {/* Overlay Badge */}
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[1px]">
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#0F2D4A] text-white shadow-xs">
               Coming Soon
@@ -438,7 +509,6 @@ export default function SalesDashboardPage() {
 
       {/* ROW 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-6">
-        {/* Sales Overview */}
         <div className="lg:col-span-4 bg-white rounded-xl p-5 border border-[#EBE6DF] shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-4">
@@ -488,7 +558,6 @@ export default function SalesDashboardPage() {
           </div>
         </div>
 
-        {/* Product vs Industry */}
         <div className="lg:col-span-3 bg-white rounded-xl p-5 border border-[#EBE6DF] shadow-2xs flex flex-col justify-between">
           <div>
             <h3 className="text-xs font-bold tracking-wider text-slate-700 uppercase mb-3">
@@ -533,7 +602,6 @@ export default function SalesDashboardPage() {
           </div>
         </div>
 
-        {/* Sales By */}
         <div className="lg:col-span-5 bg-white rounded-xl p-5 border border-[#EBE6DF] shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex justify-between items-center mb-6">
@@ -689,7 +757,7 @@ export default function SalesDashboardPage() {
                     <span className="w-2.5 h-2.5 rounded-xs bg-[#1F3864]" /> Online (Web RFQ)
                   </span>
                   <span className="font-mono font-semibold">
-                    {sourceMixOnlinePct}% · {sourceMix?.online.count ?? 0}
+                    {sourceMixOnlinePct}% · {sourceMix?.online?.count ?? 0}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -697,7 +765,7 @@ export default function SalesDashboardPage() {
                     <span className="w-2.5 h-2.5 rounded-xs bg-[#A06126]" /> Offline (Salesman)
                   </span>
                   <span className="font-mono font-semibold">
-                    {sourceMixOfflinePct}% · {sourceMix?.offline.count ?? 0}
+                    {sourceMixOfflinePct}% · {sourceMix?.offline?.count ?? 0}
                   </span>
                 </div>
               </div>
@@ -900,16 +968,73 @@ export default function SalesDashboardPage() {
         </div>
       )}
 
-      {/* Chat bubble */}
-      <div className="fixed bottom-6 right-6 z-50">
+      {/* ⭐ FLOATING CHAT PANEL & BUTTON */}
+      <div className="fixed bottom-18 right-3 z-50 flex flex-col items-end gap-3 pointer-events-none">
+        
+        {/* Chat Panel */}
+        {isChatOpen && (
+          <div className="pointer-events-auto w-[360px] h-[500px] bg-white rounded-2xl shadow-2xl border border-[#EBE6DF] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-200">
+            {/* Panel Header */}
+            <div className="flex items-center justify-between px-4 py-3 bg-[#0F2D4A] text-white shrink-0">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-14 h-14" />
+                <span className="text-sm font-semibold">{chatChannelName}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Link 
+                  href="/team-chat" 
+                  className="p-1.5 hover:bg-white/20 rounded-md transition"
+                  title="Open Full Chat"
+                >
+                  <Maximize2 className="w-3.5 h-3.5" />
+                </Link>
+                <button
+                  onClick={() => setIsChatOpen(false)}
+                  className="p-1.5 hover:bg-white/20 rounded-md transition cursor-pointer"
+                  title="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Chat Messages Component */}
+            <div className="flex-1 overflow-hidden relative">
+              {loadingChat ? (
+                <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading chat...
+                </div>
+              ) : chatChannelId ? (
+                <ChatMessages
+                  channelId={chatChannelId}
+                  channelName={chatChannelName}
+                  members={[]}
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-slate-500">
+                  No chat channel found.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Floating Button */}
         <button
-          className="relative bg-[#A06126] hover:bg-[#88501E] text-white p-3.5 rounded-full shadow-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
+          onClick={handleOpenChat}
+          className="pointer-events-auto relative bg-[#A06126] hover:bg-[#88501E] text-white p-3.5 rounded-full shadow-xl transition transform hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer"
           aria-label="Messages"
         >
-          <MessageSquare className="w-5 h-5 fill-white" />
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">
-            3
-          </span>
+          {isChatOpen ? (
+            <X className="w-5 h-5" />
+          ) : (
+            <>
+              <MessageSquare className="w-5 h-5 fill-white" />
+              <span className="absolute -top-1 -right-1 bg-red-600 text-white font-bold text-[10px] w-4 h-4 rounded-full flex items-center justify-center ring-2 ring-white">
+                3
+              </span>
+            </>
+          )}
         </button>
       </div>
     </div>

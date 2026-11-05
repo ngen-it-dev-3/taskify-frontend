@@ -176,7 +176,7 @@ const leaveTypeColors: Record<string, string> = {
   paternity: "bg-purple-100 text-purple-700 border-purple-200",
   bereavement: "bg-gray-100 text-gray-700 border-gray-200",
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
-  earned: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  earned: "bg-green-100 text-green-700 border-green-200",
   other: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
@@ -651,7 +651,7 @@ export default function LeaveManagementPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading leave requests...</p>
         </div>
       </div>
@@ -689,14 +689,14 @@ export default function LeaveManagementPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Calendar className="w-7 h-7 text-indigo-500" />
+              <Calendar className="w-7 h-7 text-green-500" />
               Leave Management
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               Manage and approve leave requests
               {refreshing && (
-                <span className="text-xs text-indigo-500 animate-pulse ml-2">
+                <span className="text-xs text-green-500 animate-pulse ml-2">
                   <Loader2 className="w-3 h-3 inline animate-spin mr-1" />
                   Updating...
                 </span>
@@ -707,7 +707,7 @@ export default function LeaveManagementPage() {
             {selectedLeaves.length > 0 && (
               <button
                 onClick={() => setShowBulkAction(true)}
-                className="cursor-pointer px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-indigo-500/25 flex items-center gap-2"
+                className="cursor-pointer px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-green-500/25 flex items-center gap-2"
               >
                 <UsersRound className="w-4 h-4" />
                 Bulk Action ({selectedLeaves.length})
@@ -792,14 +792,14 @@ export default function LeaveManagementPage() {
                 placeholder="Search leaves by name, reason, or type..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="text-black w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                className="text-black w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
               />
             </div>
             <div className="flex gap-3 flex-wrap">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as LeaveStatus)}
-                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -810,7 +810,7 @@ export default function LeaveManagementPage() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
               >
                 <option value="all">All Types</option>
                 {Object.entries(leaveTypeLabels).map(([key, label]) => (
@@ -822,7 +822,7 @@ export default function LeaveManagementPage() {
               <select
                 value={filterDateRange}
                 onChange={(e) => setFilterDateRange(e.target.value as any)}
-                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
               >
                 <option value="all">All Time</option>
                 <option value="this-month">This Month</option>
@@ -847,7 +847,7 @@ export default function LeaveManagementPage() {
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "grid"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -857,7 +857,7 @@ export default function LeaveManagementPage() {
                   onClick={() => setViewMode("table")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "table"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -916,12 +916,12 @@ export default function LeaveManagementPage() {
                     key={leave._id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-indigo-200/50 transition-all duration-300 hover:-translate-y-1"
+                    className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-green-200/50 transition-all duration-300 hover:-translate-y-1"
                   >
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-sm font-bold shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-sm font-bold shrink-0">
                             {getInitials(employeeName)}
                           </div>
                           <div className="min-w-0">
@@ -1027,7 +1027,7 @@ export default function LeaveManagementPage() {
                             setSelectedLeave(leave);
                             setShowViewModal(true);
                           }}
-                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                           title="View Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -1052,7 +1052,7 @@ export default function LeaveManagementPage() {
                             filteredLeaves.length > 0
                           }
                           onChange={toggleSelectAll}
-                          className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                         />
                       </th>
                       <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -1086,19 +1086,19 @@ export default function LeaveManagementPage() {
                       return (
                         <tr
                           key={leave._id}
-                          className="hover:bg-indigo-50/30 transition-colors group"
+                          className="hover:bg-green-50/30 transition-colors group"
                         >
                           <td className="px-4 py-3 text-center">
                             <input
                               type="checkbox"
                               checked={selectedLeaves.includes(leave._id)}
                               onChange={() => toggleSelectLeave(leave._id)}
-                              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                              className="rounded border-gray-300 text-green-600 focus:ring-green-500"
                             />
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-xs font-bold shrink-0">
+                              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-xs font-bold shrink-0">
                                 {getInitials(employeeName)}
                               </div>
                               <div>
@@ -1168,7 +1168,7 @@ export default function LeaveManagementPage() {
                                   setSelectedLeave(leave);
                                   setShowViewModal(true);
                                 }}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                 title="View Details"
                               >
                                 <Eye className="w-4 h-4" />
@@ -1252,7 +1252,7 @@ export default function LeaveManagementPage() {
                     placeholder="Provide a reason for rejection..."
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
-                    className="w-full text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-800"
+                    className="w-full text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-800"
                   />
                 </div>
               )}
@@ -1292,7 +1292,7 @@ export default function LeaveManagementPage() {
           <div className="bg-white rounded-3xl max-w-md w-full shadow-2xl">
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 bg-indigo-100 rounded-xl text-indigo-600">
+                <div className="p-2.5 bg-green-100 rounded-xl text-green-600">
                   <UsersRound className="w-6 h-6" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900">Bulk Action</h2>
@@ -1341,7 +1341,7 @@ export default function LeaveManagementPage() {
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-indigo-100 rounded-xl text-indigo-600">
+                  <div className="p-2.5 bg-green-100 rounded-xl text-green-600">
                     <FileText className="w-6 h-6" />
                   </div>
                   <div>
@@ -1383,9 +1383,9 @@ export default function LeaveManagementPage() {
               </div>
 
               {/* Employee Info */}
-              <div className="bg-linear-to-r from-gray-50 to-indigo-50/50 rounded-xl p-4 mb-6">
+              <div className="bg-linear-to-r from-gray-50 to-green-50/50 rounded-xl p-4 mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-lg font-bold shrink-0">
+                  <div className="w-14 h-14 rounded-full bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-lg font-bold shrink-0">
                     {getInitials(getEmployeeName(selectedLeave.employeeId))}
                   </div>
                   <div className="flex-1">
@@ -1416,7 +1416,7 @@ export default function LeaveManagementPage() {
                   <div className="flex items-center gap-2 mt-1">
                     {(() => {
                       const TypeIcon = getLeaveTypeIcon(selectedLeave.type);
-                      return <TypeIcon className="w-4 h-4 text-indigo-500" />;
+                      return <TypeIcon className="w-4 h-4 text-green-500" />;
                     })()}
                     <span
                       className={`text-sm font-medium px-2 py-0.5 rounded-full border ${getLeaveTypeColor(selectedLeave.type)}`}
@@ -1431,7 +1431,7 @@ export default function LeaveManagementPage() {
                     Duration
                   </label>
                   <div className="flex items-center gap-2 mt-1">
-                    <Clock className="w-4 h-4 text-indigo-500" />
+                    <Clock className="w-4 h-4 text-green-500" />
                     <span className="text-sm font-medium text-gray-900">
                       {selectedLeave.totalDays || 0} days
                     </span>
@@ -1481,7 +1481,7 @@ export default function LeaveManagementPage() {
                       Substitute
                     </label>
                     <div className="flex items-center gap-2 mt-1">
-                      <UserPlus className="w-4 h-4 text-indigo-500" />
+                      <UserPlus className="w-4 h-4 text-green-500" />
                       <span className="text-sm text-gray-800">
                         {selectedLeave.substituteName}
                       </span>

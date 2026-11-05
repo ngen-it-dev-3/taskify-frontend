@@ -57,7 +57,7 @@ export default function DepartmentDashboard() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-[60vh]"><Loader2 className="w-10 h-10 animate-spin text-indigo-600" /></div>;
+    return <div className="flex items-center justify-center min-h-[60vh]"><Loader2 className="w-10 h-10 animate-spin text-green-600" /></div>;
   }
 
   if (!stats) return null;
@@ -102,9 +102,9 @@ export default function DepartmentDashboard() {
         <Link href="/tasks/tasks-board" className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition group">
           <div className="flex items-center justify-between">
             <div><p className="text-sm font-medium text-gray-800">Team Tasks</p><p className="text-xs text-gray-400">View all department tasks</p></div>
-            <CheckSquare className="w-6 h-6 text-indigo-400 group-hover:scale-110 transition" />
+            <CheckSquare className="w-6 h-6 text-green-400 group-hover:scale-110 transition" />
           </div>
-          <div className="mt-2 text-xs text-indigo-600">View Tasks <ArrowRight size={12} className="inline ml-1" /></div>
+          <div className="mt-2 text-xs text-green-600">View Tasks <ArrowRight size={12} className="inline ml-1" /></div>
         </Link>
         <Link href="/kpi/dashboard" className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition group">
           <div className="flex items-center justify-between">

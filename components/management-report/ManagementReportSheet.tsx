@@ -590,7 +590,7 @@ export default function ManagementReportSheet({
                     <div className="h-px w-full bg-[#d3d3d3]" />
                     <div className="flex flex-col">
                         <span
-                            className="truncate text-[12px] font-bold leading-tight text-indigo-600"
+                            className="truncate text-[12px] font-bold leading-tight text-green-600"
                             title={employeeName}
                         >
                             {employeeName || "—"}

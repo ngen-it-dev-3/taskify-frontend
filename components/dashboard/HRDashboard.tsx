@@ -92,7 +92,7 @@ interface ApiError {
 
 const ROLE_COLORS: Record<string, string> = {
   super_admin: "bg-purple-50 text-purple-700 border-purple-200",
-  admin: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  admin: "bg-green-50 text-green-700 border-green-200",
   hr_manager: "bg-pink-50 text-pink-700 border-pink-200",
   dept_manager: "bg-blue-50 text-blue-700 border-blue-200",
   project_manager: "bg-amber-50 text-amber-700 border-amber-200",
@@ -387,7 +387,7 @@ export default function HRDashboard() {
           </h3>
           <div className="space-y-2">
             {[
-              { label: "View All Employees", desc: "Access full user directory", href: "/users", icon: Users, color: "text-indigo-500 bg-indigo-50" },
+              { label: "View All Employees", desc: "Access full user directory", href: "/users", icon: Users, color: "text-green-500 bg-green-50" },
               { label: "Add New Employee", desc: "Onboard staff members", href: "/users/create", icon: UserPlus, color: "text-emerald-500 bg-emerald-50" },
               { label: "Manage Departments", desc: "Organize organizational units", href: "/departments", icon: Building, color: "text-purple-500 bg-purple-50" },
               { label: "KPI Performance Dashboard", desc: "Review grading and KPIs", href: "/kpi/dashboard", icon: BarChart3, color: "text-amber-500 bg-amber-50" },
@@ -582,7 +582,7 @@ export default function HRDashboard() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-                <Users size={18} className="text-indigo-500" />
+                <Users size={18} className="text-green-500" />
                 Staff Directory
                 <span className="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
                   {filteredUsers.length} results
@@ -652,7 +652,7 @@ export default function HRDashboard() {
                 <tr key={employee._id} className="hover:bg-gray-50/60 transition">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs">
+                      <div className="w-9 h-9 rounded-xl bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-xs">
                         {getInitials(employee.fullName)}
                       </div>
                       <div>
@@ -680,7 +680,7 @@ export default function HRDashboard() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <Link href={`/users/${employee._id}`}>
-                      <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition">
+                      <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition">
                         <Eye size={16} />
                       </button>
                     </Link>

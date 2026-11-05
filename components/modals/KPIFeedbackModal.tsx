@@ -366,7 +366,7 @@ export default function KPIFeedbackModal({
             admin: "bg-red-50 text-red-700 border-red-200",
             hr_manager: "bg-pink-50 text-pink-700 border-pink-200",
             dept_manager: "bg-blue-50 text-blue-700 border-blue-200",
-            project_manager: "bg-indigo-50 text-indigo-700 border-indigo-200",
+            project_manager: "bg-green-50 text-green-700 border-green-200",
             employee: "bg-gray-50 text-gray-700 border-gray-200",
         };
         return styles[role] || "bg-gray-50 text-gray-700 border-gray-200";

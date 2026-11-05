@@ -95,8 +95,8 @@ export function CommentsSection({ taskId, comments, onCommentUpdate }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-gray-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
-            <MessageSquare className="w-4 h-4 text-indigo-600" />
+          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+            <MessageSquare className="w-4 h-4 text-green-600" />
           </div>
           <h2 className="text-base font-semibold text-gray-800">
             Notes &amp; Comments
@@ -115,7 +115,7 @@ export function CommentsSection({ taskId, comments, onCommentUpdate }: Props) {
         {/* ------------------------------------------------------------ */}
         <div className="flex gap-3">
           {/* Avatar */}
-          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
             <span className="text-white text-xs font-bold">
               {getInitials(user?.fullName || "?")}
             </span>
@@ -126,7 +126,7 @@ export function CommentsSection({ taskId, comments, onCommentUpdate }: Props) {
             <div
               className={`flex items-end gap-2 bg-gray-50 border rounded-xl px-3 py-2 transition-colors ${
                 newComment.trim()
-                  ? "border-indigo-300 ring-1 ring-indigo-100 bg-white"
+                  ? "border-green-300 ring-1 ring-green-100 bg-white"
                   : "border-gray-200"
               }`}
             >
@@ -144,7 +144,7 @@ export function CommentsSection({ taskId, comments, onCommentUpdate }: Props) {
                 disabled={!canSubmit}
                 className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
                   canSubmit
-                    ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm active:scale-95"
+                    ? "bg-green-600 hover:bg-green-700 text-white shadow-sm active:scale-95"
                     : "bg-gray-100 text-gray-400 cursor-not-allowed"
                 }`}
                 aria-label="Send comment"

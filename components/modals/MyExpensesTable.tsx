@@ -378,7 +378,7 @@ const ExpenseRow = memo(function ExpenseRow({
                             type="button"
                             onClick={() => onEdit(expense)}
                             aria-label={`Edit ${expense.title}`}
-                            className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-green-600 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer"
                             title={isApprover && !isPending ? "Edit (admin override)" : "Edit Claim"}
                         >
                             <Pencil className="w-4 h-4" />

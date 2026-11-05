@@ -51,7 +51,7 @@ interface CreateRoomModalProps {
 // ============================================================
 const getAvatarColor = (userId: string = "") => {
     const colors = [
-        "bg-indigo-500",
+        "bg-green-500",
         "bg-rose-500",
         "bg-emerald-500",
         "bg-amber-500",
@@ -249,7 +249,7 @@ export default function CreateRoomModal({
                 {/* Modal Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white/95 backdrop-blur-sm shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100/80 flex items-center justify-center text-indigo-600 shadow-2xs">
+                        <div className="w-10 h-10 rounded-2xl bg-green-50 border border-green-100/80 flex items-center justify-center text-green-600 shadow-2xs">
                             <Users className="w-5 h-5" />
                         </div>
                         <div>
@@ -296,13 +296,13 @@ export default function CreateRoomModal({
                                     type="button"
                                     onClick={() => setRoomType(type)}
                                     className={`flex flex-col items-start p-3 rounded-2xl border-2 transition-all text-left cursor-pointer ${roomType === type
-                                        ? "border-indigo-600 bg-indigo-50/50 text-indigo-900 shadow-2xs"
+                                        ? "border-green-600 bg-green-50/50 text-green-900 shadow-2xs"
                                         : "border-slate-200 hover:border-slate-300 text-slate-600 hover:bg-slate-50/50"
                                         }`}
                                 >
                                     <div
                                         className={`w-7 h-7 rounded-xl flex items-center justify-center mb-2 ${roomType === type
-                                            ? "bg-indigo-600 text-white"
+                                            ? "bg-green-600 text-white"
                                             : "bg-slate-100 text-slate-500"
                                             }`}
                                     >
@@ -324,7 +324,7 @@ export default function CreateRoomModal({
                             <select
                                 value={selectedProjectId}
                                 onChange={(e) => handleProjectSelect(e.target.value)}
-                                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white shadow-2xs transition"
+                                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white shadow-2xs transition"
                                 required
                             >
                                 <option value="">Select a project...</option>
@@ -351,7 +351,7 @@ export default function CreateRoomModal({
                                 value={roomName}
                                 onChange={(e) => setRoomName(e.target.value.toLowerCase().replace(/\s+/g, "-"))}
                                 placeholder={roomType === "project" ? "e.g. mobile-app-dev" : "e.g. general-announcements"}
-                                className="w-full pl-8 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white shadow-2xs transition font-medium"
+                                className="w-full pl-8 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white shadow-2xs transition font-medium"
                                 required
                             />
                         </div>
@@ -367,7 +367,7 @@ export default function CreateRoomModal({
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="What is this channel about?"
                             rows={2}
-                            className="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 resize-none bg-white shadow-2xs transition"
+                            className="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 resize-none bg-white shadow-2xs transition"
                         />
                     </div>
 
@@ -381,7 +381,7 @@ export default function CreateRoomModal({
                                 <button
                                     type="button"
                                     onClick={() => setSelectedMembers([])}
-                                    className="text-[10px] text-indigo-600 hover:text-indigo-700 font-semibold"
+                                    className="text-[10px] text-green-600 hover:text-green-700 font-semibold"
                                 >
                                     Clear all
                                 </button>
@@ -422,7 +422,7 @@ export default function CreateRoomModal({
                                 placeholder="Search colleagues by name or email..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-9 pr-3.5 py-2 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 bg-white shadow-2xs transition"
+                                className="w-full pl-9 pr-3.5 py-2 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 bg-white shadow-2xs transition"
                             />
                         </div>
 
@@ -430,7 +430,7 @@ export default function CreateRoomModal({
                         <div className="max-h-44 overflow-y-auto border border-slate-200 rounded-2xl divide-y divide-slate-100 bg-white">
                             {loadingData ? (
                                 <div className="p-4 flex items-center justify-center gap-2 text-xs text-slate-400">
-                                    <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+                                    <Loader2 className="w-4 h-4 animate-spin text-green-600" />
                                     Loading members...
                                 </div>
                             ) : filteredUsers.length === 0 ? (
@@ -444,7 +444,7 @@ export default function CreateRoomModal({
                                         <div
                                             key={u._id}
                                             onClick={() => toggleMember(u._id)}
-                                            className={`flex items-center justify-between px-3 py-2 cursor-pointer transition select-none ${isSelected ? "bg-indigo-50/60" : "hover:bg-slate-50"
+                                            className={`flex items-center justify-between px-3 py-2 cursor-pointer transition select-none ${isSelected ? "bg-green-50/60" : "hover:bg-slate-50"
                                                 }`}
                                         >
                                             <div className="flex items-center gap-2.5 min-w-0 pr-2">
@@ -457,7 +457,7 @@ export default function CreateRoomModal({
 
                                             <div
                                                 className={`w-5 h-5 rounded-lg flex items-center justify-center border transition shrink-0 ${isSelected
-                                                    ? "bg-indigo-600 border-indigo-600 text-white"
+                                                    ? "bg-green-600 border-green-600 text-white"
                                                     : "border-slate-300 bg-white"
                                                     }`}
                                             >
@@ -486,7 +486,7 @@ export default function CreateRoomModal({
                             <button
                                 type="submit"
                                 disabled={submitting || !roomName.trim()}
-                                className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                                className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition shadow-xs flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                                 {submitting ? (
                                     <>

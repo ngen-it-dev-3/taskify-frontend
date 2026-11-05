@@ -220,13 +220,13 @@ export default function HelpPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-linear-to-br from-indigo-600/20 via-purple-600/10 to-transparent">
+      <div className="relative overflow-hidden bg-linear-to-br from-green-600/20 via-purple-600/10 to-transparent">
         <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]" />
         <div className="relative container mx-auto px-6 lg:px-8 py-16 lg:py-24">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-6">
-              <LifeBuoy className="w-4 h-4 text-indigo-400" />
-              <span className="text-xs font-medium text-indigo-400">Help Center</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 mb-6">
+              <LifeBuoy className="w-4 h-4 text-green-400" />
+              <span className="text-xs font-medium text-green-400">Help Center</span>
             </div>
             <h1 className="text-4xl lg:text-5xl font-bold bg-linear-to-r from-white to-slate-400 bg-clip-text text-transparent mb-4">
               How can we help you?
@@ -243,7 +243,7 @@ export default function HelpPage() {
                 placeholder="Search for help articles, guides, and FAQs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-4 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition-all"
               />
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function HelpPage() {
                 onClick={() => setActiveCategory(category.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
+                    ? "bg-green-600 text-white shadow-lg shadow-green-500/25"
                     : "bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800"
                 }`}
               >
@@ -277,7 +277,7 @@ export default function HelpPage() {
         {(activeCategory === "all" || filteredGuides.length > 0) && (
           <div className="mb-12">
             <div className="flex items-center gap-2 mb-6">
-              <BookOpen className="w-5 h-5 text-indigo-400" />
+              <BookOpen className="w-5 h-5 text-green-400" />
               <h2 className="text-xl font-semibold text-white">Quick Guides</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -287,10 +287,10 @@ export default function HelpPage() {
                   <Link
                     key={index}
                     href={guide.link}
-                    className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-800 p-4 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10"
+                    className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-800 p-4 hover:border-green-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                      <Icon size={18} className="text-indigo-400" />
+                    <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <Icon size={18} className="text-green-400" />
                     </div>
                     <h3 className="text-sm font-semibold text-white mb-1">
                       {guide.title}
@@ -298,7 +298,7 @@ export default function HelpPage() {
                     <p className="text-xs text-slate-400 mb-3">
                       {guide.description}
                     </p>
-                    <div className="flex items-center gap-1 text-indigo-400 text-xs font-medium">
+                    <div className="flex items-center gap-1 text-green-400 text-xs font-medium">
                       Learn more
                       <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                     </div>
@@ -312,7 +312,7 @@ export default function HelpPage() {
         {/* FAQs Section */}
         <div>
           <div className="flex items-center gap-2 mb-6">
-            <HelpCircle className="w-5 h-5 text-indigo-400" />
+            <HelpCircle className="w-5 h-5 text-green-400" />
             <h2 className="text-xl font-semibold text-white">Frequently Asked Questions</h2>
             <span className="px-2 py-0.5 text-xs bg-slate-800 rounded-full text-slate-400">
               {filteredFAQs.length} articles
@@ -331,7 +331,7 @@ export default function HelpPage() {
                 return (
                   <div
                     key={index}
-                    className="bg-linear-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-800 overflow-hidden transition-all duration-200 hover:border-indigo-500/30"
+                    className="bg-linear-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-800 overflow-hidden transition-all duration-200 hover:border-green-500/30"
                   >
                     <button
                       onClick={() => toggleFAQ(index)}
@@ -339,7 +339,7 @@ export default function HelpPage() {
                     >
                       <div className="flex-1 pr-4">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400">
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/10 text-green-400">
                             {categories.find(c => c.id === faq.category)?.name}
                           </span>
                         </div>
@@ -368,10 +368,10 @@ export default function HelpPage() {
         </div>
 
         {/* Contact Support Section */}
-        <div className="mt-16 p-8 bg-linear-to-br from-indigo-600/10 to-purple-600/10 rounded-2xl border border-indigo-500/20 text-center">
+        <div className="mt-16 p-8 bg-linear-to-br from-green-600/10 to-purple-600/10 rounded-2xl border border-green-500/20 text-center">
           <div className="max-w-2xl mx-auto">
-            <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="w-6 h-6 text-indigo-400" />
+            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+              <MessageCircle className="w-6 h-6 text-green-400" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">
               Still need help?
@@ -382,7 +382,7 @@ export default function HelpPage() {
             <div className="flex flex-wrap gap-4 justify-center">
               <Link
                 href="/support/tickets"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition-all"
               >
                 <MessageCircle size={16} />
                 Create Support Ticket
@@ -395,7 +395,7 @@ export default function HelpPage() {
                 Email Support
               </a>
             </div>
-            <div className="mt-6 pt-6 border-t border-indigo-500/20">
+            <div className="mt-6 pt-6 border-t border-green-500/20">
               <div className="flex items-center justify-center gap-6 text-sm text-slate-500">
                 <div className="flex items-center gap-2">
                   <Clock size={14} />
@@ -418,12 +418,12 @@ export default function HelpPage() {
         <div className="mt-12">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <Video className="w-5 h-5 text-indigo-400" />
+              <Video className="w-5 h-5 text-green-400" />
               <h2 className="text-xl font-semibold text-white">Video Tutorials</h2>
             </div>
             <Link
               href="/help/videos"
-              className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+              className="text-sm text-green-400 hover:text-green-300 transition-colors flex items-center gap-1"
             >
               View all
               <ChevronRight size={14} />
@@ -439,11 +439,11 @@ export default function HelpPage() {
               return (
                 <button
                   key={index}
-                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-800 p-4 text-left hover:border-indigo-500/30 transition-all"
+                  className="group bg-linear-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-800 p-4 text-left hover:border-green-500/30 transition-all"
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Icon size={14} className="text-indigo-400" />
+                    <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Icon size={14} className="text-green-400" />
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-white">{video.title}</h3>
@@ -451,7 +451,7 @@ export default function HelpPage() {
                     </div>
                   </div>
                   <div className="relative rounded-lg overflow-hidden bg-slate-800 h-24 flex items-center justify-center">
-                    <div className="absolute inset-0 bg-linear-to-br from-indigo-600/20 to-purple-600/20" />
+                    <div className="absolute inset-0 bg-linear-to-br from-green-600/20 to-purple-600/20" />
                     <Play className="w-8 h-8 text-white/50 group-hover:text-white/80 transition-colors" />
                   </div>
                 </button>

@@ -1,3 +1,4 @@
+// components/CRM/rfq/RfqListPanel.tsx
 'use client';
 
 import React from 'react';
@@ -44,10 +45,10 @@ export default function RfqListPanel({
           </div>
         ) : (
           safeRfqs.map((rfq) => {
-            // ⭐ Changed rfq.status to rfq.stage
+            // ⭐ REMOVED isAssigned from actionsLocked
             const actionsLocked =
-              rfq.stage === 'lost' || 
-              rfq.stage === 'archived' || 
+              rfq.stage === 'lost' ||
+              rfq.stage === 'archived' ||
               rfq.stage === 'quoted';
 
             return (

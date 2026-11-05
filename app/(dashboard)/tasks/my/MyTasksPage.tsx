@@ -183,7 +183,7 @@ const SubTaskTree = ({ task, onTaskClick, level = 0 }: { task: Task; onTaskClick
           </button>
         )}
         <div className="w-7 h-7 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
-          {task.isMilestone ? <Gem className="w-3.5 h-3.5 text-purple-600" /> : hasSubTasks ? <GitBranch className="w-3.5 h-3.5 text-indigo-600" /> : <CheckSquare className="w-3.5 h-3.5 text-slate-400" />}
+          {task.isMilestone ? <Gem className="w-3.5 h-3.5 text-purple-600" /> : hasSubTasks ? <GitBranch className="w-3.5 h-3.5 text-green-600" /> : <CheckSquare className="w-3.5 h-3.5 text-slate-400" />}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
@@ -501,7 +501,7 @@ export default function MyTasksPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-green-600" />
           <p className="text-xs font-medium text-slate-400">Loading your workspace tasks...</p>
         </div>
       </div>
@@ -525,13 +525,13 @@ export default function MyTasksPage() {
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-linear-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-linear-to-tr from-green-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <CheckSquare className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Assigned Tasks Hub</h1>
-                  <span className="px-2.5 py-0.5 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                  <span className="px-2.5 py-0.5 text-xs font-bold bg-green-50 text-green-700 rounded-full border border-green-100">
                     {stats.total} total
                   </span>
                 </div>
@@ -557,7 +557,7 @@ export default function MyTasksPage() {
               <Download size={14} /> Export CSV
             </button>
 
-            <button onClick={() => setShowCreateModal(true)} className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl flex items-center gap-2 transition shadow-lg shadow-indigo-600/20 cursor-pointer">
+            <button onClick={() => setShowCreateModal(true)} className="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl flex items-center gap-2 transition shadow-lg shadow-green-600/20 cursor-pointer">
               <Plus size={15} /> Create Task
             </button>
           </div>
@@ -591,7 +591,7 @@ export default function MyTasksPage() {
               placeholder="Search deliverables by title or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-slate-800 text-xs font-semibold outline-none focus:border-indigo-500 focus:bg-white transition"
+              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200/80 rounded-2xl text-slate-800 text-xs font-semibold outline-none focus:border-green-500 focus:bg-white transition"
             />
           </div>
 
@@ -605,7 +605,7 @@ export default function MyTasksPage() {
             </button>
             <button
               onClick={() => setShowParentOnly(!showParentOnly)}
-              className={`px-4 py-3 rounded-2xl text-xs font-bold transition flex items-center gap-2 border cursor-pointer ${showParentOnly ? "bg-indigo-600 text-white border-indigo-600" : "bg-slate-50 text-slate-700 border-slate-200"
+              className={`px-4 py-3 rounded-2xl text-xs font-bold transition flex items-center gap-2 border cursor-pointer ${showParentOnly ? "bg-green-600 text-white border-green-600" : "bg-slate-50 text-slate-700 border-slate-200"
                 }`}
             >
               <GitBranch size={14} /> {showParentOnly ? "Parents Only" : "All Tasks"}
@@ -690,7 +690,7 @@ export default function MyTasksPage() {
                       </td>
                       <td className="px-6 py-4 text-xs text-slate-500">{new Date(task.deadline).toLocaleDateString()}</td>
                       <td className="px-6 py-4 text-right">
-                        <button onClick={(e) => { e.stopPropagation(); setSelectedTask(task); }} className="p-2 text-slate-400 hover:text-indigo-600 rounded-xl transition cursor-pointer">
+                        <button onClick={(e) => { e.stopPropagation(); setSelectedTask(task); }} className="p-2 text-slate-400 hover:text-green-600 rounded-xl transition cursor-pointer">
                           <Eye size={16} />
                         </button>
                       </td>
@@ -733,7 +733,7 @@ export default function MyTasksPage() {
                       </button>
                     </div>
 
-                    <h3 className="font-extrabold text-slate-900 text-base tracking-tight group-hover:text-indigo-600 transition line-clamp-1">{task.title}</h3>
+                    <h3 className="font-extrabold text-slate-900 text-base tracking-tight group-hover:text-green-600 transition line-clamp-1">{task.title}</h3>
                     <p className="text-xs text-slate-400 font-medium line-clamp-2">{task.description || "No description provided."}</p>
                   </div>
 
@@ -746,7 +746,7 @@ export default function MyTasksPage() {
                         e.stopPropagation();
                         setSelectedTask(task);
                       }}
-                      className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                      className="px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-700 font-bold rounded-xl transition flex items-center gap-1.5 cursor-pointer"
                     >
                       <Eye size={12} /> View
                     </button>
@@ -809,7 +809,7 @@ export default function MyTasksPage() {
                   <Link
                     href={`/tasks/${selectedTask._id}`}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20 text-xs flex items-center justify-center gap-2 cursor-pointer text-center"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-green-600/20 text-xs flex items-center justify-center gap-2 cursor-pointer text-center"
                   >
                     <Eye size={15} /> Check Details Page
                   </Link>

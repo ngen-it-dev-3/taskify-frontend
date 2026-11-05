@@ -758,7 +758,7 @@ export default function MyPerformancePage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading performance data...</p>
         </div>
       </div>
@@ -777,13 +777,13 @@ export default function MyPerformancePage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <TrendingUp className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   Performance Dashboard
                 </h1>
-                <span className="ml-2 px-2 py-0.5 text-[10px] font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-[10px] font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {selectedPeriod.toUpperCase()}
                 </span>
               </div>
@@ -798,7 +798,7 @@ export default function MyPerformancePage() {
                     key={period}
                     onClick={() => setSelectedPeriod(period as any)}
                     className={`px-3 py-1.5 rounded-md text-sm capitalize transition-all duration-200 ${selectedPeriod === period
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-green-600 text-white shadow-sm"
                       : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                       }`}
                   >
@@ -852,7 +852,7 @@ export default function MyPerformancePage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
-                  ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                  ? "bg-green-50 text-green-700 border border-green-200"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                   }`}
               >
@@ -951,7 +951,7 @@ export default function MyPerformancePage() {
                     </div>
                     <div className="relative h-1.5 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="absolute left-0 top-0 h-full bg-linear-to-r from-indigo-500 to-purple-600 rounded-full transition-all duration-500 group-hover:scale-x-105"
+                        className="absolute left-0 top-0 h-full bg-linear-to-r from-green-500 to-purple-600 rounded-full transition-all duration-500 group-hover:scale-x-105"
                         style={{ width: `${Math.min(metric.progress, 100)}%` }}
                       />
                     </div>
@@ -975,7 +975,7 @@ export default function MyPerformancePage() {
                   className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
                 >
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <Brain className="w-5 h-5 text-indigo-600" />
+                    <Brain className="w-5 h-5 text-green-600" />
                     Skills Overview
                   </h3>
                   <div className="h-80">
@@ -1026,7 +1026,7 @@ export default function MyPerformancePage() {
                   className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"
                 >
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-indigo-600" />
+                    <CheckCircle className="w-5 h-5 text-green-600" />
                     Task Performance Summary
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1042,11 +1042,11 @@ export default function MyPerformancePage() {
                       </p>
                       <p className="text-xs text-emerald-500">Completed</p>
                     </div>
-                    <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-100 text-center">
-                      <p className="text-2xl font-bold text-indigo-600">
+                    <div className="p-3 bg-green-50 rounded-lg border border-green-100 text-center">
+                      <p className="text-2xl font-bold text-green-600">
                         {Math.round(taskPerformance.completionRate)}%
                       </p>
-                      <p className="text-xs text-indigo-500">Completion Rate</p>
+                      <p className="text-xs text-green-500">Completion Rate</p>
                     </div>
                     <div className="p-3 bg-amber-50 rounded-lg border border-amber-100 text-center">
                       <p className="text-2xl font-bold text-amber-600">
@@ -1121,11 +1121,11 @@ export default function MyPerformancePage() {
                       </p>
                       <p className="text-xs text-red-500">Rejected</p>
                     </div>
-                    <div className="text-center p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                      <p className="text-xl font-bold text-indigo-600">
+                    <div className="text-center p-3 bg-green-50 rounded-lg border border-green-100">
+                      <p className="text-xl font-bold text-green-600">
                         {Math.round(taskPerformance.completionRate)}%
                       </p>
-                      <p className="text-xs text-indigo-500">Completion</p>
+                      <p className="text-xs text-green-500">Completion</p>
                     </div>
                   </div>
 
@@ -1196,7 +1196,7 @@ export default function MyPerformancePage() {
                           <span className="text-xs text-gray-600">
                             Completion Rate
                           </span>
-                          <span className="text-sm font-semibold text-indigo-600">
+                          <span className="text-sm font-semibold text-green-600">
                             {Math.round(taskPerformance.completionRate)}%
                           </span>
                         </div>
@@ -1215,7 +1215,7 @@ export default function MyPerformancePage() {
                   className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"
                 >
                   <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                    <PieChart className="w-5 h-5 text-indigo-600" />
+                    <PieChart className="w-5 h-5 text-green-600" />
                     Category Performance
                   </h3>
                   <div className="h-64">
@@ -1275,7 +1275,7 @@ export default function MyPerformancePage() {
                 >
                   <div className="p-5 border-b border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-indigo-600" />
+                      <Activity className="w-5 h-5 text-green-600" />
                       Productivity Trends
                     </h3>
                     <p className="text-xs text-gray-500">
@@ -1440,7 +1440,7 @@ export default function MyPerformancePage() {
                     className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"
                   >
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Calendar className="w-5 h-5 text-indigo-600" />
+                      <Calendar className="w-5 h-5 text-green-600" />
                       {selectedPeriod === "year"
                         ? "Yearly Overview"
                         : "Monthly Performance"}
@@ -1471,14 +1471,14 @@ export default function MyPerformancePage() {
                               Avg. Completion
                             </p>
                           </div>
-                          <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-100 text-center">
-                            <p className="text-2xl font-bold text-indigo-600">
+                          <div className="p-3 bg-green-50 rounded-lg border border-green-100 text-center">
+                            <p className="text-2xl font-bold text-green-600">
                               {yearlyStats.reduce(
                                 (sum, y) => sum + y.totalHours,
                                 0,
                               )}
                             </p>
-                            <p className="text-xs text-indigo-500">
+                            <p className="text-xs text-green-500">
                               Total Hours
                             </p>
                           </div>
@@ -1582,7 +1582,7 @@ export default function MyPerformancePage() {
                     className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm"
                   >
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Star className="w-5 h-5 text-indigo-600" />
+                      <Star className="w-5 h-5 text-green-600" />
                       Ratings & Feedback
                     </h3>
                     <div className="flex items-center justify-between mb-6">
@@ -1701,7 +1701,7 @@ export default function MyPerformancePage() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-indigo-600" />
+                    <Trophy className="w-5 h-5 text-green-600" />
                     Achievements
                   </h3>
                   <p className="text-xs text-gray-500">

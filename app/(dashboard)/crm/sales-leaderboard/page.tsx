@@ -116,10 +116,10 @@ function avatarColor(name: string): string {
     const palette = [
         'from-amber-500 to-amber-700 text-white',
         'from-emerald-500 to-teal-700 text-white',
-        'from-violet-500 to-indigo-700 text-white',
+        'from-violet-500 to-green-700 text-white',
         'from-blue-500 to-cyan-700 text-white',
         'from-rose-500 to-pink-700 text-white',
-        'from-indigo-500 to-purple-800 text-white',
+        'from-green-500 to-purple-800 text-white',
     ];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
@@ -270,7 +270,7 @@ export default function SalesLeaderboardPage() {
                             accent="amber"
                         />
                         <StatCard
-                            icon={<Percent className="w-4 h-4 text-indigo-600" />}
+                            icon={<Percent className="w-4 h-4 text-green-600" />}
                             label="Win Rate"
                             value={`${data.winRate}%`}
                             accent="indigo"
@@ -514,7 +514,7 @@ function StatCard({
     const accentColors = {
         emerald: 'bg-emerald-50 border-emerald-100',
         amber: 'bg-amber-50 border-amber-100',
-        indigo: 'bg-indigo-50 border-indigo-100',
+        indigo: 'bg-green-50 border-green-100',
         slate: 'bg-slate-50 border-slate-100',
     };
 

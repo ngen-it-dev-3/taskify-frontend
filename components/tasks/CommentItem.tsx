@@ -122,7 +122,7 @@ export function CommentItem({ comment, depth = 0, onCommentUpdate }: Props) {
     <div className={depth > 0 ? "ml-8 mt-3" : "mb-4"}>
       <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center shrink-0 shadow-sm">
             <span className="text-white text-xs font-bold">
               {getInitials(comment.author?.fullName)}
             </span>
@@ -148,7 +148,7 @@ export function CommentItem({ comment, depth = 0, onCommentUpdate }: Props) {
                         setEditing(true);
                         setEditContent(comment.content);
                       }}
-                      className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                      className="p-1 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                     >
                       <Edit2 size={12} />
                     </button>
@@ -168,13 +168,13 @@ export function CommentItem({ comment, depth = 0, onCommentUpdate }: Props) {
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   rows={2}
                 />
                 <div className="flex gap-2 mt-2">
                   <button
                     onClick={handleUpdate}
-                    className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-lg"
+                    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg"
                   >
                     Save
                   </button>
@@ -196,15 +196,15 @@ export function CommentItem({ comment, depth = 0, onCommentUpdate }: Props) {
               <button
                 onClick={handleLike}
                 className={`flex items-center gap-1 text-xs transition ${isLiked
-                    ? "text-indigo-600"
-                    : "text-gray-400 hover:text-indigo-600"
+                    ? "text-green-600"
+                    : "text-gray-400 hover:text-green-600"
                   }`}
               >
                 <ThumbsUp size={12} /> {comment.likes?.length || 0} Likes
               </button>
               <button
                 onClick={() => setShowReply(!showReply)}
-                className="flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-600 transition"
+                className="flex items-center gap-1 text-xs text-gray-400 hover:text-green-600 transition"
               >
                 <Reply size={12} /> Reply
               </button>
@@ -226,11 +226,11 @@ export function CommentItem({ comment, depth = 0, onCommentUpdate }: Props) {
             }}
             placeholder="Write a reply…  (Ctrl+Enter to send)"
             rows={2}
-            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm resize-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm resize-none focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
           />
           <button
             onClick={handleReply}
-            className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+            className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg"
           >
             <Send size={14} />
           </button>

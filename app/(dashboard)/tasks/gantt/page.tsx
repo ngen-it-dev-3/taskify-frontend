@@ -270,7 +270,7 @@ const TaskGanttBar = memo(({
         >
             <Tooltip content={tooltipContent}>
                 <div
-                    className={`relative w-full h-full rounded-md border flex items-center overflow-hidden transition-all duration-100 group-hover:scale-[1.01] ${barColorLight} ${hasDependencies ? "border-l-4 border-l-indigo-500" : ""
+                    className={`relative w-full h-full rounded-md border flex items-center overflow-hidden transition-all duration-100 group-hover:scale-[1.01] ${barColorLight} ${hasDependencies ? "border-l-4 border-l-green-500" : ""
                         }`}
                 >
                     <div
@@ -802,7 +802,7 @@ export default function GanttChartPage() {
         return (
             <div className="flex items-center justify-center min-h-100 w-full">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                    <Loader2 className="w-8 h-8 animate-spin text-green-600" />
                     <p className="text-slate-500 text-sm font-medium">Loading schedule...</p>
                 </div>
             </div>
@@ -818,7 +818,7 @@ export default function GanttChartPage() {
                     <p className="text-slate-500 text-sm mb-4">{error}</p>
                     <button
                         onClick={fetchData}
-                        className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium transition flex items-center gap-2 mx-auto shadow-xs"
+                        className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition flex items-center gap-2 mx-auto shadow-xs"
                     >
                         <RefreshCw size={15} /> Retry
                     </button>
@@ -839,12 +839,12 @@ export default function GanttChartPage() {
             >
                 <div>
                     <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5 tracking-tight">
-                        <CalendarDays className="w-6 h-6 text-indigo-600" />
+                        <CalendarDays className="w-6 h-6 text-green-600" />
                         Gantt Chart
                     </h1>
                     <p className="text-slate-500 text-xs mt-0.5">
                         Interactive visual timeline
-                        <span className="ml-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">
+                        <span className="ml-2 text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full border border-green-100">
                             {ganttData.totalTasks} tasks
                         </span>
                         <span className="ml-2 text-xs font-semibold text-purple-600 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-100">
@@ -853,7 +853,7 @@ export default function GanttChartPage() {
                         <span className="ml-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
                             <GitBranch className="w-3 h-3 inline" /> {ganttData.subTaskCount} sub-tasks
                         </span>
-                        <span className="ml-2 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">
+                        <span className="ml-2 text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-0.5 rounded-full border border-green-100">
                             <Link2 className="w-3 h-3 inline" /> {dependencyEdges.length} dependencies
                         </span>
                     </p>
@@ -862,21 +862,21 @@ export default function GanttChartPage() {
                 <div className="flex items-center gap-2 flex-wrap">
                     <button
                         onClick={fetchData}
-                        className="p-2 bg-white border border-slate-200 hover:border-indigo-300 rounded-xl transition text-slate-600 hover:text-indigo-600 shadow-xs"
+                        className="p-2 bg-white border border-slate-200 hover:border-green-300 rounded-xl transition text-slate-600 hover:text-green-600 shadow-xs"
                         title="Refresh"
                     >
                         <RefreshCw size={15} />
                     </button>
                     <button
                         onClick={handleExportCSV}
-                        className="px-3.5 py-2 bg-white border border-slate-200 hover:border-indigo-300 rounded-xl transition flex items-center gap-1.5 text-xs font-semibold text-slate-700 shadow-xs"
+                        className="px-3.5 py-2 bg-white border border-slate-200 hover:border-green-300 rounded-xl transition flex items-center gap-1.5 text-xs font-semibold text-slate-700 shadow-xs"
                     >
                         <Download size={14} /> CSV
                     </button>
                     <button
                         onClick={handleExportPDF}
                         disabled={exportingPDF || ganttData.tasks.length === 0}
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition flex items-center gap-1.5 text-xs font-semibold shadow-xs disabled:opacity-50"
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition flex items-center gap-1.5 text-xs font-semibold shadow-xs disabled:opacity-50"
                     >
                         <FileText size={14} className={exportingPDF ? "animate-spin" : ""} />
                         {exportingPDF ? "Exporting..." : "PDF"}
@@ -892,14 +892,14 @@ export default function GanttChartPage() {
                         setFilterEmployee("all");
                         setSelectedEmployee(null);
                     }}
-                    className={`flex-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 ${viewTab === "all" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                    className={`flex-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 ${viewTab === "all" ? "bg-white text-green-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
                         }`}
                 >
                     <Users size={14} /> All Tasks
                 </button>
                 <button
                     onClick={() => handleFilterChange<"all" | "employee">(setViewTab, "employee")}
-                    className={`flex-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 ${viewTab === "employee" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
+                    className={`flex-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 ${viewTab === "employee" ? "bg-white text-green-600 shadow-xs" : "text-slate-600 hover:text-slate-900"
                         }`}
                 >
                     <UserCircle size={14} /> Employee Wise
@@ -911,7 +911,7 @@ export default function GanttChartPage() {
                 <div className="bg-white rounded-xl border border-slate-200/80 p-3.5 shadow-xs">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                         <div className="flex items-center gap-2 text-xs font-medium text-slate-600">
-                            <UserCheck className="w-4 h-4 text-indigo-600" />
+                            <UserCheck className="w-4 h-4 text-green-600" />
                             <span>Employee:</span>
                         </div>
                         <div className="flex-1 min-w-55">
@@ -923,7 +923,7 @@ export default function GanttChartPage() {
                                     const emp = users.find((u) => u._id === empId);
                                     setSelectedEmployee(emp || null);
                                 }}
-                                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 text-xs focus:ring-2 focus:ring-indigo-100 outline-none"
+                                className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 text-xs focus:ring-2 focus:ring-green-100 outline-none"
                             >
                                 <option value="all">Select an employee...</option>
                                 {users.map((u) => {
@@ -943,8 +943,8 @@ export default function GanttChartPage() {
                             </select>
                         </div>
                         {selectedEmployee && (
-                            <div className="flex items-center gap-2.5 px-3 py-1 bg-indigo-50/70 rounded-lg border border-indigo-100">
-                                <div className="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
+                            <div className="flex items-center gap-2.5 px-3 py-1 bg-green-50/70 rounded-lg border border-green-100">
+                                <div className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white text-[10px] font-bold">
                                     {getInitials(selectedEmployee.fullName)}
                                 </div>
                                 <div className="text-xs">
@@ -956,7 +956,7 @@ export default function GanttChartPage() {
                                         handleFilterChange<string>(setFilterEmployee, "all");
                                         setSelectedEmployee(null);
                                     }}
-                                    className="p-0.5 hover:bg-indigo-100 rounded text-slate-400 hover:text-slate-600 ml-1"
+                                    className="p-0.5 hover:bg-green-100 rounded text-slate-400 hover:text-slate-600 ml-1"
                                 >
                                     <X size={12} />
                                 </button>
@@ -976,7 +976,7 @@ export default function GanttChartPage() {
                             placeholder="Search tasks..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-indigo-100 outline-none"
+                            className="w-full pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-2 focus:ring-green-100 outline-none"
                         />
                     </div>
 
@@ -1057,7 +1057,7 @@ export default function GanttChartPage() {
                                             setTimeout(() => setFilterLoading(false), 50);
                                         });
                                     }}
-                                    className={`px-3 py-1 text-xs font-semibold capitalize rounded-md transition ${viewMode === mode ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                                    className={`px-3 py-1 text-xs font-semibold capitalize rounded-md transition ${viewMode === mode ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                                         }`}
                                 >
                                     {mode}
@@ -1076,7 +1076,7 @@ export default function GanttChartPage() {
                             </button>
                             <button
                                 onClick={goToToday}
-                                className="px-2 py-0.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 rounded"
+                                className="px-2 py-0.5 text-xs font-semibold text-green-600 hover:bg-green-50 rounded"
                             >
                                 Today
                             </button>
@@ -1119,7 +1119,7 @@ export default function GanttChartPage() {
                 {/* Non-Blocking Loader Overlay */}
                 {filterLoading && (
                     <div className="absolute inset-0  bg-white/70 backdrop-blur-[1.5px] flex flex-col items-center justify-center gap-2">
-                        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
                         <span className="text-xs font-semibold text-slate-600 tracking-wide uppercase">
                             Updating Timeline...
                         </span>
@@ -1154,7 +1154,7 @@ export default function GanttChartPage() {
                                         <div
                                             key={idx}
                                             className={`shrink-0 text-center py-1.5 border-r border-slate-100 flex flex-col justify-center select-none ${col.isWeekend ? "bg-slate-100/50" : ""
-                                                } ${col.isToday ? "bg-indigo-50 font-bold text-indigo-600" : "text-slate-600"}`}
+                                                } ${col.isToday ? "bg-green-50 font-bold text-green-600" : "text-slate-600"}`}
                                             style={{ width: `${dayWidth}px` }}
                                         >
                                             <span className="text-[9px] text-slate-400 leading-none">{col.text}</span>
@@ -1195,7 +1195,7 @@ export default function GanttChartPage() {
                                                     {task.isMilestone && <Gem className="w-3.5 h-3.5 text-purple-600 shrink-0" />}
                                                     {isSubTask && !task.isMilestone && <GitBranch className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
                                                     {hasSubTasks && !task.isMilestone && !isSubTask && <GitBranch className="w-3.5 h-3.5 text-emerald-500 shrink-0" />}
-                                                    {hasDependencies && <Link2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />}
+                                                    {hasDependencies && <Link2 className="w-3.5 h-3.5 text-green-500 shrink-0" />}
 
                                                     <div
                                                         className="w-2 h-2 rounded-full shrink-0"
@@ -1287,7 +1287,7 @@ export default function GanttChartPage() {
                 <div className="flex items-center gap-1.5 text-blue-600 font-medium">
                     <GitBranch className="w-3.5 h-3.5" /> <span>Sub-Task</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-indigo-600 font-medium">
+                <div className="flex items-center gap-1.5 text-green-600 font-medium">
                     <Link2 className="w-3.5 h-3.5" /> <span>Dependency</span>
                 </div>
             </div>
@@ -1379,7 +1379,7 @@ export default function GanttChartPage() {
 
                                 {selectedTask.assignedTo && (
                                     <div className="flex items-center gap-3 p-3 bg-slate-50/70 border border-slate-100 rounded-xl">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-indigo-600/20">
+                                        <div className="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm shadow-green-600/20">
                                             {getInitials(selectedTask.assignedTo.fullName)}
                                         </div>
                                         <div className="min-w-0 flex-1">
@@ -1399,7 +1399,7 @@ export default function GanttChartPage() {
                                         setShowDependencyEditor(true);
                                         setShowTaskDetails(false);
                                     }}
-                                    className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200/70 text-indigo-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+                                    className="px-3.5 py-2 bg-green-50 hover:bg-green-100 active:bg-green-200/70 text-green-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
                                 >
                                     <Link2 size={13} />
                                     Manage Dependencies

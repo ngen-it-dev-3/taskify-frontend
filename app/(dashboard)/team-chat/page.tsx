@@ -242,9 +242,9 @@ export default function TeamChatPage() {
 
             if (messageElement) {
                 messageElement.scrollIntoView({ behavior: "smooth", block: "center" });
-                messageElement.classList.add("ring-2", "ring-indigo-500", "bg-indigo-50/70", "animate-pulse");
+                messageElement.classList.add("ring-2", "ring-green-500", "bg-green-50/70", "animate-pulse");
                 setTimeout(() => {
-                    messageElement.classList.remove("ring-2", "ring-indigo-500", "bg-indigo-50/70", "animate-pulse");
+                    messageElement.classList.remove("ring-2", "ring-green-500", "bg-green-50/70", "animate-pulse");
                 }, 2500);
                 return;
             }
@@ -405,7 +405,7 @@ export default function TeamChatPage() {
         return (
             <div className="flex items-center justify-center min-h-screen bg-white">
                 <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                    <Loader2 className="w-8 h-8 animate-spin text-green-600" />
                     <p className="text-slate-400 text-xs font-medium">Connecting to workspace chat...</p>
                 </div>
             </div>
@@ -431,7 +431,7 @@ export default function TeamChatPage() {
             {/* Top Header */}
             <header className="h-14 border-b border-slate-200/80 px-6 flex items-center justify-between shrink-0 bg-white/95 backdrop-blur-sm z-20">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-sm">
+                    <div className="w-8 h-8 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center text-green-600 font-bold text-sm">
                         #
                     </div>
                     <h1 className="text-sm font-bold text-slate-900 tracking-tight">Team Chating</h1>
@@ -487,7 +487,7 @@ export default function TeamChatPage() {
                         <div className="flex flex-col items-center justify-center h-full bg-slate-50/50 p-6 text-center">
                             <div className="flex flex-col items-center gap-4 max-w-sm">
                                 <div className="w-16 h-16 rounded-3xl bg-white border border-slate-200 flex items-center justify-center shadow-xs">
-                                    <MessageSquare className="w-8 h-8 text-indigo-500" />
+                                    <MessageSquare className="w-8 h-8 text-green-500" />
                                 </div>
                                 <div>
                                     <h3 className="text-base font-bold text-slate-800">No conversation selected</h3>
@@ -500,7 +500,7 @@ export default function TeamChatPage() {
                                     onClick={() => setIsModalOpen(true)}
                                     className="mt-2 px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition shadow-2xs flex items-center gap-2 cursor-pointer"
                                 >
-                                    <Plus className="w-4 h-4 text-indigo-600" />
+                                    <Plus className="w-4 h-4 text-green-600" />
                                     Create a new channel
                                 </button>
                             </div>

@@ -1507,12 +1507,12 @@ export default function TasksPage() {
   // ============ LOADING STATE ============
   if (isLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 to-indigo-50/30">
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 to-green-50/30">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-indigo-200 rounded-full animate-spin border-t-indigo-600"></div>
+            <div className="w-16 h-16 border-4 border-green-200 rounded-full animate-spin border-t-green-600"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-              <CheckSquare className="w-6 h-6 text-indigo-600" />
+              <CheckSquare className="w-6 h-6 text-green-600" />
             </div>
           </div>
           <p className="text-gray-500 text-sm font-medium animate-pulse">
@@ -1525,7 +1525,7 @@ export default function TasksPage() {
 
   // ============ RENDER ============
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50/20">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-green-50/20">
       <div className="p-4 md:p-6 lg:p-8">
         <div className="w-full mx-auto space-y-6">
           {/* Breadcrumb */}
@@ -1550,10 +1550,10 @@ export default function TasksPage() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-linear-to-r from-indigo-50/80 via-purple-50/80 to-pink-50/80 backdrop-blur-sm border border-indigo-200/50 rounded-xl p-4 flex items-center justify-between shadow-sm"
+              className="bg-linear-to-r from-green-50/80 via-purple-50/80 to-pink-50/80 backdrop-blur-sm border border-green-200/50 rounded-xl p-4 flex items-center justify-between shadow-sm"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-md shadow-indigo-500/25">
+                <div className="p-2 bg-linear-to-br from-green-500 to-purple-600 rounded-xl shadow-md shadow-green-500/25">
                   <Building2 size={18} className="text-white" />
                 </div>
                 <div>
@@ -1568,7 +1568,7 @@ export default function TasksPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium px-3 py-1 bg-white/80 rounded-full border border-indigo-200 text-indigo-700 shadow-sm">
+                <span className="text-xs font-medium px-3 py-1 bg-white/80 rounded-full border border-green-200 text-green-700 shadow-sm">
                   {isProjectManager ? "Project Manager" : "Department Manager"}
                 </span>
               </div>
@@ -1583,13 +1583,13 @@ export default function TasksPage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-10 h-10 bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                <div className="w-10 h-10 bg-linear-to-br from-green-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25">
                   <CheckSquare className="w-5 h-5 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold bg-linear-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                   Task Workspace
                 </h1>
-                <span className="ml-2 px-3 py-0.5 text-xs font-medium bg-linear-to-r from-indigo-50 to-purple-50 text-indigo-700 rounded-full border border-indigo-200 shadow-sm">
+                <span className="ml-2 px-3 py-0.5 text-xs font-medium bg-linear-to-r from-green-50 to-purple-50 text-green-700 rounded-full border border-green-200 shadow-sm">
                   {stats.total}
                 </span>
               </div>
@@ -1612,7 +1612,7 @@ export default function TasksPage() {
                 <button
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition-all ${viewMode === "grid"
-                    ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                    ? "bg-linear-to-r from-green-600 to-purple-600 text-white shadow-md"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
@@ -1622,7 +1622,7 @@ export default function TasksPage() {
                 <button
                   onClick={() => setViewMode("list")}
                   className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition-all ${viewMode === "list"
-                    ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                    ? "bg-linear-to-r from-green-600 to-purple-600 text-white shadow-md"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
                 >
@@ -1633,7 +1633,7 @@ export default function TasksPage() {
               {canManage && (
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="px-4 py-2 bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-white text-sm rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/30"
+                  className="px-4 py-2 bg-linear-to-r from-green-600 via-purple-600 to-pink-600 hover:from-green-700 hover:via-purple-700 hover:to-pink-700 text-white text-sm rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-green-500/25 hover:shadow-xl hover:shadow-green-500/30"
                 >
                   <Plus size={16} />
                   Create Task
@@ -1682,7 +1682,7 @@ export default function TasksPage() {
             <button
               onClick={() => setActiveTab("tasks")}
               className={`px-4 py-2.5 text-sm font-medium transition-all relative ${activeTab === "tasks"
-                ? "text-indigo-600"
+                ? "text-green-600"
                 : "text-gray-500 hover:text-gray-700"
                 }`}
             >
@@ -1696,7 +1696,7 @@ export default function TasksPage() {
               {activeTab === "tasks" && (
                 <motion.div
                   layoutId="tab-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-indigo-600 to-purple-600"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-green-600 to-purple-600"
                 />
               )}
             </button>
@@ -1708,7 +1708,7 @@ export default function TasksPage() {
                 fetchMyExtensionRequests();
               }}
               className={`px-4 py-2.5 text-sm font-medium transition-all relative ${activeTab === "extensions"
-                ? "text-indigo-600"
+                ? "text-green-600"
                 : "text-gray-500 hover:text-gray-700"
                 }`}
             >
@@ -1729,7 +1729,7 @@ export default function TasksPage() {
               {activeTab === "extensions" && (
                 <motion.div
                   layoutId="tab-indicator"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-indigo-600 to-purple-600"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-green-600 to-purple-600"
                 />
               )}
             </button>
@@ -1746,13 +1746,13 @@ export default function TasksPage() {
                     placeholder="Search your tasks..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition shadow-sm"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition shadow-sm"
                   />
                 </div>
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className={`px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm transition-all shadow-sm ${showFilters
-                    ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white"
+                    ? "bg-linear-to-r from-green-600 to-purple-600 text-white"
                     : "bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 hover:text-gray-800"
                     }`}
                 >
@@ -1778,7 +1778,7 @@ export default function TasksPage() {
                       <select
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
-                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition"
+                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition"
                       >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -1791,7 +1791,7 @@ export default function TasksPage() {
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition"
+                        className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition"
                       >
                         <option value="createdAt">Sort by Date</option>
                         <option value="deadline">Sort by Deadline</option>
@@ -1824,7 +1824,7 @@ export default function TasksPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-sm"
                 >
-                  <div className="w-20 h-20 bg-linear-to-br from-gray-100 to-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <div className="w-20 h-20 bg-linear-to-br from-gray-100 to-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                     <CheckSquare className="w-10 h-10 text-gray-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-800 mb-2">
@@ -1838,7 +1838,7 @@ export default function TasksPage() {
                   {canManage && (
                     <button
                       onClick={() => setShowCreateModal(true)}
-                      className="mt-4 px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-lg inline-flex items-center gap-2 shadow-md hover:shadow-lg transition"
+                      className="mt-4 px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 text-white rounded-lg inline-flex items-center gap-2 shadow-md hover:shadow-lg transition"
                     >
                       <Plus size={16} />
                       Create Task
@@ -1894,16 +1894,16 @@ export default function TasksPage() {
                 >
                   <div className="overflow-x-auto">
                     <table className="w-full">
-                      <thead className="bg-linear-to-r from-gray-50/80 to-indigo-50/80 border-b border-gray-200">
+                      <thead className="bg-linear-to-r from-gray-50/80 to-green-50/80 border-b border-gray-200">
                         <tr>
                           <th className="text-left px-4 py-3">
                             <button
                               onClick={toggleAllTasks}
-                              className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-indigo-600 transition"
+                              className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-green-600 transition"
                             >
                               {selectedTasks.size === filteredTasks.length &&
                                 selectedTasks.size > 0 ? (
-                                <CheckSquare className="w-4 h-4 text-indigo-600" />
+                                <CheckSquare className="w-4 h-4 text-green-600" />
                               ) : (
                                 <Square className="w-4 h-4" />
                               )}
@@ -1935,18 +1935,18 @@ export default function TasksPage() {
                           return (
                             <tr
                               key={task._id}
-                              className={`hover:bg-indigo-50/30 transition-colors duration-200 ${selectedTasks.has(task._id)
-                                ? "bg-indigo-50/50 border-l-4 border-indigo-500"
+                              className={`hover:bg-green-50/30 transition-colors duration-200 ${selectedTasks.has(task._id)
+                                ? "bg-green-50/50 border-l-4 border-green-500"
                                 : ""
                                 }`}
                             >
                               <td className="px-4 py-3">
                                 <button
                                   onClick={() => toggleTaskSelection(task._id)}
-                                  className="p-1 rounded-lg hover:bg-indigo-100 transition"
+                                  className="p-1 rounded-lg hover:bg-green-100 transition"
                                 >
                                   {selectedTasks.has(task._id) ? (
-                                    <CheckSquare className="w-4 h-4 text-indigo-600" />
+                                    <CheckSquare className="w-4 h-4 text-green-600" />
                                   ) : (
                                     <Square className="w-4 h-4 text-gray-400" />
                                   )}
@@ -1968,7 +1968,7 @@ export default function TasksPage() {
                                     />
                                   </button>
                                   <div>
-                                    <p className="text-gray-800 text-sm font-medium hover:text-indigo-600 transition">
+                                    <p className="text-gray-800 text-sm font-medium hover:text-green-600 transition">
                                       {task.title}
                                     </p>
                                     <p className="text-gray-400 text-xs line-clamp-1">
@@ -2002,7 +2002,7 @@ export default function TasksPage() {
                               </td>
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-7 h-7 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                                  <div className="w-7 h-7 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                                     <span className="text-white text-[10px] font-bold">
                                       {task.assignedTo?.fullName?.charAt(0) || "?"}
                                     </span>
@@ -2027,7 +2027,7 @@ export default function TasksPage() {
                                 <div className="flex items-center justify-center gap-1">
                                   <button
                                     onClick={() => setSelectedTask(task)}
-                                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                     title="View Details"
                                   >
                                     <Eye size={14} />
@@ -2089,9 +2089,9 @@ export default function TasksPage() {
             <div className="space-y-6">
               {/* Extension Stats */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                <div className="bg-linear-to-br from-indigo-50 to-purple-50 rounded-2xl p-4 border border-indigo-200 shadow-sm">
+                <div className="bg-linear-to-br from-green-50 to-purple-50 rounded-2xl p-4 border border-green-200 shadow-sm">
                   <p className="text-xs text-gray-500 font-medium">Total Requests</p>
-                  <p className="text-2xl font-bold text-indigo-700">
+                  <p className="text-2xl font-bold text-green-700">
                     {canManageExtensions ? extensionStats.total : myExtensionStats.total}
                   </p>
                 </div>
@@ -2124,7 +2124,7 @@ export default function TasksPage() {
                   <button
                     onClick={() => setExtensionFilter("all")}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${extensionFilter === "all"
-                      ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-md"
+                      ? "bg-linear-to-r from-green-600 to-purple-600 text-white shadow-md"
                       : "bg-white border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                       }`}
                   >
@@ -2170,7 +2170,7 @@ export default function TasksPage() {
               {/* Extension Requests List */}
               {loadingExtensions && canManageExtensions ? (
                 <div className="flex items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                  <Loader2 className="w-8 h-8 animate-spin text-green-600" />
                   <span className="ml-3 text-gray-500">Loading extension requests...</span>
                 </div>
               ) : (
@@ -2199,7 +2199,7 @@ export default function TasksPage() {
                           {!canManageExtensions && (
                             <button
                               onClick={() => setActiveTab("tasks")}
-                              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition-all shadow-md hover:shadow-lg"
+                              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition-all shadow-md hover:shadow-lg"
                             >
                               <Plus className="w-4 h-4" />
                               Request Extension
@@ -2299,7 +2299,7 @@ export default function TasksPage() {
                                   </span>
                                   <Link
                                     href={`/tasks/${(task as any)._id}`}
-                                    className="text-indigo-600 hover:text-indigo-800 text-sm font-medium hover:underline"
+                                    className="text-green-600 hover:text-green-800 text-sm font-medium hover:underline"
                                   >
                                     View Task →
                                   </Link>
@@ -2397,7 +2397,7 @@ export default function TasksPage() {
               className="w-full max-w-3xl bg-white/95 backdrop-blur-sm rounded-2xl border border-gray-200 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-5 border-b border-gray-200 sticky top-0 bg-linear-to-r from-indigo-50/80 via-purple-50/80 to-pink-50/80 backdrop-blur-sm z-10">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 sticky top-0 bg-linear-to-r from-green-50/80 via-purple-50/80 to-pink-50/80 backdrop-blur-sm z-10">
                 <div className="flex items-center gap-3">
                   <div
                     className={`p-2.5 rounded-xl bg-linear-to-br ${getPriorityConfig(selectedTask.priority).gradient} shadow-md`}
@@ -2443,7 +2443,7 @@ export default function TasksPage() {
                       </span>
 
                       {isTimerActiveForTask(selectedTask._id) && (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1 rounded-full border-2 bg-indigo-50 border-indigo-200 text-indigo-700">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1 rounded-full border-2 bg-green-50 border-green-200 text-green-700">
                           <TimerIcon className="w-3 h-3" />
                           Timer Active
                         </span>
@@ -2551,7 +2551,7 @@ export default function TasksPage() {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 text-sm text-indigo-600 hover:text-indigo-800 truncate transition"
+                            className="flex-1 text-sm text-green-600 hover:text-green-800 truncate transition"
                           >
                             {url}
                           </a>
@@ -2607,7 +2607,7 @@ export default function TasksPage() {
                   <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                     <p className="text-xs text-gray-500 font-medium">Assigned To</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <div className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center">
                         <span className="text-white text-[10px] font-bold">
                           {selectedTask.assignedTo?.fullName?.charAt(0) || "?"}
                         </span>
@@ -2719,9 +2719,9 @@ export default function TasksPage() {
                     selectedTask.status !== "rejected";
 
                   return canShowTimer ? (
-                    <div className="bg-linear-to-br from-indigo-50/80 to-purple-50/80 rounded-xl p-4 border border-indigo-100">
+                    <div className="bg-linear-to-br from-green-50/80 to-purple-50/80 rounded-xl p-4 border border-green-100">
                       <p className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                        <TimerIcon className="w-4 h-4 text-indigo-600" />
+                        <TimerIcon className="w-4 h-4 text-green-600" />
                         Time Tracking
                       </p>
                       <div className="flex items-center gap-3 flex-wrap">
@@ -2729,7 +2729,7 @@ export default function TasksPage() {
                           <>
                             <div className="flex-1">
                               <div className="flex items-center gap-3">
-                                <span className="text-2xl font-mono font-bold text-indigo-700 tabular-nums">
+                                <span className="text-2xl font-mono font-bold text-green-700 tabular-nums">
                                   {formatTime(timerState.elapsedSeconds)}
                                 </span>
                                 <span
@@ -2791,7 +2791,7 @@ export default function TasksPage() {
                               }}
                               className={`px-4 py-2 text-white text-sm rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 ${activeTimerTaskId && activeTimerTaskId !== selectedTask._id
                                 ? "bg-gray-400 cursor-not-allowed"
-                                : "bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                                : "bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700"
                                 }`}
                               disabled={!!activeTimerTaskId && activeTimerTaskId !== selectedTask._id}
                               title={
@@ -2823,7 +2823,7 @@ export default function TasksPage() {
                       isCompleting === selectedTask._id ||
                       isSubmitting === selectedTask._id
                     }
-                    className="cursor-pointer flex-1 min-w-[120px] px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition disabled:opacity-50"
+                    className="cursor-pointer flex-1 min-w-[120px] px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition disabled:opacity-50"
                   >
                     <option value="pending">Pending</option>
                     <option value="in_progress">In Progress</option>
@@ -2946,7 +2946,7 @@ export default function TasksPage() {
                   <Link
                     href={`/tasks/${selectedTask._id}`}
                     onClick={(e) => e.stopPropagation()}
-                    className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl transition flex items-center gap-2 border border-indigo-200"
+                    className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl transition flex items-center gap-2 border border-green-200"
                   >
                     <Eye size={16} />
                     View Full Details
@@ -2996,7 +2996,7 @@ export default function TasksPage() {
                         requestedDate: e.target.value,
                       })
                     }
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     min={new Date().toISOString().split("T")[0]}
                   />
                   <p className="text-xs text-gray-400 mt-1">
@@ -3018,7 +3018,7 @@ export default function TasksPage() {
                       })
                     }
                     placeholder="Explain why you need an extension..."
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                   />
                 </div>
 
@@ -3092,7 +3092,7 @@ export default function TasksPage() {
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     placeholder="Explain why this task is being rejected..."
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                   />
                   <p className="text-xs text-gray-400 mt-1">
                     This feedback will be sent to the assignee.
@@ -3286,7 +3286,7 @@ export default function TasksPage() {
                           title: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                   </div>
                   <div>
@@ -3302,7 +3302,7 @@ export default function TasksPage() {
                         })
                       }
                       rows={3}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -3318,7 +3318,7 @@ export default function TasksPage() {
                             priority: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       >
                         <option value="low">Low</option>
                         <option value="normal">Normal</option>
@@ -3338,7 +3338,7 @@ export default function TasksPage() {
                             status: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       >
                         <option value="pending">Pending</option>
                         <option value="in_progress">In Progress</option>
@@ -3363,7 +3363,7 @@ export default function TasksPage() {
                             deadline: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       />
                     </div>
                     <div>
@@ -3379,7 +3379,7 @@ export default function TasksPage() {
                             estimatedHours: parseFloat(e.target.value) || 0,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       />
                     </div>
                   </div>
@@ -3396,7 +3396,7 @@ export default function TasksPage() {
                             assignedTo: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       >
                         <option value="">Select Assignee</option>
                         {getAvailableUsers.map((u) => (
@@ -3418,7 +3418,7 @@ export default function TasksPage() {
                             projectId: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                       >
                         <option value="">Select Project</option>
                         {projects.map((p) => (
@@ -3434,7 +3434,7 @@ export default function TasksPage() {
                 <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200">
                   <button
                     onClick={handleUpdateTask}
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition shadow-md"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-lg transition shadow-md"
                   >
                     Update Task
                   </button>
@@ -3489,12 +3489,12 @@ function TaskCard({
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: idx * 0.05 }}
-      className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-100/50 shadow-md overflow-hidden ${isRejected
+      className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-2xl hover:shadow-green-100/50 shadow-md overflow-hidden ${isRejected
         ? "border-red-200 hover:border-red-300"
-        : "border-gray-200 hover:border-indigo-300"
+        : "border-gray-200 hover:border-green-300"
         }`}
     >
-      <div className="absolute inset-0 bg-linear-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-700 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-green-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-green-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-700 pointer-events-none" />
 
       <div
         className={`h-1 bg-linear-to-r ${isRejected
@@ -3566,7 +3566,7 @@ function TaskCard({
           </div>
         </div>
 
-        <h3 className="text-gray-800 font-semibold text-base mb-2 line-clamp-2 group-hover:text-indigo-600 transition-all duration-300">
+        <h3 className="text-gray-800 font-semibold text-base mb-2 line-clamp-2 group-hover:text-green-600 transition-all duration-300">
           {task.title}
         </h3>
         <p className="text-gray-500 text-sm line-clamp-2 mb-3 leading-relaxed">
@@ -3594,7 +3594,7 @@ function TaskCard({
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
           {task.projectId && (
-            <div className="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-full bg-linear-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200/50">
+            <div className="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-full bg-linear-to-r from-green-50 to-purple-50 text-green-700 border border-green-200/50">
               <Briefcase size={10} />
               <span>{task.projectId.name}</span>
             </div>
@@ -3616,7 +3616,7 @@ function TaskCard({
         <div className="flex items-center justify-between pt-3 border-t border-gray-100/80">
           <div className="flex items-center gap-2.5">
             <div className="relative">
-              <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-indigo-500/25">
+              <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-green-500/25">
                 <span className="text-white text-[10px] font-bold">
                   {task.assignedTo?.fullName?.charAt(0) || "?"}
                 </span>
@@ -3650,7 +3650,7 @@ function TaskCard({
             <button
               onClick={() => onUpdateStatus(task._id, "in_progress")}
               disabled={updating}
-              className="flex-1 py-1.5 bg-linear-to-r from-indigo-50 to-indigo-100/50 hover:from-indigo-600 hover:to-indigo-700 text-indigo-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 border border-indigo-200/50 hover:border-transparent shadow-sm hover:shadow-md"
+              className="flex-1 py-1.5 bg-linear-to-r from-green-50 to-green-100/50 hover:from-green-600 hover:to-green-700 text-green-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 border border-green-200/50 hover:border-transparent shadow-sm hover:shadow-md"
             >
               <Play size={12} />
               Start            </button>
@@ -3707,7 +3707,7 @@ function TaskCard({
           </button>
           <Link
             href={`/tasks/${task._id}`}
-            className="py-1.5 px-3 bg-linear-to-r from-indigo-50 to-purple-50 hover:from-indigo-600 hover:to-purple-600 text-indigo-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center gap-1.5 border border-indigo-200/50 hover:border-transparent shadow-sm hover:shadow-md"
+            className="py-1.5 px-3 bg-linear-to-r from-green-50 to-purple-50 hover:from-green-600 hover:to-purple-600 text-green-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center gap-1.5 border border-green-200/50 hover:border-transparent shadow-sm hover:shadow-md"
           >
             <ExternalLink size={12} />
             Details

@@ -530,7 +530,7 @@ export default function AttendancePage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading attendance data...</p>
         </div>
       </div>
@@ -572,16 +572,16 @@ export default function AttendancePage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Calendar className="w-7 h-7 text-indigo-500" />
+              <Calendar className="w-7 h-7 text-green-500" />
               Attendance
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               {isHR
                 ? "Manage and track employee attendance"
                 : "Track your attendance"}
               {refreshing && (
-                <span className="text-xs text-indigo-500 animate-pulse ml-2">
+                <span className="text-xs text-green-500 animate-pulse ml-2">
                   <Loader2 className="w-3 h-3 inline animate-spin mr-1" />
                   Updating...
                 </span>
@@ -601,7 +601,7 @@ export default function AttendancePage() {
             </button>
             <button
               onClick={goToToday}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-indigo-500/25 flex items-center gap-2"
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-green-500/25 flex items-center gap-2"
             >
               <Calendar className="w-4 h-4" />
               Today
@@ -615,7 +615,7 @@ export default function AttendancePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-lg p-6 mb-6 text-white"
+          className="bg-linear-to-r from-green-600 to-purple-600 rounded-2xl shadow-lg p-6 mb-6 text-white"
         >
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
@@ -711,8 +711,8 @@ export default function AttendancePage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4 mb-6">
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-4 hover:shadow-md transition-all">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-indigo-50 rounded-xl">
-                <Users className="w-5 h-5 text-indigo-600" />
+              <div className="p-2.5 bg-green-50 rounded-xl">
+                <Users className="w-5 h-5 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total</p>
@@ -785,7 +785,7 @@ export default function AttendancePage() {
               </div>
             </div>
           </div>
-          <div className="bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-md p-4 text-white">
+          <div className="bg-linear-to-br from-green-600 to-purple-600 rounded-2xl shadow-md p-4 text-white">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-white/20 rounded-xl">
                 <Activity className="w-5 h-5" />
@@ -827,7 +827,7 @@ export default function AttendancePage() {
                   showFilters ||
                   selectedStatus !== "all" ||
                   selectedDepartment !== "All Departments"
-                    ? "bg-indigo-100 text-indigo-700"
+                    ? "bg-green-100 text-green-700"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -839,7 +839,7 @@ export default function AttendancePage() {
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "grid"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -849,7 +849,7 @@ export default function AttendancePage() {
                   onClick={() => setViewMode("table")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "table"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -869,14 +869,14 @@ export default function AttendancePage() {
                     placeholder="Search employees..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
                   />
                 </div>
               </div>
               <select
                 value={selectedDepartment}
                 onChange={(e) => setSelectedDepartment(e.target.value)}
-                className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm min-w-[160px]"
+                className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm min-w-[160px]"
               >
                 {departments.map((dept) => (
                   <option key={dept} value={dept}>
@@ -887,7 +887,7 @@ export default function AttendancePage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm min-w-[140px]"
+                className="px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm min-w-[140px]"
               >
                 <option value="all">All Status</option>
                 {Object.entries(statusLabels).map(([key, label]) => (
@@ -930,7 +930,7 @@ export default function AttendancePage() {
                     key={record._id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-indigo-200/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                    className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-green-200/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer"
                     onClick={() => {
                       setSelectedEmployee(record);
                       setShowEmployeeDetail(true);
@@ -939,7 +939,7 @@ export default function AttendancePage() {
                     <div className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-sm font-bold shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-sm font-bold shrink-0">
                             {getInitials(employeeName)}
                           </div>
                           <div className="min-w-0">
@@ -1059,11 +1059,11 @@ export default function AttendancePage() {
                       return (
                         <tr
                           key={record._id}
-                          className="hover:bg-indigo-50/30 transition-colors group"
+                          className="hover:bg-green-50/30 transition-colors group"
                         >
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-xs font-bold shrink-0">
+                              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-xs font-bold shrink-0">
                                 {getInitials(employeeName)}
                               </div>
                               <div>
@@ -1117,7 +1117,7 @@ export default function AttendancePage() {
                                 setSelectedEmployee(record);
                                 setShowEmployeeDetail(true);
                               }}
-                              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
@@ -1144,7 +1144,7 @@ export default function AttendancePage() {
             </p>
             <button
               onClick={goToToday}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+              className="mt-4 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
             >
               Go to Today
             </button>
@@ -1167,7 +1167,7 @@ export default function AttendancePage() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-xl font-bold shrink-0">
+                    <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-xl font-bold shrink-0">
                       {getInitials(getEmployeeName(selectedEmployee))}
                     </div>
                     <div>

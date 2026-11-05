@@ -240,7 +240,7 @@ export default function DepartmentDetailPage() {
       super_admin: "bg-red-50 text-red-700 border-red-200",
       admin: "bg-purple-50 text-purple-700 border-purple-200",
       hr_manager: "bg-pink-50 text-pink-700 border-pink-200",
-      dept_manager: "bg-indigo-50 text-indigo-700 border-indigo-200",
+      dept_manager: "bg-green-50 text-green-700 border-green-200",
       project_manager: "bg-blue-50 text-blue-700 border-blue-200",
       line_manager: "bg-cyan-50 text-cyan-700 border-cyan-200",
       team_lead: "bg-blue-50 text-blue-700 border-blue-200",
@@ -306,7 +306,7 @@ export default function DepartmentDetailPage() {
     return (
       <div className="flex items-center justify-center min-h-[80vh] bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm font-medium">
             Loading department details...
           </p>
@@ -331,7 +331,7 @@ export default function DepartmentDetailPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={fetchDepartmentData}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
+              className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
             >
               <RefreshCw size={16} />
               Retry
@@ -361,7 +361,7 @@ export default function DepartmentDetailPage() {
           </p>
           <Link
             href="/departments"
-            className="inline-block px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition"
+            className="inline-block px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-xl transition"
           >
             Back to Departments
           </Link>
@@ -414,7 +414,7 @@ export default function DepartmentDetailPage() {
               <ArrowLeft size={18} />
             </Link>
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-indigo-500/10 shrink-0">
+              <div className="w-12 h-12 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shadow-green-500/10 shrink-0">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -432,7 +432,7 @@ export default function DepartmentDetailPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs font-mono font-medium text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                  <span className="text-xs font-mono font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">
                     Code: {department.code}
                   </span>
                 </div>
@@ -460,14 +460,14 @@ export default function DepartmentDetailPage() {
             >
               <RefreshCw
                 size={16}
-                className={loading ? "animate-spin text-indigo-600" : ""}
+                className={loading ? "animate-spin text-green-600" : ""}
               />
             </button>
             {canManage && (
               <>
                 <Link
                   href={`/departments/${departmentId}/edit`}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl flex items-center gap-1.5 transition shadow-sm"
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-xl flex items-center gap-1.5 transition shadow-sm"
                 >
                   <Edit2 size={14} />
                   Edit
@@ -501,8 +501,8 @@ export default function DepartmentDetailPage() {
                   {members.length}
                 </p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-                <Users className="w-5 h-5 text-indigo-600" />
+              <div className="w-10 h-10 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center">
+                <Users className="w-5 h-5 text-green-600" />
               </div>
             </div>
           </div>
@@ -659,7 +659,7 @@ export default function DepartmentDetailPage() {
                       placeholder="Search member..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition"
+                      className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:bg-white transition"
                     />
                   </div>
 
@@ -674,7 +674,7 @@ export default function DepartmentDetailPage() {
                   {canManage && (
                     <Link
                       href={`/departments/${departmentId}/members/add`}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl transition flex items-center gap-1 shrink-0"
+                      className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-xl transition flex items-center gap-1 shrink-0"
                     >
                       <Plus size={14} />
                       Add Member
@@ -693,7 +693,7 @@ export default function DepartmentDetailPage() {
                         className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-gray-50/60 rounded-xl border border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition gap-3"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-9 h-9 rounded-full bg-linear-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-semibold shadow-xs shrink-0">
+                          <div className="w-9 h-9 rounded-full bg-linear-to-tr from-green-500 to-purple-500 flex items-center justify-center text-white text-xs font-semibold shadow-xs shrink-0">
                             {member.fullName.charAt(0).toUpperCase()}
                           </div>
                           <div className="min-w-0">
@@ -730,7 +730,7 @@ export default function DepartmentDetailPage() {
                           </span>
                           <Link
                             href={`/users/${member._id}`}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                             title="View Profile"
                           >
                             <ExternalLink size={14} />
@@ -753,7 +753,7 @@ export default function DepartmentDetailPage() {
                     {!searchTerm && canManage && (
                       <Link
                         href={`/departments/${departmentId}/members/add`}
-                        className="inline-block mt-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-xl transition"
+                        className="inline-block mt-3 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-xl transition"
                       >
                         <Plus size={14} className="inline mr-1" />
                         Add First Member

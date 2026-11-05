@@ -167,8 +167,8 @@ const ToggleSwitch = ({
       className={`
         relative inline-flex items-center rounded-full transition-colors duration-200 ease-in-out
         ${sizeConfig.container}
-        ${enabled ? "bg-indigo-600" : "bg-gray-300"}
-        focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+        ${enabled ? "bg-green-600" : "bg-gray-300"}
+        focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
       `}
     >
       <span
@@ -968,7 +968,7 @@ export default function CreateTaskModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-gray-50 to-white shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -1009,11 +1009,11 @@ export default function CreateTaskModal({
 
           {/* Quick Task Toggle */}
           {(isSuperAdmin || isAdmin) && !isEmployee && (
-            <div className="p-4 bg-linear-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-200">
+            <div className="p-4 bg-linear-to-r from-green-50 to-blue-50 rounded-xl border border-green-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <Zap className="w-4 h-4 text-indigo-600" />
+                  <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-800">
@@ -1031,7 +1031,7 @@ export default function CreateTaskModal({
                 />
               </div>
               {isQuickTask && (
-                <p className="text-xs text-indigo-600 mt-2 flex items-center gap-1">
+                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
                   <CheckSquare className="w-3 h-3" />
                   Task will be assigned to you with default settings
                 </p>
@@ -1083,7 +1083,7 @@ export default function CreateTaskModal({
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  className="w-full px-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition placeholder:text-gray-400"
+                  className="w-full px-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition placeholder:text-gray-400"
                   placeholder="Enter task title"
                   required
                 />
@@ -1101,7 +1101,7 @@ export default function CreateTaskModal({
                   <select
                     value={selectedProject}
                     onChange={(e) => setSelectedProject(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition appearance-none cursor-pointer"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition appearance-none cursor-pointer"
                   >
                     <option value="">Auto-assign Project</option>
                     {projects.map((project) => (
@@ -1112,7 +1112,7 @@ export default function CreateTaskModal({
                   </select>
                 </div>
                 {isCreatingProject && (
-                  <p className="text-xs text-indigo-600 mt-1 flex items-center gap-1">
+                  <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" />
                     Creating default project...
                   </p>
@@ -1131,7 +1131,7 @@ export default function CreateTaskModal({
                   setFormData({ ...formData, description: e.target.value })
                 }
                 rows={3}
-                className="w-full px-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none placeholder:text-gray-400"
+                className="w-full px-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none placeholder:text-gray-400"
                 placeholder="Describe the task details..."
                 required
               />
@@ -1162,7 +1162,7 @@ export default function CreateTaskModal({
                     <select
                       value={selectedDepartment}
                       onChange={(e) => handleDepartmentChange(e.target.value)}
-                      className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition appearance-none cursor-pointer"
+                      className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition appearance-none cursor-pointer"
                       required={!isQuickTask && !isProjectManager}
                       disabled={isQuickTask || isProjectManager}
                     >
@@ -1197,7 +1197,7 @@ export default function CreateTaskModal({
                       onChange={(e) =>
                         setFormData({ ...formData, assignedTo: e.target.value })
                       }
-                      className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition appearance-none cursor-pointer"
+                      className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition appearance-none cursor-pointer"
                       required={!isQuickTask}
                       disabled={
                         isQuickTask || (!canAssignToOthers && !isQuickTask)
@@ -1280,7 +1280,7 @@ export default function CreateTaskModal({
                   )}
 
                   {!isQuickTask && (isSuperAdmin || isAdmin || isHrManager) && (
-                    <p className="text-xs text-indigo-600 mt-1 flex items-center gap-1">
+                    <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
                       <Users className="w-3 h-3" />
                       You can assign tasks to anyone in the system
                     </p>
@@ -1333,7 +1333,7 @@ export default function CreateTaskModal({
                           | "urgent",
                       })
                     }
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="low">Low</option>
                     <option value="normal">Normal</option>
@@ -1360,7 +1360,7 @@ export default function CreateTaskModal({
                         estimatedHours: parseFloat(e.target.value) || 0,
                       })
                     }
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition placeholder:text-gray-400"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition placeholder:text-gray-400"
                     placeholder="Hours"
                   />
                 </div>
@@ -1383,7 +1383,7 @@ export default function CreateTaskModal({
                         actualMinutes: parseInt(e.target.value) || 0,
                       })
                     }
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition placeholder:text-gray-400"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition placeholder:text-gray-400"
                     placeholder="Minutes"
                   />
                 </div>
@@ -1404,7 +1404,7 @@ export default function CreateTaskModal({
                     onChange={(e) =>
                       setFormData({ ...formData, startTime: e.target.value })
                     }
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   />
                 </div>
               </div>
@@ -1421,7 +1421,7 @@ export default function CreateTaskModal({
                     onChange={(e) =>
                       setFormData({ ...formData, endTime: e.target.value })
                     }
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   />
                 </div>
               </div>
@@ -1448,7 +1448,7 @@ export default function CreateTaskModal({
                     onChange={(e) =>
                       setFormData({ ...formData, deadline: e.target.value })
                     }
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     required={!isQuickTask && !isEmployee}
                     min={new Date().toISOString().split("T")[0]}
                     disabled={isQuickTask || isEmployee}
@@ -1477,7 +1477,7 @@ export default function CreateTaskModal({
                         revisedDeadline: e.target.value,
                       })
                     }
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     min={
                       formData.deadline ||
                       new Date().toISOString().split("T")[0]
@@ -1504,14 +1504,14 @@ export default function CreateTaskModal({
                     type="url"
                     value={newUrl}
                     onChange={(e) => setNewUrl(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition placeholder:text-gray-400"
+                    className="w-full pl-9 pr-3 py-2 text-sm text-gray-800 bg-gray-50 border border-gray-200 rounded-lg focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition placeholder:text-gray-400"
                     placeholder="https://example.com/evidence"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={handleAddEvidenceUrl}
-                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition shadow-sm"
+                  className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition shadow-sm"
                 >
                   Add
                 </button>
@@ -1527,7 +1527,7 @@ export default function CreateTaskModal({
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-indigo-600 hover:text-indigo-800 truncate flex-1"
+                        className="text-xs text-green-600 hover:text-green-800 truncate flex-1"
                       >
                         {url}
                       </a>
@@ -1604,7 +1604,7 @@ export default function CreateTaskModal({
               <button
                 type="submit"
                 disabled={loading || isCreatingProject}
-                className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-lg transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-lg transition-all shadow-md shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading || isCreatingProject ? (
                   <>

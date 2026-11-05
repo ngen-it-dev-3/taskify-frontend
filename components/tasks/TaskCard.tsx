@@ -69,10 +69,10 @@ export const TaskCard = ({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: idx * 0.05 }}
-            className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-2xl hover:shadow-indigo-100/50 shadow-md overflow-hidden ${isRejected ? "border-red-200 hover:border-red-300" : "border-gray-200 hover:border-indigo-300"
+            className={`group relative bg-white rounded-2xl border transition-all duration-300 hover:shadow-2xl hover:shadow-green-100/50 shadow-md overflow-hidden ${isRejected ? "border-red-200 hover:border-red-300" : "border-gray-200 hover:border-green-300"
                 }`}
         >
-            <div className="absolute inset-0 bg-linear-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-700 pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-br from-green-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-green-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-700 pointer-events-none" />
 
             <div
                 className={`h-1 bg-linear-to-r ${isRejected ? "from-red-400 to-red-600" : getPriorityConfig(task.priority).gradient
@@ -138,7 +138,7 @@ export const TaskCard = ({
                     </div>
                 </div>
 
-                <h3 className="text-gray-800 font-semibold text-base mb-2 line-clamp-2 group-hover:text-indigo-600 transition-all duration-300">
+                <h3 className="text-gray-800 font-semibold text-base mb-2 line-clamp-2 group-hover:text-green-600 transition-all duration-300">
                     {task.title}
                 </h3>
                 <p className="text-gray-500 text-sm line-clamp-2 mb-3 leading-relaxed">
@@ -159,7 +159,7 @@ export const TaskCard = ({
 
                 <div className="flex items-center gap-2 mb-3 flex-wrap">
                     {task.projectId && (
-                        <div className="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-full bg-linear-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200/50">
+                        <div className="flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-full bg-linear-to-r from-green-50 to-purple-50 text-green-700 border border-green-200/50">
                             <Briefcase size={10} /> <span>{task.projectId.name}</span>
                         </div>
                     )}
@@ -178,7 +178,7 @@ export const TaskCard = ({
                 <div className="flex items-center justify-between pt-3 border-t border-gray-100/80">
                     <div className="flex items-center gap-2.5">
                         <div className="relative">
-                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-indigo-500/25">
+                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-green-500/25">
                                 <span className="text-white text-[10px] font-bold">
                                     {task.assignedTo?.fullName?.charAt(0) || "?"}
                                 </span>
@@ -211,7 +211,7 @@ export const TaskCard = ({
                         <button
                             onClick={() => onStatusChange(task._id, "in_progress")}
                             disabled={updatingStatus === task._id}
-                            className="flex-1 py-1.5 bg-linear-to-r from-indigo-50 to-indigo-100/50 hover:from-indigo-600 hover:to-indigo-700 text-indigo-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 border border-indigo-200/50 hover:border-transparent shadow-sm hover:shadow-md disabled:opacity-50"
+                            className="flex-1 py-1.5 bg-linear-to-r from-green-50 to-green-100/50 hover:from-green-600 hover:to-green-700 text-green-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 border border-green-200/50 hover:border-transparent shadow-sm hover:shadow-md disabled:opacity-50"
                         >
                             <Play size={12} /> Start
                         </button>
@@ -263,7 +263,7 @@ export const TaskCard = ({
                     </button>
                     <Link
                         href={`/tasks/${task._id}`}
-                        className="py-1.5 px-3 bg-linear-to-r from-indigo-50 to-purple-50 hover:from-indigo-600 hover:to-purple-600 text-indigo-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center gap-1.5 border border-indigo-200/50 hover:border-transparent shadow-sm hover:shadow-md"
+                        className="py-1.5 px-3 bg-linear-to-r from-green-50 to-purple-50 hover:from-green-600 hover:to-purple-600 text-green-600 hover:text-white text-[11px] font-medium rounded-lg transition-all duration-300 flex items-center gap-1.5 border border-green-200/50 hover:border-transparent shadow-sm hover:shadow-md"
                     >
                         <ExternalLink size={12} /> Details
                     </Link>

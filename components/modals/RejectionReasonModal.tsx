@@ -48,7 +48,7 @@ export function RejectionReasonModal({
               <div className="flex gap-3">
                 <button
                   onClick={onRework}
-                  className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
+                  className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
                 >
                   <RefreshCw size={14} />
                   Send for Rework

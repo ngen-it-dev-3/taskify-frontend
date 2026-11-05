@@ -323,11 +323,11 @@ export default function AllDepartmentsPage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <Building2 className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">All Departments</h1>
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {departments.length}
                 </span>
               </div>
@@ -355,7 +355,7 @@ export default function AllDepartmentsPage() {
                     setFormData({ name: "", code: "", description: "" });
                     setShowCreateModal(true);
                   }}
-                  className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-indigo-500/20"
+                  className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-green-500/20"
                 >
                   <Plus size={16} />
                   Add Department
@@ -384,8 +384,8 @@ export default function AllDepartmentsPage() {
                     <p className="text-2xl font-bold text-gray-800">{stats.total}</p>
                     <p className="text-xs text-gray-500 mt-0.5">Departments</p>
                   </div>
-                  <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-indigo-500" />
+                  <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-green-500" />
                   </div>
                 </div>
               </div>
@@ -461,14 +461,14 @@ export default function AllDepartmentsPage() {
                 placeholder="Search by name or code..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <div className="flex gap-2">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               >
                 <option value="name">Sort by Name</option>
                 <option value="code">Sort by Code</option>
@@ -487,7 +487,7 @@ export default function AllDepartmentsPage() {
           {/* Departments Grid/List */}
           {loading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
           ) : filteredDepartments.length === 0 ? (
             <motion.div
@@ -509,7 +509,7 @@ export default function AllDepartmentsPage() {
                     setFormData({ name: "", code: "", description: "" });
                     setShowCreateModal(true);
                   }}
-                  className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
+                  className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
                 >
                   <Plus size={16} className="inline mr-2" />
                   Add Department
@@ -540,8 +540,8 @@ export default function AllDepartmentsPage() {
                     <div className="p-5">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                            <Building2 className="w-5 h-5 text-indigo-500" />
+                          <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                            <Building2 className="w-5 h-5 text-green-500" />
                           </div>
                           <div>
                             <h3 className="text-sm font-semibold text-gray-800">{dept.name}</h3>
@@ -581,10 +581,10 @@ export default function AllDepartmentsPage() {
                             {members.slice(0, 5).map((member) => (
                               <div
                                 key={member._id}
-                                className="w-6 h-6 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center"
+                                className="w-6 h-6 rounded-full bg-green-100 border-2 border-white flex items-center justify-center"
                                 title={member.fullName}
                               >
-                                <span className="text-[10px] font-bold text-indigo-600">
+                                <span className="text-[10px] font-bold text-green-600">
                                   {member.fullName.charAt(0).toUpperCase()}
                                 </span>
                               </div>
@@ -608,7 +608,7 @@ export default function AllDepartmentsPage() {
                     <div className="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
                       <Link
                         href={`/departments/${dept._id}`}
-                        className="text-xs text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
+                        className="text-xs text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
                       >
                         <Eye size={12} />
                         View Details
@@ -625,7 +625,7 @@ export default function AllDepartmentsPage() {
                               });
                               setShowCreateModal(true);
                             }}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                           >
                             <Edit2 size={14} />
                           </button>
@@ -695,8 +695,8 @@ export default function AllDepartmentsPage() {
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-                                <Building2 className="w-4 h-4 text-indigo-500" />
+                              <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+                                <Building2 className="w-4 h-4 text-green-500" />
                               </div>
                               <div>
                                 <p className="text-gray-800 text-sm font-medium">{dept.name}</p>
@@ -722,10 +722,10 @@ export default function AllDepartmentsPage() {
                                   {dept.members?.slice(0, 3).map((member) => (
                                     <div
                                       key={member._id}
-                                      className="w-5 h-5 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center"
+                                      className="w-5 h-5 rounded-full bg-green-100 border-2 border-white flex items-center justify-center"
                                       title={member.fullName}
                                     >
-                                      <span className="text-[8px] font-bold text-indigo-600">
+                                      <span className="text-[8px] font-bold text-green-600">
                                         {member.fullName.charAt(0).toUpperCase()}
                                       </span>
                                     </div>
@@ -757,7 +757,7 @@ export default function AllDepartmentsPage() {
                             <div className="flex items-center justify-end gap-1">
                               <Link
                                 href={`/departments/${dept._id}`}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                               >
                                 <Eye size={16} />
                               </Link>
@@ -831,7 +831,7 @@ export default function AllDepartmentsPage() {
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
                       className={`px-3 py-2 rounded-lg text-sm transition ${currentPage === pageNum
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-green-600 text-white shadow-sm"
                         : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                         }`}
                     >
@@ -862,7 +862,7 @@ export default function AllDepartmentsPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
             >
-              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50 to-purple-50">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50 to-purple-50">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">
                     {editingDept ? "Edit Department" : "Create Department"}
@@ -890,7 +890,7 @@ export default function AllDepartmentsPage() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     placeholder="e.g., Software Engineering"
                     required
                   />
@@ -903,7 +903,7 @@ export default function AllDepartmentsPage() {
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition font-mono"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition font-mono"
                     placeholder="e.g., SWE"
                     required
                   />
@@ -914,14 +914,14 @@ export default function AllDepartmentsPage() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none resize-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none resize-none transition"
                     placeholder="Describe the department's purpose..."
                   />
                 </div>
                 <div className="flex gap-3 pt-4">
                   <button
                     type="submit"
-                    className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm"
+                    className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm"
                   >
                     {editingDept ? "Update" : "Create"}
                   </button>

@@ -416,13 +416,13 @@ export default function CompletedProjectsPage() {
             <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-2xl font-bold text-indigo-600">
+                  <p className="text-2xl font-bold text-green-600">
                     {stats.avgProgress}%
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">Avg Completion</p>
                 </div>
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-indigo-500" />
+                <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-green-500" />
                 </div>
               </div>
             </div>
@@ -455,13 +455,13 @@ export default function CompletedProjectsPage() {
                 placeholder="Search completed projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="completedAt">Sort by Completed Date</option>
               <option value="name">Sort by Name</option>
@@ -478,7 +478,7 @@ export default function CompletedProjectsPage() {
           {/* Projects Display */}
           {loading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
           ) : filteredProjects.length === 0 ? (
             <motion.div
@@ -570,7 +570,7 @@ export default function CompletedProjectsPage() {
                     )}
                     <Link
                       href={`/projects/${project._id}/dashboard`}
-                      className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1"
+                      className="text-green-600 hover:text-green-700 text-xs font-medium flex items-center gap-1"
                     >
                       View Details
                       <ArrowUpRight size={12} />
@@ -656,7 +656,7 @@ export default function CompletedProjectsPage() {
                         <td className="px-6 py-4 text-right">
                           <Link
                             href={`/projects/${project._id}`}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition inline-block"
+                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition inline-block"
                           >
                             <Eye size={16} />
                           </Link>
@@ -705,7 +705,7 @@ export default function CompletedProjectsPage() {
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
                       className={`px-3 py-2 rounded-lg text-sm transition ${currentPage === pageNum
-                          ? "bg-indigo-600 text-white shadow-sm"
+                          ? "bg-green-600 text-white shadow-sm"
                           : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                         }`}
                     >

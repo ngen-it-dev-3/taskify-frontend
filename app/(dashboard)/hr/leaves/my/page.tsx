@@ -197,7 +197,7 @@ const leaveTypeColors: Record<string, string> = {
   paternity: "bg-purple-100 text-purple-700 border-purple-200",
   bereavement: "bg-gray-100 text-gray-700 border-gray-200",
   unpaid: "bg-amber-100 text-amber-700 border-amber-200",
-  earned: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  earned: "bg-green-100 text-green-700 border-green-200",
   other: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
@@ -736,7 +736,7 @@ export default function MyLeavesPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading your leave data...</p>
         </div>
       </div>
@@ -778,14 +778,14 @@ export default function MyLeavesPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Calendar className="w-7 h-7 text-indigo-500" />
+              <Calendar className="w-7 h-7 text-green-500" />
               My Leaves
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               Track your leave requests and balances
               {refreshing && (
-                <span className="text-xs text-indigo-500 animate-pulse ml-2">
+                <span className="text-xs text-green-500 animate-pulse ml-2">
                   <Loader2 className="w-3 h-3 inline animate-spin mr-1" />
                   Updating...
                 </span>
@@ -794,7 +794,7 @@ export default function MyLeavesPage() {
           </div>
           <button
             onClick={() => setShowApplyModal(true)}
-            className="cursor-pointer px-4 py-2 bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-indigo-500/25 flex items-center gap-2"
+            className="cursor-pointer px-4 py-2 bg-linear-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-green-500/25 flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Apply Leave
@@ -888,7 +888,7 @@ export default function MyLeavesPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl p-4 shadow-md text-white"
+            className="bg-linear-to-br from-green-600 to-purple-600 rounded-2xl p-4 shadow-md text-white"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -910,7 +910,7 @@ export default function MyLeavesPage() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-indigo-500" />
+              <PieChart className="w-4 h-4 text-green-500" />
               Leave Balances
               <span className="text-xs font-normal text-gray-400 ml-2">
                 (Default: Annual 15, Sick 10, Casual 12, Earned 15)
@@ -918,7 +918,7 @@ export default function MyLeavesPage() {
             </h3>
             <button
               onClick={() => fetchLeaveData()}
-              className="text-xs text-indigo-500 hover:text-indigo-600 transition-colors flex items-center gap-1"
+              className="text-xs text-green-500 hover:text-green-600 transition-colors flex items-center gap-1"
             >
               <RefreshCw
                 className={`w-3 h-3 ${refreshing ? "animate-spin" : ""}`}
@@ -948,7 +948,7 @@ export default function MyLeavesPage() {
                   )}
                   <div className="flex items-center gap-2 mb-1">
                     <Icon
-                      className={`w-3.5 h-3.5 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-indigo-500"}`}
+                      className={`w-3.5 h-3.5 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-green-500"}`}
                     />
                     <span className="text-[10px] font-medium text-gray-500 uppercase truncate">
                       {label}
@@ -966,7 +966,7 @@ export default function MyLeavesPage() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
                     <div
-                      className={`h-1 rounded-full transition-all ${isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-indigo-500"}`}
+                      className={`h-1 rounded-full transition-all ${isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-green-500"}`}
                       style={{
                         width:
                           balance.total > 0
@@ -1049,14 +1049,14 @@ export default function MyLeavesPage() {
                 placeholder="Search your leaves..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="text-black w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                className="text-black w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
               />
             </div>
             <div className="flex gap-3 flex-wrap">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as LeaveStatus)}
-                className="text-gray-400 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                className="text-gray-400 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
               >
                 <option value="all">All Status</option>
                 <option value="pending">Pending</option>
@@ -1067,7 +1067,7 @@ export default function MyLeavesPage() {
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="text-gray-400 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                className="text-gray-400 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
               >
                 <option value="all">All Types</option>
                 {Object.entries(leaveTypeLabels).map(([key, label]) => (
@@ -1226,7 +1226,7 @@ export default function MyLeavesPage() {
             </p>
             <button
               onClick={() => setShowApplyModal(true)}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+              className="mt-4 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
             >
               <Plus className="w-4 h-4 inline mr-1" />
               Apply for Leave
@@ -1271,7 +1271,7 @@ export default function MyLeavesPage() {
                 {/* Personal Information */}
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <User size={14} className="text-indigo-500" />
+                    <User size={14} className="text-green-500" />
                     Personal Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1327,7 +1327,7 @@ export default function MyLeavesPage() {
                       <select
                         value={applyForm.type}
                         onChange={(e) => handleLeaveTypeChange(e.target.value)}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         required
                       >
                         {LEAVE_TYPES.map((type) => {
@@ -1385,7 +1385,7 @@ export default function MyLeavesPage() {
                                 isHalfDay: e.target.checked,
                               })
                             }
-                            className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                           />
                           <span className="text-sm text-gray-700">
                             Half Day
@@ -1400,7 +1400,7 @@ export default function MyLeavesPage() {
                                 halfDayType: e.target.value,
                               })
                             }
-                            className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                            className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                           >
                             <option value="first_half">First Half</option>
                             <option value="second_half">Second Half</option>
@@ -1421,7 +1421,7 @@ export default function MyLeavesPage() {
                             startDate: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         required
                       />
                     </div>
@@ -1438,18 +1438,18 @@ export default function MyLeavesPage() {
                             endDate: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         required
                       />
                     </div>
                   </div>
                   {applyForm.startDate && applyForm.endDate && (
-                    <div className="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                    <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">
                           Total Days Requested:
                         </span>
-                        <span className="font-semibold text-indigo-700">
+                        <span className="font-semibold text-green-700">
                           {calculateDays(
                             applyForm.startDate,
                             applyForm.endDate,
@@ -1526,7 +1526,7 @@ export default function MyLeavesPage() {
                               isPreviousDayOff: e.target.checked,
                             })
                           }
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                         />
                         <span className="text-sm text-gray-700">Yes</span>
                       </label>
@@ -1545,7 +1545,7 @@ export default function MyLeavesPage() {
                               isNextDayOff: e.target.checked,
                             })
                           }
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                         />
                         <span className="text-sm text-gray-700">Yes</span>
                       </label>
@@ -1564,7 +1564,7 @@ export default function MyLeavesPage() {
                               isGovernmentHoliday: e.target.checked,
                             })
                           }
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                         />
                         <span className="text-sm text-gray-700">Yes</span>
                       </label>
@@ -1582,7 +1582,7 @@ export default function MyLeavesPage() {
                             holidayNote: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         placeholder="Specify holiday details"
                       />
                     </div>
@@ -1607,7 +1607,7 @@ export default function MyLeavesPage() {
                           substituteId: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="">Select a substitute</option>
                       {getAvailableSubstitutes.map((sub) => (
@@ -1637,7 +1637,7 @@ export default function MyLeavesPage() {
                           setApplyForm({ ...applyForm, reason: e.target.value })
                         }
                         rows={3}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                         placeholder="Please provide a reason for your leave..."
                         required
                       />
@@ -1655,7 +1655,7 @@ export default function MyLeavesPage() {
                           })
                         }
                         rows={2}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                         placeholder="Any additional information..."
                       />
                     </div>
@@ -1672,7 +1672,7 @@ export default function MyLeavesPage() {
                             contactDuringLeave: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         placeholder="Phone number or email for contact"
                       />
                     </div>
@@ -1693,7 +1693,7 @@ export default function MyLeavesPage() {
                               },
                             })
                           }
-                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                       </div>
                       <div>
@@ -1712,7 +1712,7 @@ export default function MyLeavesPage() {
                               },
                             })
                           }
-                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                       </div>
                     </div>
@@ -1722,7 +1722,7 @@ export default function MyLeavesPage() {
                 {/* Signature */}
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <FileSignature size={14} className="text-indigo-500" />
+                    <FileSignature size={14} className="text-green-500" />
                     Signature
                   </h3>
                   <div className="space-y-3">
@@ -1739,7 +1739,7 @@ export default function MyLeavesPage() {
                             signatureText: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         placeholder="Type your full name as signature"
                       />
                     </div>
@@ -1752,7 +1752,7 @@ export default function MyLeavesPage() {
                           type="file"
                           accept="image/*"
                           onChange={handleSignatureUpload}
-                          className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                          className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
                         />
                       </div>
                       {signaturePreview && (
@@ -1772,7 +1772,7 @@ export default function MyLeavesPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <Loader2 size={16} className="animate-spin" />

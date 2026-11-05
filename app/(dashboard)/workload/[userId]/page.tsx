@@ -737,10 +737,10 @@ export default function IndividualWorkloadPage() {
   // ============= Loading State =============
   if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 via-indigo-50/20 to-purple-50/20">
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 via-green-50/20 to-purple-50/20">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 animate-pulse" />
+            <div className="w-16 h-16 rounded-full bg-linear-to-br from-green-500 to-purple-600 animate-pulse" />
             <Loader2 className="absolute inset-0 w-16 h-16 animate-spin text-white/80 p-3" />
           </div>
           <p className="text-gray-500 text-sm font-medium animate-pulse">
@@ -760,7 +760,7 @@ export default function IndividualWorkloadPage() {
   // ============= Error State =============
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-gray-50 via-indigo-50/20 to-purple-50/20 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-gray-50 via-green-50/20 to-purple-50/20 flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="w-10 h-10 text-red-500" />
@@ -770,7 +770,7 @@ export default function IndividualWorkloadPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={fetchAllData}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
+              className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center justify-center gap-2 shadow-sm"
             >
               <RefreshCw size={16} />
               Retry
@@ -814,7 +814,7 @@ export default function IndividualWorkloadPage() {
   const filteredTasks = getFilteredTasks();
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-indigo-50/10 to-purple-50/10">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-green-50/10 to-purple-50/10">
       <div className="p-4 md:p-6 lg:p-8">
         <div className="container mx-auto">
           {/* Header */}
@@ -830,11 +830,11 @@ export default function IndividualWorkloadPage() {
                 <ArrowLeft size={16} />
                 Back to Workload Dashboard
               </Link>
-              <h1 className="text-3xl font-bold bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mt-2">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-green-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mt-2">
                 Employee Workload Analysis
               </h1>
               <p className="text-gray-500 text-sm mt-1 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <Sparkles className="w-4 h-4 text-green-400" />
                 {data.metrics.totalTasks} tasks across {data.tasksByProject.length} projects
               </p>
             </motion.div>
@@ -845,14 +845,14 @@ export default function IndividualWorkloadPage() {
             >
               <button
                 onClick={fetchAllData}
-                className="px-4 py-2 bg-white border border-gray-200 hover:border-indigo-300 rounded-xl transition flex items-center gap-2 text-gray-700 hover:text-indigo-600 shadow-sm"
+                className="px-4 py-2 bg-white border border-gray-200 hover:border-green-300 rounded-xl transition flex items-center gap-2 text-gray-700 hover:text-green-600 shadow-sm"
               >
                 <RefreshCw size={16} />
                 Refresh
               </button>
               <button
                 onClick={handleExportReport}
-                className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition flex items-center gap-2 shadow-md shadow-indigo-500/25"
+                className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition flex items-center gap-2 shadow-md shadow-green-500/25"
               >
                 <Download size={16} />
                 Export Report
@@ -867,9 +867,9 @@ export default function IndividualWorkloadPage() {
             className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 shadow-xl overflow-hidden mb-6"
           >
             <div className="relative">
-              <div className="h-24 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500" />
+              <div className="h-24 bg-linear-to-r from-green-500 via-purple-500 to-pink-500" />
               <div className="absolute -bottom-12 left-6 flex items-end gap-4">
-                <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-xl shrink-0">
+                <div className="w-24 h-24 rounded-2xl bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center border-4 border-white shadow-xl shrink-0">
                   <span className="text-white text-4xl font-bold">
                     {getInitials(data.user.fullName)}
                   </span>
@@ -904,13 +904,13 @@ export default function IndividualWorkloadPage() {
             </div>
             <div className="mt-16 p-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="flex items-center gap-3 p-3 bg-indigo-50/50 rounded-xl border border-indigo-100">
-                  <div className="p-2 bg-indigo-100 rounded-lg">
-                    <Target className="w-4 h-4 text-indigo-600" />
+                <div className="flex items-center gap-3 p-3 bg-green-50/50 rounded-xl border border-green-100">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Target className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Completion Rate</p>
-                    <p className="text-lg font-bold text-indigo-600">
+                    <p className="text-lg font-bold text-green-600">
                       {data.metrics.completionRate}%
                     </p>
                   </div>
@@ -1001,7 +1001,7 @@ export default function IndividualWorkloadPage() {
                     key={tab.id}
                     onClick={() => setSelectedTab(tab.id as any)}
                     className={`flex items-center gap-2 px-5 py-3 text-sm font-medium transition whitespace-nowrap border-b-2 ${selectedTab === tab.id
-                      ? "text-indigo-600 border-indigo-600 bg-indigo-50/30"
+                      ? "text-green-600 border-green-600 bg-green-50/30"
                       : "text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50"
                       }`}
                   >
@@ -1030,7 +1030,7 @@ export default function IndividualWorkloadPage() {
                     {/* Weekly Activity Chart */}
                     <div className="bg-white/50 rounded-xl p-4 border border-gray-200/50">
                       <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                        <Activity className="w-4 h-4 text-indigo-500" />
+                        <Activity className="w-4 h-4 text-green-500" />
                         Weekly Activity
                       </h4>
                       {weeklyChartData.length > 0 ? (
@@ -1073,7 +1073,7 @@ export default function IndividualWorkloadPage() {
                     {/* Priority Distribution Chart */}
                     <div className="bg-white/50 rounded-xl p-4 border border-gray-200/50">
                       <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                        <PieChart className="w-4 h-4 text-indigo-500" />
+                        <PieChart className="w-4 h-4 text-green-500" />
                         Priority Distribution
                       </h4>
                       <div className="h-64 flex items-center justify-center">
@@ -1114,7 +1114,7 @@ export default function IndividualWorkloadPage() {
                   {/* Status Distribution */}
                   <div className="bg-white/50 rounded-xl p-4 border border-gray-200/50">
                     <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                      <BarChart2 className="w-4 h-4 text-indigo-500" />
+                      <BarChart2 className="w-4 h-4 text-green-500" />
                       Task Status Distribution
                     </h4>
                     <div className="h-48">
@@ -1171,7 +1171,7 @@ export default function IndividualWorkloadPage() {
                           key={filter.id}
                           onClick={() => setTaskFilter(filter.id as any)}
                           className={`px-3 py-1.5 text-xs font-medium rounded-lg transition ${taskFilter === filter.id
-                            ? "bg-white text-indigo-600 shadow-sm"
+                            ? "bg-white text-green-600 shadow-sm"
                             : "text-gray-500 hover:bg-white/50"
                             }`}
                         >
@@ -1214,7 +1214,7 @@ export default function IndividualWorkloadPage() {
                         {tasksToShow.map((task) => (
                           <div
                             key={task._id}
-                            className="bg-gray-50/80 rounded-xl p-4 border border-gray-100 hover:border-indigo-200 transition group"
+                            className="bg-gray-50/80 rounded-xl p-4 border border-gray-100 hover:border-green-200 transition group"
                           >
                             <div className="flex items-center justify-between flex-wrap gap-2">
                               <div className="flex-1 min-w-0">
@@ -1252,7 +1252,7 @@ export default function IndividualWorkloadPage() {
                               <div className="flex items-center gap-2">
                                 <Link
                                   href={`/tasks/${task._id}`}
-                                  className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition opacity-0 group-hover:opacity-100"
+                                  className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition opacity-0 group-hover:opacity-100"
                                 >
                                   <Eye size={14} />
                                 </Link>
@@ -1273,11 +1273,11 @@ export default function IndividualWorkloadPage() {
                     data.tasksByProject.map((projectData) => (
                       <div
                         key={projectData.project?._id || Math.random().toString()}
-                        className="bg-white/50 rounded-xl p-4 border border-gray-200/50 hover:border-indigo-200 transition"
+                        className="bg-white/50 rounded-xl p-4 border border-gray-200/50 hover:border-green-200 transition"
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                               <FolderKanban className="w-4 h-4 text-white" />
                             </div>
                             <div>
@@ -1310,7 +1310,7 @@ export default function IndividualWorkloadPage() {
                             <p className="text-[10px] text-gray-400">Completion Rate</p>
                           </div>
                           <div className="text-center">
-                            <p className="text-lg font-bold text-indigo-600">
+                            <p className="text-lg font-bold text-green-600">
                               {projectData.totalEstimated || 0}h
                             </p>
                             <p className="text-[10px] text-gray-400">Estimated</p>
@@ -1381,7 +1381,7 @@ export default function IndividualWorkloadPage() {
                         />
                       </div>
                     </div>
-                    <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+                    <div className="bg-linear-to-br from-blue-50 to-green-50 rounded-xl p-4 border border-blue-100">
                       <p className="text-xs text-gray-500 font-medium">Efficiency Rate</p>
                       <p className="text-2xl font-bold text-blue-600 mt-1">
                         {data.metrics.efficiencyRate}%
@@ -1425,7 +1425,7 @@ export default function IndividualWorkloadPage() {
                   {projectChartData.length > 0 && (
                     <div className="bg-white/50 rounded-xl p-4 border border-gray-200/50">
                       <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                        <BarChart2 className="w-4 h-4 text-indigo-500" />
+                        <BarChart2 className="w-4 h-4 text-green-500" />
                         Project Performance
                       </h4>
                       <div className="h-64">

@@ -479,7 +479,7 @@ export default function WorkloadCapacityPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">
             {authLoading ? "Authenticating..." : "Loading workload data..."}
           </p>
@@ -500,7 +500,7 @@ export default function WorkloadCapacityPage() {
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchWorkloadData}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center justify-center gap-2 mx-auto shadow-sm"
+            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center justify-center gap-2 mx-auto shadow-sm"
           >
             <RefreshCw size={16} />
             Retry
@@ -527,7 +527,7 @@ export default function WorkloadCapacityPage() {
             </p>
             <button
               onClick={fetchWorkloadData}
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition shadow-sm"
             >
               <RefreshCw size={16} />
               Refresh
@@ -563,7 +563,7 @@ export default function WorkloadCapacityPage() {
           >
             <div>
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center gap-3">
-                <BarChart3 className="w-7 h-7 text-indigo-500" />
+                <BarChart3 className="w-7 h-7 text-green-500" />
                 Team Workload Capacity
               </h1>
               <p className="text-gray-500 text-sm mt-1">
@@ -579,14 +579,14 @@ export default function WorkloadCapacityPage() {
               </button>
               <button
                 onClick={fetchWorkloadData}
-                className="px-4 py-2 bg-white border border-gray-200 hover:border-indigo-300 rounded-lg transition flex items-center gap-2 text-gray-700 hover:text-indigo-600"
+                className="px-4 py-2 bg-white border border-gray-200 hover:border-green-300 rounded-lg transition flex items-center gap-2 text-gray-700 hover:text-green-600"
               >
                 <RefreshCw size={16} />
                 Refresh
               </button>
               <button
                 onClick={handleExport}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
               >
                 <Download size={16} />
                 Export
@@ -607,8 +607,8 @@ export default function WorkloadCapacityPage() {
                   <p className="text-gray-500 text-xs font-medium">Total Members</p>
                   <p className="text-2xl font-bold text-gray-800">{displayAggregates.totalMembers}</p>
                 </div>
-                <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-indigo-500" />
+                <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                  <Users className="w-5 h-5 text-green-500" />
                 </div>
               </div>
               <div className="flex items-center gap-1 mt-2">
@@ -719,14 +719,14 @@ export default function WorkloadCapacityPage() {
                   placeholder="Search by name, email, department..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 />
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <select
                   value={departmentFilter}
                   onChange={(e) => setDepartmentFilter(e.target.value)}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   <option value="all">All Departments</option>
                   {departments.map((dept) => (
@@ -738,7 +738,7 @@ export default function WorkloadCapacityPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   <option value="capacity">Sort by Capacity</option>
                   <option value="name">Sort by Name</option>
@@ -800,7 +800,7 @@ export default function WorkloadCapacityPage() {
                       <div className="p-5">
                         {/* User Info */}
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-12 h-12 rounded-full shrink-0 shadow-sm overflow-hidden bg-linear-to-br from-indigo-500 to-purple-600">
+                          <div className="w-12 h-12 rounded-full shrink-0 shadow-sm overflow-hidden bg-linear-to-br from-green-500 to-purple-600">
                             {imageUrl ? (
                               <img
                                 src={imageUrl}
@@ -882,7 +882,7 @@ export default function WorkloadCapacityPage() {
                           </div>
                           <Link
                             href={`/workload/${member.user?._id}`}
-                            className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
+                            className="text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
                           >
                             View <Eye size={14} />
                           </Link>
@@ -917,7 +917,7 @@ export default function WorkloadCapacityPage() {
                       >
                         <div className="flex items-center gap-4">
                           {/* Avatar */}
-                          <div className="w-12 h-12 rounded-full shrink-0 shadow-sm overflow-hidden bg-linear-to-br from-indigo-500 to-purple-600">
+                          <div className="w-12 h-12 rounded-full shrink-0 shadow-sm overflow-hidden bg-linear-to-br from-green-500 to-purple-600">
                             {imageUrl ? (
                               <img
                                 src={imageUrl}
@@ -1019,7 +1019,7 @@ export default function WorkloadCapacityPage() {
                                 {/* Task Breakdown */}
                                 <div className="bg-white rounded-lg p-4 border border-gray-100">
                                   <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                                    <Target size={14} className="text-indigo-500" />
+                                    <Target size={14} className="text-green-500" />
                                     Task Breakdown
                                   </h4>
                                   <div className="space-y-2">
@@ -1113,7 +1113,7 @@ export default function WorkloadCapacityPage() {
                               <div className="mt-4 flex justify-end">
                                 <Link
                                   href={`/workload/${member.user?._id}`}
-                                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center gap-2 text-sm shadow-sm"
+                                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 text-sm shadow-sm"
                                 >
                                   <Eye size={14} />
                                   View Full Details

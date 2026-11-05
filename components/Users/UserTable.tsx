@@ -63,8 +63,8 @@ export const UserTable: React.FC<UserTableProps> = ({
             <tr key={user._id} className="hover:bg-gray-50">
               <td className="px-6 py-4">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
-                    <span className="text-indigo-600 font-medium text-sm">
+                  <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-green-600 font-medium text-sm">
                       {user.fullName.charAt(0)}
                     </span>
                   </div>
@@ -117,7 +117,7 @@ export const UserTable: React.FC<UserTableProps> = ({
                   </button>
                   <button
                     onClick={() => onEdit(user)}
-                    className="text-gray-400 hover:text-indigo-600 transition"
+                    className="text-gray-400 hover:text-green-600 transition"
                   >
                     <Edit size={18} />
                   </button>

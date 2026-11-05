@@ -56,7 +56,7 @@ export default function DependencyBadge({ taskId, onClick }: DependencyBadgeProp
             onClick={onClick}
             className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium transition-all hover:scale-105 ${isBlocked
                     ? "bg-rose-100 text-rose-700 border border-rose-200 hover:bg-rose-200"
-                    : "bg-indigo-100 text-indigo-700 border border-indigo-200 hover:bg-indigo-200"
+                    : "bg-green-100 text-green-700 border border-green-200 hover:bg-green-200"
                 }`}
         >
             {isBlocked ? (

@@ -682,13 +682,13 @@ export default function AllUsersPage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <Users className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   All Users
                 </h1>
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {users.length}
                 </span>
               </div>
@@ -700,7 +700,7 @@ export default function AllUsersPage() {
               {canCreateUser && (
                 <button
                   onClick={() => setShowCreateModal(true)}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-indigo-500/20"
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-green-500/20"
                 >
                   <UserPlus size={16} />
                   Add User
@@ -735,8 +735,8 @@ export default function AllUsersPage() {
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">Total Users</p>
                 </div>
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                  <Users className="w-5 h-5 text-indigo-500" />
+                <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                  <Users className="w-5 h-5 text-green-500" />
                 </div>
               </div>
             </div>
@@ -798,7 +798,7 @@ export default function AllUsersPage() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSearchTerm(e.target.value)
                   }
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
                 />
               </div>
               <select
@@ -806,7 +806,7 @@ export default function AllUsersPage() {
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                   setSelectedRole(e.target.value)
                 }
-                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               >
                 <option value="">All Roles</option>
                 {ROLES.map((role) => (
@@ -820,7 +820,7 @@ export default function AllUsersPage() {
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                   setSelectedDepartment(e.target.value)
                 }
-                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               >
                 <option value="">All Departments</option>
                 {departments.map((dept) => (
@@ -834,7 +834,7 @@ export default function AllUsersPage() {
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                   setShowStatus(e.target.value)
                 }
-                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -858,7 +858,7 @@ export default function AllUsersPage() {
           {/* Users Table */}
           {loading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
           ) : (
             <motion.div
@@ -912,13 +912,13 @@ export default function AllUsersPage() {
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center shadow-sm shrink-0">
+                              <div className="w-10 h-10 bg-linear-to-br from-green-500 to-purple-500 rounded-lg flex items-center justify-center shadow-sm shrink-0">
                                 <span className="text-white text-sm font-bold">
                                   {userItem.fullName.charAt(0).toUpperCase()}
                                 </span>
                               </div>
                               <div>
-                                <p className="text-gray-800 text-sm font-medium group-hover:text-indigo-600 transition">
+                                <p className="text-gray-800 text-sm font-medium group-hover:text-green-600 transition">
                                   {userItem.fullName}
                                 </p>
                                 <div className="flex items-center gap-2 mt-0.5">
@@ -979,7 +979,7 @@ export default function AllUsersPage() {
                                 </span>
                               )}
                               {hasMultipleRoles && (
-                                <span className="px-1.5 py-0.5 text-[8px] font-medium rounded-full border border-indigo-200 bg-indigo-50 text-indigo-600">
+                                <span className="px-1.5 py-0.5 text-[8px] font-medium rounded-full border border-green-200 bg-green-50 text-green-600">
                                   Multi
                                 </span>
                               )}
@@ -1024,7 +1024,7 @@ export default function AllUsersPage() {
                             <div className="flex items-center justify-end gap-1">
                               <button
                                 onClick={() => handleViewUser(userItem)}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                 title="View User"
                               >
                                 <Eye size={16} />
@@ -1116,7 +1116,7 @@ export default function AllUsersPage() {
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
                           className={`px-3 py-2 rounded-lg text-sm transition ${currentPage === pageNum
-                            ? "bg-indigo-600 text-white shadow-sm"
+                            ? "bg-green-600 text-white shadow-sm"
                             : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                             }`}
                         >
@@ -1201,7 +1201,7 @@ export default function AllUsersPage() {
                       fullName: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   placeholder="John Doe"
                   required
                 />
@@ -1220,7 +1220,7 @@ export default function AllUsersPage() {
                       email: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   placeholder="john@example.com"
                   required
                 />
@@ -1240,7 +1240,7 @@ export default function AllUsersPage() {
                         password: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition pr-10"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition pr-10"
                     placeholder="Min 8 characters"
                     required
                   />
@@ -1270,7 +1270,7 @@ export default function AllUsersPage() {
                       employeeId: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   placeholder="EMP001"
                   required
                 />
@@ -1289,7 +1289,7 @@ export default function AllUsersPage() {
                       phoneNumber: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   placeholder="+1 234 567 8900"
                 />
               </div>
@@ -1306,7 +1306,7 @@ export default function AllUsersPage() {
                       role: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   required
                 >
                   {ROLES.map((role) => (
@@ -1329,7 +1329,7 @@ export default function AllUsersPage() {
                       departmentId: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   <option value="">No Department</option>
                   {departments.map((dept) => (
@@ -1410,7 +1410,7 @@ export default function AllUsersPage() {
             <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
               {/* User Header */}
               <div className="flex items-center gap-4 pb-4 border-b border-gray-100">
-                <div className="w-16 h-16 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
+                <div className="w-16 h-16 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md shrink-0">
                   <span className="text-white text-2xl font-bold">
                     {selectedUser.fullName.charAt(0).toUpperCase()}
                   </span>
@@ -1521,7 +1521,7 @@ export default function AllUsersPage() {
                       setShowViewModal(false);
                       handleEditUser(selectedUser);
                     }}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg transition shadow-sm flex items-center justify-center gap-2"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg transition shadow-sm flex items-center justify-center gap-2"
                   >
                     <Edit2 size={16} />
                     Edit User
@@ -1565,9 +1565,9 @@ export default function AllUsersPage() {
             className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
           >
             {/* Edit Modal Content */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-blue-50 to-indigo-50">
+            <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-blue-50 to-green-50">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-linear-to-br from-blue-500 to-green-600 rounded-lg flex items-center justify-center">
                   <Edit2 className="w-4 h-4 text-white" />
                 </div>
                 <h2 className="text-lg font-semibold text-gray-800">
@@ -1602,7 +1602,7 @@ export default function AllUsersPage() {
                       fullName: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   required
                 />
               </div>
@@ -1619,7 +1619,7 @@ export default function AllUsersPage() {
                       email: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   required
                 />
               </div>
@@ -1636,7 +1636,7 @@ export default function AllUsersPage() {
                       employeeId: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   required
                 />
               </div>
@@ -1653,7 +1653,7 @@ export default function AllUsersPage() {
                       phoneNumber: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 />
               </div>
               <div>
@@ -1668,7 +1668,7 @@ export default function AllUsersPage() {
                       role: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   {ROLES.map((role) => (
                     <option key={role.value} value={role.value}>
@@ -1689,7 +1689,7 @@ export default function AllUsersPage() {
                       departmentId: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                 >
                   <option value="">No Department</option>
                   {departments.map((dept) => (
@@ -1712,7 +1712,7 @@ export default function AllUsersPage() {
                       position: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   placeholder="e.g. Senior Developer"
                 />
               </div>
@@ -1729,7 +1729,7 @@ export default function AllUsersPage() {
                       location: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   placeholder="e.g. New York, USA"
                 />
               </div>
@@ -1745,7 +1745,7 @@ export default function AllUsersPage() {
                       onChange={() =>
                         setEditFormData({ ...editFormData, isActive: true })
                       }
-                      className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 text-green-600 focus:ring-green-500"
                     />
                     <span className="text-sm text-gray-700">Active</span>
                   </label>
@@ -1756,7 +1756,7 @@ export default function AllUsersPage() {
                       onChange={() =>
                         setEditFormData({ ...editFormData, isActive: false })
                       }
-                      className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 text-green-600 focus:ring-green-500"
                     />
                     <span className="text-sm text-gray-700">Inactive</span>
                   </label>
@@ -1775,7 +1775,7 @@ export default function AllUsersPage() {
                     })
                   }
                   rows={2}
-                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                  className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                   placeholder="Brief description about the user"
                 />
               </div>
@@ -1783,7 +1783,7 @@ export default function AllUsersPage() {
                 <button
                   type="submit"
                   disabled={editing}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg transition disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg transition disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
                 >
                   {editing ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -1858,7 +1858,7 @@ export default function AllUsersPage() {
                         newPassword: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition pr-10"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition pr-10"
                     placeholder="Enter new password (min 8 characters)"
                     required
                   />
@@ -1888,7 +1888,7 @@ export default function AllUsersPage() {
                         confirmPassword: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition pr-10"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition pr-10"
                     placeholder="Confirm new password"
                     required
                   />
@@ -1953,9 +1953,9 @@ export default function AllUsersPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
           >
-            <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-purple-50 to-indigo-50">
+            <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-purple-50 to-green-50">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-green-600 rounded-lg flex items-center justify-center">
                   <Layers className="w-4 h-4 text-white" />
                 </div>
                 <div>
@@ -1989,7 +1989,7 @@ export default function AllUsersPage() {
                       <label
                         key={role._id}
                         className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition ${isSelected
-                          ? "bg-indigo-50 hover:bg-indigo-100"
+                          ? "bg-green-50 hover:bg-green-100"
                           : "hover:bg-gray-50"
                           }`}
                       >
@@ -1997,7 +1997,7 @@ export default function AllUsersPage() {
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleToggleRoleSelection(role._id)}
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                         />
                         <div className="flex-1">
                           <p className="text-sm font-medium text-gray-900">
@@ -2034,7 +2034,7 @@ export default function AllUsersPage() {
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                       setPrimaryRoleForUser(e.target.value)
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     {selectedRolesForUser.map((roleId) => {
                       const role = allRoles.find((r) => r._id === roleId);
@@ -2067,7 +2067,7 @@ export default function AllUsersPage() {
                 <button
                   onClick={handleUpdateUserRoles}
                   disabled={updatingRoles || selectedRolesForUser.length === 0}
-                  className="flex-1 bg-linear-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                  className="flex-1 bg-linear-to-r from-purple-600 to-green-600 hover:from-purple-700 hover:to-green-700 text-white py-2.5 rounded-lg transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
                 >
                   {updatingRoles ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

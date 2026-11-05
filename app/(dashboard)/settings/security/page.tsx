@@ -517,7 +517,7 @@ const SecuritySettingsPage: React.FC = () => {
         <div className="min-h-screen bg-gray-50  p-4 md:p-6">
             <div className="container mx-auto">
                 {/* Modern Header with Gradient */}
-                <div className="relative overflow-hidden bg-linear-to-br from-blue-600 via-blue-500 to-indigo-600 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+                <div className="relative overflow-hidden bg-linear-to-br from-blue-600 via-blue-500 to-green-600 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
                     <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
 
@@ -907,8 +907,8 @@ const SecuritySettingsPage: React.FC = () => {
                             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                                 <div className="flex items-center justify-between mb-6">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl">
-                                            <Users className="h-5 w-5 text-indigo-500" />
+                                        <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-xl">
+                                            <Users className="h-5 w-5 text-green-500" />
                                         </div>
                                         <div>
                                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Active Sessions</h2>

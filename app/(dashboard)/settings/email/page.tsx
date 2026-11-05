@@ -405,7 +405,7 @@ export default function EmailSettingsPage() {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+                    <Loader2 className="w-10 h-10 animate-spin text-green-600" />
                     <p className="text-gray-500 text-sm">Loading email settings...</p>
                 </div>
             </div>
@@ -430,7 +430,7 @@ export default function EmailSettingsPage() {
                     </p>
                     <button
                         onClick={() => router.push("/dashboard")}
-                        className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700 transition"
+                        className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition"
                     >
                         Go to Dashboard
                     </button>
@@ -443,7 +443,7 @@ export default function EmailSettingsPage() {
     // RENDER
     // ============================================================
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50/20">
+        <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-green-50/20">
             <div className="p-4 md:p-6 lg:p-8">
                 <div className="container mx-auto">
                     {/* Breadcrumb */}
@@ -477,7 +477,7 @@ export default function EmailSettingsPage() {
                         className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-linear-to-br from-blue-500 via-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                            <div className="w-12 h-12 bg-linear-to-br from-blue-500 via-green-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
                                 <Mail className="w-6 h-6 text-white" />
                             </div>
                             <div>
@@ -500,7 +500,7 @@ export default function EmailSettingsPage() {
                             <button
                                 onClick={handleSaveSettings}
                                 disabled={saving}
-                                className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:shadow-xl disabled:opacity-50"
+                                className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:shadow-xl disabled:opacity-50"
                             >
                                 {saving ? (
                                     <Loader2 size={18} className="animate-spin" />
@@ -532,14 +532,14 @@ export default function EmailSettingsPage() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
                                     className={`px-4 py-3 text-sm font-medium transition-all duration-200 relative whitespace-nowrap ${isActive
-                                        ? "text-indigo-600"
+                                        ? "text-green-600"
                                         : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <Icon size={16} className="inline mr-2" />
                                     {tab.label}
                                     {isActive && (
-                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-500 to-indigo-500" />
+                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-500 to-green-500" />
                                     )}
                                 </button>
                             );
@@ -629,7 +629,7 @@ function SmtpTab({
                         value={settings.smtpHost}
                         onChange={(e) => updateSettings("smtpHost", e.target.value)}
                         placeholder="smtp.gmail.com"
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div>
@@ -641,7 +641,7 @@ function SmtpTab({
                         value={settings.smtpPort}
                         onChange={(e) => updateSettings("smtpPort", parseInt(e.target.value) || 587)}
                         placeholder="587"
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div className="flex items-center justify-between p-4 bg-gray-50/80 rounded-xl border border-gray-200">
@@ -663,7 +663,7 @@ function SmtpTab({
                         value={settings.smtpUser}
                         onChange={(e) => updateSettings("smtpUser", e.target.value)}
                         placeholder="user@example.com"
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div>
@@ -676,7 +676,7 @@ function SmtpTab({
                             value={settings.smtpPassword}
                             onChange={(e) => updateSettings("smtpPassword", e.target.value)}
                             placeholder="••••••••"
-                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition pr-10"
+                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition pr-10"
                         />
                         <button
                             type="button"
@@ -697,7 +697,7 @@ function SmtpTab({
                         value={settings.smtpFromEmail}
                         onChange={(e) => updateSettings("smtpFromEmail", e.target.value)}
                         placeholder="noreply@example.com"
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div>
@@ -709,7 +709,7 @@ function SmtpTab({
                         value={settings.smtpFromName}
                         onChange={(e) => updateSettings("smtpFromName", e.target.value)}
                         placeholder="Task Management System"
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div>
@@ -721,7 +721,7 @@ function SmtpTab({
                         value={settings.smtpReplyTo}
                         onChange={(e) => updateSettings("smtpReplyTo", e.target.value)}
                         placeholder="reply@example.com"
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
             </div>
@@ -736,7 +736,7 @@ function SmtpTab({
                             value={settings.testEmailRecipient}
                             onChange={(e) => updateSettings("testEmailRecipient", e.target.value)}
                             placeholder="Enter email to send test"
-                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                     </div>
                     <button
@@ -855,7 +855,7 @@ function TemplatesTab({
                                 key={template.id}
                                 onClick={() => setSelectedTemplate(template.id)}
                                 className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center justify-between ${selectedTemplate === template.id
-                                    ? "bg-linear-to-r from-indigo-50 to-purple-50 border border-indigo-200"
+                                    ? "bg-linear-to-r from-green-50 to-purple-50 border border-green-200"
                                     : "bg-gray-50/80 border border-gray-200 hover:bg-gray-100"
                                     }`}
                             >
@@ -903,7 +903,7 @@ function TemplatesTab({
                                     const key = getSubjectKey(selectedTemplate);
                                     updateSettings(key, e.target.value);
                                 }}
-                                className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                             />
                         </div>
 
@@ -918,7 +918,7 @@ function TemplatesTab({
                                     updateSettings(key, e.target.value);
                                 }}
                                 rows={6}
-                                className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none font-mono"
+                                className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none font-mono"
                             />
                         </div>
 
@@ -926,7 +926,7 @@ function TemplatesTab({
                         <div>
                             <button
                                 onClick={() => setShowVariables(!showVariables)}
-                                className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition"
+                                className="flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700 transition"
                             >
                                 {showVariables ? <ChevronRight size={16} className="rotate-90" /> : <ChevronRight size={16} />}
                                 Available Template Variables
@@ -946,7 +946,7 @@ function TemplatesTab({
                                                     key={variable.name}
                                                     className="flex items-center gap-2 p-2 bg-white rounded-lg border border-gray-200"
                                                 >
-                                                    <code className="text-xs font-mono text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
+                                                    <code className="text-xs font-mono text-green-600 bg-green-50 px-2 py-0.5 rounded">
                                                         {variable.name}
                                                     </code>
                                                     <span className="text-xs text-gray-500">{variable.description}</span>
@@ -968,7 +968,7 @@ function TemplatesTab({
                                 onChange={(e) => updateSettings("emailSignature", e.target.value)}
                                 rows={2}
                                 placeholder="Best regards,&#10;The Task Management Team"
-                                className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                                className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                             />
                         </div>
                     </div>
@@ -1065,7 +1065,7 @@ function NotificationsTab({
                             type="number"
                             value={settings.maxEmailsPerMinute}
                             onChange={(e) => updateSettings("maxEmailsPerMinute", parseInt(e.target.value) || 100)}
-                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                     </div>
                 </div>
@@ -1117,7 +1117,7 @@ function Toggle({
                 onChange={(e) => onChange(e.target.checked)}
                 className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
         </label>
     );
 }

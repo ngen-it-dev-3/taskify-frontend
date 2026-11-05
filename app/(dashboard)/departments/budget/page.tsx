@@ -271,7 +271,7 @@ export default function BudgetPage() {
         {/* Financial KPI Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Total Allocated", val: `$${totalBudget.toLocaleString()}`, icon: DollarSign, color: "text-indigo-600", bg: "bg-indigo-50" },
+            { label: "Total Allocated", val: `$${totalBudget.toLocaleString()}`, icon: DollarSign, color: "text-green-600", bg: "bg-green-50" },
             { label: "Total Spent", val: `$${totalSpent.toLocaleString()}`, icon: TrendingDown, color: "text-rose-600", bg: "bg-rose-50" },
             { label: "Net Remaining", val: `$${totalRemaining.toLocaleString()}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
             { label: "Utilization Rate", val: `${utilizationRate.toFixed(1)}%`, icon: PieChart, color: getUtilizationTextColor(utilizationRate), bg: "bg-blue-50" },
@@ -297,7 +297,7 @@ export default function BudgetPage() {
               placeholder="Search departments by name or code..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs"
             />
           </div>
 

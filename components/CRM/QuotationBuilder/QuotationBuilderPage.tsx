@@ -40,25 +40,11 @@ interface Props {
 }
 
 const COUNTRY_CURRENCY_MAP: Record<string, string> = {
-    'Turkey': 'TRY',
-    'Qatar': 'QAR',
-    'Saudi Arabia': 'SAR',
-    'Pakistan': 'PKR',
-    'United Arab Emirates': 'AED',
-    'United States of America': 'USD',
-    'United States': 'USD',
-    'United Kingdom': 'GBP',
-    'Singapore': 'SGD',
-    'India': 'INR',
-    'Europe': 'EUR',
-    'Bangladesh': 'BDT',
-    'Australia': 'AUD',
-    'Canada': 'CAD',
-    'China': 'CNY',
-    'Malaysia': 'MYR',
-    'Japan': 'JPY',
-    'Kuwait': 'KWD',
-    'Vietnam': 'VND',
+  'Singapore': 'USD',      // ⭐ সিঙ্গাপুরের জন্য USD
+  'United Kingdom': 'GBP',
+  'Bangladesh': 'BDT',
+  'Middle East': 'AED',
+  'Portugal': 'EUR',
 };
 
 function buildPqNumberFromSettings(s: any): string {
@@ -795,11 +781,6 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                         generating={generating}
                         savingDraft={saving || sending}
                         onNumberingSaved={refreshNumbering}
-                    />
-
-                    <ClientTypeBar
-                        meta={meta}
-                        onChange={(newMeta) => setMeta(newMeta)}
                     />
 
                     <div className="mt-6 border-b border-[#EBE6DF] flex items-center gap-6 text-xs">

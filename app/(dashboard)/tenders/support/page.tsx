@@ -459,7 +459,7 @@ export default function TenderSupportInboxPage() {
                               className="h-7 w-7 shrink-0 rounded-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-purple-600 text-white">
                               <span className="text-[10px] font-bold">
                                 {r.owner?.fullName
                                   ?.charAt(0)

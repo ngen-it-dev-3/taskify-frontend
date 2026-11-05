@@ -887,7 +887,7 @@ export default function EmployeeKPIDetailPage() {
                     <p className="text-gray-500">You don't have permission to view this page</p>
                     <button
                         onClick={() => router.push("/dashboard")}
-                        className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700 transition"
+                        className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition"
                     >
                         Go to Dashboard
                     </button>
@@ -948,7 +948,7 @@ export default function EmployeeKPIDetailPage() {
                             </button>
                             <div>
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
+                                    <div className="w-12 h-12 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-md">
                                         <User className="w-6 h-6 text-white" />
                                     </div>
                                     <div>
@@ -973,7 +973,7 @@ export default function EmployeeKPIDetailPage() {
                             <select
                                 value={selectedMonth}
                                 onChange={(e) => setSelectedMonth(e.target.value)}
-                                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                             >
                                 {MONTHS.map((month) => (
                                     <option key={month} value={month}>{month}</option>
@@ -982,7 +982,7 @@ export default function EmployeeKPIDetailPage() {
                             <select
                                 value={selectedYear}
                                 onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                             >
                                 {YEARS.map((year) => (
                                     <option key={year} value={year}>{year}</option>
@@ -1021,7 +1021,7 @@ export default function EmployeeKPIDetailPage() {
                         <div className="flex justify-center py-16">
                             <div className="flex flex-col items-center gap-4">
                                 <div className="relative">
-                                    <div className="w-12 h-12 border-4 border-indigo-200 rounded-full animate-spin border-t-indigo-600" />
+                                    <div className="w-12 h-12 border-4 border-green-200 rounded-full animate-spin border-t-green-600" />
                                 </div>
                                 <p className="text-gray-500 text-sm font-medium animate-pulse">Loading employee data...</p>
                             </div>
@@ -1036,7 +1036,7 @@ export default function EmployeeKPIDetailPage() {
                             <div className="flex flex-wrap gap-3 justify-center mt-6">
                                 <button
                                     onClick={loadAllData}
-                                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm flex items-center gap-2"
+                                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition shadow-sm flex items-center gap-2"
                                 >
                                     <RefreshCw size={16} className="inline" />
                                     Retry
@@ -1088,7 +1088,7 @@ export default function EmployeeKPIDetailPage() {
                                 </div>
                                 <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition">
                                     <p className="text-sm text-gray-500">Percentile</p>
-                                    <p className="text-2xl font-bold text-indigo-600">{employee.percentile}%</p>
+                                    <p className="text-2xl font-bold text-green-600">{employee.percentile}%</p>
                                 </div>
                             </motion.div>
 
@@ -1100,30 +1100,30 @@ export default function EmployeeKPIDetailPage() {
                             >
                                 <button
                                     onClick={() => setActiveTab("overview")}
-                                    className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "overview" ? "text-indigo-600" : "text-gray-500 hover:text-gray-700"
+                                    className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "overview" ? "text-green-600" : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <BarChart3 size={16} className="inline mr-2" />
                                     Overview
-                                    {activeTab === "overview" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
+                                    {activeTab === "overview" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("tasks")}
-                                    className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "tasks" ? "text-indigo-600" : "text-gray-500 hover:text-gray-700"
+                                    className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "tasks" ? "text-green-600" : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <CheckCircle size={16} className="inline mr-2" />
                                     Tasks ({taskStats?.total || 0})
-                                    {activeTab === "tasks" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
+                                    {activeTab === "tasks" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />}
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("history")}
-                                    className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "history" ? "text-indigo-600" : "text-gray-500 hover:text-gray-700"
+                                    className={`px-4 py-3 text-sm font-medium transition relative ${activeTab === "history" ? "text-green-600" : "text-gray-500 hover:text-gray-700"
                                         }`}
                                 >
                                     <TrendingUp size={16} className="inline mr-2" />
                                     History
-                                    {activeTab === "history" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
+                                    {activeTab === "history" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />}
                                 </button>
                             </motion.div>
 
@@ -1134,7 +1134,7 @@ export default function EmployeeKPIDetailPage() {
                                         {/* User Profile */}
                                         <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                                             <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                                                <User size={16} className="text-indigo-500" />
+                                                <User size={16} className="text-green-500" />
                                                 Employee Profile
                                             </h3>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -1235,7 +1235,7 @@ export default function EmployeeKPIDetailPage() {
                                                             </div>
                                                             <div className="text-right">
                                                                 <p className="text-lg font-bold text-gray-800">{formatScore(value.score)}%</p>
-                                                                <p className="text-xs text-indigo-600">Weighted: {formatScore(value.weightedScore)}%</p>
+                                                                <p className="text-xs text-green-600">Weighted: {formatScore(value.weightedScore)}%</p>
                                                             </div>
                                                         </div>
                                                         <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
@@ -1258,7 +1258,7 @@ export default function EmployeeKPIDetailPage() {
                                     <div className="space-y-6">
                                         {taskLoading ? (
                                             <div className="flex justify-center py-8">
-                                                <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+                                                <Loader2 className="w-6 h-6 animate-spin text-green-500" />
                                             </div>
                                         ) : taskStats ? (
                                             <>
@@ -1367,7 +1367,7 @@ export default function EmployeeKPIDetailPage() {
                                     <div className="space-y-6">
                                         <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                                             <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                                                <TrendingUp size={16} className="text-indigo-500" />
+                                                <TrendingUp size={16} className="text-green-500" />
                                                 KPI History
                                             </h3>
                                             {allKPIScores.length > 0 ? (
@@ -1409,12 +1409,12 @@ export default function EmployeeKPIDetailPage() {
 
                                         <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                                             <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                                                <LineChart className="text-indigo-500" />
+                                                <LineChart className="text-green-500" />
                                                 Performance Trend
                                             </h3>
                                             {trendLoading ? (
                                                 <div className="flex justify-center py-8">
-                                                    <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+                                                    <Loader2 className="w-6 h-6 animate-spin text-green-500" />
                                                 </div>
                                             ) : trendData.length > 0 ? (
                                                 <div className="h-64">
@@ -1450,7 +1450,7 @@ export default function EmployeeKPIDetailPage() {
                             <p className="text-gray-500">Unable to find KPI data for this employee</p>
                             <button
                                 onClick={loadAllData}
-                                className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow-sm flex items-center gap-2 mx-auto"
+                                className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition shadow-sm flex items-center gap-2 mx-auto"
                             >
                                 <RefreshCw size={16} className="inline" />
                                 Retry

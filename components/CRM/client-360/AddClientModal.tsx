@@ -14,8 +14,11 @@ interface Props {
 }
 
 const COUNTRIES = [
-    'Bangladesh', 'Singapore', 'India', 'Pakistan', 'Egypt',
-    'Middle East', 'Hungary', 'Nigeria', 'United Kingdom', 'United States',
+    'Bangladesh',
+    'Singapore',
+    'Middle East',
+    'United Kingdom',
+    'Portugal',
 ];
 
 export function AddClientModal({ constants, onClose, onSaved }: Props) {

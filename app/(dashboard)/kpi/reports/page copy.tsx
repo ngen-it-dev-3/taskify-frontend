@@ -1272,7 +1272,7 @@ export default function KPIReportsPage() {
           </p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm"
           >
             Go to Dashboard
           </button>
@@ -1285,7 +1285,7 @@ export default function KPIReportsPage() {
   // RENDER
   // ============================================================
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50/30">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-green-50/30">
       <div className="p-4 md:p-6 lg:p-8">
         <div className="container mx-auto space-y-6">
           {/* Breadcrumb */}
@@ -1313,7 +1313,7 @@ export default function KPIReportsPage() {
           >
             <div>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                <div className="w-12 h-12 bg-linear-to-br from-green-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25">
                   <FileText className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -1332,7 +1332,7 @@ export default function KPIReportsPage() {
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
                   disabled={!reportData || exportLoading}
-                  className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition text-sm flex items-center gap-2 shadow-md shadow-indigo-500/20 hover:shadow-lg disabled:opacity-50"
+                  className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition text-sm flex items-center gap-2 shadow-md shadow-green-500/20 hover:shadow-lg disabled:opacity-50"
                 >
                   {exportLoading ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -1403,7 +1403,7 @@ export default function KPIReportsPage() {
                   key={tab.type}
                   onClick={() => setReportType(tab.type as ReportType)}
                   className={`px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 flex items-center gap-2 ${reportType === tab.type
-                    ? "bg-linear-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/20"
+                    ? "bg-linear-to-r from-green-600 to-purple-600 text-white shadow-md shadow-green-500/20"
                     : "text-gray-600 hover:text-gray-800 hover:bg-gray-100/80"
                     }`}
                 >
@@ -1433,7 +1433,7 @@ export default function KPIReportsPage() {
                         setSelectedMonth(e.target.value);
                         setIsFirstLoad(false);
                       }}
-                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       {months.map((month) => (
                         <option key={month} value={month}>
@@ -1452,7 +1452,7 @@ export default function KPIReportsPage() {
                         setSelectedYear(parseInt(e.target.value));
                         setIsFirstLoad(false);
                       }}
-                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       {[2023, 2024, 2025, 2026].map((year) => (
                         <option key={year} value={year}>
@@ -1476,7 +1476,7 @@ export default function KPIReportsPage() {
                         setSelectedQuarter(e.target.value as Quarter);
                         setIsFirstLoad(false);
                       }}
-                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="Q1">Q1 (Jan - Mar)</option>
                       <option value="Q2">Q2 (Apr - Jun)</option>
@@ -1494,7 +1494,7 @@ export default function KPIReportsPage() {
                         setSelectedYear(parseInt(e.target.value));
                         setIsFirstLoad(false);
                       }}
-                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       {[2023, 2024, 2025, 2026].map((year) => (
                         <option key={year} value={year}>
@@ -1517,7 +1517,7 @@ export default function KPIReportsPage() {
                       setSelectedYear(parseInt(e.target.value));
                       setIsFirstLoad(false);
                     }}
-                    className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     {[2023, 2024, 2025, 2026].map((year) => (
                       <option key={year} value={year}>
@@ -1539,7 +1539,7 @@ export default function KPIReportsPage() {
                       setSelectedDepartment(e.target.value);
                       setIsFirstLoad(false);
                     }}
-                    className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="all">All Departments</option>
                     {departments.map((dept) => (
@@ -1557,7 +1557,7 @@ export default function KPIReportsPage() {
                   fetchReportData();
                 }}
                 disabled={loading}
-                className="px-6 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md shadow-indigo-500/20 hover:shadow-lg disabled:opacity-50"
+                className="px-6 py-2.5 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-md shadow-green-500/20 hover:shadow-lg disabled:opacity-50"
               >
                 <RefreshCw
                   size={16}
@@ -1573,9 +1573,9 @@ export default function KPIReportsPage() {
             <div className="flex justify-center py-16">
               <div className="flex flex-col items-center gap-4">
                 <div className="relative">
-                  <div className="w-16 h-16 border-4 border-indigo-200 rounded-full animate-spin border-t-indigo-600"></div>
+                  <div className="w-16 h-16 border-4 border-green-200 rounded-full animate-spin border-t-green-600"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-indigo-600" />
+                    <FileText className="w-6 h-6 text-green-600" />
                   </div>
                 </div>
                 <p className="text-gray-500 text-sm font-medium animate-pulse">
@@ -1598,7 +1598,7 @@ export default function KPIReportsPage() {
                   fetchReportData();
                 }}
                 disabled={loading}
-                className="mt-4 px-6 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 shadow-md shadow-indigo-500/20 disabled:opacity-50"
+                className="mt-4 px-6 py-2.5 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 shadow-md shadow-green-500/20 disabled:opacity-50"
               >
                 Retry
               </button>
@@ -1616,9 +1616,9 @@ export default function KPIReportsPage() {
                     label: "Total Employees",
                     value: reportData.totalEmployees,
                     icon: Users,
-                    color: "text-indigo-600",
-                    bg: "bg-indigo-50",
-                    border: "border-indigo-200",
+                    color: "text-green-600",
+                    bg: "bg-green-50",
+                    border: "border-green-200",
                   },
                   {
                     label: "Average Score",
@@ -1681,8 +1681,8 @@ export default function KPIReportsPage() {
                 {/* Distribution Chart */}
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
                   <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <div className="w-8 h-8 bg-indigo-50 rounded-xl flex items-center justify-center">
-                      <PieChartIcon size={16} className="text-indigo-500" />
+                    <div className="w-8 h-8 bg-green-50 rounded-xl flex items-center justify-center">
+                      <PieChartIcon size={16} className="text-green-500" />
                     </div>
                     Performance Distribution
                   </h3>
@@ -1920,7 +1920,7 @@ export default function KPIReportsPage() {
                                 : "Unknown Department"}
                             </p>
                             <div className="flex items-center justify-between mt-2">
-                              <span className="text-2xl font-bold text-indigo-600">
+                              <span className="text-2xl font-bold text-green-600">
                                 {dept.averageScore}%
                               </span>
                               <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full">
@@ -1932,7 +1932,7 @@ export default function KPIReportsPage() {
                                 initial={{ width: 0 }}
                                 animate={{ width: `${dept.averageScore}%` }}
                                 transition={{ duration: 0.8, delay: 0.1 }}
-                                className="h-1.5 rounded-full bg-linear-to-r from-indigo-500 to-purple-500"
+                                className="h-1.5 rounded-full bg-linear-to-r from-green-500 to-purple-500"
                               />
                             </div>
                           </motion.div>
@@ -1985,7 +1985,7 @@ export default function KPIReportsPage() {
                                 {index + 1}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-800 truncate group-hover:text-indigo-600 transition">
+                                <p className="text-sm font-medium text-gray-800 truncate group-hover:text-green-600 transition">
                                   {performer.userId?.fullName ?? "No Name"}
                                 </p>
                                 <p className="text-xs text-gray-400 truncate">
@@ -2007,10 +2007,10 @@ export default function KPIReportsPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-linear-to-r from-gray-50/80 to-indigo-50/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200 text-center text-sm"
+                className="bg-linear-to-r from-gray-50/80 to-green-50/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200 text-center text-sm"
               >
                 <p className="text-gray-500 flex items-center justify-center gap-2 flex-wrap">
-                  <FileText size={14} className="text-indigo-400" />
+                  <FileText size={14} className="text-green-400" />
                   Report generated for{" "}
                   <span className="font-semibold text-gray-700">
                     {reportData.period}
@@ -2019,7 +2019,7 @@ export default function KPIReportsPage() {
                   {reportData.totalEmployees} employees evaluated
                   <span className="w-1 h-1 bg-gray-300 rounded-full" />
                   Average score:{" "}
-                  <span className="font-semibold text-indigo-600">
+                  <span className="font-semibold text-green-600">
                     {reportData.averageScore}%
                   </span>
                 </p>

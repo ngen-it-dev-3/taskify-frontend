@@ -103,7 +103,7 @@ export default function RecentTasks({ tasks = [] }: RecentTasksProps) {
           </div>
           <button
             onClick={() => router.push("/tasks/tasks-board")}
-            className="text-xs cursor-pointer text-indigo-600 hover:text-indigo-700 flex items-center gap-1 transition font-medium"
+            className="text-xs cursor-pointer text-green-600 hover:text-green-700 flex items-center gap-1 transition font-medium"
           >
             View All
             <ArrowRight size={12} />
@@ -119,7 +119,7 @@ export default function RecentTasks({ tasks = [] }: RecentTasksProps) {
           >
             <div className="flex items-start justify-between">
               <div className="flex-1 min-w-0">
-                <h4 className="text-gray-800 text-sm font-medium mb-2 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                <h4 className="text-gray-800 text-sm font-medium mb-2 line-clamp-1 group-hover:text-green-600 transition-colors">
                   {task.title}
                 </h4>
                 <div className="flex flex-wrap items-center gap-2">
@@ -147,7 +147,7 @@ export default function RecentTasks({ tasks = [] }: RecentTasksProps) {
               </div>
               <ArrowRight
                 size={16}
-                className="text-gray-300 group-hover:text-indigo-500 transition-colors shrink-0 ml-2"
+                className="text-gray-300 group-hover:text-green-500 transition-colors shrink-0 ml-2"
               />
             </div>
           </div>

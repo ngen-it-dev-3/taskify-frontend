@@ -724,8 +724,8 @@ const handleExportEmployee = async () => {
       label: "Total Employees",
       value: employees.length,
       icon: Users,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-50",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
     },
     {
       label: "Total Tasks",
@@ -745,8 +745,8 @@ const handleExportEmployee = async () => {
       label: "Completion Rate",
       value: `${overallStats.completionRate}%`,
       icon: Target,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-50",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
     },
     {
       label: "Pending",
@@ -782,7 +782,7 @@ const handleExportEmployee = async () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading employee reports...</p>
         </div>
       </div>
@@ -831,13 +831,13 @@ const handleExportEmployee = async () => {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <BarChart3 className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   Employee Task Report
                 </h1>
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {employees.length}
                 </span>
               </div>
@@ -855,7 +855,7 @@ const handleExportEmployee = async () => {
                     key={range}
                     onClick={() => setDateRange(range as any)}
                     className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-all ${dateRange === range
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-green-600 text-white shadow-sm"
                         : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                       }`}
                   >
@@ -929,14 +929,14 @@ const handleExportEmployee = async () => {
                 placeholder="Search employees by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <div className="flex gap-2">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               >
                 <option value="name">Sort by Name</option>
                 <option value="total">Sort by Total Tasks</option>
@@ -1030,7 +1030,7 @@ const handleExportEmployee = async () => {
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                            <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                               <span className="text-white text-xs font-bold">
                                 {employee.fullName.charAt(0).toUpperCase()}
                               </span>
@@ -1095,7 +1095,7 @@ const handleExportEmployee = async () => {
                               e.stopPropagation();
                               handleEmployeeClick(employee);
                             }}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                            className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                           >
                             <Eye size={16} />
                           </button>
@@ -1131,7 +1131,7 @@ const handleExportEmployee = async () => {
             >
               <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-5 flex justify-between items-start">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                  <div className="w-12 h-12 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                     <span className="text-white text-xl font-bold">
                       {selectedEmployeeForDetail.fullName
                         .charAt(0)
@@ -1183,7 +1183,7 @@ const handleExportEmployee = async () => {
 
               {loadingEmployee ? (
                 <div className="flex items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+                  <Loader2 className="w-8 h-8 animate-spin text-green-500" />
                 </div>
               ) : employeeDetailStats ? (
                 <div className="p-5 space-y-6">
@@ -1213,11 +1213,11 @@ const handleExportEmployee = async () => {
                       </p>
                       <p className="text-xs text-rose-500">Overdue</p>
                     </div>
-                    <div className="bg-indigo-50 rounded-lg p-3 text-center border border-indigo-100">
-                      <p className="text-2xl font-bold text-indigo-600">
+                    <div className="bg-green-50 rounded-lg p-3 text-center border border-green-100">
+                      <p className="text-2xl font-bold text-green-600">
                         {employeeDetailStats.completionRate}%
                       </p>
-                      <p className="text-xs text-indigo-500">Completion Rate</p>
+                      <p className="text-xs text-green-500">Completion Rate</p>
                     </div>
                     <div className="bg-amber-50 rounded-lg p-3 text-center border border-amber-100">
                       <p className="text-2xl font-bold text-amber-600">
@@ -1243,7 +1243,7 @@ const handleExportEmployee = async () => {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                       <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                        <Flag size={14} className="text-indigo-500" />
+                        <Flag size={14} className="text-green-500" />
                         Priority Distribution
                       </h4>
                       <div className="h-56">
@@ -1431,7 +1431,7 @@ const handleExportEmployee = async () => {
                     employeeDetailStats.monthlyStats.length > 0 && (
                       <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                         <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                          <Calendar size={14} className="text-indigo-500" />
+                          <Calendar size={14} className="text-green-500" />
                           Monthly Performance (Last 6 Months)
                         </h4>
                         <div className="h-56">
@@ -1488,7 +1488,7 @@ const handleExportEmployee = async () => {
                     employeeDetailStats.tasksByProject.length > 0 && (
                       <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                         <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                          <FolderKanban size={14} className="text-indigo-500" />
+                          <FolderKanban size={14} className="text-green-500" />
                           Project Breakdown
                         </h4>
                         <div className="overflow-x-auto">
@@ -1563,7 +1563,7 @@ const handleExportEmployee = async () => {
                     </button>
                     <button
                       onClick={handleExportEmployee}
-                      className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm flex items-center justify-center gap-2"
+                      className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm flex items-center justify-center gap-2"
                     >
                       <Download size={16} />
                       Export Report

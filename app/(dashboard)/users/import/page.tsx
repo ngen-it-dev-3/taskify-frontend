@@ -59,7 +59,7 @@ export default function ImportPage() {
           <p className="text-slate-500 text-sm mb-6">You lack administrative privileges to perform bulk user imports.</p>
           <Link
             href="/dashboard"
-            className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20"
+            className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20"
           >
             Return to Dashboard
           </Link>
@@ -286,7 +286,7 @@ export default function ImportPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <Upload className="w-6 h-6" />
               </div>
               <div>
@@ -309,7 +309,7 @@ export default function ImportPage() {
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-xs space-y-6">
               <div className="text-center max-w-md mx-auto space-y-1">
-                <div className="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+                <div className="w-16 h-16 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
                   <FileSpreadsheet className="w-8 h-8" />
                 </div>
                 <h2 className="text-lg font-bold text-slate-900">Upload Data Archive</h2>
@@ -318,7 +318,7 @@ export default function ImportPage() {
 
               <div
                 {...getRootProps()}
-                className={`border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition ${isDragActive ? "border-indigo-500 bg-indigo-50/50" : "border-slate-200 hover:border-indigo-400 hover:bg-slate-50/60"
+                className={`border-2 border-dashed rounded-3xl p-10 text-center cursor-pointer transition ${isDragActive ? "border-green-500 bg-green-50/50" : "border-slate-200 hover:border-green-400 hover:bg-slate-50/60"
                   }`}
               >
                 <input {...getInputProps()} />
@@ -334,7 +334,7 @@ export default function ImportPage() {
                   onClick={() => downloadTemplate("csv")}
                   className="flex-1 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition shadow-xs"
                 >
-                  <Download size={14} className="text-indigo-600" />
+                  <Download size={14} className="text-green-600" />
                   Download CSV Template
                 </button>
                 <button
@@ -519,7 +519,7 @@ export default function ImportPage() {
               <button
                 onClick={handleFinalSubmit}
                 disabled={importing || records.length === 0 || totalMissingFieldsCount > 0}
-                className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20 disabled:opacity-40 flex items-center justify-center gap-2"
+                className="flex-1 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20 disabled:opacity-40 flex items-center justify-center gap-2"
               >
                 {importing ? (
                   <>
@@ -564,7 +564,7 @@ export default function ImportPage() {
                 </button>
                 <Link
                   href="/users"
-                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20"
+                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20"
                 >
                   View Directory
                 </Link>

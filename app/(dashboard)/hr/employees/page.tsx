@@ -72,7 +72,7 @@ const roleColors: Record<string, string> = {
   admin: "bg-red-100 text-red-700 border-red-200",
   hr_manager: "bg-pink-100 text-pink-700 border-pink-200",
   dept_manager: "bg-blue-100 text-blue-700 border-blue-200",
-  project_manager: "bg-indigo-100 text-indigo-700 border-indigo-200",
+  project_manager: "bg-green-100 text-green-700 border-green-200",
   line_manager: "bg-amber-100 text-amber-700 border-amber-200",
   employee: "bg-emerald-100 text-emerald-700 border-emerald-200",
 };
@@ -467,7 +467,7 @@ export default function EmployeesPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading employees...</p>
         </div>
       </div>
@@ -486,18 +486,18 @@ export default function EmployeesPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Users className="w-7 h-7 text-indigo-500" />
+              <Users className="w-7 h-7 text-green-500" />
               Employees
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               Manage and organize your workforce
             </p>
           </div>
           {isHR && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="group flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all duration-200 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 font-medium"
+              className="group flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 font-medium"
             >
               <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
               Add Employee
@@ -507,10 +507,10 @@ export default function EmployeesPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <div className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 p-5 hover:shadow-md hover:border-indigo-200/50 transition-all duration-200">
+          <div className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 p-5 hover:shadow-md hover:border-green-200/50 transition-all duration-200">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-linear-to-br from-indigo-50 to-indigo-100/50 rounded-xl group-hover:scale-110 transition-transform duration-200">
-                <Users className="w-5 h-5 text-indigo-600" />
+              <div className="p-2.5 bg-linear-to-br from-green-50 to-green-100/50 rounded-xl group-hover:scale-110 transition-transform duration-200">
+                <Users className="w-5 h-5 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">Total Employees</p>
@@ -571,14 +571,14 @@ export default function EmployeesPage() {
                 placeholder="Search employees..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="text-black w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
+                className="text-black w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
               />
             </div>
             <div className="flex gap-3 flex-wrap">
               <select
                 value={filterDepartment}
                 onChange={(e) => setFilterDepartment(e.target.value)}
-                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[160px]"
+                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[160px]"
               >
                 <option value="all">All Departments</option>
                 {departments.map((dept) => (
@@ -590,7 +590,7 @@ export default function EmployeesPage() {
               <select
                 value={filterRole}
                 onChange={(e) => setFilterRole(e.target.value)}
-                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
               >
                 <option value="all">All Roles</option>
                 {Object.entries(roleLabels).map(([key, label]) => (
@@ -602,7 +602,7 @@ export default function EmployeesPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[120px]"
+                className="text-black px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[120px]"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -625,7 +625,7 @@ export default function EmployeesPage() {
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "grid"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -635,7 +635,7 @@ export default function EmployeesPage() {
                   onClick={() => setViewMode("table")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "table"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -660,13 +660,13 @@ export default function EmployeesPage() {
                 return (
                   <div
                     key={employee._id}
-                    className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-indigo-200/50 transition-all duration-300 hover:-translate-y-1"
+                    className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-green-200/50 transition-all duration-300 hover:-translate-y-1"
                   >
                     <div className="p-5">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3 min-w-0">
                           <div className="relative">
-                            <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-lg font-bold shrink-0">
+                            <div className="w-12 h-12 rounded-2xl bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-lg font-bold shrink-0">
                               {getInitials(employee.fullName)}
                             </div>
                             {employee.isActive ? (
@@ -679,7 +679,7 @@ export default function EmployeesPage() {
                             <h3 className="font-semibold text-gray-900 truncate flex items-center gap-1.5">
                               {employee.fullName}
                               {isCurrentUser && (
-                                <span className="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full">
+                                <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">
                                   You
                                 </span>
                               )}
@@ -731,7 +731,7 @@ export default function EmployeesPage() {
                             setSelectedEmployee(employee);
                             setShowEmployeeDetail(true);
                           }}
-                          className="flex-1 px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors flex items-center justify-center gap-1"
+                          className="flex-1 px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-50 rounded-xl transition-colors flex items-center justify-center gap-1"
                         >
                           <Eye className="w-4 h-4" />
                           View Profile
@@ -740,7 +740,7 @@ export default function EmployeesPage() {
                           <>
                             <button
                               onClick={() => openEditModal(employee)}
-                              className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors"
+                              className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition-colors"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
@@ -798,18 +798,18 @@ export default function EmployeesPage() {
                       return (
                         <tr
                           key={employee._id}
-                          className="hover:bg-indigo-50/30 transition-colors group"
+                          className="hover:bg-green-50/30 transition-colors group"
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-xs font-bold shrink-0">
+                              <div className="w-9 h-9 rounded-xl bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-xs font-bold shrink-0">
                                 {getInitials(employee.fullName)}
                               </div>
                               <div>
                                 <p className="font-medium text-gray-900 flex items-center gap-1.5">
                                   {employee.fullName}
                                   {isCurrentUser && (
-                                    <span className="text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-full">
+                                    <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">
                                       You
                                     </span>
                                   )}
@@ -867,7 +867,7 @@ export default function EmployeesPage() {
                                   setSelectedEmployee(employee);
                                   setShowEmployeeDetail(true);
                                 }}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                 title="View Profile"
                               >
                                 <Eye className="w-4 h-4" />
@@ -876,7 +876,7 @@ export default function EmployeesPage() {
                                 <>
                                   <button
                                     onClick={() => openEditModal(employee)}
-                                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                                    className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                     title="Edit Employee"
                                   >
                                     <Edit className="w-4 h-4" />
@@ -919,7 +919,7 @@ export default function EmployeesPage() {
             {isHR && (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+                className="mt-4 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
               >
                 Add Employee
               </button>
@@ -964,7 +964,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, fullName: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -980,7 +980,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -994,7 +994,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, role: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     >
                       {Object.entries(roleLabels).map(([key, label]) => (
                         <option key={key} value={key}>
@@ -1016,7 +1016,7 @@ export default function EmployeesPage() {
                           departmentId: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     >
                       <option value="">Select Department</option>
                       {departments.map((dept) => (
@@ -1038,7 +1038,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, position: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1053,7 +1053,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, phone: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1068,7 +1068,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, location: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1083,7 +1083,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, bio: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-800"
                     />
                   </div>
                 </div>
@@ -1091,7 +1091,7 @@ export default function EmployeesPage() {
                 <div className="flex gap-3 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors font-medium shadow-lg shadow-indigo-500/25"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors font-medium shadow-lg shadow-green-500/25"
                   >
                     Create Employee
                   </button>
@@ -1146,7 +1146,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, fullName: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1162,7 +1162,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, email: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1176,7 +1176,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, role: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     >
                       {Object.entries(roleLabels).map(([key, label]) => (
                         <option key={key} value={key}>
@@ -1198,7 +1198,7 @@ export default function EmployeesPage() {
                           departmentId: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     >
                       <option value="">Select Department</option>
                       {departments.map((dept) => (
@@ -1220,7 +1220,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, position: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1235,7 +1235,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, phone: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1250,7 +1250,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, location: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     />
                   </div>
 
@@ -1266,7 +1266,7 @@ export default function EmployeesPage() {
                           isActive: e.target.value === "active",
                         })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-800"
                     >
                       <option value="active">Active</option>
                       <option value="inactive">Inactive</option>
@@ -1284,7 +1284,7 @@ export default function EmployeesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, bio: e.target.value })
                       }
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-800"
+                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-800"
                     />
                   </div>
                 </div>
@@ -1292,7 +1292,7 @@ export default function EmployeesPage() {
                 <div className="flex gap-3 mt-6">
                   <button
                     type="submit"
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors font-medium shadow-lg shadow-indigo-500/25"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors font-medium shadow-lg shadow-green-500/25"
                   >
                     Update Employee
                   </button>
@@ -1361,14 +1361,14 @@ export default function EmployeesPage() {
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-2xl font-bold shrink-0">
+                  <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-2xl font-bold shrink-0">
                     {getInitials(selectedEmployee.fullName)}
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                       {selectedEmployee.fullName}
                       {selectedEmployee._id === user?._id && (
-                        <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                           You
                         </span>
                       )}
@@ -1523,7 +1523,7 @@ export default function EmployeesPage() {
                       setShowEmployeeDetail(false);
                       openEditModal(selectedEmployee);
                     }}
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors font-medium shadow-lg shadow-indigo-500/25"
+                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors font-medium shadow-lg shadow-green-500/25"
                   >
                     <Edit className="w-4 h-4 inline mr-1" />
                     Edit Employee

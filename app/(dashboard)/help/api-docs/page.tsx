@@ -507,7 +507,7 @@ const ApiDocsPage: React.FC = () => {
   return (
     <div className="p-4 md:p-6 container mx-auto container">
       {/* Header */}
-      <div className="bg-linear-to-br from-indigo-600 via-indigo-500 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+      <div className="bg-linear-to-br from-green-600 via-green-500 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
@@ -515,7 +515,7 @@ const ApiDocsPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">API Documentation</h1>
-              <p className="text-indigo-100 text-sm">
+              <p className="text-green-100 text-sm">
                 Complete reference for the Task Management System API
               </p>
             </div>
@@ -525,7 +525,7 @@ const ApiDocsPage: React.FC = () => {
               href="/api/v1/docs"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 bg-white text-indigo-600 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+              className="px-4 py-2 bg-white text-green-600 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center gap-2"
             >
               <ExternalLink className="w-4 h-4" />
               OpenAPI Spec
@@ -536,19 +536,19 @@ const ApiDocsPage: React.FC = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">Total Endpoints</p>
+            <p className="text-green-100 text-xs">Total Endpoints</p>
             <p className="text-white text-xl font-bold">{ENDPOINTS.length}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">Categories</p>
+            <p className="text-green-100 text-xs">Categories</p>
             <p className="text-white text-xl font-bold">{CATEGORIES.length}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">GET Requests</p>
+            <p className="text-green-100 text-xs">GET Requests</p>
             <p className="text-blue-300 text-xl font-bold">{ENDPOINTS.filter(e => e.method === "GET").length}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">POST/PUT/DELETE</p>
+            <p className="text-green-100 text-xs">POST/PUT/DELETE</p>
             <p className="text-green-300 text-xl font-bold">{ENDPOINTS.filter(e => e.method !== "GET").length}</p>
           </div>
         </div>
@@ -564,7 +564,7 @@ const ApiDocsPage: React.FC = () => {
               placeholder="Search endpoints by path, method, or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
             />
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2">
@@ -572,7 +572,7 @@ const ApiDocsPage: React.FC = () => {
               onClick={() => setSelectedCategory("all")}
               className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 selectedCategory === "all"
-                  ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                   : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
@@ -717,7 +717,7 @@ const ApiDocsPage: React.FC = () => {
                                   ),
                                   `${endpoint.id}-body`
                                 )}
-                                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                                className="text-xs text-green-600 dark:text-green-400 hover:underline flex items-center gap-1"
                               >
                                 {copiedId === `${endpoint.id}-body` ? (
                                   <Check className="w-3 h-3" />
@@ -766,7 +766,7 @@ const ApiDocsPage: React.FC = () => {
                                   {response.example && (
                                     <button
                                       onClick={() => handleCopy(response.example!, `${endpoint.id}-response-${response.code}`)}
-                                      className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                                      className="text-xs text-green-600 dark:text-green-400 hover:underline flex items-center gap-1"
                                     >
                                       {copiedId === `${endpoint.id}-response-${response.code}` ? (
                                         <Check className="w-3 h-3" />
@@ -799,7 +799,7 @@ const ApiDocsPage: React.FC = () => {
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Example Request</span>
                               <button
                                 onClick={() => handleCopy(endpoint.example!, `${endpoint.id}-example`)}
-                                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+                                className="text-xs text-green-600 dark:text-green-400 hover:underline flex items-center gap-1"
                               >
                                 {copiedId === `${endpoint.id}-example` ? (
                                   <Check className="w-3 h-3" />
@@ -834,16 +834,16 @@ const ApiDocsPage: React.FC = () => {
             <span>All endpoints require authentication unless marked otherwise</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <a href="#" className="hover:text-green-600 dark:hover:text-green-400 transition-colors">
               <FaGithub className="w-4 h-4" />
             </a>
-            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <a href="#" className="hover:text-green-600 dark:hover:text-green-400 transition-colors">
               <FaTwitterSquare className="w-4 h-4" />
             </a>
-            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <a href="#" className="hover:text-green-600 dark:hover:text-green-400 transition-colors">
               <FaLinkedin className="w-4 h-4" />
             </a>
-            <a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+            <a href="#" className="hover:text-green-600 dark:hover:text-green-400 transition-colors">
               <MessageCircle className="w-4 h-4" />
             </a>
           </div>

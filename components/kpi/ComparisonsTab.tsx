@@ -118,7 +118,7 @@ export default function ComparisonsTab({
               animate={{ opacity: 1, scale: 1 }}
               className={`bg-white/80 backdrop-blur-sm rounded-2xl p-5 border ${
                 isSelected
-                  ? "border-indigo-400 ring-2 ring-indigo-200"
+                  ? "border-green-400 ring-2 ring-green-200"
                   : "border-gray-200"
               } shadow-sm hover:shadow-md transition-all duration-300`}
             >
@@ -131,7 +131,7 @@ export default function ComparisonsTab({
                 </span>
               </div>
               <div className="flex items-center justify-between mb-3">
-                <span className="text-2xl font-bold text-indigo-600">
+                <span className="text-2xl font-bold text-green-600">
                   {dept.averageScore}%
                 </span>
                 <span className="text-xs text-gray-400">
@@ -140,7 +140,7 @@ export default function ComparisonsTab({
               </div>
               <div className="w-full bg-gray-200 rounded-full h-1.5 mb-3">
                 <div
-                  className="h-1.5 rounded-full bg-linear-to-r from-indigo-500 to-purple-500"
+                  className="h-1.5 rounded-full bg-linear-to-r from-green-500 to-purple-500"
                   style={{ width: `${dept.averageScore}%` }}
                 />
               </div>

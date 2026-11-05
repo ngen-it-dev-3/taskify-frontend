@@ -114,9 +114,9 @@ export default function ExportReportsPage() {
       description:
         "Export all task data including status, priority, and assignments",
       icon: CheckSquare,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-50",
-      borderColor: "border-indigo-200",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200",
       formats: [
         { value: "csv", label: "CSV", icon: FaFileCsv },
         { value: "json", label: "JSON", icon: FileJson },
@@ -438,7 +438,7 @@ export default function ExportReportsPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading...</p>
         </div>
       </div>
@@ -583,7 +583,7 @@ export default function ExportReportsPage() {
                           key={format.value}
                           onClick={() => setSelectedFormat(format.value)}
                           className={`px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${selectedFormat === format.value
-                              ? "bg-indigo-600 text-white shadow-sm"
+                              ? "bg-green-600 text-white shadow-sm"
                               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                         >
@@ -607,7 +607,7 @@ export default function ExportReportsPage() {
                           key={range}
                           onClick={() => setDateRange(range as any)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium transition capitalize ${dateRange === range
-                              ? "bg-indigo-600 text-white shadow-sm"
+                              ? "bg-green-600 text-white shadow-sm"
                               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                         >
@@ -649,7 +649,7 @@ export default function ExportReportsPage() {
                           onChange={(e) =>
                             setSelectedDepartment(e.target.value)
                           }
-                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         >
                           <option value="">All Departments</option>
                           {departments.map((dept) => (
@@ -668,7 +668,7 @@ export default function ExportReportsPage() {
                         <select
                           value={selectedProject}
                           onChange={(e) => setSelectedProject(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         >
                           <option value="">All Projects</option>
                           {projects.map((project) => (
@@ -687,7 +687,7 @@ export default function ExportReportsPage() {
                         <select
                           value={selectedStatus}
                           onChange={(e) => setSelectedStatus(e.target.value)}
-                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         >
                           <option value="">All Status</option>
                           <option value="active">Active</option>
@@ -711,7 +711,7 @@ export default function ExportReportsPage() {
                   </h2>
                   <button
                     onClick={handleSelectAllFields}
-                    className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                    className="text-xs text-green-600 hover:text-green-700 font-medium"
                   >
                     {selectedFields.length === currentOption?.fields.length
                       ? "Deselect All"
@@ -736,7 +736,7 @@ export default function ExportReportsPage() {
                             setSelectedFields([...selectedFields, field.value]);
                           }
                         }}
-                        className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                       />
                       <span className="text-sm text-gray-700">
                         {field.label}
@@ -769,7 +769,7 @@ export default function ExportReportsPage() {
                       value={fileName}
                       onChange={(e) => setFileName(e.target.value)}
                       placeholder={`${selectedType}_report`}
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                     <p className="text-[10px] text-gray-400 mt-1">
                       Leave empty for auto-generated name
@@ -780,7 +780,7 @@ export default function ExportReportsPage() {
                       type="checkbox"
                       checked={includeHeaders}
                       onChange={() => setIncludeHeaders(!includeHeaders)}
-                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
                     <span className="text-sm text-gray-700">
                       Include Column Headers
@@ -801,7 +801,7 @@ export default function ExportReportsPage() {
                       type="checkbox"
                       checked={emailReport}
                       onChange={() => setEmailReport(!emailReport)}
-                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
                     <span className="text-sm text-gray-700">
                       Email report to me
@@ -812,7 +812,7 @@ export default function ExportReportsPage() {
                       type="checkbox"
                       checked={scheduleReport}
                       onChange={() => setScheduleReport(!scheduleReport)}
-                      className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
                     <span className="text-sm text-gray-700">
                       Schedule recurring report
@@ -825,7 +825,7 @@ export default function ExportReportsPage() {
                           key={freq}
                           onClick={() => setScheduleFrequency(freq as any)}
                           className={`px-3 py-1 rounded-lg text-xs font-medium capitalize transition ${scheduleFrequency === freq
-                              ? "bg-indigo-600 text-white shadow-sm"
+                              ? "bg-green-600 text-white shadow-sm"
                               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                         >

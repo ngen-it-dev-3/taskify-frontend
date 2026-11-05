@@ -113,7 +113,7 @@ const categoryColors = {
   comment: "bg-blue-50 text-blue-700 border-blue-200",
   approval: "bg-purple-50 text-purple-700 border-purple-200",
   reminder: "bg-amber-50 text-amber-700 border-amber-200",
-  system: "bg-indigo-50 text-indigo-700 border-indigo-200",
+  system: "bg-green-50 text-green-700 border-green-200",
 };
 
 const categoryIcons = {
@@ -661,14 +661,14 @@ export default function NotificationsPage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <Bell className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   Notifications
                 </h1>
                 {totalCount > 0 && (
-                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                  <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                     {totalCount}
                   </span>
                 )}
@@ -708,7 +708,7 @@ export default function NotificationsPage() {
                 <button
                   onClick={markAllAsRead}
                   disabled={bulkActionLoading}
-                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-xl flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
+                  className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-xl flex items-center gap-2 transition-all shadow-sm disabled:opacity-50"
                 >
                   <CheckCheck size={14} />
                   Mark all read
@@ -744,7 +744,7 @@ export default function NotificationsPage() {
                       </p>
                       <p className="text-xs text-gray-500">Total</p>
                     </div>
-                    <Bell size={20} className="text-indigo-500" />
+                    <Bell size={20} className="text-green-500" />
                   </div>
                 </div>
                 <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
@@ -797,7 +797,7 @@ export default function NotificationsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <PieChart size={16} className="text-indigo-500" />
+                    <PieChart size={16} className="text-green-500" />
                     Category Distribution
                   </h3>
                   <div className="h-48">
@@ -832,7 +832,7 @@ export default function NotificationsPage() {
                 </div>
                 <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <BarChart3 size={16} className="text-indigo-500" />
+                    <BarChart3 size={16} className="text-green-500" />
                     Type Distribution
                   </h3>
                   <div className="h-48">
@@ -863,7 +863,7 @@ export default function NotificationsPage() {
               {stats.lastWeek && stats.lastWeek.length > 0 && (
                 <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
                   <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <CalendarIcon size={16} className="text-indigo-500" />
+                    <CalendarIcon size={16} className="text-green-500" />
                     Last Week Activity
                   </h3>
                   <div className="h-32">
@@ -908,7 +908,7 @@ export default function NotificationsPage() {
                 placeholder="Search notifications..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition-all shadow-sm"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               {searchTerm && (
@@ -928,7 +928,7 @@ export default function NotificationsPage() {
                   key={option.value}
                   onClick={() => setFilter(option.value)}
                   className={`px-3 py-1.5 text-xs rounded-lg capitalize transition-all flex items-center gap-1.5 ${filter === option.value
-                    ? "bg-indigo-600 text-white shadow-sm"
+                    ? "bg-green-600 text-white shadow-sm"
                     : "bg-white border border-gray-200 text-gray-600 hover:text-gray-800 hover:bg-gray-50"
                     }`}
                 >
@@ -949,7 +949,7 @@ export default function NotificationsPage() {
 
             {/* Bulk Actions Bar */}
             {selectedNotifications.length > 0 && (
-              <div className="bg-indigo-50 rounded-xl border border-indigo-200 p-3 flex items-center justify-between">
+              <div className="bg-green-50 rounded-xl border border-green-200 p-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -957,7 +957,7 @@ export default function NotificationsPage() {
                       selectedNotifications.length === notifications.length
                     }
                     onChange={toggleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                   />
                   <span className="text-sm text-gray-700">
                     {selectedNotifications.length} selected
@@ -967,7 +967,7 @@ export default function NotificationsPage() {
                   <button
                     onClick={() => handleBulkAction("read")}
                     disabled={bulkActionLoading}
-                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-lg transition flex items-center gap-1 disabled:opacity-50 shadow-sm"
+                    className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition flex items-center gap-1 disabled:opacity-50 shadow-sm"
                   >
                     <CheckCheck size={12} />
                     Mark as read
@@ -1005,7 +1005,7 @@ export default function NotificationsPage() {
           {/* Notifications List */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+              <Loader2 className="w-8 h-8 animate-spin text-green-600" />
             </div>
           ) : notifications.length === 0 ? (
             <motion.div
@@ -1042,8 +1042,8 @@ export default function NotificationsPage() {
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ delay: index * 0.03 }}
                     className={`group bg-white rounded-xl border transition-all duration-300 shadow-sm hover:shadow-md ${!notification.isRead
-                      ? "border-indigo-200 bg-indigo-50/30"
-                      : "border-gray-200 hover:border-indigo-200"
+                      ? "border-green-200 bg-green-50/30"
+                      : "border-gray-200 hover:border-green-200"
                       } ${viewMode === "compact" ? "p-3" : "p-4"}`}
                   >
                     <div className="flex items-start gap-3">
@@ -1055,7 +1055,7 @@ export default function NotificationsPage() {
                             notification._id,
                           )}
                           onChange={() => toggleSelect(notification._id)}
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                         />
                       </div>
 
@@ -1098,7 +1098,7 @@ export default function NotificationsPage() {
                               {notification.message}
                             </p>
                             {viewMode === "list" && notification.taskTitle && (
-                              <p className="text-xs text-indigo-600 mt-2 flex items-center gap-1">
+                              <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
                                 <Flag size={10} />
                                 {notification.taskTitle}
                               </p>
@@ -1116,7 +1116,7 @@ export default function NotificationsPage() {
                               {formatDate(notification.createdAt)}
                             </span>
                             {!notification.isRead && (
-                              <div className="w-2 h-2 rounded-full bg-indigo-500" />
+                              <div className="w-2 h-2 rounded-full bg-green-500" />
                             )}
                           </div>
                         </div>
@@ -1183,7 +1183,7 @@ export default function NotificationsPage() {
                       key={pageNum}
                       onClick={() => setPage(pageNum)}
                       className={`w-8 h-8 text-sm rounded-lg transition ${page === pageNum
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-green-600 text-white shadow-sm"
                         : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                         }`}
                     >

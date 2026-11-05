@@ -493,7 +493,7 @@ export default function GeneralSettingsPage() {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
-                    <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+                    <Loader2 className="w-10 h-10 animate-spin text-green-600" />
                     <p className="text-gray-500 text-sm">Loading settings...</p>
                 </div>
             </div>
@@ -518,7 +518,7 @@ export default function GeneralSettingsPage() {
                     </p>
                     <button
                         onClick={() => router.push("/dashboard")}
-                        className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700 transition"
+                        className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition"
                     >
                         Go to Dashboard
                     </button>
@@ -531,7 +531,7 @@ export default function GeneralSettingsPage() {
     // RENDER
     // ============================================================
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-indigo-50/20">
+        <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-green-50/20">
             <div className="p-4 md:p-6 lg:p-8">
                 <div className="container mx-auto">
                     {/* Breadcrumb */}
@@ -565,7 +565,7 @@ export default function GeneralSettingsPage() {
                         className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                            <div className="w-12 h-12 bg-linear-to-br from-green-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/25">
                                 <Settings className="w-6 h-6 text-white" />
                             </div>
                             <div>
@@ -588,7 +588,7 @@ export default function GeneralSettingsPage() {
                             <button
                                 onClick={handleSaveSettings}
                                 disabled={saving}
-                                className="px-6 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg shadow-indigo-500/25 hover:shadow-xl disabled:opacity-50"
+                                className="px-6 py-2.5 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg shadow-green-500/25 hover:shadow-xl disabled:opacity-50"
                             >
                                 {saving ? (
                                     <Loader2 size={18} className="animate-spin" />
@@ -619,14 +619,14 @@ export default function GeneralSettingsPage() {
                                             key={section.id}
                                             onClick={() => setActiveSection(section.id)}
                                             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 ${isActive
-                                                ? "bg-linear-to-r from-indigo-50 to-purple-50 text-indigo-700 font-medium"
+                                                ? "bg-linear-to-r from-green-50 to-purple-50 text-green-700 font-medium"
                                                 : "text-gray-600 hover:bg-gray-50 hover:text-gray-800"
                                                 }`}
                                         >
-                                            <Icon size={18} className={isActive ? "text-indigo-500" : "text-gray-400"} />
+                                            <Icon size={18} className={isActive ? "text-green-500" : "text-gray-400"} />
                                             <span className="text-sm">{section.label}</span>
                                             {isActive && (
-                                                <div className="ml-auto w-1.5 h-6 bg-linear-to-b from-indigo-500 to-purple-500 rounded-full" />
+                                                <div className="ml-auto w-1.5 h-6 bg-linear-to-b from-green-500 to-purple-500 rounded-full" />
                                             )}
                                         </button>
                                     );
@@ -761,7 +761,7 @@ function GeneralSection({
                         type="text"
                         value={settings.systemName}
                         onChange={(e) => updateSettings("systemName", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div>
@@ -772,7 +772,7 @@ function GeneralSection({
                         type="email"
                         value={settings.systemEmail}
                         onChange={(e) => updateSettings("systemEmail", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div>
@@ -783,7 +783,7 @@ function GeneralSection({
                         type="text"
                         value={settings.systemPhone}
                         onChange={(e) => updateSettings("systemPhone", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
                 <div>
@@ -793,7 +793,7 @@ function GeneralSection({
                     <select
                         value={settings.currency}
                         onChange={(e) => updateSettings("currency", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                         <option value="USD">USD - US Dollar ($)</option>
                         <option value="EUR">EUR - Euro (€)</option>
@@ -813,7 +813,7 @@ function GeneralSection({
                         value={settings.systemAddress}
                         onChange={(e) => updateSettings("systemAddress", e.target.value)}
                         rows={2}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                     />
                 </div>
             </div>
@@ -893,7 +893,7 @@ function BrandingSection({
                                     )}
 
                                     <label className="cursor-pointer">
-                                        <div className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition text-sm flex items-center gap-2 border border-indigo-200">
+                                        <div className="px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl transition text-sm flex items-center gap-2 border border-green-200">
                                             <Upload size={16} />
                                             {imageValue ? 'Change' : 'Upload'}
                                         </div>
@@ -931,31 +931,31 @@ function BrandingSection({
                     <button
                         onClick={() => updateSettings("theme", "light")}
                         className={`p-3 rounded-xl border-2 transition-all ${settings.theme === "light"
-                            ? "border-indigo-500 bg-indigo-50"
+                            ? "border-green-500 bg-green-50"
                             : "border-gray-200 hover:border-gray-300"
                             }`}
                     >
-                        <Sun size={24} className={settings.theme === "light" ? "text-indigo-600" : "text-gray-400"} />
+                        <Sun size={24} className={settings.theme === "light" ? "text-green-600" : "text-gray-400"} />
                         <span className="text-xs text-gray-600 mt-1 block">Light</span>
                     </button>
                     <button
                         onClick={() => updateSettings("theme", "dark")}
                         className={`p-3 rounded-xl border-2 transition-all ${settings.theme === "dark"
-                            ? "border-indigo-500 bg-indigo-50"
+                            ? "border-green-500 bg-green-50"
                             : "border-gray-200 hover:border-gray-300"
                             }`}
                     >
-                        <Moon size={24} className={settings.theme === "dark" ? "text-indigo-600" : "text-gray-400"} />
+                        <Moon size={24} className={settings.theme === "dark" ? "text-green-600" : "text-gray-400"} />
                         <span className="text-xs text-gray-600 mt-1 block">Dark</span>
                     </button>
                     <button
                         onClick={() => updateSettings("theme", "system")}
                         className={`p-3 rounded-xl border-2 transition-all ${settings.theme === "system"
-                            ? "border-indigo-500 bg-indigo-50"
+                            ? "border-green-500 bg-green-50"
                             : "border-gray-200 hover:border-gray-300"
                             }`}
                     >
-                        <Monitor size={24} className={settings.theme === "system" ? "text-indigo-600" : "text-gray-400"} />
+                        <Monitor size={24} className={settings.theme === "system" ? "text-green-600" : "text-gray-400"} />
                         <span className="text-xs text-gray-600 mt-1 block">System</span>
                     </button>
                 </div>
@@ -1016,7 +1016,7 @@ function AuthenticationSection({
                         type="number"
                         value={settings.sessionTimeout}
                         onChange={(e) => updateSettings("sessionTimeout", parseInt(e.target.value) || 60)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
 
@@ -1028,14 +1028,14 @@ function AuthenticationSection({
                         type="number"
                         value={settings.maxLoginAttempts}
                         onChange={(e) => updateSettings("maxLoginAttempts", parseInt(e.target.value) || 5)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                 </div>
 
                 <div>
                     <button
                         onClick={() => setShowPasswordPolicy(!showPasswordPolicy)}
-                        className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 transition"
+                        className="flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700 transition"
                     >
                         {showPasswordPolicy ? <ChevronRight size={16} className="rotate-90" /> : <ChevronRight size={16} />}
                         Password Policy Settings
@@ -1058,7 +1058,7 @@ function AuthenticationSection({
                                             type="number"
                                             value={settings.passwordPolicy.minLength}
                                             onChange={(e) => updatePasswordPolicy("minLength", parseInt(e.target.value) || 8)}
-                                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                         />
                                     </div>
 
@@ -1093,7 +1093,7 @@ function AuthenticationSection({
                                             type="number"
                                             value={settings.passwordPolicy.expireDays}
                                             onChange={(e) => updatePasswordPolicy("expireDays", parseInt(e.target.value) || 90)}
-                                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                                            className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                                         />
                                         <p className="text-xs text-gray-400 mt-1">Set to 0 for no expiry</p>
                                     </div>
@@ -1170,7 +1170,7 @@ function SecuritySection({
                             value={settings.maintenanceMessage}
                             onChange={(e) => updateSettings("maintenanceMessage", e.target.value)}
                             rows={2}
-                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition resize-none"
+                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition resize-none"
                         />
                     </div>
                 )}
@@ -1185,11 +1185,11 @@ function SecuritySection({
                             value={newIp}
                             onChange={(e) => setNewIp(e.target.value)}
                             placeholder="Enter IP address (e.g., 192.168.1.1)"
-                            className="flex-1 px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                            className="flex-1 px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                         <button
                             onClick={addIpToWhitelist}
-                            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition shadow-sm"
+                            className="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition shadow-sm"
                         >
                             <Plus size={18} />
                         </button>
@@ -1225,11 +1225,11 @@ function SecuritySection({
                             value={newDomain}
                             onChange={(e) => setNewDomain(e.target.value)}
                             placeholder="Enter domain (e.g., company.com)"
-                            className="flex-1 px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                            className="flex-1 px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                         <button
                             onClick={addAllowedDomain}
-                            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition shadow-sm"
+                            className="px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl transition shadow-sm"
                         >
                             <Plus size={18} />
                         </button>
@@ -1335,7 +1335,7 @@ function PreferencesSection({
                     <select
                         value={settings.language}
                         onChange={(e) => updateSettings("language", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                         <option value="en">English</option>
                         <option value="es">Spanish</option>
@@ -1354,7 +1354,7 @@ function PreferencesSection({
                     <select
                         value={settings.timezone}
                         onChange={(e) => updateSettings("timezone", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                         <option value="UTC">UTC</option>
                         <option value="America/New_York">Eastern Time (EST)</option>
@@ -1378,7 +1378,7 @@ function PreferencesSection({
                     <select
                         value={settings.dateFormat}
                         onChange={(e) => updateSettings("dateFormat", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                         <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                         <option value="DD/MM/YYYY">DD/MM/YYYY</option>
@@ -1394,7 +1394,7 @@ function PreferencesSection({
                     <select
                         value={settings.timeFormat}
                         onChange={(e) => updateSettings("timeFormat", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                         <option value="12h">12-hour (AM/PM)</option>
                         <option value="24h">24-hour</option>
@@ -1408,7 +1408,7 @@ function PreferencesSection({
                     <select
                         value={settings.weekStartDay}
                         onChange={(e) => updateSettings("weekStartDay", e.target.value)}
-                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                        className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                         <option value="Sunday">Sunday</option>
                         <option value="Monday">Monday</option>
@@ -1472,8 +1472,8 @@ function FeaturesSection({
                             className="flex items-center justify-between p-4 bg-gray-50/80 rounded-xl border border-gray-200"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                                    <Icon size={18} className="text-indigo-500" />
+                                <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                                    <Icon size={18} className="text-green-500" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-gray-700">{item.label}</p>
@@ -1542,7 +1542,7 @@ function IntegrationsSection({
                             value={settings.slackWebhookUrl}
                             onChange={(e) => updateSettings("slackWebhookUrl", e.target.value)}
                             placeholder="https://hooks.slack.com/services/..."
-                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                     </div>
                 )}
@@ -1575,7 +1575,7 @@ function IntegrationsSection({
                             value={settings.discordWebhookUrl}
                             onChange={(e) => updateSettings("discordWebhookUrl", e.target.value)}
                             placeholder="https://discord.com/api/webhooks/..."
-                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                            className="w-full px-4 py-2.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                         />
                     </div>
                 )}
@@ -1627,7 +1627,7 @@ function Toggle({
                 onChange={(e) => onChange(e.target.checked)}
                 className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
         </label>
     );
 }

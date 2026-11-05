@@ -818,7 +818,7 @@ export default function KPLeaderboardPage() {
           </p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm"
+            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm"
           >
             Go to Dashboard
           </button>
@@ -877,7 +877,7 @@ export default function KPLeaderboardPage() {
                   setSelectedMonth(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
               >
                 {months.map((month) => (
                   <option key={month} value={month}>
@@ -891,7 +891,7 @@ export default function KPLeaderboardPage() {
                   setSelectedYear(parseInt(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
               >
                 {[2023, 2024, 2025, 2026].map((year) => (
                   <option key={year} value={year}>
@@ -916,7 +916,7 @@ export default function KPLeaderboardPage() {
               </button>
               <Link
                 href="/kpi/management"
-                className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
+                className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition flex items-center gap-2 shadow-sm"
               >
                 <Settings size={16} />
                 Configure
@@ -953,12 +953,12 @@ export default function KPLeaderboardPage() {
                     </p>
                     <p className="text-xs text-gray-500">Total Employees</p>
                   </div>
-                  <UsersIcon className="w-8 h-8 text-indigo-400 opacity-50" />
+                  <UsersIcon className="w-8 h-8 text-green-400 opacity-50" />
                 </div>
               </div>
               <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                 <div>
-                  <p className="text-2xl font-bold text-indigo-600">
+                  <p className="text-2xl font-bold text-green-600">
                     {stats.averageScore}%
                   </p>
                   <p className="text-xs text-gray-500">Average Score</p>
@@ -1101,13 +1101,13 @@ export default function KPLeaderboardPage() {
                 placeholder="Search employees..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
               />
             </div>
             <select
               value={selectedDepartment}
               onChange={(e) => setSelectedDepartment(e.target.value)}
-              className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+              className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
             >
               <option value="all">All Departments</option>
               {displayDepartments.map((dept) => (
@@ -1119,7 +1119,7 @@ export default function KPLeaderboardPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+              className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
             >
               <option value="rank">Sort by Rank</option>
               <option value="score">Sort by Score</option>
@@ -1146,7 +1146,7 @@ export default function KPLeaderboardPage() {
           {/* Leaderboard Table */}
           {loading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-green-500" />
             </div>
           ) : displayData.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
@@ -1161,7 +1161,7 @@ export default function KPLeaderboardPage() {
               <div className="flex flex-wrap gap-2 justify-center mt-4">
                 <button
                   onClick={fetchAllData}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm flex items-center gap-2"
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm flex items-center gap-2"
                 >
                   <RefreshCw size={16} />
                   Refresh
@@ -1238,7 +1238,7 @@ export default function KPLeaderboardPage() {
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                                <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
                                   {score.userId.fullName
                                     .charAt(0)
                                     .toUpperCase()}
@@ -1355,7 +1355,7 @@ export default function KPLeaderboardPage() {
                                     `/kpi/employee/${score.userId._id}`,
                                   );
                                 }}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition inline-flex"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition inline-flex"
                               >
                                 <Eye size={16} />
                               </button>
@@ -1420,7 +1420,7 @@ export default function KPLeaderboardPage() {
                                   e.stopPropagation();
                                   router.push(`/users/${user._id}`);
                                 }}
-                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition inline-flex"
+                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition inline-flex"
                               >
                                 <Eye size={16} />
                               </button>
@@ -1467,7 +1467,7 @@ export default function KPLeaderboardPage() {
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
                           className={`px-3 py-2 rounded-lg text-sm transition ${currentPage === pageNum
-                              ? "bg-indigo-600 text-white shadow-sm"
+                              ? "bg-green-600 text-white shadow-sm"
                               : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                             }`}
                         >

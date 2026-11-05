@@ -115,8 +115,8 @@ export default function AssetsPage() {
                 <p className="text-sm text-slate-400">Total Assets</p>
                 <p className="text-2xl font-bold text-white">{totalAssets}</p>
               </div>
-              <div className="w-10 h-10 bg-indigo-500/20 rounded-xl flex items-center justify-center">
-                <FolderKanban className="w-5 h-5 text-indigo-400" />
+              <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                <FolderKanban className="w-5 h-5 text-green-400" />
               </div>
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function AssetsPage() {
         {/* Assets Table */}
         {loading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-500" />
           </div>
         ) : (
           <div className="bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
@@ -191,7 +191,7 @@ export default function AssetsPage() {
                       <td className="px-6 py-4 text-center">
                         <button
                           onClick={() => setSelectedDept(dept)}
-                          className="text-indigo-400 hover:text-indigo-300 text-sm"
+                          className="text-green-400 hover:text-green-300 text-sm"
                         >
                           View Details
                         </button>

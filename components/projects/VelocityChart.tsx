@@ -239,7 +239,7 @@ export function VelocityChart({
     return (
       <div className="flex items-center justify-center h-64 bg-gray-50 rounded-xl border border-gray-200">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-indigo-200 rounded-full animate-spin border-t-indigo-600"></div>
+          <div className="w-8 h-8 border-2 border-green-200 rounded-full animate-spin border-t-green-600"></div>
           <p className="text-sm text-gray-500">Loading velocity data...</p>
         </div>
       </div>
@@ -266,9 +266,9 @@ export function VelocityChart({
     <div className="space-y-4">
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-linear-to-br from-indigo-50 to-indigo-100/50 rounded-xl p-4 border border-indigo-200/50">
+        <div className="bg-linear-to-br from-green-50 to-green-100/50 rounded-xl p-4 border border-green-200/50">
           <p className="text-xs text-gray-500 font-medium">Avg Velocity</p>
-          <p className="text-2xl font-bold text-indigo-700">
+          <p className="text-2xl font-bold text-green-700">
             {stats.averageVelocity}
           </p>
           <p className="text-xs text-gray-400">tasks/week</p>
@@ -303,8 +303,8 @@ export function VelocityChart({
       <div className="bg-white rounded-xl p-4 border border-gray-200">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-indigo-500" />
+            <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 text-green-500" />
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-700">
@@ -318,7 +318,7 @@ export function VelocityChart({
               onClick={() => setSelectedPeriod("weekly")}
               className={`px-2 py-1 text-xs rounded-md transition ${
                 selectedPeriod === "weekly"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -328,7 +328,7 @@ export function VelocityChart({
               onClick={() => setSelectedPeriod("biweekly")}
               className={`px-2 py-1 text-xs rounded-md transition ${
                 selectedPeriod === "biweekly"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -338,7 +338,7 @@ export function VelocityChart({
               onClick={() => setSelectedPeriod("monthly")}
               className={`px-2 py-1 text-xs rounded-md transition ${
                 selectedPeriod === "monthly"
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-green-600 text-white"
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
@@ -431,11 +431,11 @@ export function VelocityChart({
       </div>
 
       {/* Velocity Summary */}
-      <div className="bg-linear-to-r from-gray-50 to-indigo-50/30 rounded-xl p-4 border border-gray-200">
+      <div className="bg-linear-to-r from-gray-50 to-green-50/30 rounded-xl p-4 border border-gray-200">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
               <span className="text-xs text-gray-600">Completed</span>
             </div>
             <div className="flex items-center gap-2">

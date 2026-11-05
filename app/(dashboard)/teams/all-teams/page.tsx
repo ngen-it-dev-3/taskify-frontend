@@ -582,7 +582,7 @@ useEffect(() => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -4, transition: { duration: 0.2 } }}
-        className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-indigo-200/50 transition-all duration-300"
+        className="group bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-xl hover:border-green-200/50 transition-all duration-300"
       >
         <div className="p-5">
           <div className="flex items-start justify-between">
@@ -629,12 +629,12 @@ useEffect(() => {
 
           <div className="mt-4 flex items-center gap-4 text-sm">
             <div className="flex items-center gap-1.5 text-gray-600 bg-gray-50/80 px-3 py-1.5 rounded-xl">
-              <Users className="w-3.5 h-3.5 text-indigo-400" />
+              <Users className="w-3.5 h-3.5 text-green-400" />
               <span className="font-medium">{team.teamSize || 0} members</span>
             </div>
             {team.lead && typeof team.lead === "object" && (
               <div className="flex items-center gap-1.5 text-gray-600 bg-gray-50/80 px-3 py-1.5 rounded-xl min-w-0">
-                <UserCheck className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                <UserCheck className="w-3.5 h-3.5 text-green-400 shrink-0" />
                 <span className="truncate">
                   {team.lead.fullName || "Unknown"}
                 </span>
@@ -648,7 +648,7 @@ useEffect(() => {
                 setSelectedTeamId(team._id);
                 setShowMembersModal(true);
               }}
-              className="flex-1 px-3 py-2 text-sm font-medium text-indigo-600 border-2 border-indigo-600 rounded-xl hover:bg-indigo-50 transition-all duration-200"
+              className="flex-1 px-3 py-2 text-sm font-medium text-green-600 border-2 border-green-600 rounded-xl hover:bg-green-50 transition-all duration-200"
             >
               Manage Members
             </button>
@@ -670,7 +670,7 @@ useEffect(() => {
                 });
                 setShowEditModal(true);
               }}
-              className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all duration-200"
+              className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition-all duration-200"
             >
               <Edit className="w-4 h-4" />
             </button>
@@ -697,7 +697,7 @@ useEffect(() => {
     (team: Team) => (
       <tr
         key={team._id}
-        className="hover:bg-indigo-50/30 transition-colors group"
+        className="hover:bg-green-50/30 transition-colors group"
       >
         <td className="px-6 py-4">
           <div className="flex items-center gap-3">
@@ -726,7 +726,7 @@ useEffect(() => {
         <td className="px-6 py-4">
           {team.lead && typeof team.lead === "object" ? (
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xs font-medium">
+              <div className="w-7 h-7 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-medium">
                 {getInitials(team.lead.fullName || "Unknown")}
               </div>
               <span className="text-sm text-gray-700">
@@ -766,7 +766,7 @@ useEffect(() => {
                 setSelectedTeamId(team._id);
                 setShowMembersModal(true);
               }}
-              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
               title="Manage Members"
             >
               <Users className="w-4 h-4" />
@@ -789,7 +789,7 @@ useEffect(() => {
                 });
                 setShowEditModal(true);
               }}
-              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
               title="Edit Team"
             >
               <Edit className="w-4 h-4" />
@@ -819,7 +819,7 @@ useEffect(() => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500 font-medium">Loading teams...</p>
           <p className="text-sm text-gray-400">
             Please wait while we fetch your data
@@ -849,13 +849,13 @@ useEffect(() => {
               Teams
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400" />
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400" />
               Manage and organize your teams
             </p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="group flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all duration-200 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 font-medium"
+            className="group flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all duration-200 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 font-medium"
           >
             <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
             Create Team
@@ -870,10 +870,10 @@ useEffect(() => {
           className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6"
         >
           {renderStatCard(
-            <Users className="w-5 h-5 text-indigo-600" />,
+            <Users className="w-5 h-5 text-green-600" />,
             "Total Teams",
             stats.total,
-            "from-indigo-50 to-indigo-100/50",
+            "from-green-50 to-green-100/50",
           )}
           {renderStatCard(
             <UserCheck className="w-5 h-5 text-emerald-600" />,
@@ -911,7 +911,7 @@ useEffect(() => {
                 placeholder="Search teams..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 placeholder:text-gray-400"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 placeholder:text-gray-400"
               />
             </div>
 
@@ -920,7 +920,7 @@ useEffect(() => {
               <select
                 value={filterDepartment}
                 onChange={(e) => setFilterDepartment(e.target.value)}
-                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 min-w-[140px]"
+                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 min-w-[140px]"
               >
                 <option value="all">All Departments</option>
                 {departments.map((dept) => (
@@ -934,7 +934,7 @@ useEffect(() => {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 min-w-[120px]"
+                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 min-w-[120px]"
               >
                 {STATUS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -947,7 +947,7 @@ useEffect(() => {
               <select
                 value={sortField}
                 onChange={(e) => setSortField(e.target.value as SortField)}
-                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 min-w-[120px]"
+                className="px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 min-w-[120px]"
               >
                 {SORT_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -992,7 +992,7 @@ useEffect(() => {
                   onClick={() => setViewMode("grid")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "grid"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -1002,7 +1002,7 @@ useEffect(() => {
                   onClick={() => setViewMode("table")}
                   className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
                     viewMode === "table"
-                      ? "bg-white shadow-sm text-indigo-600"
+                      ? "bg-white shadow-sm text-green-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -1088,7 +1088,7 @@ useEffect(() => {
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors font-medium"
+                className="mt-4 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
               >
                 Create Team
               </button>
@@ -1301,7 +1301,7 @@ function Modal({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors font-medium shadow-lg shadow-indigo-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors font-medium shadow-lg shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -1376,7 +1376,7 @@ function TeamForm({
           placeholder="Enter team name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 placeholder:text-gray-400"
+          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 placeholder:text-gray-400"
         />
       </div>
 
@@ -1391,7 +1391,7 @@ function TeamForm({
           onChange={(e) =>
             setFormData({ ...formData, description: e.target.value })
           }
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-900 placeholder:text-gray-400"
+          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors resize-none text-gray-900 placeholder:text-gray-400"
           rows={3}
         />
       </div>
@@ -1407,7 +1407,7 @@ function TeamForm({
           onChange={(e) =>
             setFormData({ ...formData, department: e.target.value })
           }
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900"
+          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900"
         >
           <option value="">Select Department</option>
           {departments.map((dept) => (
@@ -1427,7 +1427,7 @@ function TeamForm({
           required
           value={formData.lead}
           onChange={(e) => setFormData({ ...formData, lead: e.target.value })}
-          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900"
+          className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900"
         >
           <option value="">Select Team Lead</option>
           {users.map((user) => (
@@ -1452,7 +1452,7 @@ function TeamForm({
               onClick={() => setFormData({ ...formData, color })}
               className={`w-9 h-9 rounded-full transition-all ${
                 formData.color === color
-                  ? "ring-2 ring-offset-2 ring-indigo-600 scale-110 shadow-md"
+                  ? "ring-2 ring-offset-2 ring-green-600 scale-110 shadow-md"
                   : "hover:scale-105"
               }`}
               style={{ backgroundColor: color }}
@@ -1475,7 +1475,7 @@ function TeamForm({
                 status: e.target.value as "active" | "inactive",
               })
             }
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900"
+            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900"
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
@@ -1490,14 +1490,14 @@ function TeamForm({
         </label>
         <div ref={memberDropdownRef} className="relative">
           <div
-            className="flex flex-wrap gap-1.5 p-2 border border-gray-200 rounded-xl bg-gray-50 min-h-[44px] cursor-pointer focus-within:ring-2 focus-within:ring-indigo-500"
+            className="flex flex-wrap gap-1.5 p-2 border border-gray-200 rounded-xl bg-gray-50 min-h-[44px] cursor-pointer focus-within:ring-2 focus-within:ring-green-500"
             onClick={() => setIsMemberDropdownOpen(!isMemberDropdownOpen)}
           >
             {selectedMembersList.length > 0 ? (
               selectedMembersList.map((member) => (
                 <span
                   key={member._id}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-100 text-indigo-700 text-sm rounded-lg"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-100 text-green-700 text-sm rounded-lg"
                 >
                   <span>{getUserDisplayName(member)}</span>
                   <button
@@ -1506,7 +1506,7 @@ function TeamForm({
                       e.stopPropagation();
                       removeMember(member._id);
                     }}
-                    className="hover:text-indigo-900"
+                    className="hover:text-green-900"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -1535,7 +1535,7 @@ function TeamForm({
                   placeholder="Search members..."
                   value={memberSearch}
                   onChange={(e) => setMemberSearch(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm text-gray-900 placeholder:text-gray-400"
+                  className="w-full px-3 py-1.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm text-gray-900 placeholder:text-gray-400"
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>
@@ -1546,13 +1546,13 @@ function TeamForm({
                     <div
                       key={member._id}
                       onClick={() => toggleMember(member._id)}
-                      className="flex items-center gap-2 px-3 py-2 hover:bg-indigo-50 rounded-lg cursor-pointer transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-green-50 rounded-lg cursor-pointer transition-colors"
                     >
                       <input
                         type="checkbox"
                         checked={formData.members.includes(member._id)}
                         onChange={() => {}}
-                        className="w-4 h-4 border-gray-300 rounded focus:ring-indigo-500"
+                        className="w-4 h-4 border-gray-300 rounded focus:ring-green-500"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
@@ -1581,7 +1581,7 @@ function TeamForm({
                 <button
                   type="button"
                   onClick={() => setIsMemberDropdownOpen(false)}
-                  className="text-indigo-600 hover:text-indigo-700"
+                  className="text-green-600 hover:text-green-700"
                 >
                   Close
                 </button>
@@ -1689,7 +1689,7 @@ function MembersModal({
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors group"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-xs font-medium shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-xs font-medium shrink-0">
                         {getInitials(member.fullName || "Unknown")}
                       </div>
                       <div className="min-w-0">
@@ -1728,7 +1728,7 @@ function MembersModal({
                 placeholder="Search members by name or email..."
                 value={memberSearch}
                 onChange={(e) => setMemberSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 placeholder:text-gray-400"
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-gray-900 placeholder:text-gray-400"
               />
             </div>
 
@@ -1754,7 +1754,7 @@ function MembersModal({
                       }}
                       className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
                         isSelected
-                          ? "bg-indigo-50 hover:bg-indigo-100"
+                          ? "bg-green-50 hover:bg-green-100"
                           : "hover:bg-gray-100"
                       }`}
                     >
@@ -1762,7 +1762,7 @@ function MembersModal({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => {}}
-                        className="w-4 h-4 border-gray-300 rounded focus:ring-indigo-500 text-indigo-600"
+                        className="w-4 h-4 border-gray-300 rounded focus:ring-green-500 text-green-600"
                       />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">
@@ -1801,7 +1801,7 @@ function MembersModal({
             <button
               onClick={onAddMembers}
               disabled={selectedMembers.length === 0}
-              className="w-full mt-3 px-4 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-indigo-500/25"
+              className="w-full mt-3 px-4 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg shadow-green-500/25"
             >
               Add Selected Members ({selectedMembers.length})
             </button>

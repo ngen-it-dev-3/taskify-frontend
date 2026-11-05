@@ -123,18 +123,18 @@ export default function TaskAssistant({
   };
 
   return (
-    <div className="bg-linear-to-br from-indigo-500/10 to-purple-500/10 rounded-xl border border-indigo-500/20 overflow-hidden">
+    <div className="bg-linear-to-br from-green-500/10 to-purple-500/10 rounded-xl border border-green-500/20 overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-3 flex items-center justify-between hover:bg-indigo-500/5 transition"
+        className="w-full px-4 py-3 flex items-center justify-between hover:bg-green-500/5 transition"
         type="button"
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-indigo-400" />
+          <Sparkles className="w-4 h-4 text-green-400" />
           <span className="text-sm font-medium text-white">
             AI Task Assistant
           </span>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400">
+          <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">
             Beta
           </span>
         </div>
@@ -151,7 +151,7 @@ export default function TaskAssistant({
             <button
               onClick={handleGenerateDescription}
               disabled={loading || !title}
-              className="px-3 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition flex items-center justify-center gap-1"
+              className="px-3 py-1.5 text-xs bg-green-600 hover:bg-green-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition flex items-center justify-center gap-1"
               type="button"
             >
               {generating === "description" ? (
@@ -241,7 +241,7 @@ export default function TaskAssistant({
                     key={index}
                     className="text-xs text-slate-300 flex items-start gap-1.5"
                   >
-                    <span className="text-indigo-400">•</span>
+                    <span className="text-green-400">•</span>
                     <span>{subtask.title}</span>
                   </li>
                 ))}

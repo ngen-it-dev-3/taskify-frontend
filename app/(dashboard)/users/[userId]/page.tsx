@@ -125,7 +125,7 @@ export default function UserDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center space-y-3">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                <Loader2 className="w-8 h-8 animate-spin text-green-600" />
                 <p className="text-xs font-medium text-slate-400">Loading user profile...</p>
             </div>
         );
@@ -148,7 +148,7 @@ export default function UserDetailPage() {
                     </div>
                     <button
                         onClick={() => router.push("/users")}
-                        className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-indigo-600/20"
+                        className="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition shadow-lg shadow-green-600/20"
                     >
                         Return to Directory
                     </button>
@@ -175,7 +175,7 @@ export default function UserDetailPage() {
                         title="Refresh Profile Data"
                         className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-xs"
                     >
-                        <RefreshCw size={16} className={loading ? "animate-spin text-indigo-600" : ""} />
+                        <RefreshCw size={16} className={loading ? "animate-spin text-green-600" : ""} />
                     </button>
                 </div>
 
@@ -184,7 +184,7 @@ export default function UserDetailPage() {
 
                     {/* Cover & Hero Identity Banner */}
                     <div className="bg-white rounded-3xl border border-slate-100 shadow-xs overflow-hidden">
-                        <div className="bg-linear-to-r from-indigo-900 via-slate-900 to-indigo-950 p-8 sm:p-10 text-white relative">
+                        <div className="bg-linear-to-r from-green-900 via-slate-900 to-green-950 p-8 sm:p-10 text-white relative">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                                 <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white text-3xl font-extrabold border-2 border-white/20 shadow-2xl shrink-0">
                                     {user.fullName
@@ -197,7 +197,7 @@ export default function UserDetailPage() {
                                 <div className="space-y-2 flex-1">
                                     <div className="flex flex-wrap items-center gap-2.5">
                                         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">{user.fullName}</h1>
-                                        <span className="px-3 py-1 bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-xs font-bold rounded-full">
+                                        <span className="px-3 py-1 bg-green-500/30 text-green-200 border border-green-400/30 text-xs font-bold rounded-full">
                                             {getRoleDisplayName(user.role)}
                                         </span>
                                     </div>
@@ -228,14 +228,14 @@ export default function UserDetailPage() {
                                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Contact Credentials</h3>
                                 <div className="space-y-3 bg-slate-50/70 p-5 rounded-2xl border border-slate-100">
                                     <div className="flex items-center gap-3.5 text-xs font-medium text-slate-700">
-                                        <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-indigo-600 shadow-xs">
+                                        <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-green-600 shadow-xs">
                                             <Mail size={15} />
                                         </div>
                                         <span>{user.email}</span>
                                     </div>
                                     {(user.phone || user.phoneNumber) && (
                                         <div className="flex items-center gap-3.5 text-xs font-medium text-slate-700">
-                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-indigo-600 shadow-xs">
+                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-green-600 shadow-xs">
                                                 <Phone size={15} />
                                             </div>
                                             <span>{user.phone || user.phoneNumber}</span>
@@ -243,7 +243,7 @@ export default function UserDetailPage() {
                                     )}
                                     {user.location && (
                                         <div className="flex items-center gap-3.5 text-xs font-medium text-slate-700">
-                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-indigo-600 shadow-xs">
+                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-green-600 shadow-xs">
                                                 <MapPin size={15} />
                                             </div>
                                             <span>{user.location}</span>
@@ -251,10 +251,10 @@ export default function UserDetailPage() {
                                     )}
                                     {user.website && (
                                         <div className="flex items-center gap-3.5 text-xs font-medium text-slate-700">
-                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-indigo-600 shadow-xs">
+                                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center text-green-600 shadow-xs">
                                                 <Globe size={15} />
                                             </div>
-                                            <a href={user.website} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline flex items-center gap-1 font-bold">
+                                            <a href={user.website} target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline flex items-center gap-1 font-bold">
                                                 {user.website} <ExternalLink size={12} />
                                             </a>
                                         </div>

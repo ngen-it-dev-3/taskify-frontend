@@ -461,7 +461,7 @@ export default function TimerLogPage() {
 
             // If it's today and timer is running, highlight it
             if (isTodayDate && activeTimerEntry) {
-                color = "bg-linear-to-t from-indigo-500 to-purple-500";
+                color = "bg-linear-to-t from-green-500 to-purple-500";
             }
 
             return {
@@ -619,7 +619,7 @@ export default function TimerLogPage() {
                                     {day.duration > 0 ? day.displayTime : '-'}
                                 </span>
                                 <div
-                                    className={`w-full ${day.color} rounded-xl transition-all group-hover:opacity-90 shadow-sm ${day.isToday ? 'ring-2 ring-indigo-500 ring-offset-2' : ''}`}
+                                    className={`w-full ${day.color} rounded-xl transition-all group-hover:opacity-90 shadow-sm ${day.isToday ? 'ring-2 ring-green-500 ring-offset-2' : ''}`}
                                     style={{
                                         height: `${Math.max(day.height, 4)}%`,
                                         minHeight: '4px',
@@ -627,7 +627,7 @@ export default function TimerLogPage() {
                                     }}
                                 />
                                 <div className="flex items-center gap-1 mt-2">
-                                    <span className={`text-[10px] font-medium ${day.isToday ? 'text-indigo-600 font-bold' : 'text-gray-400'}`}>
+                                    <span className={`text-[10px] font-medium ${day.isToday ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
                                         {day.dayName}
                                     </span>
                                     {day.entries > 0 && (
@@ -635,7 +635,7 @@ export default function TimerLogPage() {
                                     )}
                                 </div>
                                 {day.isToday && (
-                                    <span className="text-[8px] text-indigo-500 font-bold mt-0.5">● Today</span>
+                                    <span className="text-[8px] text-green-500 font-bold mt-0.5">● Today</span>
                                 )}
                             </div>
                         ))}
@@ -661,8 +661,8 @@ export default function TimerLogPage() {
                         </div>
                         {activeTimerEntry && (
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded bg-linear-to-t from-indigo-500 to-purple-500"></div>
-                                <span className="text-[10px] text-indigo-600 font-medium">● Running</span>
+                                <div className="w-3 h-3 rounded bg-linear-to-t from-green-500 to-purple-500"></div>
+                                <span className="text-[10px] text-green-600 font-medium">● Running</span>
                             </div>
                         )}
                     </div>
@@ -670,17 +670,17 @@ export default function TimerLogPage() {
 
                 {/* Active Timer Banner */}
                 {hasActiveTimer && (
-                    <div className="bg-linear-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="bg-linear-to-r from-green-600 to-purple-600 rounded-2xl p-6 text-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white border border-white/30">
                                 <Timer className="w-6 h-6 animate-pulse" />
                             </div>
                             <div>
-                                <span className="text-[11px] font-bold text-indigo-200 uppercase tracking-wider">Currently Tracking</span>
+                                <span className="text-[11px] font-bold text-green-200 uppercase tracking-wider">Currently Tracking</span>
                                 <h3 className="text-base font-bold text-white">
                                     {activeTimerEntry?.taskTitle || "Task"}
                                 </h3>
-                                <p className="text-xs text-indigo-200">
+                                <p className="text-xs text-green-200">
                                     {activeTimerEntry?.description || "Timer is running"}
                                 </p>
                             </div>
@@ -817,7 +817,7 @@ export default function TimerLogPage() {
 
                                             return (
                                                 <div key={entry._id} className="relative flex items-start justify-between group">
-                                                    <span className={`absolute -left-6 top-1 w-3 h-3 rounded-full border-2 border-white ring-2 ${entry.isRunning ? 'bg-indigo-600 ring-indigo-100' : 'bg-emerald-500 ring-emerald-100'}`} />
+                                                    <span className={`absolute -left-6 top-1 w-3 h-3 rounded-full border-2 border-white ring-2 ${entry.isRunning ? 'bg-green-600 ring-green-100' : 'bg-emerald-500 ring-emerald-100'}`} />
 
                                                     <div className="space-y-1 flex-1">
                                                         <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
@@ -825,7 +825,7 @@ export default function TimerLogPage() {
                                                         </div>
                                                         <h4 className="text-sm font-bold text-gray-900">
                                                             {entry.taskTitle}
-                                                            {entry.isRunning && <span className="text-indigo-600 font-normal ml-1">(running)</span>}
+                                                            {entry.isRunning && <span className="text-green-600 font-normal ml-1">(running)</span>}
                                                         </h4>
                                                         <p className="text-xs text-gray-500 font-medium">
                                                             {displayTime} logged · {entry.isRunning ? 'running' : 'completed'}
@@ -839,7 +839,7 @@ export default function TimerLogPage() {
                                                         {!entry.isRunning && (
                                                             <button
                                                                 onClick={() => setEditingEntry(entry)}
-                                                                className="p-1.5 text-gray-400 hover:text-indigo-600 rounded-lg hover:bg-gray-50"
+                                                                className="p-1.5 text-gray-400 hover:text-green-600 rounded-lg hover:bg-gray-50"
                                                                 title="Edit"
                                                             >
                                                                 <Edit2 size={14} />

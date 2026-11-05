@@ -266,7 +266,7 @@ export default function AllDepartmentsPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <Building2 className="w-6 h-6" />
               </div>
               <div>
@@ -291,7 +291,7 @@ export default function AllDepartmentsPage() {
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/60">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "grid" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "grid" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <Grid className="w-3.5 h-3.5" />
@@ -299,7 +299,7 @@ export default function AllDepartmentsPage() {
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-indigo-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
+                className={`p-2 rounded-lg transition text-xs font-semibold flex items-center gap-1.5 ${viewMode === "list" ? "bg-white text-green-600 shadow-xs" : "text-slate-500 hover:text-slate-800"
                   }`}
               >
                 <List className="w-3.5 h-3.5" />
@@ -314,7 +314,7 @@ export default function AllDepartmentsPage() {
                   setFormData({ name: "", code: "", description: "" });
                   setShowCreateModal(true);
                 }}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-indigo-600/20 active:scale-95"
+                className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-green-600/20 active:scale-95"
               >
                 <Plus className="w-4 h-4" />
                 New Department
@@ -326,7 +326,7 @@ export default function AllDepartmentsPage() {
               title="Refresh Data"
               className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-xs"
             >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-indigo-600" : ""}`} />
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-green-600" : ""}`} />
             </button>
           </div>
         </motion.div>
@@ -341,7 +341,7 @@ export default function AllDepartmentsPage() {
               className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"
             >
               {[
-                { label: "Total Units", val: stats.total, icon: Building2, color: "text-indigo-600", bg: "bg-indigo-50" },
+                { label: "Total Units", val: stats.total, icon: Building2, color: "text-green-600", bg: "bg-green-50" },
                 { label: "Active Staff", val: stats.employees, icon: Users, color: "text-emerald-600", bg: "bg-emerald-50" },
                 { label: "Total Budget", val: `$${stats.budget.toLocaleString()}`, icon: DollarSign, color: "text-blue-600", bg: "bg-blue-50" },
                 { label: "Assigned Assets", val: stats.assets, icon: FolderKanban, color: "text-purple-600", bg: "bg-purple-50" },
@@ -371,14 +371,14 @@ export default function AllDepartmentsPage() {
               placeholder="Filter by department name or structural code..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs"
             />
           </div>
           <div className="flex items-center gap-2">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-700 text-sm font-medium focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs cursor-pointer"
+              className="px-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-700 text-sm font-medium focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs cursor-pointer"
             >
               <option value="name">Sort by Name</option>
               <option value="code">Sort by Code</option>
@@ -398,7 +398,7 @@ export default function AllDepartmentsPage() {
         {/* Main Content Area */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
             <p className="text-sm font-medium text-slate-400">Loading department structures...</p>
           </div>
         ) : filteredDepartments.length === 0 ? (
@@ -432,12 +432,12 @@ export default function AllDepartmentsPage() {
                   <div className="p-6 space-y-5">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3.5">
-                        <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition duration-300 shadow-xs">
+                        <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition duration-300 shadow-xs">
                           <Building2 className="w-6 h-6" />
                         </div>
                         <div>
                           <h3 className="font-bold text-slate-900 text-base leading-snug tracking-tight">{dept.name}</h3>
-                          <span className="text-xs font-mono font-semibold text-indigo-600 bg-indigo-50/80 px-2 py-0.5 rounded-md mt-1 inline-block">
+                          <span className="text-xs font-mono font-semibold text-green-600 bg-green-50/80 px-2 py-0.5 rounded-md mt-1 inline-block">
                             {dept.code}
                           </span>
                         </div>
@@ -480,7 +480,7 @@ export default function AllDepartmentsPage() {
                             {members.slice(0, 4).map((member) => (
                               <div
                                 key={member._id}
-                                className="w-7 h-7 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-indigo-700 shadow-xs"
+                                className="w-7 h-7 rounded-full bg-green-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-green-700 shadow-xs"
                                 title={member.fullName}
                               >
                                 {member.fullName.charAt(0).toUpperCase()}
@@ -502,7 +502,7 @@ export default function AllDepartmentsPage() {
                   <div className="px-6 py-4 bg-slate-50/60 border-t border-slate-100 flex items-center justify-between">
                     <Link
                       href={`/departments/${dept._id}`}
-                      className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 transition"
+                      className="text-xs font-bold text-green-600 hover:text-green-700 flex items-center gap-1.5 transition"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       View Analytics
@@ -520,7 +520,7 @@ export default function AllDepartmentsPage() {
                             });
                             setShowCreateModal(true);
                           }}
-                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+                          className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition"
                           title="Edit Unit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -564,7 +564,7 @@ export default function AllDepartmentsPage() {
                       <tr key={dept._id} className="hover:bg-slate-50/50 transition">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 font-bold shrink-0 shadow-xs">
+                            <div className="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center text-green-600 font-bold shrink-0 shadow-xs">
                               <Building2 className="w-4 h-4" />
                             </div>
                             <div>
@@ -597,7 +597,7 @@ export default function AllDepartmentsPage() {
                           <div className="flex items-center justify-end gap-1">
                             <Link
                               href={`/departments/${dept._id}`}
-                              className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+                              className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition"
                             >
                               <Eye className="w-4 h-4" />
                             </Link>
@@ -613,7 +613,7 @@ export default function AllDepartmentsPage() {
                                     });
                                     setShowCreateModal(true);
                                   }}
-                                  className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition"
+                                  className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition"
                                 >
                                   <Edit2 className="w-4 h-4" />
                                 </button>
@@ -696,7 +696,7 @@ export default function AllDepartmentsPage() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50/55 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50/55 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition"
                     placeholder="e.g., Core Engineering & Infrastructure"
                     required
                   />
@@ -710,7 +710,7 @@ export default function AllDepartmentsPage() {
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                    className="w-full px-4 py-3 bg-slate-50/55 border border-slate-200 rounded-xl text-slate-800 text-sm font-mono focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full px-4 py-3 bg-slate-50/55 border border-slate-200 rounded-xl text-slate-800 text-sm font-mono focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none transition"
                     placeholder="e.g., ENG-01"
                     required
                   />
@@ -722,7 +722,7 @@ export default function AllDepartmentsPage() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
-                    className="w-full px-4 py-3 bg-slate-50/55 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none resize-none transition"
+                    className="w-full px-4 py-3 bg-slate-50/55 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-500/10 outline-none resize-none transition"
                     placeholder="Outline the operational charter of this division..."
                   />
                 </div>
@@ -730,7 +730,7 @@ export default function AllDepartmentsPage() {
                 <div className="flex gap-3 pt-4 border-t border-slate-100">
                   <button
                     type="submit"
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20 text-sm"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-green-600/20 text-sm"
                   >
                     {editingDept ? "Save Changes" : "Create Unit"}
                   </button>

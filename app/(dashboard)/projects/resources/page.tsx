@@ -424,7 +424,7 @@ export default function ResourcesPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading resources...</p>
         </div>
       </div>
@@ -442,7 +442,7 @@ export default function ResourcesPage() {
           <p className="text-gray-500 mb-4">{error}</p>
           <button
             onClick={fetchResources}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm"
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-sm"
           >
             Try Again
           </button>
@@ -487,13 +487,13 @@ export default function ResourcesPage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <Briefcase className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   Project Resources
                 </h1>
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {stats.total}
                 </span>
               </div>
@@ -524,7 +524,7 @@ export default function ResourcesPage() {
                   resetForm();
                   setShowCreateModal(true);
                 }}
-                className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-indigo-500/20"
+                className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-green-500/20"
               >
                 <Plus size={16} />
                 Allocate Resource
@@ -556,8 +556,8 @@ export default function ResourcesPage() {
                   </p>
                   <p className="text-xs text-gray-500 mt-0.5">Total</p>
                 </div>
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                  <Briefcase className="w-5 h-5 text-indigo-500" />
+                <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center">
+                  <Briefcase className="w-5 h-5 text-green-500" />
                 </div>
               </div>
             </div>
@@ -587,7 +587,7 @@ export default function ResourcesPage() {
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
               <div>
-                <p className="text-2xl font-bold text-indigo-600">
+                <p className="text-2xl font-bold text-green-600">
                   {stats.avgUtilization}%
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">Avg Utilization</p>
@@ -617,13 +617,13 @@ export default function ResourcesPage() {
                 placeholder="Search resources..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="">All Types</option>
               <option value="human">Human Resources</option>
@@ -634,7 +634,7 @@ export default function ResourcesPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="">All Status</option>
               <option value="available">Available</option>
@@ -645,7 +645,7 @@ export default function ResourcesPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="name">Sort by Name</option>
               <option value="type">Sort by Type</option>
@@ -681,7 +681,7 @@ export default function ResourcesPage() {
                   resetForm();
                   setShowCreateModal(true);
                 }}
-                className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700 transition"
+                className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-sm hover:bg-green-700 transition"
               >
                 <Plus size={16} className="inline mr-2" />
                 Allocate Resource
@@ -710,7 +710,7 @@ export default function ResourcesPage() {
                         {getTypeIcon(resource.type)}
                       </div>
                       <div>
-                        <h3 className="text-gray-800 font-semibold group-hover:text-indigo-600 transition">
+                        <h3 className="text-gray-800 font-semibold group-hover:text-green-600 transition">
                           {resource.name}
                         </h3>
                         <span
@@ -737,7 +737,7 @@ export default function ResourcesPage() {
                       <div className="flex items-center gap-2">
                         <div className="w-16 bg-gray-200 rounded-full h-1.5">
                           <div
-                            className="bg-indigo-500 h-1.5 rounded-full"
+                            className="bg-green-500 h-1.5 rounded-full"
                             style={{ width: `${resource.utilization}%` }}
                           />
                         </div>
@@ -768,7 +768,7 @@ export default function ResourcesPage() {
                   <div className="mt-3 flex items-center justify-end gap-1">
                     <button
                       onClick={() => openEditModal(resource)}
-                      className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                      className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                     >
                       <Edit2 size={14} />
                     </button>
@@ -858,7 +858,7 @@ export default function ResourcesPage() {
                           <div className="flex items-center gap-2 justify-center">
                             <div className="w-16 bg-gray-200 rounded-full h-1.5">
                               <div
-                                className="bg-indigo-500 h-1.5 rounded-full"
+                                className="bg-green-500 h-1.5 rounded-full"
                                 style={{ width: `${resource.utilization}%` }}
                               />
                             </div>
@@ -871,7 +871,7 @@ export default function ResourcesPage() {
                           <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => openEditModal(resource)}
-                              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                             >
                               <Edit2 size={14} />
                             </button>
@@ -928,7 +928,7 @@ export default function ResourcesPage() {
                       onClick={() => setCurrentPage(pageNum)}
                       className={`px-3 py-2 rounded-lg text-sm transition ${
                         currentPage === pageNum
-                          ? "bg-indigo-600 text-white shadow-sm"
+                          ? "bg-green-600 text-white shadow-sm"
                           : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                       }`}
                     >
@@ -961,7 +961,7 @@ export default function ResourcesPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
             >
-              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50 to-purple-50">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50 to-purple-50">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">
                     {editingResource ? "Edit Resource" : "Allocate Resource"}
@@ -998,7 +998,7 @@ export default function ResourcesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     placeholder="Enter resource name"
                     required
                   />
@@ -1012,7 +1012,7 @@ export default function ResourcesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, type: e.target.value })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="human">Human Resource</option>
                     <option value="equipment">Equipment</option>
@@ -1029,7 +1029,7 @@ export default function ResourcesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, projectId: e.target.value })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="">Select Project</option>
                     {projects.map((p) => (
@@ -1048,7 +1048,7 @@ export default function ResourcesPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, assignedTo: e.target.value })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   >
                     <option value="">Select User</option>
                     {users.map((u) => (
@@ -1069,7 +1069,7 @@ export default function ResourcesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, startDate: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                   </div>
                   <div>
@@ -1082,7 +1082,7 @@ export default function ResourcesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, endDate: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                   </div>
                 </div>
@@ -1096,7 +1096,7 @@ export default function ResourcesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, status: e.target.value })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     >
                       <option value="available">Available</option>
                       <option value="in_use">In Use</option>
@@ -1119,7 +1119,7 @@ export default function ResourcesPage() {
                           utilization: parseInt(e.target.value) || 0,
                         })
                       }
-                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                      className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                     />
                   </div>
                 </div>
@@ -1127,7 +1127,7 @@ export default function ResourcesPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
+                    className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition disabled:opacity-50 shadow-sm flex items-center justify-center gap-2"
                   >
                     {submitting ? (
                       <Loader2 size={16} className="animate-spin" />

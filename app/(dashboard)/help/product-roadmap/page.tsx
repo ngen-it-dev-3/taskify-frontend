@@ -380,7 +380,7 @@ const ProductRoadmapPage: React.FC = () => {
   return (
     <div className="p-4 md:p-6 container mx-auto container">
       {/* Header */}
-      <div className="bg-linear-to-br from-indigo-600 via-indigo-500 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
+      <div className="bg-linear-to-br from-green-600 via-green-500 to-purple-600 rounded-2xl shadow-xl p-6 md:p-8 mb-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
@@ -388,7 +388,7 @@ const ProductRoadmapPage: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-white">Product Roadmap</h1>
-              <p className="text-indigo-100 text-sm">
+              <p className="text-green-100 text-sm">
                 See what we're building and what's coming next
               </p>
             </div>
@@ -420,23 +420,23 @@ const ProductRoadmapPage: React.FC = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">Total Features</p>
+            <p className="text-green-100 text-xs">Total Features</p>
             <p className="text-white text-xl font-bold">{stats.totalItems}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">Completed</p>
+            <p className="text-green-100 text-xs">Completed</p>
             <p className="text-green-300 text-xl font-bold">{stats.completed}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">In Progress</p>
+            <p className="text-green-100 text-xs">In Progress</p>
             <p className="text-blue-300 text-xl font-bold">{stats.inProgress}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">Planned</p>
+            <p className="text-green-100 text-xs">Planned</p>
             <p className="text-yellow-300 text-xl font-bold">{stats.planned}</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
-            <p className="text-indigo-100 text-xs">Avg. Progress</p>
+            <p className="text-green-100 text-xs">Avg. Progress</p>
             <p className="text-white text-xl font-bold">{stats.averageProgress}%</p>
           </div>
         </div>
@@ -452,7 +452,7 @@ const ProductRoadmapPage: React.FC = () => {
               placeholder="Search roadmap items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
             />
           </div>
           <div className="flex gap-2 overflow-x-auto pb-2">
@@ -460,7 +460,7 @@ const ProductRoadmapPage: React.FC = () => {
               onClick={() => setFilterStatus("all")}
               className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 filterStatus === "all"
-                  ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                   : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
               }`}
             >
@@ -634,14 +634,14 @@ const ProductRoadmapPage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleVote(item.id)}
-                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition-colors"
+                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors"
                       >
                         <ThumbsUp className="w-3.5 h-3.5" />
                         <span>{item.votes}</span>
                       </button>
                       <button
                         onClick={() => handleComment(item.id)}
-                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition-colors"
+                        className="flex items-center gap-1 text-xs text-gray-500 hover:text-green-600 transition-colors"
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
                         <span>{item.comments}</span>
@@ -656,7 +656,7 @@ const ProductRoadmapPage: React.FC = () => {
                     setSelectedItem(item);
                     setShowDetails(true);
                   }}
-                  className="px-5 py-2 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700 text-center text-sm text-indigo-600 dark:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                  className="px-5 py-2 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700 text-center text-sm text-green-600 dark:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                 >
                   View Details
                 </div>
@@ -758,7 +758,7 @@ const ProductRoadmapPage: React.FC = () => {
                           e.stopPropagation();
                           handleVote(item.id);
                         }}
-                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600 transition-colors justify-end"
+                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-green-600 transition-colors justify-end"
                       >
                         <ThumbsUp className="w-4 h-4" />
                         <span>{item.votes}</span>
@@ -861,7 +861,7 @@ const ProductRoadmapPage: React.FC = () => {
               <div className="flex items-center gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => handleVote(selectedItem.id)}
-                  className="flex items-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors"
                 >
                   <ThumbsUp className="w-4 h-4" />
                   <span>Vote ({selectedItem.votes})</span>

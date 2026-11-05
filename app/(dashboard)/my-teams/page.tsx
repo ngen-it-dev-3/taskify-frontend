@@ -125,7 +125,7 @@ export default function MyTeamPage() {
       },
       developer: {
         label: "Developer",
-        color: "bg-indigo-50 text-indigo-700 border-indigo-200",
+        color: "bg-green-50 text-green-700 border-green-200",
         icon: Code,
       },
       designer: {
@@ -177,7 +177,7 @@ export default function MyTeamPage() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600 mx-auto mb-4" />
           <p className="text-gray-500">Loading your teams...</p>
         </div>
       </div>
@@ -193,8 +193,8 @@ export default function MyTeamPage() {
       <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100/80">
-            <div className="w-20 h-20 bg-linear-to-br from-indigo-50 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-10 h-10 text-indigo-400" />
+            <div className="w-20 h-20 bg-linear-to-br from-green-50 to-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="w-10 h-10 text-green-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900">
               You're not in any team yet
@@ -205,7 +205,7 @@ export default function MyTeamPage() {
             </p>
             <button
               onClick={() => router.push("/teams/all-teams")}
-              className="mt-6 px-6 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-xl hover:from-indigo-700 hover:to-indigo-600 transition-all font-medium shadow-lg shadow-indigo-500/25"
+              className="mt-6 px-6 py-2.5 bg-linear-to-r from-green-600 to-green-500 text-white rounded-xl hover:from-green-700 hover:to-green-600 transition-all font-medium shadow-lg shadow-green-500/25"
             >
               Browse All Teams
             </button>
@@ -222,11 +222,11 @@ export default function MyTeamPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Sparkles className="w-7 h-7 text-indigo-500" />
+              <Sparkles className="w-7 h-7 text-green-500" />
               My Teams
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-indigo-400"></span>
+              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               Teams you're a member of
             </p>
           </div>
@@ -236,7 +236,7 @@ export default function MyTeamPage() {
             </span>
             <button
               onClick={() => router.push("/teams")}
-              className="px-4 py-2 text-sm text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors font-medium flex items-center gap-1"
+              className="px-4 py-2 text-sm text-green-600 hover:bg-green-50 rounded-xl transition-colors font-medium flex items-center gap-1"
             >
               View All Teams
               <ChevronRight className="w-4 h-4" />
@@ -253,7 +253,7 @@ export default function MyTeamPage() {
                 onClick={() => setSelectedTeamId(team._id)}
                 className={`px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap flex items-center gap-2 ${
                   selectedTeamId === team._id
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25"
+                    ? "bg-green-600 text-white shadow-lg shadow-green-500/25"
                     : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
                 }`}
               >
@@ -346,7 +346,7 @@ export default function MyTeamPage() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <UsersRound className="w-5 h-5 text-indigo-500" />
+                  <UsersRound className="w-5 h-5 text-green-500" />
                   Team Members
                   <span className="text-sm font-normal text-gray-400">
                     ({teamMembers.length})
@@ -366,19 +366,19 @@ export default function MyTeamPage() {
                       key={member._id}
                       className={`bg-white rounded-2xl shadow-sm border transition-all duration-200 hover:shadow-md ${
                         isCurrentUser
-                          ? "border-indigo-300 ring-2 ring-indigo-500/20"
-                          : "border-gray-100/80 hover:border-indigo-200/50"
+                          ? "border-green-300 ring-2 ring-green-500/20"
+                          : "border-gray-100/80 hover:border-green-200/50"
                       }`}
                     >
                       <div className="p-5">
                         <div className="flex items-start gap-4">
                           <div className="relative">
-                            <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-indigo-100 to-indigo-200 flex items-center justify-center text-indigo-600 text-xl font-bold shrink-0">
+                            <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-green-100 to-green-200 flex items-center justify-center text-green-600 text-xl font-bold shrink-0">
                               {getInitials(member.fullName || "Unknown")}
                             </div>
                             {isCurrentUser && (
                               <div className="absolute -top-1 -right-1">
-                                <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                                <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center shadow-lg">
                                   <CheckCircle className="w-3.5 h-3.5 text-white" />
                                 </div>
                               </div>
@@ -430,7 +430,7 @@ export default function MyTeamPage() {
                             <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-3 text-xs text-gray-400">
                               <a
                                 href={`mailto:${member.email}`}
-                                className="flex items-center gap-1 hover:text-indigo-600 transition-colors"
+                                className="flex items-center gap-1 hover:text-green-600 transition-colors"
                               >
                                 <Mail className="w-3.5 h-3.5" />
                                 Email
@@ -438,14 +438,14 @@ export default function MyTeamPage() {
                               {member.phone && (
                                 <a
                                   href={`tel:${member.phone}`}
-                                  className="flex items-center gap-1 hover:text-indigo-600 transition-colors"
+                                  className="flex items-center gap-1 hover:text-green-600 transition-colors"
                                 >
                                   <Phone className="w-3.5 h-3.5" />
                                   Call
                                 </a>
                               )}
                               {isCurrentUser && (
-                                <span className="flex items-center gap-1 text-indigo-600">
+                                <span className="flex items-center gap-1 text-green-600">
                                   <CheckCircle className="w-3.5 h-3.5" />
                                   You
                                 </span>
@@ -478,7 +478,7 @@ export default function MyTeamPage() {
                     // Navigate to team members or chat
                     toast.success("Feature coming soon!");
                   }}
-                  className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-xl text-sm text-indigo-700 transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-green-50 hover:bg-green-100 rounded-xl text-sm text-green-700 transition-colors flex items-center gap-2"
                 >
                   <UsersRound className="w-4 h-4" />
                   Team Chat

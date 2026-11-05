@@ -644,8 +644,8 @@ export default function PerformanceReportPage() {
       label: "Total Employees",
       value: overallStats.totalEmployees,
       icon: Users,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-50",
+      color: "text-green-600",
+      bgColor: "bg-green-50",
     },
     {
       label: "Avg Completion Rate",
@@ -688,7 +688,7 @@ export default function PerformanceReportPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading performance data...</p>
         </div>
       </div>

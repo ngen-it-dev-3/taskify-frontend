@@ -183,7 +183,7 @@ const AVATAR_COLORS = [
   "bg-cyan-500",
   "bg-amber-500",
   "bg-emerald-500",
-  "bg-indigo-500",
+  "bg-green-500",
   "bg-rose-500",
   "bg-blue-500",
   "bg-pink-500",
@@ -669,7 +669,7 @@ export default function ProjectDashboardPage() {
       case "review": return "bg-purple-500";
       case "overdue": return "bg-rose-500";
       case "rejected": return "bg-red-500";
-      default: return "bg-indigo-500";
+      default: return "bg-green-500";
     }
   };
 

@@ -34,7 +34,7 @@ const ICON_BY_KIND: Record<
   TenderActivity["kind"],
   { Icon: React.ComponentType<{ className?: string }>; bg: string }
 > = {
-  submitted: { Icon: Upload, bg: "bg-indigo-50 text-indigo-600" },
+  submitted: { Icon: Upload, bg: "bg-green-50 text-green-600" },
   won: { Icon: Trophy, bg: "bg-emerald-50 text-emerald-600" },
   lost: { Icon: XCircle, bg: "bg-rose-50 text-rose-600" },
   uploaded: { Icon: FileText, bg: "bg-slate-100 text-slate-600" },

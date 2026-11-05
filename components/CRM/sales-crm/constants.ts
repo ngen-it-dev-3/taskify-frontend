@@ -7,29 +7,24 @@ export const MONTHS: ForecastMonth[] = [
 ];
 
 export const STAGES: { key: ForecastStage; label: string; color: string }[] = [
-  { key: 'query',       label: 'Query',       color: 'border-slate-200 bg-slate-50' },
-  { key: 'rfq',         label: 'RFQ',         color: 'border-amber-200 bg-amber-50' },
-  { key: 'quotation',   label: 'Quotation',   color: 'border-violet-200 bg-violet-50' },
+  { key: 'query', label: 'Query', color: 'border-slate-200 bg-slate-50' },
+  { key: 'rfq', label: 'RFQ', color: 'border-amber-200 bg-amber-50' },
+  { key: 'quotation', label: 'Quotation', color: 'border-violet-200 bg-violet-50' },
   { key: 'negotiation', label: 'Negotiation', color: 'border-orange-200 bg-orange-50' },
-  { key: 'won',         label: 'Won',         color: 'border-emerald-200 bg-emerald-50' },
-  { key: 'lost',        label: 'Lost',        color: 'border-rose-200 bg-rose-50' },
+  { key: 'won', label: 'Won', color: 'border-emerald-200 bg-emerald-50' },
+  { key: 'lost', label: 'Lost', color: 'border-rose-200 bg-rose-50' },
 ];
 
 // ============================================================
-// REGIONS
+// REGIONS (Strictly 5 Countries)
 // ============================================================
 export const REGIONS = [
   'All Regions',
   'Bangladesh',
   'Singapore',
-  'India',
-  'Pakistan',
-  'Hungary',
-  'Nigeria',
+  'Middle East',
+  'Portugal',
   'United Kingdom',
-  'United States',
-  'Eurozone',
-  'South Africa',
 ];
 
 // ============================================================
@@ -38,68 +33,37 @@ export const REGIONS = [
 export const TERRITORIES_BY_REGION: Record<string, string[]> = {
   'All Regions': [
     'All Territories',
-    'Dhaka', 'Chattogram',
-    'Singapore City',
-    'Mumbai', 'Delhi',
-    'Karachi', 'Lahore',
-    'Budapest',
-    'Lagos',
-    'London',
-    'New York',
-    'Dublin',
-    'Johannesburg',
+    'Bangladesh',
+    'Singapore',
+    'Middle East',
+    'Portugal',
+    'United Kingdom',
   ],
   Bangladesh: [
     'All Territories',
-    'Dhaka', 'Chattogram', 'Khulna', 'Rajshahi', 'Sylhet',
-    'Barishal', 'Rangpur', 'Mymensingh',
+    'Bangladesh',
   ],
   Singapore: [
     'All Territories',
-    'Singapore City', 'Jurong East', 'Woodlands', 'Tampines', 'Changi',
+    'Singapore',
   ],
-  India: [
+  'Middle East': [
     'All Territories',
-    'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad',
+    'Middle East',
   ],
-  Pakistan: [
+  Portugal: [
     'All Territories',
-    'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad',
-  ],
-  Hungary: [
-    'All Territories',
-    'Budapest', 'Debrecen', 'Szeged', 'Miskolc', 'Pécs',
-  ],
-  Nigeria: [
-    'All Territories',
-    'Lagos', 'Abuja', 'Kano', 'Ibadan', 'Port Harcourt',
+    'Portugal',
   ],
   'United Kingdom': [
     'All Territories',
-    'London', 'Manchester', 'Birmingham', 'Edinburgh', 'Glasgow', 'Leeds',
-  ],
-  'United States': [
-    'All Territories',
-    'New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami', 'Boston',
-  ],
-  Eurozone: [
-    'All Territories',
-    'Dublin', 'Berlin', 'Paris', 'Madrid', 'Rome', 'Amsterdam',
-  ],
-  'South Africa': [
-    'All Territories',
-    'Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth',
+    'United Kingdom',
   ],
 };
 
 // ============================================================
 // CURRENCIES
-//
 // ⭐ rate = how much of this currency 1 BDT is worth.
-//    (i.e. "1 BDT = rate × this-currency")
-//    Matches Google's "1 Bangladeshi Taka equals ___"
-//
-// Rates from Sept 30, 2026 (Google Finance):
 // ============================================================
 export interface Currency {
   code: string;
@@ -109,16 +73,11 @@ export interface Currency {
 }
 
 export const CURRENCIES: Record<string, Currency> = {
-  BDT: { code: 'BDT', symbol: '৳',  name: 'Bangladeshi Taka', rate: 1 },
-  USD: { code: 'USD', symbol: '$',  name: 'US Dollar',         rate: 1 / 123.06 },
-  SGD: { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar',  rate: 0.010 },
-  INR: { code: 'INR', symbol: '₹',  name: 'Indian Rupee',      rate: 0.78 },
-  PKR: { code: 'PKR', symbol: '₨',  name: 'Pakistani Rupee',   rate: 2.25 },
-  HUF: { code: 'HUF', symbol: 'Ft', name: 'Hungarian Forint',  rate: 2.63 },
-  NGN: { code: 'NGN', symbol: '₦',  name: 'Nigerian Naira',    rate: 10.79 },
-  GBP: { code: 'GBP', symbol: '£',  name: 'British Pound',     rate: 0.0061 },
-  EUR: { code: 'EUR', symbol: '€',  name: 'Euro',              rate: 0.0072 },
-  ZAR: { code: 'ZAR', symbol: 'R',  name: 'South African Rand', rate: 0.13 },
+  BDT: { code: 'BDT', symbol: '৳', name: 'Bangladeshi Taka', rate: 1 },
+  USD: { code: 'USD', symbol: '$', name: 'Singapore Dollar (USD)', rate: 1 / 124.25 },
+  GBP: { code: 'GBP', symbol: '£', name: 'British Pound', rate: 1 / 167.37 },
+  AED: { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', rate: 1 / 33.83 },
+  EUR: { code: 'EUR', symbol: '€', name: 'Euro', rate: 1 / 139.59 },
 };
 
 // ============================================================
@@ -127,15 +86,10 @@ export const CURRENCIES: Record<string, Currency> = {
 export const REGION_DEFAULT_CURRENCY: Record<string, string> = {
   'All Regions': 'BDT',
   Bangladesh: 'BDT',
-  Singapore: 'SGD',
-  India: 'INR',
-  Pakistan: 'PKR',
-  Hungary: 'HUF',
-  Nigeria: 'NGN',
+  Singapore: 'USD',      // ⭐ Singapore defaults to USD
+  'Middle East': 'AED',
+  Portugal: 'EUR',
   'United Kingdom': 'GBP',
-  'United States': 'USD',
-  Eurozone: 'EUR',
-  'South Africa': 'ZAR',
 };
 
 // ============================================================
@@ -144,19 +98,13 @@ export const REGION_DEFAULT_CURRENCY: Record<string, string> = {
 export const TERRITORY_DEFAULT_CURRENCY: Record<string, string> = {
   Dhaka: 'BDT',
   Chattogram: 'BDT',
-  'Singapore City': 'SGD',
-  Mumbai: 'INR',
-  Delhi: 'INR',
-  Karachi: 'PKR',
-  Lahore: 'PKR',
-  Budapest: 'HUF',
-  Lagos: 'NGN',
+  'Singapore City': 'USD',
+  Dubai: 'AED',
+  'Abu Dhabi': 'AED',
+  Lisbon: 'EUR',
+  Porto: 'EUR',
   London: 'GBP',
   Manchester: 'GBP',
-  'New York': 'USD',
-  'Los Angeles': 'USD',
-  Dublin: 'EUR',
-  Johannesburg: 'ZAR',
 };
 
 // ============================================================
@@ -231,10 +179,10 @@ export const fmtFull = (
 export const fmtDate = (d: string | null) =>
   d
     ? new Date(d).toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      })
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
     : '—';
 
 export const inputCls =

@@ -484,7 +484,7 @@ export default function MyCalendarPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50/80">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">
             {isLoading ? "Checking your session..." : "Loading your calendar..."}
           </p>
@@ -533,25 +533,25 @@ export default function MyCalendarPage() {
         >
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+              <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                 <CalendarIcon className="w-4 h-4 text-white" />
               </div>
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                 My Calendar
               </h1>
-              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                 {stats.total} {stats.total === 1 ? "task" : "tasks"}
               </span>
             </div>
             <p className="text-gray-500 text-sm flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-indigo-400" />
+              <Sparkles className="w-4 h-4 text-green-400" />
               View and manage your personal task schedule
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={goToToday}
-              className="px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition-all shadow-md shadow-indigo-500/20"
+              className="px-4 py-2 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white text-sm rounded-xl flex items-center gap-2 transition-all shadow-md shadow-green-500/20"
             >
               <CalendarDays size={16} />
               Today
@@ -572,7 +572,7 @@ export default function MyCalendarPage() {
                     onClick={() => setViewMode(mode)}
                     className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 transition-all ${
                       viewMode === mode
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-green-600 text-white shadow-sm"
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -597,8 +597,8 @@ export default function MyCalendarPage() {
               label: "Total",
               value: stats.total,
               icon: CheckSquare,
-              color: "text-indigo-600",
-              bg: "bg-indigo-50",
+              color: "text-green-600",
+              bg: "bg-green-50",
             },
             {
               label: "Pending",
@@ -668,14 +668,14 @@ export default function MyCalendarPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50/50 p-4 flex items-center justify-between gap-4"
+            className="mb-6 rounded-2xl border border-green-200 bg-green-50/50 p-4 flex items-center justify-between gap-4"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 shrink-0 rounded-xl bg-indigo-600 flex items-center justify-center">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-green-600 flex items-center justify-center">
                 <Clock className="w-5 h-5 text-white" />
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-green-600">
                   Next up
                 </p>
                 <p className="text-sm font-semibold text-slate-900 truncate">
@@ -691,7 +691,7 @@ export default function MyCalendarPage() {
                 setSelectedTask(nextTask);
                 setShowTaskDetail(true);
               }}
-              className="shrink-0 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition"
+              className="shrink-0 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition"
             >
               Open Task
             </button>
@@ -767,7 +767,7 @@ export default function MyCalendarPage() {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
+                  className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
                 >
                   <option value="all">All Status</option>
                   {Object.entries(statusLabels).map(([key, label]) => (
@@ -779,7 +779,7 @@ export default function MyCalendarPage() {
                 <select
                   value={filterPriority}
                   onChange={(e) => setFilterPriority(e.target.value)}
-                  className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
+                  className="text-black px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors text-sm"
                 >
                   <option value="all">All Priority</option>
                   <option value="urgent">🔴 Urgent</option>
@@ -816,8 +816,8 @@ export default function MyCalendarPage() {
             <div className="p-4">
               {stats.total === 0 ? (
                 <div className="py-20 text-center">
-                  <div className="w-20 h-20 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <CalendarIcon className="w-10 h-10 text-indigo-400" />
+                  <div className="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <CalendarIcon className="w-10 h-10 text-green-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-800">
                     No tasks scheduled this month
@@ -855,8 +855,8 @@ export default function MyCalendarPage() {
                           className={`
                             min-h-[80px] p-2 rounded-xl cursor-pointer transition-all
                             ${isCurrentMonth ? "hover:bg-gray-50" : "opacity-40"}
-                            ${isTodayDate ? "ring-2 ring-indigo-500 ring-offset-2" : ""}
-                            ${isSelectedDate ? "bg-indigo-50" : ""}
+                            ${isTodayDate ? "ring-2 ring-green-500 ring-offset-2" : ""}
+                            ${isSelectedDate ? "bg-green-50" : ""}
                             ${hasTasks ? "hover:shadow-sm" : ""}
                           `}
                         >
@@ -864,14 +864,14 @@ export default function MyCalendarPage() {
                             <span
                               className={`
                                 text-sm font-medium
-                                ${isTodayDate ? "text-indigo-600" : "text-gray-700"}
+                                ${isTodayDate ? "text-green-600" : "text-gray-700"}
                                 ${!isCurrentMonth ? "text-gray-400" : ""}
                               `}
                             >
                               {date.getDate()}
                             </span>
                             {hasTasks && (
-                              <span className="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full">
+                              <span className="text-xs bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full">
                                 {dayTasks.length}
                               </span>
                             )}
@@ -929,8 +929,8 @@ export default function MyCalendarPage() {
                         onClick={() => setSelectedDate(startOfDay(date))}
                         className={`
                           text-center py-2 min-h-[80px] rounded-xl cursor-pointer transition-all
-                          ${isTodayDate ? "bg-indigo-50" : "hover:bg-gray-50"}
-                          ${isSelectedDate ? "bg-indigo-100" : ""}
+                          ${isTodayDate ? "bg-green-50" : "hover:bg-gray-50"}
+                          ${isSelectedDate ? "bg-green-100" : ""}
                         `}
                       >
                         <div className="text-xs text-gray-500">
@@ -941,7 +941,7 @@ export default function MyCalendarPage() {
                         <div
                           className={`
                             text-lg font-semibold
-                            ${isTodayDate ? "text-indigo-600" : "text-gray-700"}
+                            ${isTodayDate ? "text-green-600" : "text-gray-700"}
                           `}
                         >
                           {date.getDate()}
@@ -1052,7 +1052,7 @@ export default function MyCalendarPage() {
                         key={task._id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group border border-transparent hover:border-indigo-200"
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group border border-transparent hover:border-green-200"
                         onClick={() => {
                           setSelectedTask(task);
                           setShowTaskDetail(true);
@@ -1088,7 +1088,7 @@ export default function MyCalendarPage() {
                             </span>
                             {task.assignedTo && (
                               <div className="flex items-center gap-1.5">
-                                <div className="w-6 h-6 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
+                                <div className="w-6 h-6 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shadow-sm">
                                   {getInitials(task.assignedTo.fullName)}
                                 </div>
                               </div>
@@ -1111,7 +1111,7 @@ export default function MyCalendarPage() {
                     </p>
                     <button
                       onClick={goToToday}
-                      className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition shadow-sm"
+                      className="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl transition shadow-sm"
                     >
                       Go to Today
                     </button>
@@ -1192,7 +1192,7 @@ export default function MyCalendarPage() {
                         Assigned To
                       </h3>
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                           <span className="text-white text-xs font-bold">
                             {getInitials(
                               selectedTask.assignedTo?.fullName || "?",
@@ -1278,7 +1278,7 @@ export default function MyCalendarPage() {
                           updateTaskStatus(selectedTask._id, "in_progress")
                         }
                         disabled={updating}
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition flex items-center gap-2 shadow-sm disabled:opacity-50"
+                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition flex items-center gap-2 shadow-sm disabled:opacity-50"
                       >
                         <Play size={14} />
                         Start Task

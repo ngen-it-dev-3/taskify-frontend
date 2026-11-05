@@ -3,7 +3,7 @@ import FloatingCard from "./FloatingCard";
 
 export default function Hero() {
     return (
-        <section className="relative overflow-hidden bg-[#EFF3E6]">
+        <section className="relative overflow-hidden bg-[#ebf2e4]">
             {/* Background grid */}
             <div
                 aria-hidden

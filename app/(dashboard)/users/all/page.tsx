@@ -119,6 +119,9 @@ const ROLES = [
   { value: "dept_manager", label: "Department Manager" },
   { value: "project_manager", label: "Project Manager" },
   { value: "line_manager", label: "Line Manager" },
+  { value: "tender_user", label: "Tender User" },      // ⭐ Added
+  { value: "crm_user", label: "CRM User" },            // ⭐ Added
+  { value: "accountant", label: "Accountant" },        // ⭐ Added
   { value: "employee", label: "Employee" },
 ];
 
@@ -488,13 +491,13 @@ export default function AllUsersPage() {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <Users className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">User Directory</h1>
-                  <span className="px-2.5 py-0.5 text-xs font-bold bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
+                  <span className="px-2.5 py-0.5 text-xs font-bold bg-green-50 text-green-700 rounded-full border border-green-100">
                     {users.length}
                   </span>
                 </div>
@@ -507,7 +510,7 @@ export default function AllUsersPage() {
             {canCreateUser && (
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-indigo-600/20 active:scale-95 cursor-pointer"
+                className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-lg shadow-green-600/20 active:scale-95 cursor-pointer"
               >
                 <UserPlus size={16} /> Add Account
               </button>
@@ -518,7 +521,7 @@ export default function AllUsersPage() {
               className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-xs cursor-pointer"
               title="Refresh Directory"
             >
-              <RefreshCw size={16} className={refreshing ? "animate-spin text-indigo-600" : ""} />
+              <RefreshCw size={16} className={refreshing ? "animate-spin text-green-600" : ""} />
             </button>
           </div>
         </motion.div>
@@ -526,7 +529,7 @@ export default function AllUsersPage() {
         {/* Analytics Statistics Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { label: "Total Workforce", val: users.length, icon: Users, color: "text-indigo-600", bg: "bg-indigo-50" },
+            { label: "Total Workforce", val: users.length, icon: Users, color: "text-green-600", bg: "bg-green-50" },
             { label: "Active Accounts", val: totalActive, icon: UserCheck, color: "text-emerald-600", bg: "bg-emerald-50" },
             { label: "Deactivated", val: totalInactive, icon: UserX, color: "text-rose-600", bg: "bg-rose-50" },
             { label: "Divisions", val: departments.length, icon: Building2, color: "text-blue-600", bg: "bg-blue-50" },
@@ -552,7 +555,7 @@ export default function AllUsersPage() {
               placeholder="Search by name, corporate email, or employee ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition shadow-xs"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200/80 rounded-2xl text-slate-800 text-sm focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition shadow-xs"
             />
           </div>
 
@@ -601,7 +604,7 @@ export default function AllUsersPage() {
         {/* Users Table */}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-green-600" />
             <p className="text-sm font-medium text-slate-400">Loading directory records...</p>
           </div>
         ) : (
@@ -636,7 +639,7 @@ export default function AllUsersPage() {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3.5">
-                            <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-xs shrink-0">
+                            <div className="w-10 h-10 rounded-2xl bg-green-600 text-white font-bold flex items-center justify-center text-xs shadow-xs shrink-0">
                               {userItem.fullName.charAt(0).toUpperCase()}
                             </div>
                             <div className="space-y-0.5">
@@ -682,7 +685,7 @@ export default function AllUsersPage() {
                           <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => { setSelectedUser(userItem); setShowViewModal(true); }}
-                              className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition cursor-pointer"
+                              className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition cursor-pointer"
                               title="View Profile"
                             >
                               <Eye size={15} />
@@ -817,7 +820,7 @@ export default function AllUsersPage() {
                         onChange={(e) =>
                           setCreateFormData({ ...createFormData, fullName: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                         placeholder="John Doe"
                       />
                     </div>
@@ -834,7 +837,7 @@ export default function AllUsersPage() {
                         onChange={(e) =>
                           setCreateFormData({ ...createFormData, email: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                         placeholder="john@company.com"
                       />
                     </div>
@@ -852,7 +855,7 @@ export default function AllUsersPage() {
                         onChange={(e) =>
                           setCreateFormData({ ...createFormData, password: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                         placeholder="Min 8 characters"
                       />
                     </div>
@@ -869,7 +872,7 @@ export default function AllUsersPage() {
                         onChange={(e) =>
                           setCreateFormData({ ...createFormData, employeeId: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                         placeholder="EMP-001"
                       />
                     </div>
@@ -884,7 +887,7 @@ export default function AllUsersPage() {
                         onChange={(e) =>
                           setCreateFormData({ ...createFormData, role: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition cursor-pointer"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition cursor-pointer"
                       >
                         {ROLES.map((r) => (
                           <option key={r.value} value={r.value}>
@@ -904,7 +907,7 @@ export default function AllUsersPage() {
                         onChange={(e) =>
                           setCreateFormData({ ...createFormData, departmentId: e.target.value })
                         }
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition cursor-pointer"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition cursor-pointer"
                       >
                         <option value="">Unassigned</option>
                         {departments.map((d) => (
@@ -929,7 +932,7 @@ export default function AllUsersPage() {
                   <button
                     type="submit"
                     disabled={creating}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold rounded-lg shadow-sm shadow-indigo-500/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-xs font-semibold rounded-lg shadow-sm shadow-green-500/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {creating && <Loader2 size={14} className="animate-spin" />}
                     Create Account
@@ -988,7 +991,7 @@ export default function AllUsersPage() {
                         required
                         value={editFormData.fullName}
                         onChange={(e) => setEditFormData({ ...editFormData, fullName: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                         placeholder="John Doe"
                       />
                     </div>
@@ -1003,7 +1006,7 @@ export default function AllUsersPage() {
                         required
                         value={editFormData.email}
                         onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                         placeholder="john@company.com"
                       />
                     </div>
@@ -1018,7 +1021,7 @@ export default function AllUsersPage() {
                         required
                         value={editFormData.employeeId}
                         onChange={(e) => setEditFormData({ ...editFormData, employeeId: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm placeholder:text-slate-400 focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                         placeholder="EMP-001"
                       />
                     </div>
@@ -1031,7 +1034,7 @@ export default function AllUsersPage() {
                       <select
                         value={editFormData.role}
                         onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition cursor-pointer"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition cursor-pointer"
                       >
                         {ROLES.map((r) => (
                           <option key={r.value} value={r.value}>
@@ -1049,7 +1052,7 @@ export default function AllUsersPage() {
                       <select
                         value={editFormData.departmentId}
                         onChange={(e) => setEditFormData({ ...editFormData, departmentId: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition cursor-pointer"
+                        className="w-full px-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl text-slate-900 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition cursor-pointer"
                       >
                         <option value="">Unassigned</option>
                         {departments.map((d) => (
@@ -1074,7 +1077,7 @@ export default function AllUsersPage() {
                   <button
                     type="submit"
                     disabled={editing}
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs font-semibold rounded-lg shadow-sm shadow-indigo-500/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-xs font-semibold rounded-lg shadow-sm shadow-green-500/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {editing && <Loader2 size={14} className="animate-spin" />}
                     Save Changes
@@ -1115,7 +1118,7 @@ export default function AllUsersPage() {
                     minLength={8}
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 outline-none"
                     placeholder="Min 8 characters"
                   />
                 </div>
@@ -1126,7 +1129,7 @@ export default function AllUsersPage() {
                     required
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-indigo-500 outline-none"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:border-green-500 outline-none"
                     placeholder="Re-enter password"
                   />
                 </div>
@@ -1180,7 +1183,7 @@ export default function AllUsersPage() {
                     return (
                       <label
                         key={role._id}
-                        className={`flex items-center justify-between p-3.5 rounded-2xl border transition cursor-pointer ${isSelected ? "bg-indigo-50/60 border-indigo-300 shadow-xs" : "bg-white border-slate-200/80 hover:border-slate-300"
+                        className={`flex items-center justify-between p-3.5 rounded-2xl border transition cursor-pointer ${isSelected ? "bg-green-50/60 border-green-300 shadow-xs" : "bg-white border-slate-200/80 hover:border-slate-300"
                           }`}
                         onClick={() => {
                           setSelectedRolesForUser((prev) =>
@@ -1193,7 +1196,7 @@ export default function AllUsersPage() {
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => { }}
-                            className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                            className="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500 cursor-pointer"
                           />
                           <div>
                             <p className="font-bold text-slate-900 text-xs">{role.name}</p>
@@ -1209,7 +1212,7 @@ export default function AllUsersPage() {
                   <button
                     onClick={handleUpdateUserRoles}
                     disabled={updatingRoles || selectedRolesForUser.length === 0}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-green-600/20 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40"
                   >
                     {updatingRoles && <Loader2 size={16} className="animate-spin" />} Save Clearances
                   </button>
@@ -1238,7 +1241,7 @@ export default function AllUsersPage() {
             >
               <div className="flex items-center justify-between p-6 border-b border-slate-100 bg-slate-50/50">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
+                  <div className="w-12 h-12 rounded-2xl bg-green-600 text-white font-bold flex items-center justify-center text-lg shadow-xs">
                     {selectedUser.fullName.charAt(0).toUpperCase()}
                   </div>
                   <div>
@@ -1262,7 +1265,7 @@ export default function AllUsersPage() {
                 <div className="pt-4 border-t border-slate-100 flex gap-3">
                   <button
                     onClick={() => { setShowViewModal(false); handleEditUser(selectedUser); }}
-                    className="flex-1 py-3 bg-indigo-600 text-white font-semibold rounded-xl text-xs transition shadow-md shadow-indigo-600/20 cursor-pointer"
+                    className="flex-1 py-3 bg-green-600 text-white font-semibold rounded-xl text-xs transition shadow-md shadow-green-600/20 cursor-pointer"
                   >
                     Edit Profile
                   </button>

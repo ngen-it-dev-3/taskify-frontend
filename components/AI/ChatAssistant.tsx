@@ -77,7 +77,7 @@ export default function ChatAssistant({ taskContext }: ChatAssistantProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 z-50 p-3 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-full shadow-lg shadow-indigo-500/30 transition-all hover:scale-105"
+        className="fixed bottom-4 right-4 z-50 p-3 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-500 hover:to-purple-500 text-white rounded-full shadow-lg shadow-green-500/30 transition-all hover:scale-105"
       >
         <Sparkles size={20} />
       </button>
@@ -91,7 +91,7 @@ export default function ChatAssistant({ taskContext }: ChatAssistantProps) {
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-slate-700 bg-linear-to-r from-slate-800 to-slate-900 rounded-t-2xl">
         <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-indigo-400" />
+          <Sparkles className="w-4 h-4 text-green-400" />
           <span className="text-sm font-medium text-white">AI Assistant</span>
         </div>
         <div className="flex items-center gap-1">
@@ -122,7 +122,7 @@ export default function ChatAssistant({ taskContext }: ChatAssistantProps) {
                 <div
                   className={`max-w-[80%] p-2.5 rounded-lg ${
                     message.role === 'user'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-green-600 text-white'
                       : 'bg-slate-800 text-slate-200'
                   }`}
                 >
@@ -136,7 +136,7 @@ export default function ChatAssistant({ taskContext }: ChatAssistantProps) {
             {loading && (
               <div className="flex justify-start">
                 <div className="bg-slate-800 p-2.5 rounded-lg">
-                  <Loader2 className="w-4 h-4 animate-spin text-indigo-400" />
+                  <Loader2 className="w-4 h-4 animate-spin text-green-400" />
                 </div>
               </div>
             )}
@@ -170,12 +170,12 @@ export default function ChatAssistant({ taskContext }: ChatAssistantProps) {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 placeholder="Ask me anything..."
-                className="flex-1 px-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:border-indigo-500 outline-none"
+                className="flex-1 px-3 py-1.5 text-xs bg-slate-800 border border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:border-green-500 outline-none"
               />
               <button
                 onClick={handleSend}
                 disabled={loading || !input.trim()}
-                className="p-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white rounded-lg transition"
+                className="p-1.5 bg-green-600 hover:bg-green-500 disabled:opacity-50 text-white rounded-lg transition"
               >
                 <Send size={14} />
               </button>

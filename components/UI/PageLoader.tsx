@@ -16,7 +16,7 @@ export default function PageLoader() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
       <div className="flex flex-col items-center gap-3">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-green-500" />
         <p className="text-slate-400 text-sm">Loading...</p>
       </div>
     </div>

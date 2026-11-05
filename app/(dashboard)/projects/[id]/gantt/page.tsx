@@ -393,7 +393,7 @@ export default function ProjectGanttPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading Gantt chart...</p>
         </div>
       </div>
@@ -413,7 +413,7 @@ export default function ProjectGanttPage() {
           <p className="text-gray-600 mb-4">{error || "Project not found"}</p>
           <button
             onClick={fetchProjectData}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition"
+            className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition"
           >
             Retry
           </button>
@@ -454,7 +454,7 @@ export default function ProjectGanttPage() {
               {project.name}
             </Link>
             <ChevronRight size={14} className="text-gray-300" />
-            <span className="text-indigo-600 font-medium">Gantt Chart</span>
+            <span className="text-green-600 font-medium">Gantt Chart</span>
           </motion.div>
 
           {/* Header */}
@@ -472,7 +472,7 @@ export default function ProjectGanttPage() {
               </Link>
               <div>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                  <div className="w-10 h-10 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                     <GanttChartSquare className="w-5 h-5 text-white" />
                   </div>
                   <div>
@@ -502,7 +502,7 @@ export default function ProjectGanttPage() {
                   onClick={() => setViewMode("day")}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     viewMode === "day"
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-green-600 text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -512,7 +512,7 @@ export default function ProjectGanttPage() {
                   onClick={() => setViewMode("week")}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     viewMode === "week"
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-green-600 text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -522,7 +522,7 @@ export default function ProjectGanttPage() {
                   onClick={() => setViewMode("month")}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                     viewMode === "month"
-                      ? "bg-indigo-600 text-white shadow-sm"
+                      ? "bg-green-600 text-white shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
@@ -629,13 +629,13 @@ export default function ProjectGanttPage() {
                 placeholder="Search tasks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
               />
             </div>
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>
@@ -648,7 +648,7 @@ export default function ProjectGanttPage() {
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-700 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             >
               <option value="all">All Priority</option>
               <option value="low">Low</option>
@@ -685,7 +685,7 @@ export default function ProjectGanttPage() {
             {isFullscreen && (
               <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
                 <div className="flex items-center gap-2">
-                  <GanttChartSquare size={20} className="text-indigo-500" />
+                  <GanttChartSquare size={20} className="text-green-500" />
                   <h3 className="font-semibold text-gray-800">Gantt Chart</h3>
                   <span className="text-xs text-gray-500">{project.name}</span>
                 </div>
@@ -996,10 +996,10 @@ export default function ProjectGanttPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
             >
-              <div className="p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50 to-purple-50">
+              <div className="p-5 border-b border-gray-200 bg-linear-to-r from-green-50 to-purple-50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <GanttChartSquare className="w-5 h-5 text-indigo-500" />
+                    <GanttChartSquare className="w-5 h-5 text-green-500" />
                     <h2 className="text-lg font-semibold text-gray-800">
                       Task Details
                     </h2>
@@ -1063,7 +1063,7 @@ export default function ProjectGanttPage() {
                 <div className="flex gap-2 pt-3 border-t border-gray-100">
                   <Link
                     href={`/tasks/${selectedTask._id}`}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg transition text-center"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg transition text-center"
                   >
                     View Full Details
                   </Link>

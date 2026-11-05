@@ -785,7 +785,7 @@ export default function KPITrendsPage() {
           </p>
           <Link
             href="/dashboard"
-            className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition"
+            className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition"
           >
             Return to Dashboard
           </Link>
@@ -797,7 +797,7 @@ export default function KPITrendsPage() {
   if (loading && !initialSelectionDone) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 space-y-3">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
         <p className="text-xs font-medium text-slate-400">
           Loading performance trends...
         </p>
@@ -831,7 +831,7 @@ export default function KPITrendsPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+              <div className="w-12 h-12 bg-gradient-to-tr from-green-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
                 <LineChart className="w-6 h-6" />
               </div>
               <div>
@@ -860,7 +860,7 @@ export default function KPITrendsPage() {
             >
               <RefreshCw
                 className={`w-4 h-4 ${
-                  loading ? "animate-spin text-indigo-600" : ""
+                  loading ? "animate-spin text-green-600" : ""
                 }`}
               />
             </button>
@@ -874,8 +874,8 @@ export default function KPITrendsPage() {
               label: "Total Workforce",
               val: stats.totalEmployees,
               icon: Users,
-              color: "text-indigo-600",
-              bg: "bg-indigo-50",
+              color: "text-green-600",
+              bg: "bg-green-50",
             },
             {
               label: "Selected",
@@ -991,7 +991,7 @@ export default function KPITrendsPage() {
                 placeholder="Name or ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-xs font-semibold outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-xs font-semibold outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
               />
             </div>
           </div>
@@ -1027,7 +1027,7 @@ export default function KPITrendsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
             <div>
               <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                <LineChart className="w-5 h-5 text-indigo-600" /> Score Trends
+                <LineChart className="w-5 h-5 text-green-600" /> Score Trends
               </h3>
               <p className="text-xs text-slate-400 font-medium">
                 {selectedEmployees.length} of {MAX_SELECTED} employees selected
@@ -1036,7 +1036,7 @@ export default function KPITrendsPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={selectAllVisible}
-                className="px-3.5 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs rounded-xl transition"
+                className="px-3.5 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 font-bold text-xs rounded-xl transition"
               >
                 Select All
               </button>
@@ -1154,7 +1154,7 @@ export default function KPITrendsPage() {
           <div className="p-6 border-b border-slate-100 flex items-center justify-between flex-wrap gap-4">
             <div>
               <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                <Users size={18} className="text-indigo-600" /> Employee
+                <Users size={18} className="text-green-600" /> Employee
                 Performance
               </h3>
               <p className="text-xs text-slate-400 font-medium">
@@ -1194,7 +1194,7 @@ export default function KPITrendsPage() {
                       key={emp.userId}
                       onClick={() => toggleEmployee(emp.userId)}
                       className={`hover:bg-slate-50/50 transition cursor-pointer ${
-                        isSelected ? "bg-indigo-50/40" : ""
+                        isSelected ? "bg-green-50/40" : ""
                       }`}
                     >
                       <td
@@ -1205,12 +1205,12 @@ export default function KPITrendsPage() {
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleEmployee(emp.userId)}
-                          className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500 cursor-pointer"
                         />
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0">
+                          <div className="w-9 h-9 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0">
                             {getInitials(emp.fullName)}
                           </div>
                           <div>

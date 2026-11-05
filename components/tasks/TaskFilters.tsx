@@ -39,13 +39,13 @@ export const TaskFilters = ({
                         placeholder="Search your tasks..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition shadow-sm"
+                        className="w-full pl-10 pr-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition shadow-sm"
                     />
                 </div>
                 <button
                     onClick={() => setShowFilters(!showFilters)}
                     className={`px-4 py-2.5 rounded-xl flex items-center gap-2 text-sm transition-all shadow-sm ${showFilters
-                            ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+                            ? "bg-gradient-to-r from-green-600 to-purple-600 text-white"
                             : "bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-600 hover:text-gray-800"
                         }`}
                 >
@@ -67,7 +67,7 @@ export const TaskFilters = ({
                             <select
                                 value={filter}
                                 onChange={(e) => setFilter(e.target.value)}
-                                className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition"
+                                className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition"
                             >
                                 <option value="all">All Status</option>
                                 <option value="pending">Pending</option>
@@ -80,7 +80,7 @@ export const TaskFilters = ({
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value as any)}
-                                className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 outline-none transition"
+                                className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 text-sm focus:border-green-400 focus:ring-4 focus:ring-green-100 outline-none transition"
                             >
                                 <option value="createdAt">Sort by Date</option>
                                 <option value="deadline">Sort by Deadline</option>

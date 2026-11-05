@@ -39,15 +39,15 @@ export const TaskListView = ({
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
             <div className="overflow-x-auto">
                 <table className="w-full">
-                    <thead className="bg-gradient-to-r from-gray-50/80 to-indigo-50/80 border-b border-gray-200">
+                    <thead className="bg-gradient-to-r from-gray-50/80 to-green-50/80 border-b border-gray-200">
                         <tr>
                             <th className="text-left px-4 py-3">
                                 <button
                                     onClick={toggleAllTasks}
-                                    className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-indigo-600 transition"
+                                    className="flex items-center gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider hover:text-green-600 transition"
                                 >
                                     {selectedTasks.size === tasks.length && selectedTasks.size > 0 ? (
-                                        <CheckSquare className="w-4 h-4 text-indigo-600" />
+                                        <CheckSquare className="w-4 h-4 text-green-600" />
                                     ) : (
                                         <Square className="w-4 h-4" />
                                     )}
@@ -67,18 +67,18 @@ export const TaskListView = ({
                             return (
                                 <tr
                                     key={task._id}
-                                    className={`hover:bg-indigo-50/30 transition-colors duration-200 ${selectedTasks.has(task._id)
-                                            ? "bg-indigo-50/50 border-l-4 border-indigo-500"
+                                    className={`hover:bg-green-50/30 transition-colors duration-200 ${selectedTasks.has(task._id)
+                                            ? "bg-green-50/50 border-l-4 border-green-500"
                                             : ""
                                         }`}
                                 >
                                     <td className="px-4 py-3">
                                         <button
                                             onClick={() => toggleTaskSelection(task._id)}
-                                            className="p-1 rounded-lg hover:bg-indigo-100 transition"
+                                            className="p-1 rounded-lg hover:bg-green-100 transition"
                                         >
                                             {selectedTasks.has(task._id) ? (
-                                                <CheckSquare className="w-4 h-4 text-indigo-600" />
+                                                <CheckSquare className="w-4 h-4 text-green-600" />
                                             ) : (
                                                 <Square className="w-4 h-4 text-gray-400" />
                                             )}
@@ -96,7 +96,7 @@ export const TaskListView = ({
                                                 />
                                             </button>
                                             <div>
-                                                <p className="text-gray-800 text-sm font-medium hover:text-indigo-600 transition">
+                                                <p className="text-gray-800 text-sm font-medium hover:text-green-600 transition">
                                                     {task.title}
                                                 </p>
                                                 <p className="text-gray-400 text-xs line-clamp-1">{task.description}</p>
@@ -121,7 +121,7 @@ export const TaskListView = ({
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-2">
-                                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                                                 <span className="text-white text-[10px] font-bold">
                                                     {task.assignedTo?.fullName?.charAt(0) || "?"}
                                                 </span>
@@ -143,7 +143,7 @@ export const TaskListView = ({
                                         <div className="flex items-center justify-center gap-1">
                                             <button
                                                 onClick={() => onViewDetails(task)}
-                                                className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                                                className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                                                 title="View Details"
                                             >
                                                 <Eye size={14} />

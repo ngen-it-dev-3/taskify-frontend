@@ -118,7 +118,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+        <Loader2 className="w-10 h-10 animate-spin text-green-600" />
       </div>
     );
   }
@@ -170,8 +170,8 @@ export default function AdminDashboard() {
               <p className="text-2xl font-bold text-gray-800">{stats.totalUsers}</p>
               <p className="text-xs text-gray-500 mt-0.5">Total Users</p>
             </div>
-            <div className="w-9 h-9 bg-indigo-50 rounded-lg flex items-center justify-center">
-              <Users className="w-4 h-4 text-indigo-500" />
+            <div className="w-9 h-9 bg-green-50 rounded-lg flex items-center justify-center">
+              <Users className="w-4 h-4 text-green-500" />
             </div>
           </div>
           <div className="mt-2 flex items-center gap-1 text-xs">
@@ -232,8 +232,8 @@ export default function AdminDashboard() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         <Link href="/users" className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition group text-center">
-          <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition">
-            <Users className="w-6 h-6 text-indigo-600" />
+          <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition">
+            <Users className="w-6 h-6 text-green-600" />
           </div>
           <p className="text-sm font-medium text-gray-800">Manage Users</p>
           <p className="text-xs text-gray-400">Add, edit, or remove users</p>

@@ -344,7 +344,7 @@ export default function PricingAdminPage() {
 
     const iconOptions = ["Users", "User", "Crown", "Star", "TrendingUp", "Briefcase", "Zap", "Gift", "Tag", "Layers", "List", "Sparkles", "UserCircle2", "UsersRound"];
     const colorOptions = [
-        { name: "Indigo", value: "indigo", bg: "bg-indigo-50 dark:bg-indigo-900/20", text: "text-indigo-600 dark:text-indigo-400", ring: "ring-indigo-500" },
+        { name: "Indigo", value: "indigo", bg: "bg-green-50 dark:bg-green-900/20", text: "text-green-600 dark:text-green-400", ring: "ring-green-500" },
         { name: "Emerald", value: "emerald", bg: "bg-emerald-50 dark:bg-emerald-900/20", text: "text-emerald-600 dark:text-emerald-400", ring: "ring-emerald-500" },
         { name: "Blue", value: "blue", bg: "bg-blue-50 dark:bg-blue-900/20", text: "text-blue-600 dark:text-blue-400", ring: "ring-blue-500" },
         { name: "Purple", value: "purple", bg: "bg-purple-50 dark:bg-purple-900/20", text: "text-purple-600 dark:text-purple-400", ring: "ring-purple-500" },
@@ -406,7 +406,7 @@ export default function PricingAdminPage() {
         const colors: Record<string, string> = {
             popular: "bg-linear-to-r from-amber-400 to-orange-500 text-white",
             'best-value': "bg-linear-to-r from-emerald-400 to-teal-500 text-white",
-            enterprise: "bg-linear-to-r from-purple-400 to-indigo-500 text-white",
+            enterprise: "bg-linear-to-r from-purple-400 to-green-500 text-white",
         };
         return colors[badge] || "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300";
     };
@@ -426,8 +426,8 @@ export default function PricingAdminPage() {
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="flex flex-col items-center gap-4">
                     <div className="relative">
-                        <div className="w-16 h-16 border-4 border-indigo-200 dark:border-indigo-800 rounded-full"></div>
-                        <div className="absolute top-0 left-0 w-16 h-16 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin"></div>
+                        <div className="w-16 h-16 border-4 border-green-200 dark:border-green-800 rounded-full"></div>
+                        <div className="absolute top-0 left-0 w-16 h-16 border-4 border-green-600 rounded-full border-t-transparent animate-spin"></div>
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">Loading pricing plans...</p>
                 </div>
@@ -445,11 +445,11 @@ export default function PricingAdminPage() {
             >
                 <div>
                     <div className="flex items-center gap-3">
-                        <div className="p-2.5 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/25">
+                        <div className="p-2.5 bg-linear-to-br from-green-500 to-purple-600 rounded-xl shadow-lg shadow-green-500/25">
                             <Tag className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-bold bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+                            <h1 className="text-2xl md:text-3xl font-bold bg-linear-to-r from-green-600 to-purple-600 dark:from-green-400 dark:to-purple-400 bg-clip-text text-transparent">
                                 Pricing Plans
                             </h1>
                             <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -472,7 +472,7 @@ export default function PricingAdminPage() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handleOpenModal()}
-                        className="px-4 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/25"
+                        className="px-4 py-2.5 bg-linear-to-r from-green-600 to-purple-600 text-white rounded-xl hover:from-green-700 hover:to-purple-700 transition-all flex items-center gap-2 shadow-lg shadow-green-500/25"
                     >
                         <Plus className="w-4 h-4" />
                         <span>Add Plan</span>
@@ -527,7 +527,7 @@ export default function PricingAdminPage() {
                         placeholder="Search plans..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-4 py-2.5 pl-10 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition"
+                        className="w-full px-4 py-2.5 pl-10 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition"
                     />
                     <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 </div>
@@ -537,7 +537,7 @@ export default function PricingAdminPage() {
                             key={status}
                             onClick={() => setFilterStatus(status as any)}
                             className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all capitalize ${filterStatus === status
-                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
+                                ? 'bg-green-600 text-white shadow-lg shadow-green-500/25'
                                 : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                                 }`}
                         >
@@ -585,7 +585,7 @@ export default function PricingAdminPage() {
                     ) : (
                         <button
                             onClick={() => handleOpenModal()}
-                            className="mt-4 px-6 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition inline-flex items-center gap-2 shadow-lg shadow-indigo-500/25"
+                            className="mt-4 px-6 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition inline-flex items-center gap-2 shadow-lg shadow-green-500/25"
                         >
                             <Plus className="w-4 h-4" />
                             Create First Plan
@@ -800,8 +800,8 @@ export default function PricingAdminPage() {
                             {/* Modal Header */}
                             <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between z-10">
                                 <div className="flex items-center gap-3">
-                                    <div className={`p-2.5 rounded-xl ${editingPlan ? 'bg-blue-50 dark:bg-blue-900/30' : 'bg-indigo-50 dark:bg-indigo-900/30'}`}>
-                                        {editingPlan ? <Edit className="w-5 h-5 text-blue-600" /> : <Plus className="w-5 h-5 text-indigo-600" />}
+                                    <div className={`p-2.5 rounded-xl ${editingPlan ? 'bg-blue-50 dark:bg-blue-900/30' : 'bg-green-50 dark:bg-green-900/30'}`}>
+                                        {editingPlan ? <Edit className="w-5 h-5 text-blue-600" /> : <Plus className="w-5 h-5 text-green-600" />}
                                     </div>
                                     <div>
                                         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -833,7 +833,7 @@ export default function PricingAdminPage() {
                                             type="text"
                                             value={formData.name || ''}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                            className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                            className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                                 }`}
                                             placeholder="e.g., Pro Plan"
                                         />
@@ -889,7 +889,7 @@ export default function PricingAdminPage() {
                                         value={formData.description || ''}
                                         onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                         rows={2}
-                                        className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                        className={`w-full px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                             }`}
                                         placeholder="Describe this plan..."
                                     />
@@ -910,7 +910,7 @@ export default function PricingAdminPage() {
                                         <select
                                             value={formData.icon || 'Users'}
                                             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
                                         >
                                             {iconOptions.map((icon) => (
                                                 <option key={icon} value={icon}>{icon}</option>
@@ -924,7 +924,7 @@ export default function PricingAdminPage() {
                                         <select
                                             value={formData.color || 'indigo'}
                                             onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
                                         >
                                             {colorOptions.map((color) => (
                                                 <option key={color.value} value={color.value}>
@@ -941,7 +941,7 @@ export default function PricingAdminPage() {
                                             type="number"
                                             value={formData.trialDays || 7}
                                             onChange={(e) => setFormData({ ...formData, trialDays: parseInt(e.target.value) || 0 })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
                                         />
                                         {errors.trialDays && (
                                             <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
@@ -958,7 +958,7 @@ export default function PricingAdminPage() {
                                             type="number"
                                             value={formData.order || 0}
                                             onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
                                         />
                                     </div>
                                 </div>
@@ -986,7 +986,7 @@ export default function PricingAdminPage() {
                                                         });
                                                     }}
                                                     className={`px-3 py-2.5 rounded-xl border-2 text-sm font-medium transition-all flex items-center justify-center gap-2 ${formData.billingCycle === option.value
-                                                            ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 shadow-lg shadow-indigo-500/10'
+                                                            ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-lg shadow-green-500/10'
                                                             : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
                                                         }`}
                                                 >
@@ -1012,7 +1012,7 @@ export default function PricingAdminPage() {
                                                 type="number"
                                                 value={formData.price || 0}
                                                 onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
-                                                className={`w-full pl-16 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.price ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                                className={`w-full pl-16 pr-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.price ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                                     }`}
                                                 placeholder="0"
                                             />
@@ -1032,7 +1032,7 @@ export default function PricingAdminPage() {
                                             type="number"
                                             value={formData.discount || 0}
                                             onChange={(e) => setFormData({ ...formData, discount: parseInt(e.target.value) || 0 })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
                                             placeholder="0"
                                             min="0"
                                             max="100"
@@ -1045,7 +1045,7 @@ export default function PricingAdminPage() {
                                         <select
                                             value={formData.currency || 'BDT'}
                                             onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
+                                            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
                                         >
                                             <option value="BDT">BDT (৳)</option>
                                             <option value="USD">USD ($)</option>
@@ -1062,7 +1062,7 @@ export default function PricingAdminPage() {
                                             type="checkbox"
                                             checked={formData.isPopular || false}
                                             onChange={(e) => setFormData({ ...formData, isPopular: e.target.checked })}
-                                            className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                                         />
                                         <span className="text-sm text-gray-700 dark:text-gray-300">Mark as Popular</span>
                                     </label>
@@ -1071,7 +1071,7 @@ export default function PricingAdminPage() {
                                             type="checkbox"
                                             checked={formData.isActive ?? true}
                                             onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                            className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                                         />
                                         <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
                                     </label>
@@ -1084,7 +1084,7 @@ export default function PricingAdminPage() {
                                                 contactSales: e.target.checked,
                                                 price: e.target.checked ? 0 : formData.price,
                                             })}
-                                            className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
                                         />
                                         <span className="text-sm text-gray-700 dark:text-gray-300">Contact Sales (Enterprise)</span>
                                     </label>
@@ -1111,7 +1111,7 @@ export default function PricingAdminPage() {
                                                         teamMembers: formData.limits?.teamMembers ?? 0,
                                                     }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
                                                 min="1"
                                             />
                                         </div>
@@ -1130,7 +1130,7 @@ export default function PricingAdminPage() {
                                                         teamMembers: formData.limits?.teamMembers ?? 0,
                                                     }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
                                             />
                                         </div>
                                         <div>
@@ -1148,7 +1148,7 @@ export default function PricingAdminPage() {
                                                         teamMembers: formData.limits?.teamMembers ?? 0,
                                                     }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
                                             />
                                         </div>
                                         <div>
@@ -1166,7 +1166,7 @@ export default function PricingAdminPage() {
                                                         teamMembers: parseInt(e.target.value) || 0,
                                                     }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white text-sm"
                                             />
                                         </div>
                                     </div>
@@ -1183,7 +1183,7 @@ export default function PricingAdminPage() {
                                             value={featureInput}
                                             onChange={(e) => setFeatureInput(e.target.value)}
                                             onKeyPress={handleFeatureKeyPress}
-                                            className={`flex-1 px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.features ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                            className={`flex-1 px-4 py-2.5 border rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition ${errors.features ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                                 }`}
                                             placeholder="Add a feature (press Enter)"
                                         />
@@ -1192,7 +1192,7 @@ export default function PricingAdminPage() {
                                             whileTap={{ scale: 0.98 }}
                                             type="button"
                                             onClick={handleAddFeature}
-                                            className="px-4 py-2.5 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition flex items-center gap-1"
+                                            className="px-4 py-2.5 bg-green-600 text-white rounded-xl hover:bg-green-700 transition flex items-center gap-1"
                                         >
                                             <Plus className="w-4 h-4" />
                                             Add
@@ -1246,7 +1246,7 @@ export default function PricingAdminPage() {
                                         whileTap={{ scale: 0.98 }}
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="px-6 py-2.5 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-50 flex items-center gap-2 font-medium shadow-lg shadow-indigo-500/25"
+                                        className="px-6 py-2.5 bg-linear-to-r from-green-600 to-purple-600 text-white rounded-xl hover:from-green-700 hover:to-purple-700 transition disabled:opacity-50 flex items-center gap-2 font-medium shadow-lg shadow-green-500/25"
                                     >
                                         {isSubmitting ? (
                                             <>

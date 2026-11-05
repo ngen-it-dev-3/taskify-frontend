@@ -259,8 +259,8 @@ export default function EditDepartmentPage() {
       <div className="flex items-center justify-center min-h-screen bg-slate-50/50">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+            <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-green-600" />
             </div>
           </div>
           <p className="text-slate-500 text-sm font-medium animate-pulse">
@@ -291,7 +291,7 @@ export default function EditDepartmentPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={fetchData}
-              className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 shadow-sm shadow-indigo-200"
+              className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition flex items-center justify-center gap-2 shadow-sm shadow-green-200"
             >
               <RefreshCw size={16} />
               Try Again
@@ -339,7 +339,7 @@ export default function EditDepartmentPage() {
             {department.name}
           </Link>
           <ChevronRight size={12} className="text-slate-300 shrink-0" />
-          <span className="text-indigo-600 font-semibold shrink-0">Edit</span>
+          <span className="text-green-600 font-semibold shrink-0">Edit</span>
         </motion.nav>
 
         {/* Page Header */}
@@ -357,7 +357,7 @@ export default function EditDepartmentPage() {
               <ArrowLeft size={18} />
             </button>
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 bg-linear-to-tr from-indigo-600 to-violet-500 rounded-2xl flex items-center justify-center shadow-md shadow-indigo-100 shrink-0">
+              <div className="w-12 h-12 bg-linear-to-tr from-green-600 to-violet-500 rounded-2xl flex items-center justify-center shadow-md shadow-green-100 shrink-0">
                 <Building2 className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -411,7 +411,7 @@ export default function EditDepartmentPage() {
             className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8 space-y-6"
           >
             <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100/50 flex items-center justify-center text-indigo-600">
+              <div className="w-9 h-9 rounded-xl bg-green-50 border border-green-100/50 flex items-center justify-center text-green-600">
                 <Briefcase size={18} />
               </div>
               <div>
@@ -435,7 +435,7 @@ export default function EditDepartmentPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                   placeholder="e.g. Engineering & Product"
                   required
                 />
@@ -454,7 +454,7 @@ export default function EditDepartmentPage() {
                       code: e.target.value.toUpperCase(),
                     })
                   }
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition font-mono uppercase"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition font-mono uppercase"
                   placeholder="e.g. ENG"
                   required
                 />
@@ -473,7 +473,7 @@ export default function EditDepartmentPage() {
                     })
                   }
                   rows={3}
-                  className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none resize-none transition"
+                  className="w-full px-4 py-3 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none resize-none transition"
                   placeholder="Briefly describe the responsibilities and scope of this department..."
                 />
               </div>
@@ -515,7 +515,7 @@ export default function EditDepartmentPage() {
                         headOfDepartment: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition appearance-none"
+                    className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition appearance-none"
                   >
                     <option value="">Unassigned</option>
                     {users
@@ -593,7 +593,7 @@ export default function EditDepartmentPage() {
                         budgetAllocated: parseInt(e.target.value) || 0,
                       })
                     }
-                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                     placeholder="0"
                     min="0"
                   />
@@ -612,7 +612,7 @@ export default function EditDepartmentPage() {
                     onChange={(e) =>
                       setFormData({ ...formData, location: e.target.value })
                     }
-                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                     placeholder="e.g., Floor 3, Building A"
                   />
                 </div>
@@ -655,7 +655,7 @@ export default function EditDepartmentPage() {
                       workStartTime: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                  className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                 />
               </div>
 
@@ -672,7 +672,7 @@ export default function EditDepartmentPage() {
                       workEndTime: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                  className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                 />
               </div>
 
@@ -689,7 +689,7 @@ export default function EditDepartmentPage() {
                       gracePeriodMinutes: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                   min="0"
                   max="60"
                 />
@@ -708,7 +708,7 @@ export default function EditDepartmentPage() {
                       breakDurationMinutes: parseInt(e.target.value) || 0,
                     })
                   }
-                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition"
+                  className="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition"
                   min="0"
                   max="180"
                 />
@@ -735,7 +735,7 @@ export default function EditDepartmentPage() {
                   })
                 }
                 className={`w-12 h-6 rounded-full transition-colors relative p-0.5 shrink-0 ${
-                  formData.allowRemoteCheckIn ? "bg-indigo-600" : "bg-slate-300"
+                  formData.allowRemoteCheckIn ? "bg-green-600" : "bg-slate-300"
                 }`}
               >
                 <div
@@ -762,7 +762,7 @@ export default function EditDepartmentPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-2.5 bg-linear-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-indigo-200 flex items-center gap-2 disabled:opacity-50"
+              className="px-6 py-2.5 bg-linear-to-r from-green-600 to-violet-600 hover:from-green-700 hover:to-violet-700 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-green-200 flex items-center gap-2 disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 size={16} className="animate-spin" />

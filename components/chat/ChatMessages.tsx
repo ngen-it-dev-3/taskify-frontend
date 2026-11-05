@@ -331,7 +331,7 @@ const MessageBubble = memo(
                 data-message-id={message._id}
                 data-sender-id={message.senderId?._id}
                 className={`group relative flex items-start gap-2.5 my-2 transition-all duration-300 ${isOwn ? "flex-row-reverse" : "flex-row"
-                    } ${hasMention ? "bg-indigo-50/40 -mx-4 px-4 py-1.5 rounded-2xl border-l-4 border-indigo-500" : ""} ${highlight ? "ring-2 ring-indigo-500 ring-offset-2 bg-indigo-50/70 rounded-2xl animate-pulse" : ""
+                    } ${hasMention ? "bg-green-50/40 -mx-4 px-4 py-1.5 rounded-2xl border-l-4 border-green-500" : ""} ${highlight ? "ring-2 ring-green-500 ring-offset-2 bg-green-50/70 rounded-2xl animate-pulse" : ""
                     }`}
             >
                 {/* User Avatar */}
@@ -345,7 +345,7 @@ const MessageBubble = memo(
                         />
                     ) : (
                         <div
-                            className={`w-8 h-8 rounded-full text-white font-medium text-xs flex items-center justify-center ${isOwn ? "bg-indigo-600" : "bg-slate-700"
+                            className={`w-8 h-8 rounded-full text-white font-medium text-xs flex items-center justify-center ${isOwn ? "bg-green-600" : "bg-slate-700"
                                 }`}
                         >
                             {getInitials(isOwn ? "You" : message.senderId?.fullName)}
@@ -360,7 +360,7 @@ const MessageBubble = memo(
                             <span>{message.senderId?.fullName || "Member"}</span>
                             {isPinned && <Pin className="w-3 h-3 text-amber-500 fill-amber-500" />}
                             {hasMention && (
-                                <span className="text-[9px] text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded-full font-semibold">
+                                <span className="text-[9px] text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full font-semibold">
                                     @mentioned
                                 </span>
                             )}
@@ -375,7 +375,7 @@ const MessageBubble = memo(
                         ) : (
                             <div
                                 className={`rounded-2xl px-4 py-2.5 shadow-xs transition-colors ${isOwn
-                                        ? "bg-indigo-600 text-white rounded-tr-xs"
+                                        ? "bg-green-600 text-white rounded-tr-xs"
                                         : "bg-white border border-slate-200 text-slate-800 rounded-tl-xs hover:border-slate-300"
                                     } ${isPinned ? "ring-1 ring-amber-400" : ""}`}
                             >
@@ -391,8 +391,8 @@ const MessageBubble = memo(
                                         type="button"
                                         onClick={() => message.replyTo && onScrollToMessage(message.replyTo._id)}
                                         className={`w-full text-left mb-2 p-2 rounded-xl text-xs border-l-[3px] transition cursor-pointer flex flex-col gap-0.5 ${isOwn
-                                                ? "bg-indigo-700/60 border-indigo-300 text-indigo-100 hover:bg-indigo-700"
-                                                : "bg-slate-50 border-indigo-600 text-slate-600 hover:bg-slate-100"
+                                                ? "bg-green-700/60 border-green-300 text-green-100 hover:bg-green-700"
+                                                : "bg-slate-50 border-green-600 text-slate-600 hover:bg-slate-100"
                                             }`}
                                     >
                                         <div className="flex items-center gap-1 font-semibold text-[11px]">
@@ -430,8 +430,8 @@ const MessageBubble = memo(
                                                                 onMentionClick(matchedMention.userId, matchedMention.name);
                                                             }}
                                                             className={`font-semibold cursor-pointer underline underline-offset-2 px-1 py-0.5 rounded transition ${isOwn
-                                                                    ? "text-indigo-200 hover:bg-indigo-700"
-                                                                    : "text-indigo-600 bg-indigo-50 hover:bg-indigo-100"
+                                                                    ? "text-green-200 hover:bg-green-700"
+                                                                    : "text-green-600 bg-green-50 hover:bg-green-100"
                                                                 }`}
                                                             title={`Jump to ${matchedMention.name}'s messages`}
                                                         >
@@ -500,7 +500,7 @@ const MessageBubble = memo(
                                                 <div
                                                     key={idx}
                                                     className={`flex items-center justify-between gap-3 p-2.5 rounded-xl text-xs transition border ${isOwn
-                                                            ? "bg-indigo-700/50 border-indigo-400/40 text-white hover:bg-indigo-700"
+                                                            ? "bg-green-700/50 border-green-400/40 text-white hover:bg-green-700"
                                                             : "bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100"
                                                         }`}
                                                 >
@@ -563,7 +563,7 @@ const MessageBubble = memo(
                                                 key={emoji}
                                                 type="button"
                                                 onClick={() => onReaction(message._id, emoji)}
-                                                className={`p-1.5 hover:bg-slate-100 rounded-lg text-xs transition cursor-pointer ${isReacted ? "bg-indigo-50 text-indigo-600" : ""
+                                                className={`p-1.5 hover:bg-slate-100 rounded-lg text-xs transition cursor-pointer ${isReacted ? "bg-green-50 text-green-600" : ""
                                                     }`}
                                                 title={isReacted ? `Remove ${emoji}` : `React ${emoji}`}
                                             >
@@ -601,7 +601,7 @@ const MessageBubble = memo(
                                         type="button"
                                         onClick={() => onReaction(message._id, emoji)}
                                         className={`inline-flex items-center gap-1 text-[11px] border px-2 py-0.5 rounded-full transition shadow-2xs cursor-pointer ${isReacted
-                                                ? "bg-indigo-50 border-indigo-300 text-indigo-700 font-medium"
+                                                ? "bg-green-50 border-green-300 text-green-700 font-medium"
                                                 : "bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
                                             }`}
                                     >
@@ -623,7 +623,7 @@ const MessageBubble = memo(
                         {isOwn && !isDeleted && (
                             <span>
                                 {isSeenByRecipient ? (
-                                    <CheckCheck className="w-3.5 h-3.5 text-indigo-500" aria-label="Seen" />
+                                    <CheckCheck className="w-3.5 h-3.5 text-green-500" aria-label="Seen" />
                                 ) : (
                                     <Check className="w-3.5 h-3.5 text-slate-400" aria-label="Delivered" />
                                 )}
@@ -1536,7 +1536,7 @@ export default function ChatMessages({
     if (loading) {
         return (
             <div className="flex-1 flex flex-col items-center justify-center bg-white">
-                <Loader2 className="w-7 h-7 animate-spin text-indigo-600 mb-2" />
+                <Loader2 className="w-7 h-7 animate-spin text-green-600 mb-2" />
                 <span className="text-xs font-medium text-slate-400">Loading conversation...</span>
             </div>
         );
@@ -1557,7 +1557,7 @@ export default function ChatMessages({
                             onClick={onToggleDetails}
                             className="flex items-center gap-3 min-w-0 text-left hover:opacity-90 transition cursor-pointer"
                         >
-                            <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs shrink-0 overflow-hidden shadow-2xs select-none">
+                            <div className="w-9 h-9 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center text-green-600 font-bold text-xs shrink-0 overflow-hidden shadow-2xs select-none">
                                 {(() => {
                                     let avatarUrl = channelAvatar;
 
@@ -1682,7 +1682,7 @@ export default function ChatMessages({
                                     placeholder="Search in conversation..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition"
+                                    className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
                                     autoFocus
                                 />
                             </div>
@@ -1699,7 +1699,7 @@ export default function ChatMessages({
                             <div className="mt-2 max-h-48 overflow-y-auto space-y-1 bg-white border border-slate-200 rounded-xl p-1.5 shadow-md">
                                 {isSearching ? (
                                     <div className="flex items-center justify-center py-3 text-xs text-slate-400 gap-2">
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" />
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin text-green-600" />
                                         Searching...
                                     </div>
                                 ) : searchResults.length === 0 ? (
@@ -1737,8 +1737,8 @@ export default function ChatMessages({
             <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 bg-white">
                 {messages.length === 0 ? (
                     <div className="flex flex-col items-center justify-center h-full text-center py-16">
-                        <div className="w-14 h-14 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-center mb-3">
-                            <MessageSquare className="w-7 h-7 text-indigo-400" />
+                        <div className="w-14 h-14 rounded-2xl bg-green-50/70 border border-green-100 flex items-center justify-center mb-3">
+                            <MessageSquare className="w-7 h-7 text-green-400" />
                         </div>
                         <p className="text-sm font-semibold text-slate-700">No messages yet</p>
                         <p className="text-xs text-slate-400 mt-0.5">Send a message to break the ice</p>
@@ -1787,7 +1787,7 @@ export default function ChatMessages({
                         </div>
                         <div className="bg-slate-100 border border-slate-200/80 rounded-2xl rounded-tl-xs px-4 py-2 text-xs flex items-center gap-1.5 text-slate-600">
                             <span>{typingSummary}</span>
-                            <span className="font-bold tracking-widest text-indigo-600">{typingDots}</span>
+                            <span className="font-bold tracking-widest text-green-600">{typingDots}</span>
                         </div>
                     </div>
                 )}
@@ -1798,11 +1798,11 @@ export default function ChatMessages({
             {/* Modern Input Deck */}
             <footer className="p-3 border-t border-slate-200/80 bg-white/95 backdrop-blur-sm shrink-0 relative z-10">
                 {replyingTo && (
-                    <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl px-3.5 py-2 mb-2.5 flex items-center justify-between text-xs shadow-2xs animate-in fade-in slide-in-from-bottom-1 duration-150">
-                        <div className="min-w-0 pr-3 border-l-2 border-indigo-600 pl-2.5">
+                    <div className="bg-green-50/70 border border-green-100 rounded-2xl px-3.5 py-2 mb-2.5 flex items-center justify-between text-xs shadow-2xs animate-in fade-in slide-in-from-bottom-1 duration-150">
+                        <div className="min-w-0 pr-3 border-l-2 border-green-600 pl-2.5">
                             <div className="flex items-center gap-1.5 leading-tight">
                                 <span className="text-[11px] text-slate-500 font-normal">Replying to</span>
-                                <span className="font-semibold text-indigo-600 truncate">
+                                <span className="font-semibold text-green-600 truncate">
                                     {typeof replyingTo.senderId === "object" && replyingTo.senderId !== null
                                         ? (replyingTo.senderId as any)?.fullName || "User"
                                         : "User"}
@@ -1815,7 +1815,7 @@ export default function ChatMessages({
                         <button
                             type="button"
                             onClick={() => setReplyingTo(null)}
-                            className="p-1 hover:bg-indigo-100/60 text-slate-400 hover:text-slate-600 rounded-lg transition shrink-0 cursor-pointer"
+                            className="p-1 hover:bg-green-100/60 text-slate-400 hover:text-slate-600 rounded-lg transition shrink-0 cursor-pointer"
                             title="Cancel reply"
                         >
                             <X className="w-4 h-4" />
@@ -1873,7 +1873,7 @@ export default function ChatMessages({
                         </div>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-1 border border-slate-200/90 bg-slate-50/60 focus-within:bg-white focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/10 rounded-2xl px-2.5 py-1.5 transition-all shadow-2xs relative">
+                    <div className="flex items-center gap-1 border border-slate-200/90 bg-slate-50/60 focus-within:bg-white focus-within:border-green-500 focus-within:ring-2 focus-within:ring-green-500/10 rounded-2xl px-2.5 py-1.5 transition-all shadow-2xs relative">
                         <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
@@ -1890,7 +1890,7 @@ export default function ChatMessages({
                                 type="button"
                                 onClick={() => setShowEmojiPicker((prev) => !prev)}
                                 className={`p-2 rounded-xl transition cursor-pointer ${showEmojiPicker
-                                        ? "text-indigo-600 bg-indigo-50"
+                                        ? "text-green-600 bg-green-50"
                                         : "text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
                                     }`}
                                 title="Add emoji"
@@ -1942,7 +1942,7 @@ export default function ChatMessages({
                             {showMentionPopup && filteredMentionUsers.length > 0 && (
                                 <div className="absolute bottom-full left-0 mb-3 w-72 max-h-52 overflow-y-auto bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-150">
                                     <div className="sticky top-0 bg-white/95 backdrop-blur-sm px-3.5 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 flex items-center justify-between">
-                                        <span className="flex items-center gap-1.5 text-indigo-600">
+                                        <span className="flex items-center gap-1.5 text-green-600">
                                             <AtSign className="w-3 h-3" /> Mention Member
                                         </span>
                                         <span>{filteredMentionUsers.length}</span>
@@ -1955,7 +1955,7 @@ export default function ChatMessages({
                                                 onClick={() => handleSelectMention(u)}
                                                 onMouseEnter={() => setSelectedMentionIndex(idx)}
                                                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-left transition cursor-pointer ${selectedMentionIndex === idx
-                                                        ? "bg-indigo-50 text-indigo-600 font-semibold"
+                                                        ? "bg-green-50 text-green-600 font-semibold"
                                                         : "text-slate-700 hover:bg-slate-50"
                                                     }`}
                                             >
@@ -1989,7 +1989,7 @@ export default function ChatMessages({
                                 <button
                                     type="button"
                                     onClick={startRecording}
-                                    className="text-slate-400 hover:text-indigo-600 hover:bg-slate-200/50 p-2 rounded-xl transition shrink-0 cursor-pointer"
+                                    className="text-slate-400 hover:text-green-600 hover:bg-slate-200/50 p-2 rounded-xl transition shrink-0 cursor-pointer"
                                     title="Record voice note"
                                 >
                                     <Mic className="w-4 h-4" />
@@ -2002,7 +2002,7 @@ export default function ChatMessages({
                             type="button"
                             onClick={handleSendMessage}
                             disabled={sending || (!inputText.trim() && attachments.length === 0 && !audioBlob)}
-                            className="w-8 h-8 bg-indigo-600 hover:bg-indigo-700 active:scale-95 disabled:hover:bg-indigo-600 disabled:active:scale-100 text-white rounded-xl flex items-center justify-center transition disabled:opacity-30 shrink-0 shadow-xs cursor-pointer"
+                            className="w-8 h-8 bg-green-600 hover:bg-green-700 active:scale-95 disabled:hover:bg-green-600 disabled:active:scale-100 text-white rounded-xl flex items-center justify-center transition disabled:opacity-30 shrink-0 shadow-xs cursor-pointer"
                             title="Send message"
                         >
                             {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <SendHorizontal className="w-4 h-4" />}

@@ -23,25 +23,11 @@ interface Props {
 }
 
 const COUNTRY_CURRENCY_MAP: Record<string, string> = {
-  'Turkey': 'TRY',
-  'Qatar': 'QAR',
-  'Saudi Arabia': 'SAR',
-  'Pakistan': 'PKR',
-  'United Arab Emirates': 'AED',
-  'United States of America': 'USD',
-  'United States': 'USD',
+  'Singapore': 'USD',           // ⭐ সিঙ্গাপুরের জন্য USD
   'United Kingdom': 'GBP',
-  'Singapore': 'SGD',
-  'India': 'INR',
-  'Europe': 'EUR',
   'Bangladesh': 'BDT',
-  'Australia': 'AUD',
-  'Canada': 'CAD',
-  'China': 'CNY',
-  'Malaysia': 'MYR',
-  'Japan': 'JPY',
-  'Kuwait': 'KWD',
-  'Vietnam': 'VND',
+  'Middle East': 'AED',
+  'Portugal': 'EUR',
 };
 
 export default function CostOfGoodTab({

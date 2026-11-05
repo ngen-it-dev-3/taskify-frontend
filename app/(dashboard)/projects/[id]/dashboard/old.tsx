@@ -657,7 +657,7 @@ export default function ProjectDashboardPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading project...</p>
         </div>
       </div>
@@ -673,7 +673,7 @@ export default function ProjectDashboardPage() {
           </div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">Failed to Load</h3>
           <p className="text-gray-600 mb-4">{error || "Project not found"}</p>
-          <button onClick={fetchProjectData} className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">
+          <button onClick={fetchProjectData} className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition">
             <RefreshCw size={16} className="inline mr-2" /> Retry
           </button>
         </div>
@@ -699,15 +699,15 @@ export default function ProjectDashboardPage() {
             <ChevronRight size={14} className="text-gray-300" />
             <span className="text-gray-700 font-medium">{project.name}</span>
             <ChevronRight size={14} className="text-gray-300" />
-            <span className="text-indigo-600 font-medium">Dashboard</span>
+            <span className="text-green-600 font-medium">Dashboard</span>
           </div>
 
           {/* Header */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-50 rounded-xl">
-                  <FolderKanban className="w-6 h-6 text-indigo-600" />
+                <div className="p-3 bg-green-50 rounded-xl">
+                  <FolderKanban className="w-6 h-6 text-green-600" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-gray-800">{project.name}</h1>
@@ -732,7 +732,7 @@ export default function ProjectDashboardPage() {
                   <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
                   {refreshing ? "Updating..." : "Refresh"}
                 </button>
-                <Link href="/projects" className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm flex items-center gap-2">
+                <Link href="/projects" className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm flex items-center gap-2">
                   <ArrowLeft size={14} /> Back
                 </Link>
               </div>
@@ -741,9 +741,9 @@ export default function ProjectDashboardPage() {
 
           {/* Time Range Selector */}
           <div className="flex items-center gap-2 bg-white rounded-xl p-1.5 border border-gray-200 shadow-sm w-fit">
-            <button onClick={() => setSelectedTimeRange("week")} className={`px-4 py-1.5 text-sm rounded-lg transition ${selectedTimeRange === "week" ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>Week</button>
-            <button onClick={() => setSelectedTimeRange("month")} className={`px-4 py-1.5 text-sm rounded-lg transition ${selectedTimeRange === "month" ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>Month</button>
-            <button onClick={() => setSelectedTimeRange("all")} className={`px-4 py-1.5 text-sm rounded-lg transition ${selectedTimeRange === "all" ? "bg-indigo-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>All Time</button>
+            <button onClick={() => setSelectedTimeRange("week")} className={`px-4 py-1.5 text-sm rounded-lg transition ${selectedTimeRange === "week" ? "bg-green-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>Week</button>
+            <button onClick={() => setSelectedTimeRange("month")} className={`px-4 py-1.5 text-sm rounded-lg transition ${selectedTimeRange === "month" ? "bg-green-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>Month</button>
+            <button onClick={() => setSelectedTimeRange("all")} className={`px-4 py-1.5 text-sm rounded-lg transition ${selectedTimeRange === "all" ? "bg-green-600 text-white shadow-sm" : "text-gray-600 hover:bg-gray-100"}`}>All Time</button>
           </div>
 
           {/* Stats Cards */}
@@ -769,7 +769,7 @@ export default function ProjectDashboardPage() {
               <p className="text-xs text-gray-500">Overdue</p>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-              <p className="text-2xl font-bold text-indigo-600">{contributors.length}</p>
+              <p className="text-2xl font-bold text-green-600">{contributors.length}</p>
               <p className="text-xs text-gray-500">Contributors</p>
             </div>
             <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
@@ -783,31 +783,31 @@ export default function ProjectDashboardPage() {
             <div className="flex border-b border-gray-200 bg-gray-50 overflow-x-auto">
               <button
                 onClick={() => setActiveTab("overview")}
-                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "overview" ? "text-indigo-600" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "overview" ? "text-green-600" : "text-gray-500 hover:text-gray-700"}`}
               >
                 <span className="flex items-center gap-2"><BarChart3 size={14} /> Overview</span>
-                {activeTab === "overview" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
+                {activeTab === "overview" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />}
               </button>
               <button
                 onClick={() => setActiveTab("tasks")}
-                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "tasks" ? "text-indigo-600" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "tasks" ? "text-green-600" : "text-gray-500 hover:text-gray-700"}`}
               >
                 <span className="flex items-center gap-2"><ListTodo size={14} /> Tasks ({filteredTaskList.length})</span>
-                {activeTab === "tasks" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
+                {activeTab === "tasks" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />}
               </button>
               <button
                 onClick={() => setActiveTab("analytics")}
-                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "analytics" ? "text-indigo-600" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "analytics" ? "text-green-600" : "text-gray-500 hover:text-gray-700"}`}
               >
                 <span className="flex items-center gap-2"><TrendingUp size={14} /> Analytics</span>
-                {activeTab === "analytics" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
+                {activeTab === "analytics" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />}
               </button>
               <button
                 onClick={() => setActiveTab("contributions")}
-                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "contributions" ? "text-indigo-600" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-3 text-sm font-medium transition relative whitespace-nowrap ${activeTab === "contributions" ? "text-green-600" : "text-gray-500 hover:text-gray-700"}`}
               >
                 <span className="flex items-center gap-2"><Users size={14} /> Contributors ({contributors.length})</span>
-                {activeTab === "contributions" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-500" />}
+                {activeTab === "contributions" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-green-500" />}
               </button>
             </div>
 
@@ -822,7 +822,7 @@ export default function ProjectDashboardPage() {
                   <div className="border border-gray-200 rounded-xl overflow-hidden">
                     <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                       <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                        <LineChart size={18} className="text-indigo-500" /> Burndown — Remaining Tasks
+                        <LineChart size={18} className="text-green-500" /> Burndown — Remaining Tasks
                       </h3>
                       {burndownAccuracy && (
                         <div className="text-right">
@@ -950,13 +950,13 @@ export default function ProjectDashboardPage() {
                         placeholder="Search tasks..."
                         value={taskSearch}
                         onChange={(e) => setTaskSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                        className="w-full pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                       />
                     </div>
                     <select
                       value={taskStatusFilter}
                       onChange={(e) => setTaskStatusFilter(e.target.value)}
-                      className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                     >
                       <option value="all">All Status</option>
                       <option value="pending">Pending</option>
@@ -969,7 +969,7 @@ export default function ProjectDashboardPage() {
                     <select
                       value={taskPriorityFilter}
                       onChange={(e) => setTaskPriorityFilter(e.target.value)}
-                      className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none"
                     >
                       <option value="all">All Priority</option>
                       <option value="low">Low</option>
@@ -993,7 +993,7 @@ export default function ProjectDashboardPage() {
                             setTaskSortOrder("desc");
                           }
                         }}
-                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "createdAt" ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "createdAt" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                       >
                         Date {taskSortBy === "createdAt" && (taskSortOrder === "asc" ? "↑" : "↓")}
                       </button>
@@ -1006,7 +1006,7 @@ export default function ProjectDashboardPage() {
                             setTaskSortOrder("asc");
                           }
                         }}
-                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "title" ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "title" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                       >
                         Title {taskSortBy === "title" && (taskSortOrder === "asc" ? "↑" : "↓")}
                       </button>
@@ -1019,7 +1019,7 @@ export default function ProjectDashboardPage() {
                             setTaskSortOrder("asc");
                           }
                         }}
-                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "status" ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "status" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                       >
                         Status {taskSortBy === "status" && (taskSortOrder === "asc" ? "↑" : "↓")}
                       </button>
@@ -1032,7 +1032,7 @@ export default function ProjectDashboardPage() {
                             setTaskSortOrder("asc");
                           }
                         }}
-                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "dueDate" ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                        className={`px-2 py-1 text-xs rounded-md transition ${taskSortBy === "dueDate" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                       >
                         Due {taskSortBy === "dueDate" && (taskSortOrder === "asc" ? "↑" : "↓")}
                       </button>
@@ -1143,7 +1143,7 @@ export default function ProjectDashboardPage() {
                             <button
                               key={pageNum}
                               onClick={() => setTaskPage(pageNum)}
-                              className={`px-3 py-1 rounded-md text-sm transition ${taskPage === pageNum ? "bg-indigo-600 text-white" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}
+                              className={`px-3 py-1 rounded-md text-sm transition ${taskPage === pageNum ? "bg-green-600 text-white" : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"}`}
                             >
                               {pageNum}
                             </button>
@@ -1172,7 +1172,7 @@ export default function ProjectDashboardPage() {
                     <div className="border border-gray-200 rounded-xl overflow-hidden">
                       <div className="p-4 border-b border-gray-100 bg-gray-50">
                         <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                          <PieChart size={18} className="text-indigo-500" /> Task Status Distribution
+                          <PieChart size={18} className="text-green-500" /> Task Status Distribution
                         </h3>
                       </div>
                       <div className="p-4">
@@ -1202,7 +1202,7 @@ export default function ProjectDashboardPage() {
                     <div className="border border-gray-200 rounded-xl overflow-hidden">
                       <div className="p-4 border-b border-gray-100 bg-gray-50">
                         <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                          <BarChart3 size={18} className="text-indigo-500" /> Priority Distribution
+                          <BarChart3 size={18} className="text-green-500" /> Priority Distribution
                         </h3>
                       </div>
                       <div className="p-4">
@@ -1239,9 +1239,9 @@ export default function ProjectDashboardPage() {
                 <div className="space-y-4">
                   {/* Stats */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-linear-to-br from-indigo-50 to-indigo-100/50 rounded-xl p-4 border border-indigo-200/50">
+                    <div className="bg-linear-to-br from-green-50 to-green-100/50 rounded-xl p-4 border border-green-200/50">
                       <p className="text-xs text-gray-500 font-medium">Contributors</p>
-                      <p className="text-2xl font-bold text-indigo-700">{contributors.length}</p>
+                      <p className="text-2xl font-bold text-green-700">{contributors.length}</p>
                     </div>
                     <div className="bg-linear-to-br from-emerald-50 to-emerald-100/50 rounded-xl p-4 border border-emerald-200/50">
                       <p className="text-xs text-gray-500 font-medium">Tasks Completed</p>
@@ -1267,7 +1267,7 @@ export default function ProjectDashboardPage() {
                           placeholder="Search contributors..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none w-48"
+                          className="pl-9 pr-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none w-48"
                         />
                       </div>
                       <div className="flex gap-1">
@@ -1275,7 +1275,7 @@ export default function ProjectDashboardPage() {
                           <button
                             key={key}
                             onClick={() => setSortBy(key as any)}
-                            className={`px-2 py-1 text-xs rounded-md transition ${sortBy === key ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
+                            className={`px-2 py-1 text-xs rounded-md transition ${sortBy === key ? "bg-green-600 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
                           >
                             {key.charAt(0).toUpperCase() + key.slice(1)}
                           </button>
@@ -1310,7 +1310,7 @@ export default function ProjectDashboardPage() {
                               <tr key={c.userId} className="hover:bg-gray-50 transition">
                                 <td className="px-4 py-3">
                                   <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                                    <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs font-bold">
                                       {c.fullName.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
@@ -1326,7 +1326,7 @@ export default function ProjectDashboardPage() {
                                     {c.completionRate}%
                                   </span>
                                   <div className="w-16 mx-auto mt-1 bg-gray-200 rounded-full h-1">
-                                    <div className="h-1 rounded-full bg-indigo-500" style={{ width: `${c.completionRate}%` }} />
+                                    <div className="h-1 rounded-full bg-green-500" style={{ width: `${c.completionRate}%` }} />
                                   </div>
                                 </td>
                                 <td className="text-center text-sm text-gray-600">{c.hoursLogged}h</td>

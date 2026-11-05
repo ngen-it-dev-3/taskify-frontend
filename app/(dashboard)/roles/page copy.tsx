@@ -339,7 +339,7 @@ export default function RolesPage() {
       "Line Manager": "text-green-600",
       Employee: "text-gray-500",
     };
-    return colors[roleName] || "text-indigo-600";
+    return colors[roleName] || "text-green-600";
   };
 
   const getRoleBgColor = (roleName: string) => {
@@ -352,7 +352,7 @@ export default function RolesPage() {
       "Line Manager": "bg-green-50",
       Employee: "bg-gray-50",
     };
-    return colors[roleName] || "bg-indigo-50";
+    return colors[roleName] || "bg-green-50";
   };
 
   const getRoleBorderColor = (roleName: string) => {
@@ -365,7 +365,7 @@ export default function RolesPage() {
       "Line Manager": "border-green-200",
       Employee: "border-gray-200",
     };
-    return colors[roleName] || "border-indigo-200";
+    return colors[roleName] || "border-green-200";
   };
 
   if (!canManageRoles) return null;
@@ -374,7 +374,7 @@ export default function RolesPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+          <Loader2 className="w-10 h-10 animate-spin text-green-600" />
           <p className="text-gray-500 text-sm">Loading roles...</p>
         </div>
       </div>
@@ -393,13 +393,13 @@ export default function RolesPage() {
           >
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-9 h-9 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
+                <div className="w-9 h-9 bg-linear-to-br from-green-500 to-purple-600 rounded-xl flex items-center justify-center shadow-md">
                   <Shield className="w-4 h-4 text-white" />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                   Role Management
                 </h1>
-                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-700 rounded-full border border-indigo-200">
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-green-50 text-green-700 rounded-full border border-green-200">
                   {stats.totalRoles}
                 </span>
               </div>
@@ -479,7 +479,7 @@ export default function RolesPage() {
               placeholder="Search roles by name or code..."
               value={searchRoleTerm}
               onChange={(e) => setSearchRoleTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition shadow-sm"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition shadow-sm"
             />
           </motion.div>
 
@@ -500,7 +500,7 @@ export default function RolesPage() {
                   onClick={() => setSelectedRole(role._id)}
                   className={`cursor-pointer rounded-2xl border transition-all duration-300 ${
                     selectedRole === role._id
-                      ? `bg-white border-indigo-300 shadow-lg shadow-indigo-100 scale-[1.02]`
+                      ? `bg-white border-green-300 shadow-lg shadow-green-100 scale-[1.02]`
                       : "bg-white border-gray-200 hover:border-gray-300 hover:shadow-md hover:scale-[1.01]"
                   } overflow-hidden group shadow-sm`}
                 >
@@ -564,7 +564,7 @@ export default function RolesPage() {
                         size={16}
                         className={`text-gray-400 transition-transform duration-300 ${
                           selectedRole === role._id
-                            ? "translate-x-1 text-indigo-600"
+                            ? "translate-x-1 text-green-600"
                             : "group-hover:translate-x-1"
                         }`}
                       />
@@ -663,7 +663,7 @@ export default function RolesPage() {
                                 setEditingRole(role);
                                 setShowEditModal(true);
                               }}
-                              className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                              className="p-1 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition"
                             >
                               <Edit2 size={14} />
                             </button>
@@ -736,7 +736,7 @@ export default function RolesPage() {
 
               <div className="p-6">
                 <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <Users size={14} className="text-indigo-500" />
+                  <Users size={14} className="text-green-500" />
                   Users with this role ({selectedRoleData.userCount || 0})
                 </h3>
                 <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
@@ -747,7 +747,7 @@ export default function RolesPage() {
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition group border border-gray-100"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm">
+                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-green-500 to-purple-600 flex items-center justify-center shadow-sm">
                           <span className="text-white text-xs font-bold">
                             {user.fullName.charAt(0).toUpperCase()}
                           </span>
@@ -760,7 +760,7 @@ export default function RolesPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-200">
                           {getUserRoleNames(user)}
                         </span>
                         <Eye
@@ -1024,7 +1024,7 @@ export default function RolesPage() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="w-full max-w-md bg-white rounded-2xl border border-gray-200 shadow-2xl overflow-hidden"
             >
-              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-indigo-50 to-purple-50">
+              <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-linear-to-r from-green-50 to-purple-50">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800">
                     Edit Role
@@ -1051,7 +1051,7 @@ export default function RolesPage() {
                     onChange={(e) =>
                       setEditingRole({ ...editingRole, name: e.target.value })
                     }
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none transition"
                   />
                 </div>
                 <div>
@@ -1067,7 +1067,7 @@ export default function RolesPage() {
                       })
                     }
                     rows={3}
-                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none resize-none transition"
+                    className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm focus:border-green-400 focus:ring-2 focus:ring-green-100 outline-none resize-none transition"
                   />
                 </div>
                 <div>
@@ -1085,11 +1085,11 @@ export default function RolesPage() {
                         level: parseInt(e.target.value),
                       })
                     }
-                    className="w-full accent-indigo-500"
+                    className="w-full accent-green-500"
                   />
                   <div className="flex justify-between text-xs text-gray-500 mt-1">
                     <span>Low Access</span>
-                    <span className="text-indigo-600 font-medium">
+                    <span className="text-green-600 font-medium">
                       Level {editingRole.level}
                     </span>
                     <span>Full Access</span>
@@ -1098,7 +1098,7 @@ export default function RolesPage() {
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={handleUpdateRole}
-                    className="flex-1 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm"
+                    className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm"
                   >
                     Save Changes
                   </button>

@@ -1,3 +1,4 @@
+// components/CRM/rfq/RfqListItem.tsx
 'use client';
 
 import React from 'react';
@@ -35,10 +36,10 @@ export default function RfqListItem({
         rawDays: fallbackDays
       };
     }
-    
+
     const createdDate = new Date(rfq.createdAt);
     const now = new Date();
-    
+
     const diffTime = now.getTime() - createdDate.getTime();
     if (diffTime < 0) return { display: 'Just now', rawDays: 0 }; // Safety fallback
 
@@ -47,15 +48,12 @@ export default function RfqListItem({
     const diffMins = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
 
     let display = '';
-    
+
     if (diffDays > 0) {
-      // Show e.g. "2d 5h"
       display = `${diffDays}d ${diffHours}h`;
     } else if (diffHours > 0) {
-      // Show e.g. "5h 30m"
       display = `${diffHours}h ${diffMins}m`;
     } else if (diffMins > 0) {
-      // Show e.g. "15m"
       display = `${diffMins}m`;
     } else {
       display = 'Just now';
@@ -77,8 +75,8 @@ export default function RfqListItem({
     <div
       onClick={onSelect}
       className={`p-4 transition cursor-pointer border-l-3 ${isSelected
-          ? 'bg-[#FAF6EE] border-[#A06126]'
-          : 'hover:bg-[#FDFBF7] border-transparent'
+        ? 'bg-[#FAF6EE] border-[#A06126]'
+        : 'hover:bg-[#FDFBF7] border-transparent'
         }`}
     >
       <div className="flex justify-between items-start">
@@ -94,24 +92,24 @@ export default function RfqListItem({
 
       <div className="text-[11.5px] text-slate-500 mt-1 mb-2.5">
         RFQ# {rfq.rfqNumber} | {rfq.country} · {rfq.date}, {rfq.time}
-        
-        <span 
-          className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium ${
-            rfq.source === 'manual' 
-              ? 'bg-amber-50 text-amber-700' 
+
+        <span
+          className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium ${rfq.source === 'manual'
+              ? 'bg-amber-50 text-amber-700'
               : 'bg-blue-50 text-blue-700'
-          }`}
+            }`}
         >
           {rfq.source === 'manual' ? '✍️ Manual' : '🌐 Web RFQ'}
         </span>
       </div>
 
-      <div className="flex gap-2 justify-end pt-1">
+      <div className="flex gap-2 justify-end items-center pt-1 min-h-[28px]">
         {!hideActions ? (
           <>
-            {isAssigned ? (
+            {/* Assigned Badge (Only shows if assigned) */}
+            {isAssigned && (
               <div
-                className="px-3 py-1 rounded border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-semibold flex items-center gap-1.5 max-w-[60%]"
+                className="px-2.5 py-1 rounded border border-emerald-200 bg-emerald-50 text-emerald-700 text-[11px] font-semibold flex items-center gap-1.5 max-w-[60%] mr-auto"
                 title={`Assigned to ${assignedTo}`}
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
@@ -120,35 +118,47 @@ export default function RfqListItem({
                   {assignedTo}
                 </span>
               </div>
-            ) : (
+            )}
+
+            {/* Assign Button (Only shows if NOT assigned) */}
+            {!isAssigned && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onAssign();
                 }}
-                className="px-3 py-1 rounded border border-[#E2DBD1] hover:bg-white text-slate-700 text-xs font-medium transition"
+                className="px-3 py-1 rounded border border-[#E2DBD1] hover:bg-white text-slate-700 text-[11px] font-medium transition"
               >
                 Assign
               </button>
             )}
 
+            {/* Quote Button (Disabled if not assigned) */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                if (!isAssigned) {
+                  onAssign(); // Optional: Open Assign modal if they click without assigning
+                  return;
+                }
                 onQuote();
               }}
-              className="px-3.5 py-1 rounded bg-[#0F2D4A] hover:bg-[#1C3760] text-white text-xs font-semibold shadow-2xs transition"
+              disabled={!isAssigned}
+              title={!isAssigned ? "Please assign this RFQ first" : "Create Quote"}
+              className={`px-3.5 py-1 rounded text-[11px] font-semibold transition ${!isAssigned
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                  : 'bg-[#0F2D4A] hover:bg-[#1C3760] text-white shadow-2xs cursor-pointer'
+                }`}
             >
-              Quote
+              {!isAssigned ? 'Assign First' : 'Quote'}
             </button>
           </>
         ) : (
           <span
-            className={`px-2.5 py-1 rounded text-[10px] font-semibold border ${
-              rfq.stage === 'lost'
+            className={`px-2.5 py-1 rounded text-[10px] font-semibold border ${rfq.stage === 'lost'
                 ? 'bg-rose-50 text-rose-600 border-rose-200'
                 : 'bg-slate-100 text-slate-500 border-slate-200'
-            }`}
+              }`}
           >
             {rfq.stage === 'lost' ? '🔒 Lost — no actions' : '🔒 Already Quoted'}
           </span>
