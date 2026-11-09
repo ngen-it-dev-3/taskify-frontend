@@ -1,0 +1,1265 @@
+// app/(dashboard)/kpi/trends/page.tsx
+"use client";
+
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import {
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Download,
+  RefreshCw,
+  Loader2,
+  ChevronRight,
+  Home,
+  Search,
+  Target,
+  LineChart,
+  X,
+  Minus,
+  AlertCircle,
+} from "lucide-react";
+import api from "@/lib/axios";
+import toast from "react-hot-toast";
+import Link from "next/link";
+import { calculateKPIFromTasks } from "@/lib/kpi-utils";
+import {
+  LineChart as RechartsLineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
+
+// ============================================================
+// TYPES
+// ============================================================
+interface EmployeeTrend {
+  userId: string;
+  fullName: string;
+  email: string;
+  employeeId: string;
+  department: string;
+  scores: {
+    month: string;
+    monthIndex: number;
+    year: number;
+    score: number;
+    level: string;
+  }[];
+  averageScore: number;
+  trend: "up" | "down" | "stable";
+  trendPercentage: number;
+  bestMonth: { month: string; score: number };
+  worstMonth: { month: string; score: number };
+  consistencyScore: number;
+}
+
+interface TrendDataPoint {
+  month: string;
+  monthIndex: number;
+  year: number;
+  label: string;
+  [key: string]: any;
+}
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+const YEARS = [2023, 2024, 2025, 2026, 2027];
+
+const CHART_COLORS = [
+  "#6366f1", "#8b5cf6", "#ec4899", "#f59e0b",
+  "#10b981", "#3b82f6", "#ef4444", "#14b8a6",
+  "#a855f7", "#f472b6", "#34d399", "#60a5fa",
+  "#fbbf24", "#fb7185", "#4ade80", "#22d3ee",
+  "#c084fc", "#facc15", "#f87171", "#38bdf8",
+  "#818cf8", "#e879f9", "#5eead4", "#fca5a5",
+  "#93c5fd", "#fdba74", "#a3e635", "#67e8f9",
+  "#d8b4fe", "#fda4af",
+];
+
+/** Maximum employees that can be compared at once */
+const MAX_SELECTED = 30;
+
+// ============================================================
+// HELPERS
+// ============================================================
+const getInitials = (name: string): string => {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+};
+
+// ============================================================
+// CUSTOM TOOLTIP — portal-based, self-positioning, no clipping
+// ============================================================
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: any[];
+  label?: string;
+  coordinate?: { x: number; y: number };
+  maxVisible?: number;
+  chartRef?: React.RefObject<HTMLDivElement | null>;
+}
+
+function LineChartTooltip({
+  active,
+  payload,
+  label,
+  coordinate,
+  maxVisible = 8,
+  chartRef,
+}: CustomTooltipProps) {
+  const [mounted, setMounted] = useState(false);
+  const [position, setPosition] = useState<{
+    top: number;
+    left: number;
+    maxHeight: number;
+  } | null>(null);
+
+  const listRef = useRef<HTMLUListElement>(null);
+
+  /* Client-only mount guard (portals need document) */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  /* Compute position whenever the cursor moves */
+  useEffect(() => {
+    if (!active || !payload || !payload.length) return;
+    if (!coordinate || !chartRef?.current) return;
+    if (typeof window === "undefined") return;
+
+    const chartBox = chartRef.current.getBoundingClientRect();
+
+    const itemCount = Math.min(payload.length, maxVisible);
+    const estimatedHeight = Math.min(400, 70 + itemCount * 22);
+    const tooltipWidth = 280;
+
+    const cursorViewportX = chartBox.left + coordinate.x;
+    const cursorViewportY = chartBox.top + coordinate.y;
+
+    const spaceBelow = window.innerHeight - cursorViewportY - 16;
+    const spaceAbove = cursorViewportY - 16;
+
+    let top: number;
+    let maxHeight: number;
+
+    if (spaceBelow >= estimatedHeight || spaceBelow >= spaceAbove) {
+      top = cursorViewportY + 12;
+      maxHeight = Math.min(estimatedHeight, spaceBelow);
+    } else {
+      maxHeight = Math.min(estimatedHeight, spaceAbove);
+      top = cursorViewportY - maxHeight - 12;
+    }
+
+    let left = cursorViewportX + 12;
+    if (left + tooltipWidth > window.innerWidth - 12) {
+      left = cursorViewportX - tooltipWidth - 12;
+    }
+    if (left < 12) left = 12;
+
+    setPosition({ top, left, maxHeight: Math.max(140, maxHeight) });
+  }, [active, payload, coordinate, chartRef, maxVisible]);
+
+  /* Custom wheel handling — Recharts blocks events on its own wrapper,
+     and even here we need passive:false to call preventDefault() */
+  useEffect(() => {
+    if (!active || !listRef.current) return;
+    const el = listRef.current;
+
+    const onWheel = (e: WheelEvent) => {
+      const atTop = el.scrollTop <= 0;
+      const atBottom =
+        el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+
+      if ((e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      el.scrollTop += e.deltaY;
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [active, payload]);
+
+  if (!mounted || !active || !payload || !payload.length || !position) {
+    return null;
+  }
+
+  const sorted = [...payload]
+    .filter((p) => p.dataKey && p.value !== undefined)
+    .sort((a, b) => Number(b.value ?? 0) - Number(a.value ?? 0));
+
+  const hasOverflow = sorted.length > maxVisible;
+  const visible = hasOverflow ? sorted.slice(0, maxVisible) : sorted;
+
+  return createPortal(
+    <div
+      className="pointer-events-auto fixed z-[9999] rounded-xl border border-slate-200 bg-white shadow-2xl"
+      style={{
+        top: position.top,
+        left: position.left,
+        maxHeight: position.maxHeight,
+        width: 280,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        boxSizing: "border-box",
+      }}
+      onMouseEnter={(e) => e.stopPropagation()}
+      onMouseMove={(e) => e.stopPropagation()}
+    >
+      {/* Header */}
+      <div className="shrink-0 border-b border-slate-100 px-3 py-2">
+        <p className="text-[11px] font-bold text-slate-900">{label}</p>
+        <p className="mt-0.5 text-[10px] text-slate-400">
+          {sorted.length} {sorted.length === 1 ? "employee" : "employees"}
+        </p>
+      </div>
+
+      {/* Scrollable list */}
+      <ul
+        ref={listRef}
+        className="flex-1 overflow-x-hidden overflow-y-auto px-3 py-2"
+        style={{
+          pointerEvents: "auto",
+          overscrollBehavior: "contain",
+          boxSizing: "border-box",
+          scrollbarGutter: "stable",
+        }}
+      >
+        {visible.map((entry, i) => (
+          <li
+            key={i}
+            className="grid items-center gap-2 py-0.5 text-[11px]"
+            style={{ gridTemplateColumns: "1fr auto" }}
+          >
+            <span className="flex min-w-0 items-center gap-1.5">
+              <span
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="truncate text-slate-700 max-w-[160px]">
+                {entry.name}
+              </span>
+            </span>
+            <span
+              className="shrink-0 font-mono font-semibold tabular-nums"
+              style={{ color: entry.color }}
+            >
+              {Number(entry.value ?? 0).toFixed(1)}%
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      {/* Footer when truncated */}
+      {hasOverflow && (
+        <div className="shrink-0 border-t border-slate-100 bg-slate-50/60 px-3 py-1.5 text-center text-[10px] text-slate-400">
+          Scroll to see {sorted.length - maxVisible} more
+        </div>
+      )}
+    </div>,
+    document.body,
+  );
+}
+
+// ============================================================
+// PAGE
+// ============================================================
+export default function KPITrendsPage() {
+  const { hasRole } = useAuth();
+  const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [employeeTrends, setEmployeeTrends] = useState<EmployeeTrend[]>([]);
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [departmentFilter, setDepartmentFilter] = useState("all");
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [monthsToShow, setMonthsToShow] = useState(6);
+  const [showAllEmployees, setShowAllEmployees] = useState(false);
+  const [sortBy, setSortBy] = useState<"name" | "average" | "trend">("average");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [initialSelectionDone, setInitialSelectionDone] = useState(false);
+
+  const isFetching = useRef(false);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+
+  const canManage = hasRole([
+    "super_admin",
+    "admin",
+    "hr_manager",
+    "dept_manager",
+    "project_manager",
+    "line_manager",
+    "employee",
+  ]);
+
+  // ============================================================
+  // GET LAST MONTHS
+  // ============================================================
+  const getLastMonths = useCallback(() => {
+    const result = [];
+    const now = new Date();
+    const baseMonth =
+      selectedYear === now.getFullYear() ? now.getMonth() : 11;
+
+    for (let i = monthsToShow - 1; i >= 0; i--) {
+      const date = new Date(selectedYear, baseMonth - i, 1);
+      result.push({
+        month: MONTHS[date.getMonth()],
+        monthIndex: date.getMonth(),
+        year: date.getFullYear(),
+      });
+    }
+    return result;
+  }, [monthsToShow, selectedYear]);
+
+  // ============================================================
+  // FETCH DATA
+  // ============================================================
+  const fetchTrendData = useCallback(async () => {
+    if (isFetching.current) return;
+
+    try {
+      isFetching.current = true;
+      setLoading(true);
+      setError(null);
+
+      const usersRes = await api.get("/users");
+      const usersData: any[] = usersRes.data?.data || [];
+
+      console.log(`📊 Total users: ${usersData.length}`);
+
+      const taskPromises = usersData.map(async (user) => {
+        try {
+          const tasksRes = await api.get("/tasks", {
+            params: {
+              assignedTo: user._id,
+              limit: 10000,
+            },
+          });
+          return tasksRes.data?.data || [];
+        } catch {
+          return [];
+        }
+      });
+
+      const results = await Promise.all(taskPromises);
+
+      const uniqueTasksMap = new Map();
+      results.forEach((tasks) => {
+        tasks.forEach((task: any) => {
+          if (!uniqueTasksMap.has(task._id)) {
+            uniqueTasksMap.set(task._id, task);
+          }
+        });
+      });
+      const allTasksData = Array.from(uniqueTasksMap.values());
+
+      console.log(
+        `📊 Fetched ${allTasksData.length} unique tasks for ${usersData.length} users`,
+      );
+
+      const lastMonths = [];
+      const now = new Date();
+      const baseMonth =
+        selectedYear === now.getFullYear() ? now.getMonth() : 11;
+
+      for (let i = monthsToShow - 1; i >= 0; i--) {
+        const date = new Date(selectedYear, baseMonth - i, 1);
+        lastMonths.push({
+          month: MONTHS[date.getMonth()],
+          monthIndex: date.getMonth(),
+          year: date.getFullYear(),
+        });
+      }
+
+      const processedTrends: EmployeeTrend[] = [];
+
+      for (const user of usersData) {
+        const userTrends: {
+          month: string;
+          monthIndex: number;
+          year: number;
+          score: number;
+          level: string;
+        }[] = [];
+
+        const userTasks = allTasksData.filter((task: any) => {
+          let taskAssignedTo = task.assignedTo;
+          if (
+            taskAssignedTo &&
+            typeof taskAssignedTo === "object" &&
+            taskAssignedTo._id
+          ) {
+            taskAssignedTo = taskAssignedTo._id;
+          }
+          return taskAssignedTo === user._id;
+        });
+
+        for (const lm of lastMonths) {
+          const monthTasks = userTasks.filter((task: any) => {
+            const taskDate = new Date(task.createdAt);
+            return (
+              taskDate.getMonth() === lm.monthIndex &&
+              taskDate.getFullYear() === lm.year
+            );
+          });
+
+          const result = calculateKPIFromTasks(
+            monthTasks,
+            user,
+            lm.month,
+            lm.year,
+            usersData,
+          );
+
+          userTrends.push({
+            month: lm.month,
+            monthIndex: lm.monthIndex,
+            year: lm.year,
+            score: result.totalScore,
+            level: result.performanceLevel,
+          });
+        }
+
+        const deptName =
+          user.department?.name ||
+          user.departmentId?.name ||
+          "Unassigned";
+
+        const activeScores = userTrends.filter((s) => s.score > 0);
+        const avg =
+          activeScores.length > 0
+            ? activeScores.reduce((sum, s) => sum + s.score, 0) /
+              activeScores.length
+            : 0;
+
+        let trend: "up" | "down" | "stable" = "stable";
+        let trendPercentage = 0;
+        if (activeScores.length >= 2) {
+          const first = activeScores[0].score;
+          const last = activeScores[activeScores.length - 1].score;
+          const diff = last - first;
+          trendPercentage = first > 0 ? Math.round((diff / first) * 100) : 0;
+          if (diff > 2) trend = "up";
+          else if (diff < -2) trend = "down";
+        }
+
+        let bestMonth = { month: "None", score: 0 };
+        let worstMonth = { month: "None", score: 100 };
+        activeScores.forEach((s) => {
+          if (s.score > bestMonth.score)
+            bestMonth = { month: s.month, score: s.score };
+          if (s.score < worstMonth.score)
+            worstMonth = { month: s.month, score: s.score };
+        });
+
+        const variance =
+          activeScores.length > 1
+            ? activeScores.reduce(
+                (sum, s) => sum + Math.pow(s.score - avg, 2),
+                0,
+              ) / activeScores.length
+            : 0;
+
+        processedTrends.push({
+          userId: user._id,
+          fullName: user.fullName || "Unknown",
+          email: user.email || "",
+          employeeId: user.employeeId || "N/A",
+          department: deptName,
+          scores: userTrends,
+          averageScore: Math.round(avg),
+          trend,
+          trendPercentage,
+          bestMonth:
+            bestMonth.score > 0 ? bestMonth : { month: "None", score: 0 },
+          worstMonth:
+            worstMonth.score < 100
+              ? worstMonth
+              : { month: "None", score: 0 },
+          consistencyScore: Math.round(Math.sqrt(variance) * 10) / 10,
+        });
+      }
+
+      setEmployeeTrends(processedTrends);
+      console.log(`✅ Loaded ${processedTrends.length} employees`);
+
+      if (!initialSelectionDone && processedTrends.length > 0) {
+        const topPerformers = [...processedTrends]
+          .filter((e) => e.averageScore > 0)
+          .sort((a, b) => b.averageScore - a.averageScore)
+          .slice(0, Math.min(5, MAX_SELECTED));
+
+        if (topPerformers.length > 0) {
+          setSelectedEmployees(topPerformers.map((e) => e.userId));
+        } else {
+          setSelectedEmployees(
+            processedTrends
+              .slice(0, Math.min(3, MAX_SELECTED))
+              .map((e) => e.userId),
+          );
+        }
+        setInitialSelectionDone(true);
+      }
+    } catch (err: any) {
+      console.error("Error fetching trend data:", err);
+      setError(
+        err.response?.data?.message || "Failed to load trend analytics.",
+      );
+      toast.error("Failed to load performance trends");
+    } finally {
+      setLoading(false);
+      isFetching.current = false;
+    }
+  }, [monthsToShow, selectedYear, initialSelectionDone]);
+
+  useEffect(() => {
+    if (canManage) {
+      fetchTrendData();
+    }
+  }, [canManage, fetchTrendData]);
+
+  // ============================================================
+  // MEMOIZED DATA
+  // ============================================================
+  const filteredEmployees = useMemo(() => {
+    let filtered = [...employeeTrends];
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (e) =>
+          e.fullName.toLowerCase().includes(term) ||
+          e.email.toLowerCase().includes(term) ||
+          e.employeeId.toLowerCase().includes(term),
+      );
+    }
+
+    if (departmentFilter !== "all") {
+      filtered = filtered.filter((e) => e.department === departmentFilter);
+    }
+
+    filtered.sort((a, b) => {
+      let aVal: any = a.averageScore;
+      let bVal: any = b.averageScore;
+
+      if (sortBy === "name") {
+        aVal = a.fullName;
+        bVal = b.fullName;
+      } else if (sortBy === "trend") {
+        aVal = a.trendPercentage;
+        bVal = b.trendPercentage;
+      }
+
+      if (typeof aVal === "string") {
+        return sortOrder === "asc"
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+    });
+
+    return showAllEmployees ? filtered : filtered.slice(0, 25);
+  }, [
+    employeeTrends,
+    searchTerm,
+    departmentFilter,
+    sortBy,
+    sortOrder,
+    showAllEmployees,
+  ]);
+
+  const departmentsList = useMemo(() => {
+    const depts = new Set(employeeTrends.map((e) => e.department));
+    return Array.from(depts).filter(Boolean);
+  }, [employeeTrends]);
+
+  const chartData = useMemo(() => {
+    const targetMonths = getLastMonths();
+
+    return targetMonths.map((m) => {
+      const dataPoint: TrendDataPoint = {
+        month: m.month,
+        monthIndex: m.monthIndex,
+        year: m.year,
+        label: `${m.month.slice(0, 3)} ${m.year}`,
+      };
+
+      selectedEmployees.forEach((uId) => {
+        const emp = employeeTrends.find((e) => e.userId === uId);
+        if (emp) {
+          const match = emp.scores.find(
+            (s) => s.month === m.month && s.year === m.year,
+          );
+          dataPoint[emp.fullName] = match ? match.score : 0;
+        }
+      });
+
+      return dataPoint;
+    });
+  }, [getLastMonths, selectedEmployees, employeeTrends]);
+
+  const stats = useMemo(() => {
+    const selected = employeeTrends.filter((e) =>
+      selectedEmployees.includes(e.userId),
+    );
+    const activeScored = selected.filter((e) => e.averageScore > 0);
+
+    return {
+      totalEmployees: employeeTrends.length,
+      selectedCount: selected.length,
+      averageScore:
+        activeScored.length > 0
+          ? Math.round(
+              activeScored.reduce((sum, e) => sum + e.averageScore, 0) /
+                activeScored.length,
+            )
+          : 0,
+      improving: selected.filter((e) => e.trend === "up").length,
+      declining: selected.filter((e) => e.trend === "down").length,
+      stable: selected.filter((e) => e.trend === "stable").length,
+    };
+  }, [employeeTrends, selectedEmployees]);
+
+  // ============================================================
+  // HANDLERS
+  // ============================================================
+  const toggleEmployee = (userId: string) => {
+    setSelectedEmployees((prev) => {
+      if (prev.includes(userId)) {
+        return prev.filter((id) => id !== userId);
+      }
+      if (prev.length >= MAX_SELECTED) {
+        toast.error(
+          `You can compare up to ${MAX_SELECTED} employees at once. Remove one first.`,
+          { id: "kpi-select-cap" },
+        );
+        return prev;
+      }
+      return [...prev, userId];
+    });
+  };
+
+  const selectAllVisible = () => {
+    const visible = filteredEmployees.map((e) => e.userId);
+    const total = visible.length;
+
+    if (total === 0) {
+      toast.error("No employees match your current filters.");
+      return;
+    }
+
+    if (total > MAX_SELECTED) {
+      const chosen = visible.slice(0, MAX_SELECTED);
+      setSelectedEmployees(chosen);
+      toast.success(
+        `Selected top ${MAX_SELECTED} of ${total} employees (chart limit).`,
+        { id: "kpi-select-all", duration: 3000 },
+      );
+      return;
+    }
+
+    setSelectedEmployees(visible);
+    toast.success(
+      `Selected all ${total} employee${total === 1 ? "" : "s"}.`,
+      { id: "kpi-select-all", duration: 2000 },
+    );
+  };
+
+  const clearSelection = () => {
+    setSelectedEmployees([]);
+    toast.success("Selection cleared.", {
+      id: "kpi-select-all",
+      duration: 1500,
+    });
+  };
+
+  const handleExport = () => {
+    if (chartData.length === 0 || selectedEmployees.length === 0) {
+      toast.error("Please select at least one employee to export data");
+      return;
+    }
+
+    try {
+      const headers = [
+        "Month",
+        "Year",
+        ...selectedEmployees.map(
+          (id) =>
+            employeeTrends.find((e) => e.userId === id)?.fullName || id,
+        ),
+      ];
+
+      const rows = chartData.map((t) => [
+        t.month,
+        t.year,
+        ...selectedEmployees.map((id) => {
+          const emp = employeeTrends.find((e) => e.userId === id);
+          return emp ? (t[emp.fullName] || 0).toFixed(1) : "0";
+        }),
+      ]);
+
+      const csv = [headers.join(","), ...rows.map((row) => row.join(","))].join(
+        "\n",
+      );
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `KPI_Trends_Report_${new Date().toISOString().split("T")[0]}.csv`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast.success("Trend data exported successfully");
+    } catch {
+      toast.error("Failed to generate CSV export");
+    }
+  };
+
+  const getTrendInfo = (trend: string, percentage: number) => {
+    if (trend === "up") {
+      return {
+        color: "text-emerald-600",
+        bg: "bg-emerald-50",
+        icon: TrendingUp,
+        label: `+${percentage}%`,
+      };
+    }
+    if (trend === "down") {
+      return {
+        color: "text-rose-600",
+        bg: "bg-rose-50",
+        icon: TrendingDown,
+        label: `${percentage}%`,
+      };
+    }
+    return {
+      color: "text-amber-600",
+      bg: "bg-amber-50",
+      icon: Minus,
+      label: "Stable",
+    };
+  };
+
+  // ============================================================
+  // RENDER
+  // ============================================================
+  if (!canManage) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="text-center bg-white rounded-3xl p-8 border border-slate-100 shadow-xl max-w-md w-full">
+          <div className="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+            <AlertCircle className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-800 mb-1">
+            Access Restricted
+          </h2>
+          <p className="text-slate-500 text-sm mb-6">
+            You do not have clearance to view performance trend analytics.
+          </p>
+          <Link
+            href="/dashboard"
+            className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold text-xs rounded-xl transition"
+          >
+            Return to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading && !initialSelectionDone) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 space-y-3">
+        <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+        <p className="text-xs font-medium text-slate-400">
+          Loading performance trends...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50/60">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
+          <Link
+            href="/dashboard"
+            className="hover:text-slate-600 transition flex items-center gap-1"
+          >
+            <Home size={13} /> Dashboard
+          </Link>
+          <ChevronRight size={13} />
+          <Link
+            href="/kpi/dashboard"
+            className="hover:text-slate-600 transition"
+          >
+            KPI Dashboard
+          </Link>
+          <ChevronRight size={13} />
+          <span className="text-slate-700">Performance Trends</span>
+        </div>
+
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-tr from-green-600 to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-600/20 text-white">
+                <LineChart className="w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                  Performance Trends
+                </h1>
+                <p className="text-slate-500 text-sm font-medium">
+                  Track employee performance over time
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleExport}
+              disabled={selectedEmployees.length === 0}
+              className="px-4 py-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl flex items-center gap-2 transition shadow-sm disabled:opacity-40"
+            >
+              <Download size={14} /> Export CSV
+            </button>
+            <button
+              onClick={fetchTrendData}
+              disabled={loading}
+              className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl transition shadow-sm"
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${
+                  loading ? "animate-spin text-green-600" : ""
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-4">
+          {[
+            {
+              label: "Total Workforce",
+              val: stats.totalEmployees,
+              icon: Users,
+              color: "text-green-600",
+              bg: "bg-green-50",
+            },
+            {
+              label: "Selected",
+              val: stats.selectedCount,
+              icon: Target,
+              color: "text-blue-600",
+              bg: "bg-blue-50",
+            },
+            {
+              label: "Improving",
+              val: stats.improving,
+              icon: TrendingUp,
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
+            },
+            {
+              label: "Declining",
+              val: stats.declining,
+              icon: TrendingDown,
+              color: "text-rose-600",
+              bg: "bg-rose-50",
+            },
+            {
+              label: "Stable",
+              val: stats.stable,
+              icon: Minus,
+              color: "text-amber-600",
+              bg: "bg-amber-50",
+            },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-slate-400 text-xs font-bold uppercase tracking-wider">
+                  {stat.label}
+                </span>
+                <div
+                  className={`w-8 h-8 rounded-xl ${stat.bg} ${stat.color} flex items-center justify-center`}
+                >
+                  <stat.icon className="w-4 h-4" />
+                </div>
+              </div>
+              <p className="text-2xl font-extrabold text-slate-900 tracking-tight">
+                {stat.val}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Time Horizon
+            </label>
+            <select
+              value={monthsToShow}
+              onChange={(e) => setMonthsToShow(Number(e.target.value))}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-xs font-semibold outline-none cursor-pointer"
+            >
+              <option value={3}>Last 3 Months</option>
+              <option value={6}>Last 6 Months</option>
+              <option value={9}>Last 9 Months</option>
+              <option value={12}>Last 12 Months</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Year
+            </label>
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(Number(e.target.value))}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-xs font-semibold outline-none cursor-pointer"
+            >
+              {YEARS.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Department
+            </label>
+            <select
+              value={departmentFilter}
+              onChange={(e) => setDepartmentFilter(e.target.value)}
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-xs font-semibold outline-none cursor-pointer"
+            >
+              <option value="all">All Departments</option>
+              {departmentsList.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Search
+            </label>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Name or ID..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-xs font-semibold outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+              Sort By
+            </label>
+            <div className="flex gap-2">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-slate-800 text-xs font-semibold outline-none cursor-pointer"
+              >
+                <option value="average">Score</option>
+                <option value="name">Name</option>
+                <option value="trend">Trend</option>
+              </select>
+              <button
+                onClick={() =>
+                  setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                }
+                className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-2xl transition cursor-pointer"
+              >
+                {sortOrder === "asc" ? "↑" : "↓"}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Chart */}
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+            <div>
+              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                <LineChart className="w-5 h-5 text-green-600" /> Score Trends
+              </h3>
+              <p className="text-xs text-slate-400 font-medium">
+                {selectedEmployees.length} of {MAX_SELECTED} employees selected
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={selectAllVisible}
+                className="px-3.5 py-1.5 bg-green-50 text-green-700 hover:bg-green-100 font-bold text-xs rounded-xl transition"
+              >
+                Select All
+              </button>
+              <button
+                onClick={clearSelection}
+                className="px-3.5 py-1.5 bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold text-xs rounded-xl transition"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+
+          <div ref={chartContainerRef} className="h-[400px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsLineChart
+                data={chartData}
+                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis
+                  dataKey="label"
+                  tick={{ fontSize: 11, fill: "#64748b" }}
+                />
+                <YAxis
+                  domain={[0, 100]}
+                  tick={{ fontSize: 11, fill: "#64748b" }}
+                />
+                <Tooltip
+                  content={
+                    <LineChartTooltip
+                      maxVisible={MAX_SELECTED}
+                      chartRef={chartContainerRef}
+                    />
+                  }
+                  wrapperStyle={{
+                    outline: "none",
+                    pointerEvents: "none",
+                  }}
+                  cursor={{
+                    stroke: "#cbd5e1",
+                    strokeWidth: 1,
+                    strokeDasharray: "3 3",
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }}
+                />
+                <ReferenceLine
+                  y={70}
+                  stroke="#f59e0b"
+                  strokeDasharray="4 4"
+                  label={{
+                    value: "Target (70%)",
+                    fill: "#d97706",
+                    fontSize: 10,
+                  }}
+                />
+                {selectedEmployees.map((uId, idx) => {
+                  const emp = employeeTrends.find((e) => e.userId === uId);
+                  if (!emp) return null;
+                  return (
+                    <Line
+                      key={uId}
+                      type="monotone"
+                      dataKey={emp.fullName}
+                      stroke={CHART_COLORS[idx % CHART_COLORS.length]}
+                      strokeWidth={2.5}
+                      dot={{ r: 4 }}
+                      activeDot={{ r: 7 }}
+                      connectNulls
+                    />
+                  );
+                })}
+              </RechartsLineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Selected Legend Pills */}
+          {selectedEmployees.length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-4 border-t border-slate-100">
+              {selectedEmployees.map((uId, idx) => {
+                const emp = employeeTrends.find((e) => e.userId === uId);
+                if (!emp) return null;
+                return (
+                  <div
+                    key={uId}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-xl border border-slate-200/80 text-xs font-bold text-slate-700"
+                  >
+                    <span
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{
+                        backgroundColor:
+                          CHART_COLORS[idx % CHART_COLORS.length],
+                      }}
+                    />
+                    <span>{emp.fullName}</span>
+                    <span className="text-slate-400 font-normal">
+                      ({emp.averageScore}%)
+                    </span>
+                    <button
+                      onClick={() => toggleEmployee(uId)}
+                      className="ml-1 text-slate-400 hover:text-rose-600 transition"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Table */}
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-100 flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                <Users size={18} className="text-green-600" /> Employee
+                Performance
+              </h3>
+              <p className="text-xs text-slate-400 font-medium">
+                Showing {filteredEmployees.length} of {employeeTrends.length}{" "}
+                employees
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAllEmployees(!showAllEmployees)}
+              className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition"
+            >
+              {showAllEmployees
+                ? "Show Less"
+                : `Show All (${employeeTrends.length})`}
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 w-12 text-center">Chart</th>
+                  <th className="px-6 py-4">Employee</th>
+                  <th className="px-6 py-4">Department</th>
+                  <th className="px-6 py-4 text-center">Trend</th>
+                  <th className="px-6 py-4 text-center">Variance</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                {filteredEmployees.map((emp) => {
+                  const isSelected = selectedEmployees.includes(emp.userId);
+                  const trend = getTrendInfo(emp.trend, emp.trendPercentage);
+                  const TrendIcon = trend.icon;
+
+                  return (
+                    <tr
+                      key={emp.userId}
+                      onClick={() => toggleEmployee(emp.userId)}
+                      className={`hover:bg-slate-50/50 transition cursor-pointer ${
+                        isSelected ? "bg-green-50/40" : ""
+                      }`}
+                    >
+                      <td
+                        className="px-6 py-4 text-center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleEmployee(emp.userId)}
+                          className="w-4 h-4 rounded border-slate-300 text-green-600 focus:ring-green-500 cursor-pointer"
+                        />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-green-600 text-white font-bold flex items-center justify-center text-xs shadow-sm shrink-0">
+                            {getInitials(emp.fullName)}
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-900">
+                              {emp.fullName}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {emp.employeeId} • {emp.email}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-xs font-semibold text-slate-600">
+                        {emp.department}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${trend.bg} ${trend.color}`}
+                        >
+                          <TrendIcon size={12} /> {trend.label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-center text-xs font-bold text-slate-600">
+                        {emp.consistencyScore}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {filteredEmployees.length === 0 && (
+            <div className="py-16 text-center text-slate-400 text-xs">
+              No employees found matching your filters.
+            </div>
+          )}
+
+          {filteredEmployees.length > 0 && (
+            <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs text-slate-500">
+              <span>
+                Showing {filteredEmployees.length} of {employeeTrends.length}{" "}
+                employees
+              </span>
+              <span>Click any row to add/remove from chart</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
