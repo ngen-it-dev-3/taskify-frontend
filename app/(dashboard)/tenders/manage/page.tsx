@@ -34,6 +34,8 @@ import {
 import type { Tender, TenderEligibilityRequirement } from "@/lib/api/tender.api";
 import { tenderApi } from "@/lib/api/tender.api";
 import { confirmToast } from "@/lib/confirmToast";
+import { UploadAgreementModal } from "@/components/tender/modal/UploadAgreementModal";
+
 
 /* ---------- Column schemas ---------- */
 const COLUMNS_POTENTIAL = [
@@ -273,6 +275,7 @@ function TenderManageContent() {
   const urlTab = searchParams.get("tab");
   const urlStage = searchParams.get("stage");
   const urlTenderId = searchParams.get("tenderId");
+  const [agreementTender, setAgreementTender] = useState<Tender | null>(null);
 
   const didInitTab = useRef(false);
 
@@ -532,6 +535,18 @@ function TenderManageContent() {
     if (t) setEditTender(t);
   };
 
+  /* ⭐ NEW: Update agreement title */
+  const handleUpdateAgreement = async (tenderId: string, fileId: string, newTitle: string) => {
+    await tenderApi.updateAgreementTitle(tenderId, fileId, newTitle);
+    await refetch();
+  };
+
+  /* ⭐ NEW: Delete agreement file */
+  const handleDeleteAgreement = async (tenderId: string, fileId: string) => {
+    await tenderApi.deleteAgreementFile(tenderId, fileId);
+    await refetch();
+  };
+
   return (
     <main className="min-h-screen bg-[#faf7f0] pb-16 text-slate-900">
       <div className="mx-auto max-w-[1600px] space-y-6 p-6 lg:p-8">
@@ -719,10 +734,15 @@ function TenderManageContent() {
                 />
                 {selected && (
                   <TenderDetailSubmitted
-                    key={selected._id}
                     data={toSubmittedDetail(selected)}
                     onMarkWon={() => handleMarkWon(selected)}
                     onMarkLost={() => handleMarkLost(selected)}
+                    onDownloadAll={async () => {
+                      await tenderApi.downloadAgreementZip(selected._id);
+                    }}
+                    // ⭐ নতুন প্রপস
+                    onUpdateAgreement={handleUpdateAgreement}
+                    onDeleteAgreement={handleDeleteAgreement}
                   />
                 )}
               </>
@@ -736,6 +756,8 @@ function TenderManageContent() {
                   rows={mapRows("lost", groups.lost)}
                   selectedId={selected?._id ?? null}
                   onRowClick={setSelectedId}
+                  onDelete={handleDelete}
+                  showActions
                   searchable
                   searchPlaceholder="Search lost tenders or loss reason…"
                   pageSize={10}
@@ -757,6 +779,8 @@ function TenderManageContent() {
                   rows={mapRows("won", groups.won)}
                   selectedId={selected?._id ?? null}
                   onRowClick={setSelectedId}
+                  onDelete={handleDelete}
+                  showActions
                   searchable
                   searchPlaceholder="Search won tenders…"
                   pageSize={10}
@@ -765,6 +789,13 @@ function TenderManageContent() {
                   <TenderDetailSubmitted
                     key={selected._id}
                     data={toSubmittedDetail(selected)}
+                    onDownloadAll={async () => {
+                      await tenderApi.downloadAgreementZip(selected._id);
+                    }}
+                    onAddDocument={() => setAgreementTender(selected)}
+                    // ⭐ নতুন প্রপস
+                    onUpdateAgreement={handleUpdateAgreement}
+                    onDeleteAgreement={handleDeleteAgreement}
                   />
                 )}
               </>
@@ -973,6 +1004,17 @@ function TenderManageContent() {
           }
         }}
       />
+
+      {agreementTender && (
+        <UploadAgreementModal
+          open={!!agreementTender}
+          onOpenChange={(o) => !o && setAgreementTender(null)}
+          tenderId={agreementTender._id}
+          onSaved={() => {
+            refetch();
+          }}
+        />
+      )}
     </main>
   );
 }

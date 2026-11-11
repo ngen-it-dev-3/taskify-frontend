@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, AlertTriangle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
   SalesOrderApi,
@@ -50,6 +50,9 @@ export function EditOrderModal({ order, onClose, onSaved }: Props) {
   );
 
   const [saving, setSaving] = useState(false);
+  
+  // ⭐ States for Delete Confirmation
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const handleSave = async () => {
@@ -93,9 +96,8 @@ export function EditOrderModal({ order, onClose, onSaved }: Props) {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm(`Delete order "${order.poRef}"? This cannot be undone.`)) return;
-
+  // ⭐ Actual delete operation
+  const confirmDelete = async () => {
     try {
       setDeleting(true);
       await SalesOrderApi.remove(order.id);
@@ -105,191 +107,243 @@ export function EditOrderModal({ order, onClose, onSaved }: Props) {
       toast.error(e.message || 'Failed to delete order');
     } finally {
       setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
-      onClick={onClose}
-    >
+    <>
       <div
-        className="w-full max-w-[720px] max-h-[92vh] overflow-y-auto rounded-2xl bg-white p-7 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+        onClick={onClose}
       >
-        {/* Header */}
-        <div className="mb-5 flex items-start justify-between">
-          <div>
-            <h2 className="font-serif text-xl font-bold text-[#0F2D4A]">
-              Edit Order
-            </h2>
-            <p className="mt-1 text-[11px] text-slate-500">
-              Update order details, advance the current stage, or track
-              payments.
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Form */}
-        <div className="grid grid-cols-2 gap-4">
-          <Field label="PO Ref" full>
-            <input
-              value={poRef}
-              onChange={(e) => setPoRef(e.target.value)}
-              className={inputCls + ' font-mono'}
-            />
-          </Field>
-
-          <Field label="Client Company" required full>
-            <input
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-
-          <Field label="Contact Name">
-            <input
-              value={contactName}
-              onChange={(e) => setContactName(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-          <Field label="Country">
-            <input
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-
-          <Field label="Email">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-          <Field label="Phone">
-            <input
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-
-          <Field label="Product" full>
-            <input
-              value={product}
-              onChange={(e) => setProduct(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-
-          <Field label="Sales Value (৳)">
-            <input
-              type="number"
-              value={salesValue}
-              onChange={(e) => setSalesValue(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-          <Field label="Current Stage">
-            <select
-              value={stage}
-              onChange={(e) => setStage(e.target.value as SalesOrderStage)}
-              className={selectCls}
-            >
-              {STAGES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </Field>
-
-          {/* Payment tracking */}
-          <Field label="Client Payment">
-            <select
-              value={clientPaymentStatus}
-              onChange={(e) => setClientPaymentStatus(e.target.value)}
-              className={selectCls}
-            >
-              {PAYMENT_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Principal Payment">
-            <select
-              value={principalPaymentStatus}
-              onChange={(e) => setPrincipalPaymentStatus(e.target.value)}
-              className={selectCls}
-            >
-              <option value="Not Required">Not Required</option>
-              <option value="Pending">Pending</option>
-              <option value="Paid">Paid</option>
-            </select>
-          </Field>
-
-          <Field label="Salesman" full>
-            <input
-              value={salesman}
-              onChange={(e) => setSalesman(e.target.value)}
-              className={inputCls}
-            />
-          </Field>
-
-          <Field label="Notes" full>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={2}
-              placeholder="Optional notes"
-              className={inputCls + ' resize-none'}
-            />
-          </Field>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-6 flex items-center justify-between gap-2">
-          {/* Delete on left */}
-          <button
-            onClick={handleDelete}
-            disabled={deleting || saving}
-            className="rounded-lg border border-rose-200 bg-rose-50 px-5 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-100 disabled:opacity-60 transition"
-          >
-            {deleting ? 'Deleting…' : 'Delete Order'}
-          </button>
-
-          {/* Cancel + Save on right */}
-          <div className="flex items-center gap-2">
+        <div
+          className="w-full max-w-[720px] max-h-[92vh] overflow-y-auto rounded-2xl bg-white p-7 shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="mb-5 flex items-start justify-between">
+            <div>
+              <h2 className="font-serif text-xl font-bold text-[#0F2D4A]">
+                Edit Order
+              </h2>
+              <p className="mt-1 text-[11px] text-slate-500">
+                Update order details, advance the current stage, or track
+                payments.
+              </p>
+            </div>
             <button
               onClick={onClose}
-              className="rounded-lg border border-[#E2DBD1] bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+              className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
             >
-              Cancel
+              <X className="h-4 w-4" />
             </button>
+          </div>
+
+          {/* Form */}
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="PO Ref" full>
+              <input
+                value={poRef}
+                onChange={(e) => setPoRef(e.target.value)}
+                className={inputCls + ' font-mono'}
+              />
+            </Field>
+
+            <Field label="Client Company" required full>
+              <input
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+
+            <Field label="Contact Name">
+              <input
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Country">
+              <input
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+
+            <Field label="Email">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Phone">
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+
+            <Field label="Product" full>
+              <input
+                value={product}
+                onChange={(e) => setProduct(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+
+            <Field label="Sales Value (৳)">
+              <input
+                type="number"
+                value={salesValue}
+                onChange={(e) => setSalesValue(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Current Stage">
+              <select
+                value={stage}
+                onChange={(e) => setStage(e.target.value as SalesOrderStage)}
+                className={selectCls}
+              >
+                {STAGES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            {/* Payment tracking */}
+            <Field label="Client Payment">
+              <select
+                value={clientPaymentStatus}
+                onChange={(e) => setClientPaymentStatus(e.target.value)}
+                className={selectCls}
+              >
+                {PAYMENT_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Principal Payment">
+              <select
+                value={principalPaymentStatus}
+                onChange={(e) => setPrincipalPaymentStatus(e.target.value)}
+                className={selectCls}
+              >
+                <option value="Not Required">Not Required</option>
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+              </select>
+            </Field>
+
+            <Field label="Salesman" full>
+              <input
+                value={salesman}
+                onChange={(e) => setSalesman(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+
+            <Field label="Notes" full>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={2}
+                placeholder="Optional notes"
+                className={inputCls + ' resize-none'}
+              />
+            </Field>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-6 flex items-center justify-between gap-2">
+            {/* Delete on left */}
             <button
-              onClick={handleSave}
-              disabled={saving || deleting}
-              className="rounded-lg bg-[#A06126] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60 transition"
+              onClick={() => setShowDeleteConfirm(true)}
+              disabled={saving}
+              className="rounded-lg border border-rose-200 bg-rose-50 px-5 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-100 disabled:opacity-60 transition"
             >
-              {saving ? 'Saving…' : 'Save Changes'}
+              Delete Order
             </button>
+
+            {/* Cancel + Save on right */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onClose}
+                className="rounded-lg border border-[#E2DBD1] bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving || deleting}
+                className="rounded-lg bg-[#A06126] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#88501E] disabled:opacity-60 transition"
+              >
+                {saving ? 'Saving…' : 'Save Changes'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* ⭐ Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-[2px] animate-in fade-in duration-200">
+          <div className="bg-white rounded-xl max-w-md w-full shadow-2xl p-6 animate-in zoom-in-95 duration-200">
+            
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-rose-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-slate-900">Delete Order?</h3>
+                <p className="text-xs text-slate-500">This action cannot be undone.</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100 mb-6 text-sm text-slate-700">
+              Are you sure you want to delete the order <strong className="text-slate-900">{order.poRef}</strong>? 
+              All associated data will be permanently removed.
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={deleting}
+                className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="animate-spin w-4 h-4" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Yes, Delete'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

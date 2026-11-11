@@ -167,6 +167,19 @@ export function toSubmittedDetail(t: Tender): SubmittedTenderDetail {
             checked: !!c.checked,
             isCustom: !!c.isCustom,
         })),
+        agreementFiles: (t.agreementFiles ?? []).map((f) => ({
+            _id: f._id?.toString(),
+            title: f.title,
+            category: f.category,
+            fileUrl: f.fileUrl,
+            fileName: f.fileName,
+            noaDate: f.noaDate,
+            contractDate: f.contractDate,
+            deliveryDate: f.deliveryDate,
+            invoiceDate: f.invoiceDate,
+            challanDate: f.challanDate,
+            mushakDate: f.mushakDate,
+        })),
     };
 }
 

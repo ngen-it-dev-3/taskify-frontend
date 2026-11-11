@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Plus, Search, X } from 'lucide-react';
+import { Plus, Search, X, AlertTriangle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import {
@@ -37,6 +37,10 @@ export default function SalesOrdersPage() {
 
     const [activeStage, setActiveStage] = useState<SalesOrderStage | 'all'>('all');
     const [search, setSearch] = useState('');
+
+    // ⭐ States for Delete Modal
+    const [orderToDelete, setOrderToDelete] = useState<SalesOrder | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     // ============================================================
     // LOAD
@@ -81,18 +85,28 @@ export default function SalesOrdersPage() {
     );
 
     // ============================================================
-    // DELETE HANDLER
+    // DELETE HANDLERS
     // ============================================================
-    const handleDelete = async (order: SalesOrder) => {
-        if (!confirm(`Delete order "${order.poRef}"? This cannot be undone.`)) return;
+    // ১. মডাল ওপেন করার জন্য
+    const requestDelete = (order: SalesOrder) => {
+        setOrderToDelete(order);
+    };
 
+    // ২. আসল ডিলিট অপারেশন
+    const confirmDelete = async () => {
+        if (!orderToDelete) return;
+
+        setIsDeleting(true);
         try {
-            await SalesOrderApi.remove(order.id);
+            await SalesOrderApi.remove(orderToDelete.id);
             toast.success('Order deleted');
-            if (selectedId === order.id) setSelectedId(null);
+            if (selectedId === orderToDelete.id) setSelectedId(null);
+            setOrderToDelete(null); // মডাল বন্ধ করুন
             await load();
         } catch (e: any) {
             toast.error(e.message || 'Failed to delete order');
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -150,8 +164,8 @@ export default function SalesOrdersPage() {
                             key={t.key}
                             onClick={() => setActiveStage(t.key)}
                             className={`pb-3 font-semibold relative whitespace-nowrap transition ${activeStage === t.key
-                                    ? 'text-[#A06126]'
-                                    : 'text-slate-500 hover:text-slate-700'
+                                ? 'text-[#A06126]'
+                                : 'text-slate-500 hover:text-slate-700'
                                 }`}
                         >
                             {t.label}
@@ -192,7 +206,7 @@ export default function SalesOrdersPage() {
                         selectedId={selectedId}
                         onSelect={setSelectedId}
                         onEdit={(o) => setEditingOrder(o)}
-                        onDelete={handleDelete}
+                        onDelete={requestDelete} // ⭐ এখন requestDelete পাস করা হলো
                     />
                 )}
 
@@ -221,6 +235,55 @@ export default function SalesOrdersPage() {
                         await load();
                     }}
                 />
+            )}
+
+            {/* ⭐ Delete Confirmation Modal */}
+            {orderToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-[2px] animate-in fade-in duration-200">
+                    <div className="bg-white rounded-xl max-w-md w-full shadow-2xl p-6 animate-in zoom-in-95 duration-200">
+
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+                                <AlertTriangle className="w-5 h-5 text-rose-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-slate-900">Delete Order?</h3>
+                                <p className="text-xs text-slate-500">This action cannot be undone.</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-slate-50 rounded-lg p-3 border border-slate-100 mb-6 text-sm text-slate-700">
+                            Are you sure you want to delete the order <strong className="text-slate-900">{orderToDelete.poRef}</strong>?
+                            All associated data will be permanently removed.
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setOrderToDelete(null)}
+                                disabled={isDeleting}
+                                className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={confirmDelete}
+                                disabled={isDeleting}
+                                className="px-4 py-2 text-sm font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-700 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                            >
+                                {isDeleting ? (
+                                    <>
+                                        <Loader2 className="animate-spin w-4 h-4" />
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    'Yes, Delete'
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </main>
     );

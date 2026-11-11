@@ -55,6 +55,7 @@ export default function CompanyDocsPage() {
   const [isAddingTab, setIsAddingTab] = useState(false);
   const [newTabName, setNewTabName] = useState("");
   const [loadingTabs, setLoadingTabs] = useState(true);
+  const [isCreatingTab, setIsCreatingTab] = useState(false);
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [addOpen, setAddOpen] = useState(false);
@@ -189,18 +190,26 @@ export default function CompanyDocsPage() {
     });
   };
 
-  // ✅ CREATE TAB
   const handleCreateTab = async () => {
+    // ⭐ যদি ইতিমধ্যে একটি রিকোয়েস্ট চলছে, তবে আরেকবার রিকোয়েস্ট পাঠাবে না
+    if (isCreatingTab) return;
     if (!newTabName.trim()) return;
+
     try {
+      setIsCreatingTab(true); // ⭐ লোডিং শুরু
+
       const newCat = await companyDocApi.createCategory(newTabName.trim());
+
       toast.success("Tab created");
       setNewTabName("");
       setIsAddingTab(false);
+
       await fetchTabs();
       setTab(newCat.id);
     } catch (err) {
       toast.error((err as Error).message || "Failed to create tab");
+    } finally {
+      setIsCreatingTab(false); // ⭐ লোডিং শেষ
     }
   };
 
@@ -356,12 +365,30 @@ export default function CompanyDocsPage() {
                 type="text"
                 value={newTabName}
                 onChange={(e) => setNewTabName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleCreateTab()}
+                onKeyDown={(e) => {
+                  // ⭐ Enter চাপলে এবং লোডিং না চললে তবে ফাংশন কল হবে
+                  if (e.key === "Enter" && !isCreatingTab) {
+                    handleCreateTab();
+                  }
+                }}
+                disabled={isCreatingTab} // ⭐ লোডিংয়ের সময় ইনপুট ডিজেবল
                 placeholder="Tab name..."
-                className="h-8 w-32 rounded-md border border-slate-300 px-2 text-xs outline-none focus:border-[#a97400]"
+                className="h-8 w-32 rounded-md border border-slate-300 px-2 text-xs outline-none focus:border-[#a97400] disabled:opacity-60"
               />
-              <button onClick={handleCreateTab} className="text-xs font-bold text-[#a97400] hover:underline">Save</button>
-              <button onClick={() => setIsAddingTab(false)} className="text-xs text-slate-500 hover:underline">Cancel</button>
+              <button
+                onClick={handleCreateTab}
+                disabled={isCreatingTab} // ⭐ লোডিংয়ের সময় বাটন ডিজেবল
+                className="text-xs font-bold text-[#a97400] hover:underline disabled:opacity-50"
+              >
+                {isCreatingTab ? "Saving..." : "Save"} {/* ⭐ লোডিং টেক্সট */}
+              </button>
+              <button
+                onClick={() => setIsAddingTab(false)}
+                disabled={isCreatingTab} // ⭐ লোডিংয়ের সময় ক্যান্সেল বাটন ডিজেবল
+                className="text-xs text-slate-500 hover:underline disabled:opacity-50"
+              >
+                Cancel
+              </button>
             </div>
           ) : (
             <button

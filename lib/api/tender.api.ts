@@ -166,6 +166,20 @@ export interface Tender {
   attachments?: TenderAttachment[];
   otherParticipants?: TenderOtherParticipant[];
   checklist?: TenderChecklistItem[];
+  agreementFiles?: {
+    _id?: string;
+    title: string;
+    category: string;
+    fileUrl: string;
+    fileName: string;
+    noaDate?: string | null;
+    contractDate?: string | null;
+    deliveryDate?: string | null;
+    invoiceDate?: string | null;
+    challanDate?: string | null;
+    mushakDate?: string | null;
+    uploadedAt?: string;
+  }[];
   packageMode?: SubmissionPackageMode;
   packageLabel?: string;
   sections?: TenderSection[];
@@ -683,6 +697,58 @@ export const tenderApi = {
       headers: authHeaders(),
     });
     return handle<void>(r);
+  },
+
+  async uploadAgreement(tenderId: string, formData: FormData): Promise<void> {
+    const r = await fetch(`${API_BASE}/tenders/${tenderId}/agreements`, {
+      method: "POST",
+      headers: authHeadersNoJson(),
+      body: formData,
+    });
+    return handle<void>(r);
+  },
+
+
+  // ⭐ নতুন: Agreement ফাইলের টাইটেল আপডেট
+  async updateAgreementTitle(tenderId: string, fileId: string, title: string): Promise<any> {
+    const r = await fetch(`${API_BASE}/tenders/${tenderId}/agreements/${fileId}`, {
+      method: "PATCH",
+      headers: authHeaders(),
+      body: JSON.stringify({ title }),
+    });
+    return handle<any>(r);
+  },
+
+
+  // ⭐ নতুন: Agreement ফাইল ডিলিট
+  async deleteAgreementFile(tenderId: string, fileId: string): Promise<void> {
+    const r = await fetch(`${API_BASE}/tenders/${tenderId}/agreements/${fileId}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+    return handle<void>(r);
+  },
+
+
+  async downloadAgreementZip(tenderId: string): Promise<void> {
+    const r = await fetch(`${API_BASE}/tenders/${tenderId}/agreements/download-zip`, {
+      headers: authHeadersNoJson(),
+    });
+
+    if (!r.ok) {
+      const json = await r.json().catch(() => ({}));
+      throw new Error(json.message || "Failed to download");
+    }
+
+    const blob = await r.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `agreement_files_${Date.now()}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
   },
 
   async notifyFinance(

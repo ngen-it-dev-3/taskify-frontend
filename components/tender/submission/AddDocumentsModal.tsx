@@ -1,13 +1,13 @@
 // components/tender/submission/AddDocumentsModal.tsx
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { X, Search, ChevronDown, Plus, Loader2, Check } from "lucide-react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { X, Search, ChevronDown, ChevronLeft, ChevronRight, Plus, Loader2, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { useCompanyDocBundle } from "@/hooks/tender/useCompanyDocBundle";
 import type { CompanyDocUI } from "@/lib/api/mappers";
 import { toCompanyDocUI } from "@/lib/api/mappers";
-import type { DocsTab } from "@/components/tender/documents/DocsTabs";
+import { companyDocApi } from "@/lib/api/tender.api";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -18,14 +18,11 @@ interface Props {
     targetSectionTitle: string;
 }
 
-const TABS: { id: DocsTab; label: string }[] = [
-    { id: "work-orders", label: "Work Orders" },
-    { id: "team", label: "Team & CVs" },
-    { id: "certificates", label: "Partner Certificates" },
-    { id: "legal", label: "Company & Legal Docs" },
-    { id: "datasheets", label: "Datasheets & Brochures" },
-    { id: "profiles", label: "Company Profiles" },
-];
+interface TabItem {
+    id: string;
+    label: string;
+    count?: number;
+}
 
 const REQUIREMENT_TYPES = [
     "Auto-detect",
@@ -41,11 +38,18 @@ const REQUIREMENT_TYPES = [
 ];
 
 export function AddDocumentsModal({ open, onOpenChange, onAdd, targetSectionTitle }: Props) {
-    const [activeTab, setActiveTab] = useState<DocsTab>("work-orders");
+    const [activeTab, setActiveTab] = useState<string>("work-orders");
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [search, setSearch] = useState("");
     const [saving, setSaving] = useState(false);
     const router = useRouter();
+
+    // ⭐ ডাইনামিক ট্যাবের জন্য স্টেট
+    const [tabs, setTabs] = useState<TabItem[]>([]);
+    const [loadingTabs, setLoadingTabs] = useState(true);
+
+    // ⭐ স্ক্রলিংয়ের জন্য রেফ
+    const tabsContainerRef = useRef<HTMLDivElement>(null);
 
     // --- Requirements State ---
     const [requirements, setRequirements] = useState<string[]>([
@@ -62,7 +66,34 @@ export function AddDocumentsModal({ open, onOpenChange, onAdd, targetSectionTitl
     const [tenderDate, setTenderDate] = useState("2026-09-30");
     const [companyStartDate, setCompanyStartDate] = useState("2009-01-04");
 
-    const { rows, loading } = useCompanyDocBundle({ category: activeTab });
+    // ⭐ মডাল ওপেন হলে ডাইনামিক ট্যাব লোড করুন
+    useEffect(() => {
+        if (!open) return;
+        
+        let cancelled = false;
+        const fetchTabs = async () => {
+            try {
+                setLoadingTabs(true);
+                const list = await companyDocApi.listCategories();
+                if (!cancelled) {
+                    setTabs(list);
+                    if (list.length > 0 && !list.find((t: any) => t.id === activeTab)) {
+                        setActiveTab(list[0].id);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                toast.error("Failed to load document tabs");
+            } finally {
+                if (!cancelled) setLoadingTabs(false);
+            }
+        };
+
+        fetchTabs();
+        return () => { cancelled = true; };
+    }, [open]);
+
+    const { rows, loading } = useCompanyDocBundle({ category: activeTab as any });
 
     const docs: CompanyDocUI[] = useMemo(() => {
         if (!Array.isArray(rows)) return [];
@@ -77,7 +108,6 @@ export function AddDocumentsModal({ open, onOpenChange, onAdd, targetSectionTitl
         const startTime = new Date(companyStartDate).getTime();
         const generalYears = ((tenderTime - startTime) / (1000 * 60 * 60 * 24 * 365.25)).toFixed(1);
 
-        // Filter docs valid before tender date
         const validDocs = docs.filter(d => new Date(d.issuedOn || 0).getTime() <= tenderTime);
 
         const totalValue = validDocs.reduce((sum, d) => sum + (d.totalValue || 0), 0);
@@ -101,7 +131,6 @@ export function AddDocumentsModal({ open, onOpenChange, onAdd, targetSectionTitl
             const q = search.toLowerCase();
             result = result.filter(d => d.title.toLowerCase().includes(q));
         }
-        // Apply automatic filtering for Work Orders if we have metrics
         if (activeTab === "work-orders" && metrics) {
             result = result.filter(d => new Date(d.issuedOn || 0).getTime() <= new Date(tenderDate).getTime());
         }
@@ -160,6 +189,18 @@ export function AddDocumentsModal({ open, onOpenChange, onAdd, targetSectionTitl
         setRequirements(requirements.filter((_, i) => i !== index));
     };
 
+    // ⭐ স্ক্রল হ্যান্ডলার
+    const scrollTabs = (direction: 'left' | 'right') => {
+        if (tabsContainerRef.current) {
+            const scrollAmount = 300; // কত পিক্সেল স্ক্রল হবে
+            const currentScroll = tabsContainerRef.current.scrollLeft;
+            tabsContainerRef.current.scrollTo({
+                left: direction === 'left' ? currentScroll - scrollAmount : currentScroll + scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
+
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => !saving && onOpenChange(false)} />
@@ -180,7 +221,6 @@ export function AddDocumentsModal({ open, onOpenChange, onAdd, targetSectionTitl
                             onClick={() => {
                                 onOpenChange(false);
                                 router.push("/tenders/documents");
-                                // Optional: router.refresh() ensures fresh data on arrival
                                 router.refresh();
                             }}
                             className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[#a97400] px-3 text-xs font-semibold text-white shadow-sm hover:bg-[#8f6100]"
@@ -196,35 +236,72 @@ export function AddDocumentsModal({ open, onOpenChange, onAdd, targetSectionTitl
                     </div>
                 </div>
 
-                {/* Tabs */}
-                {/* Tabs */}
-                <div className="shrink-0 border-b border-slate-200 bg-white px-6">
-                    {/* ✅ Added scrollbar-hide and proper flex alignment */}
-                    <div className="flex items-center gap-8 overflow-hide">
-                        {TABS.map((t) => (
-                            <button
-                                key={t.id}
-                                onClick={() => setActiveTab(t.id)}
-                                className={`relative whitespace-nowrap pb-3 pt-4 text-[13px] font-semibold transition ${activeTab === t.id
-                                    ? "text-slate-900"
-                                    : "text-slate-500 hover:text-slate-800"
-                                    }`}
-                            >
-                                {t.label}
-                                {activeTab === t.id && (
-                                    <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#a97400]" />
-                                )}
-                            </button>
-                        ))}
+                {/* ⭐ TABS WITH ARROWS */}
+                <div className="shrink-0 border-b border-slate-200 bg-white px-6 relative">
+                    <div className="flex items-center">
+                        {/* Left Arrow */}
+                        <button 
+                            onClick={() => scrollTabs('left')}
+                            className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full z-10 shrink-0"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </button>
+
+                        {/* Scrollable Tabs Container */}
+                        <div 
+                            ref={tabsContainerRef}
+                            className="flex-1 flex items-center gap-6 overflow-x-auto scrollbar-hide px-2"
+                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Firefox এবং IE এর জন্য
+                        >
+                            {loadingTabs ? (
+                                <div className="flex items-center gap-2 py-4">
+                                    <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                                    <span className="text-xs text-slate-500">Loading tabs...</span>
+                                </div>
+                            ) : tabs.length === 0 ? (
+                                <div className="py-4 text-xs text-slate-500">No document categories found.</div>
+                            ) : (
+                                tabs.map((t) => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => setActiveTab(t.id)}
+                                        className={`relative whitespace-nowrap pb-3 pt-4 text-[13px] font-semibold transition ${activeTab === t.id
+                                            ? "text-slate-900"
+                                            : "text-slate-500 hover:text-slate-800"
+                                            }`}
+                                    >
+                                        {t.label}
+                                        {t.count !== undefined && (
+                                            <span className={`ml-1.5 inline-flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[9px] font-bold ${activeTab === t.id ? "bg-[#a97400] text-white" : "bg-slate-100 text-slate-500"
+                                                }`}>
+                                                {t.count}
+                                            </span>
+                                        )}
+                                        {activeTab === t.id && (
+                                            <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-[#a97400]" />
+                                        )}
+                                    </button>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Right Arrow */}
+                        <button 
+                            onClick={() => scrollTabs('right')}
+                            className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full z-10 shrink-0"
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </button>
                     </div>
                 </div>
 
                 {/* Content Area */}
                 <div className="flex-1 overflow-y-auto px-6 py-4">
-
+                    {/* ... (বাকি কন্টেন্ট আগের মতোই থাকবে) ... */}
                     {/* ✅ WORK ORDERS MATCHER */}
                     {activeTab === "work-orders" && (
                         <div className="mb-6 rounded-xl border border-amber-200 bg-white p-4 shadow-sm">
+                            {/* ... */}
                             <h3 className="text-[13px] font-bold text-slate-900 mb-1">What does this tender ask for?</h3>
                             <p className="text-[10px] text-slate-500 mb-3">
                                 Sample requirements are filled in — remove or change them. Type in plain words, for example: 3 years, 5 orders, 20 lac, 1 cr, Govt, Educational, Tenable, general 10 years, service 2 years, 5 engineers.
