@@ -719,7 +719,10 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
       currentProjectStatus: form.currentProjectStatus,
       tentativePurchaseDate: form.tentativePurchaseDate,
       comment: form.comment,
-      inquiryDate: form.inquiryDate || new Date().toISOString(),
+      inquiryDate: form.inquiryDate
+        ? new Date(form.inquiryDate).toISOString()
+        : new Date().toISOString(),
+
     };
 
     onSubmit(payload);

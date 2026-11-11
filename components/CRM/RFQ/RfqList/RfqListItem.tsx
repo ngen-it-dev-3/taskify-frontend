@@ -67,22 +67,35 @@ export default function RfqListItem({
   const calculateResponseGap = () => {
     if (!rfq.inquiryDate || !rfq.createdAt) return null;
 
-    const inquiryTime = new Date(rfq.inquiryDate).getTime();
-    const entryTime = new Date(rfq.createdAt).getTime();
+    try {
+      // ১. এন্ট্রি টাইম (createdAt) থেকে লোকাল টাইম
+      const entryDate = new Date(rfq.createdAt);
 
-    // ⭐ Math.abs() ব্যবহার করায় এটি ফিউচার বা পাস্ট যাই হোক, গ্যাপ পজিটিভ দেখাবে
-    const diffTime = Math.abs(entryTime - inquiryTime);
+      // ২. ইনকোয়ারি টাইম (inquiryDate) থেকে লোকাল টাইম
+      // ⭐ যেহেতু inquiryDate এখন ISO ফরম্যাটে (যেমন: 2026-11-11T05:00:00.000Z), 
+      // new Date() সেটিকে লোকাল টাইমে কনভার্ট করবে (11:00 AM)।
+      const inquiryDate = new Date(rfq.inquiryDate);
 
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(
-      (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-    );
-    const diffMins = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+      if (isNaN(inquiryDate.getTime()) || isNaN(entryDate.getTime())) {
+        return 'Invalid Date';
+      }
 
-    if (diffDays > 0) return `${diffDays}d ${diffHours}h gap`;
-    if (diffHours > 0) return `${diffHours}h ${diffMins}m gap`;
-    if (diffMins > 0) return `${diffMins}m gap`;
-    return 'Just now';
+      // ৩. পার্থক্য বের করা
+      const diffTime = Math.abs(entryDate.getTime() - inquiryDate.getTime());
+
+      // ৪. দিন, ঘণ্টা, মিনিট
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const diffMins = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
+
+      // ৫. রিটার্ন স্ট্রিং
+      if (diffDays > 0) return `${diffDays}d ${diffHours}h gap`;
+      if (diffHours > 0) return `${diffHours}h ${diffMins}m gap`;
+      if (diffMins > 0) return `${diffMins}m gap`;
+      return 'Just now';
+    } catch (e) {
+      return 'Invalid Date';
+    }
   };
 
   const aging = calculateAging();
@@ -98,10 +111,11 @@ export default function RfqListItem({
   return (
     <div
       onClick={onSelect}
-      className={`p-4 transition cursor-pointer border-l-3 ${isSelected
-        ? 'bg-[#FAF6EE] border-[#A06126]'
-        : 'hover:bg-[#FDFBF7] border-transparent'
-        }`}
+      className={`p-4 transition cursor-pointer border-l-3 ${
+        isSelected
+          ? 'bg-[#FAF6EE] border-[#A06126]'
+          : 'hover:bg-[#FDFBF7] border-transparent'
+      }`}
     >
       <div className="flex justify-between items-start">
         <strong className="text-xs font-bold text-[#0F2D4A]">
@@ -115,13 +129,24 @@ export default function RfqListItem({
       </div>
 
       <div className="text-[11.5px] text-slate-500 mt-1 mb-2.5">
-        RFQ# {rfq.rfqNumber} | {rfq.country} · {rfq.date}, {rfq.time}
+        RFQ# {rfq.rfqNumber} | {rfq.country} ·{' '}
+        {/* ⭐ createdAt কে লোকাল টাইমে কনভার্ট করে দেখান */}
+        {new Date(rfq.createdAt || new Date()).toLocaleString('en-US', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+          timeZone: 'Asia/Dhaka',
+        })}
 
         <span
-          className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium ${rfq.source === 'manual'
-            ? 'bg-amber-50 text-amber-700'
-            : 'bg-blue-50 text-blue-700'
-            }`}
+          className={`ml-2 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+            rfq.source === 'manual'
+              ? 'bg-amber-50 text-amber-700'
+              : 'bg-blue-50 text-blue-700'
+          }`}
         >
           {rfq.source === 'manual' ? '✍️ Manual' : '🌐 Web RFQ'}
         </span>
@@ -134,13 +159,15 @@ export default function RfqListItem({
             <div className="text-[11px] text-slate-500 font-medium flex items-center gap-2 flex-wrap">
               <span className="shrink-0">Client Inquiry Time</span>
               <span className="badge bg-amber-500 rounded-2xl px-2.5 py-0.5 text-white text-[10px] font-semibold shrink-0">
-                {new Date(rfq.inquiryDate).toLocaleString('en-GB', {
+                {/* ⭐ নতুন উপায়: toLocaleString দিয়ে সরাসরি লোকাল টাইম দেখানো */}
+                {new Date(rfq.inquiryDate).toLocaleString('en-US', {
                   day: '2-digit',
                   month: 'short',
                   year: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit',
                   hour12: true,
+                  timeZone: 'Asia/Dhaka', // ⭐ লোকাল টাইমজোন
                 })}
               </span>
 
@@ -195,20 +222,22 @@ export default function RfqListItem({
               }}
               disabled={!isAssigned}
               title={!isAssigned ? 'Please assign this RFQ first' : 'Create Quote'}
-              className={`px-3.5 py-1 rounded text-[11px] font-semibold transition ${!isAssigned
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                : 'bg-[#0F2D4A] hover:bg-[#1C3760] text-white shadow-2xs cursor-pointer'
-                }`}
+              className={`px-3.5 py-1 rounded text-[11px] font-semibold transition ${
+                !isAssigned
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                  : 'bg-[#0F2D4A] hover:bg-[#1C3760] text-white shadow-2xs cursor-pointer'
+              }`}
             >
               {!isAssigned ? 'Assign First' : 'Quote'}
             </button>
           </div>
         ) : (
           <span
-            className={`px-2.5 py-1 rounded text-[10px] font-semibold border shrink-0 ${rfq.stage === 'lost'
-              ? 'bg-rose-50 text-rose-600 border-rose-200'
-              : 'bg-slate-100 text-slate-500 border-slate-200'
-              }`}
+            className={`px-2.5 py-1 rounded text-[10px] font-semibold border shrink-0 ${
+              rfq.stage === 'lost'
+                ? 'bg-rose-50 text-rose-600 border-rose-200'
+                : 'bg-slate-100 text-slate-500 border-slate-200'
+            }`}
           >
             {rfq.stage === 'lost' ? '🔒 Lost — no actions' : '🔒 Already Quoted'}
           </span>

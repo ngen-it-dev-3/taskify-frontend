@@ -149,7 +149,7 @@ export interface UpdateRFQPayload {
   city?: string;
   zipCode?: string;
   isReseller?: boolean;
-
+  inquiryDate?: string;
   // Additional Details
   projectName?: string;
   tentativeBudget?: string;
