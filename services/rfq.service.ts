@@ -60,6 +60,7 @@ export interface RFQItem {
   source: RFQSource;
   salesman: string;
   assignedTo: string;
+  inquiryDate?: string;
 
   // ⭐ CRITICAL: These 3 fields were missing. Adding them fixes the UI.
   territory?: string;
