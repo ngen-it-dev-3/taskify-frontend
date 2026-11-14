@@ -11,7 +11,7 @@ export interface ProductDraft {
   name: string;
   description: string;
   additionalInfo: string;
-  files: File[];
+  files: File[]; // Kept in interface to avoid breaking parent component, but won't be used here
 }
 
 interface Props {
@@ -34,7 +34,6 @@ const EMPTY: ProductDraft = {
 export default function ProductEditorModal({ initial, onClose, onSave }: Props) {
   const [data, setData] = useState<ProductDraft>({ ...EMPTY, ...initial });
   const panelRef = useRef<HTMLDivElement>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   // ---- ESC to close ----
   useEffect(() => {
@@ -53,14 +52,6 @@ export default function ProductEditorModal({ initial, onClose, onSave }: Props) 
   const set = <K extends keyof ProductDraft>(key: K, value: ProductDraft[K]) =>
     setData((prev) => ({ ...prev, [key]: value }));
 
-  const handleFiles = (files: FileList | null) => {
-    if (!files) return;
-    set('files', [...data.files, ...Array.from(files)]);
-  };
-
-  const removeFile = (idx: number) =>
-    set('files', data.files.filter((_, i) => i !== idx));
-
   return (
     <div
       onClick={onBackdropClick}
@@ -71,7 +62,7 @@ export default function ProductEditorModal({ initial, onClose, onSave }: Props) 
     >
       <div
         ref={panelRef}
-        className="bg-white rounded-lg max-w-5xl w-full shadow-2xl relative max-h-[92vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
+        className="bg-white rounded-lg max-w-2xl w-full shadow-2xl relative max-h-[92vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
       >
         {/* =============== HEADER =============== */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
@@ -145,57 +136,8 @@ export default function ProductEditorModal({ initial, onClose, onSave }: Props) 
                 onChange={(v) => set('additionalInfo', v)}
               />
             </div>
-
-            {/* Divider + Upload */}
-            <div className="border-t border-slate-200 pt-5">
-              <label className="block text-sm font-semibold text-slate-800 mb-2">
-                Upload Product Datasheet / Images
-              </label>
-
-              {/* Browser-style file input */}
-              <div className="flex items-stretch">
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 border-r-0 rounded-l text-xs font-semibold text-slate-700"
-                >
-                  Choose File
-                </button>
-                <div className="flex-1 flex items-center px-3 border border-slate-300 rounded-r bg-white text-xs text-slate-500">
-                  {data.files.length === 0
-                    ? 'No file chosen'
-                    : `${data.files.length} file${data.files.length > 1 ? 's' : ''} selected`}
-                </div>
-                <input
-                  ref={fileRef}
-                  type="file"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => handleFiles(e.target.files)}
-                />
-              </div>
-
-              {/* Selected files list */}
-              {data.files.length > 0 && (
-                <ul className="mt-3 space-y-1.5">
-                  {data.files.map((f, i) => (
-                    <li
-                      key={`${f.name}-${i}`}
-                      className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded px-3 py-1.5 text-xs"
-                    >
-                      <span className="text-slate-700 truncate max-w-[80%]">{f.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeFile(i)}
-                        className="text-rose-600 hover:text-rose-800 text-[11px] font-semibold"
-                      >
-                        Remove
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            
+            {/* ⭐ REMOVED: Upload Product Datasheet / Images section */}
           </div>
         </div>
 

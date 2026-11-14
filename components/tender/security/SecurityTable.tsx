@@ -1,7 +1,7 @@
 // components/tender/security/SecurityTable.tsx
 "use client";
 
-import { Loader2, Pencil, Trash2, History, Bell } from "lucide-react";
+import { Loader2, Pencil, Trash2, History, Bell, Eye } from "lucide-react"; // ✅ Eye ইম্পোর্ট
 import type { SecurityType } from "@/lib/api/tender.api";
 import type { SecurityRowUI } from "@/lib/api/mappers";
 
@@ -12,9 +12,10 @@ interface Props {
   rows: SecurityRow[];
   onDelete?: (id: string) => void | Promise<void>;
   onNotify?: (id: string) => void;
-  onEdit?: (row: SecurityRow) => void; // ✅ Changed to pass the full row
+  onEdit?: (row: SecurityRow) => void;
   onRecordPayment?: (row: SecurityRow) => void;
   onViewHistory?: (row: SecurityRow) => void;
+  onViewDetails?: (row: SecurityRow) => void; // ✅ নতুন প্রপ
   deletingId?: string | null;
   notifyingId?: string | null;
 }
@@ -38,6 +39,7 @@ export function SecurityTable({
   onEdit,
   onRecordPayment,
   onViewHistory,
+  onViewDetails, // ✅ রিসিভ করা হলো
   deletingId = null,
   notifyingId = null,
 }: Props) {
@@ -54,7 +56,7 @@ export function SecurityTable({
             <th className="px-5 py-3 w-[110px]">Payment due</th>
             <th className="px-5 py-3 w-[140px]">Payment status</th>
             <th className="px-5 py-3 w-[100px]">Delivery</th>
-            <th className="px-5 py-3 w-[160px] text-right pr-6">Actions</th>
+            <th className="px-5 py-3 w-[180px] text-right pr-6">Actions</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -107,14 +109,15 @@ export function SecurityTable({
                 </td>
                 <td className="px-5 py-3.5">
                   <span className={`inline-flex rounded-full px-2.5 py-0.5 text-[9px] font-bold ${r.delivery === "Delivered" ? "bg-[#ecfdf5] text-[#059669]" :
-                      r.delivery === "In delivery" ? "bg-[#fef3c7] text-[#d97706]" :
-                        "bg-[#f1f5f9] text-[#475569]"
+                    r.delivery === "In delivery" ? "bg-[#fef3c7] text-[#d97706]" :
+                      "bg-[#f1f5f9] text-[#475569]"
                     }`}>
                     {r.delivery || "—"}
                   </span>
                 </td>
                 <td className="px-5 py-3.5 text-right pr-6">
                   <div className="flex items-center justify-end gap-1.5">
+
                     {r.balance > 0 ? (
                       <button
                         onClick={() => onRecordPayment?.(r)}
@@ -146,6 +149,14 @@ export function SecurityTable({
                         {isNotifying ? <Loader2 className="h-3 w-3 animate-spin" /> : <Bell className="h-3 w-3" />}
                       </button>
                     )}
+                    {/* ✅ View Details Icon (Eye) */}
+                    <button
+                      onClick={() => onViewDetails?.(r)}
+                      className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-40"
+                      title="View Details"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </button>
 
                     {onEdit && (
                       <button
@@ -158,6 +169,7 @@ export function SecurityTable({
                         <Pencil className="h-3 w-3" />
                       </button>
                     )}
+
 
                     {onDelete && (
                       <button

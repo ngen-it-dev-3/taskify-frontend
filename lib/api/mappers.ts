@@ -29,7 +29,15 @@ export interface SecurityRowUI {
     isEditing?: boolean;
     isSaving?: boolean;
     isDeleting?: boolean;
+    documentUrl?: string;
+    purchaseDate?: string;
+    securityClosingDate?: string;
+    purchaseFrom?: string;
+    purchaseType?: string;
+    validityDate?: string;
 }
+
+// lib/api/mappers.ts
 
 export function toSecurityUIRow(raw: any): SecurityRowUI {
     const amount = Number(raw.amount) || 0;
@@ -41,8 +49,9 @@ export function toSecurityUIRow(raw: any): SecurityRowUI {
     let isOverdue = false;
     let dueText = "";
 
-    // ✅ Dynamic Status Calculation
-    if (raw.invoiceNo && raw.invoiceNo !== "No invoice yet") {
+    // ✅ Updated Status Calculation
+    // ইন্ভয়েস থাকে অথবা কোনো পেমেন্ট রিসিভ হয়ে থাকলে (receivedAmount > 0) স্ট্যাটাস চেক করবে
+    if ((raw.invoiceNo && raw.invoiceNo !== "No invoice yet") || receivedAmount > 0) {
         if (balance <= 0) {
             paymentStatus = raw.delivery === "Closed" ? "Closed" : "Paid in full";
         } else if (raw.dueDate) {
@@ -60,6 +69,7 @@ export function toSecurityUIRow(raw: any): SecurityRowUI {
                 dueText = `in ${diffDays} days`;
             }
         } else {
+            // ডিউ ডেট না থাকলেও যদি পেমেন্ট থাকে, তবে Part paid দেখাবে
             paymentStatus = receivedAmount > 0 ? "Part paid" : "Invoiced";
         }
     }
@@ -82,6 +92,12 @@ export function toSecurityUIRow(raw: any): SecurityRowUI {
         type: raw.type || "Tender Security",
         docsStatus: raw.docsStatus || "Missing",
         currency: "৳",
+        purchaseDate: raw.purchaseDate ? fmtDate(raw.purchaseDate) : "",
+        securityClosingDate: raw.securityClosingDate ? fmtDate(raw.securityClosingDate) : "",
+        purchaseFrom: raw.purchaseFrom || "",
+        purchaseType: raw.purchaseType || "",
+        validityDate: raw.validityDate ? fmtDate(raw.validityDate) : "",
+        documentUrl: raw.documentUrl || "",
     };
 }
 

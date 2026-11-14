@@ -99,6 +99,7 @@ export interface CreateRFQPayload {
   source?: RFQSource;
   company: string;
   country: string;
+  rfqSource?: string;
   contactName: string;
   email: string;
   phone?: string;

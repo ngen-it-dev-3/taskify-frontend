@@ -62,12 +62,12 @@ export default function ProductDetailsModal({ product, onClose }: Props) {
           {/* ---------- Grid of fields ---------- */}
           <div className="mt-7 grid grid-cols-2 gap-x-10 gap-y-6 text-sm">
             {/* Row 1: SKU / Part No. + Model No. */}
-            <Field label="SKU / PART NO." value={product.sku ?? 'N/A'} />
-            <Field label="MODEL NO." value={product.modelNo ?? 'N/A'} />
+            <Field label="SKU / PART NO." value={product.sku || 'N/A'} />
+            <Field label="MODEL NO." value={product.modelNo || 'N/A'} />
 
             {/* Row 2: Brand Name + Quantity */}
-            <Field label="BRAND NAME" value={product.brand ?? 'Acronis'} bold />
-            <Field label="QUANTITY" value={String(product.qty)} bold />
+            <Field label="BRAND NAME" value={product.brand || 'N/A'} bold />
+            <Field label="QUANTITY" value={String(product.qty || 1)} bold />
 
             {/* Row 3: Item Name (full width) */}
             <div className="col-span-2">
@@ -75,11 +75,15 @@ export default function ProductDetailsModal({ product, onClose }: Props) {
             </div>
 
             {/* Row 4: Item Description + Additional Info */}
+            {/* ⭐ FIX: Using product.description and product.additionalInfo instead of spec and N/A */}
             <Field
               label="ITEM DESCRIPTION"
-              value={product.spec ?? 'N/A'}
+              value={product.description || 'N/A'}
             />
-            <Field label="ADDITIONAL INFO" value="N/A" />
+            <Field
+              label="ADDITIONAL INFO"
+              value={product.additionalInfo || 'N/A'}
+            />
           </div>
         </div>
       </div>
@@ -105,11 +109,10 @@ function Field({
         {label}
       </div>
       <div
-        className={`mt-1.5 ${
-          bold
+        className={`mt-1.5 whitespace-pre-wrap ${bold
             ? 'font-semibold text-slate-900'
-            : 'font-normal text-slate-500'
-        } leading-snug`}
+            : 'font-normal text-slate-600'
+          } leading-snug`}
       >
         {value}
       </div>

@@ -1,8 +1,7 @@
 // components/tender/documents/DocCard.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { FileText, Shield, Award, Users, Trash2, RotateCw, Pencil, Clock } from "lucide-react";
+import { FileText, Shield, Award, Users, Trash2, RotateCw, Pencil, Clock, Calendar } from "lucide-react"; // ✅ Added Calendar icon
 import { StatusPill } from "./StatusPill";
 import type { CompanyDocUI } from "@/lib/api/mappers";
 import type { DocsTab } from "./DocsTabs";
@@ -40,6 +39,31 @@ function formatTimeAgo(dateString?: string) {
   return `${days} day${days === 1 ? "" : "s"} ago`;
 }
 
+// ✅ ১. শুধু তারিখ ফরম্যাট করার ফাংশন (Year Month Date)
+function formatDateOnly(dateString?: string) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = date.toLocaleString("en-GB", { month: "long" }); 
+  const day = date.getDate();
+
+  return `${year} ${month} ${day}`;
+}
+
+// ✅ ২. শুধু সময় ফরম্যাট করার ফাংশন (Hour:Minute)
+function formatTimeOnly(dateString?: string) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "";
+
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}
+
 export function DocCard({
   doc,
   category,
@@ -51,71 +75,6 @@ export function DocCard({
   const isExpired = doc.status === "Expired";
   const isExpiring = doc.status === "Expiring Soon";
 
-  // ✅ State for live time (updates every second)
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    // Update every 1 second for live countdown effect
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // ✅ Live Countdown Calculation Function
-  const getCountdown = () => {
-    let expiryDate: Date;
-
-    if (doc.validUntil) {
-      expiryDate = new Date(doc.validUntil);
-    } else if (doc.createdAt) {
-      expiryDate = new Date(doc.createdAt);
-      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    } else {
-      return null;
-    }
-
-    if (isNaN(expiryDate.getTime())) return null;
-
-    // If no time is provided in validUntil, set it to end of the day (23:59:59)
-    // This prevents showing "0h 0m" if the date is today
-    if (expiryDate.getHours() === 0 && expiryDate.getMinutes() === 0 && expiryDate.getSeconds() === 0) {
-      expiryDate.setHours(23, 59, 59);
-    }
-
-    const diffTime = expiryDate.getTime() - currentTime.getTime();
-
-    if (diffTime < 0) {
-      const absDiff = Math.abs(diffTime);
-      const days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((absDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      return { 
-        text: days > 0 ? `${days}d ${hours}h ago` : `${hours}h ago`, 
-        color: "text-rose-600"
-      };
-    }
-
-    const days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diffTime % (1000 * 60)) / 1000);
-
-    let text = "";
-    if (days > 0) text += `${days}d `;
-    if (hours > 0 || days > 0) text += `${hours}h `;
-    text += `${minutes}m ${seconds}s left`;
-
-    if (days === 0 && hours === 0) {
-      return { text: "Expires soon", color: "text-orange-600" };
-    }
-    if (days <= 30) {
-      return { text, color: "text-orange-600" };
-    }
-    
-    return { text, color: "text-emerald-600" };
-  };
-
-  const countdown = ["certificates", "legal", "profiles"].includes(category) ? getCountdown() : null;
-
-  // Determine Icon and Colors based on category
   let Icon = FileText;
   let iconBg = "bg-[#fdf8ec] text-[#a97400]";
   if (category === "certificates") { Icon = Shield; iconBg = "bg-purple-50 text-purple-600"; }
@@ -126,6 +85,19 @@ export function DocCard({
   const creatorName = doc.creatorName || "System Admin";
   const initials = creatorName.substring(0, 2).toUpperCase();
   const timeAgo = formatTimeAgo(doc.createdAt);
+  
+  let rawExpiryDate = doc.validUntil;
+  if (!rawExpiryDate && doc.createdAt) {
+    const d = new Date(doc.createdAt);
+    d.setFullYear(d.getFullYear() + 1);
+    rawExpiryDate = d.toISOString();
+  }
+
+  // ✅ আলাদা ভেরিয়েবল তৈরি করা হলো
+  const formattedExpiryDate = formatDateOnly(rawExpiryDate);
+  const formattedExpiryTime = formatTimeOnly(rawExpiryDate);
+  
+  const countdownColor = isExpired ? "text-rose-600" : isExpiring ? "text-orange-600" : "text-emerald-600";
 
   return (
     <article
@@ -276,11 +248,19 @@ export function DocCard({
           {["legal", "certificates", "profiles"].includes(category) && (
             <div className="flex items-center gap-2">
               <StatusPill status={doc.status} />
-              {countdown && (
-                <span className={`flex items-center gap-1 text-[10px] font-semibold ${countdown.color}`}>
-                  <Clock className="h-3 w-3" />
-                  {countdown.text}
-                </span>
+              
+              {/* ✅ এখানে তারিখ এবং সময় আলাদা করে দেখানো হয়েছে */}
+              {formattedExpiryDate && (
+                <div className={`flex items-center gap-2 text-[10px] font-semibold ${countdownColor}`}>
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {formattedExpiryDate}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {formattedExpiryTime}
+                  </span>
+                </div>
               )}
             </div>
           )}

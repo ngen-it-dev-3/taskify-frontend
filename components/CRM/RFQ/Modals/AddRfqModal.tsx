@@ -51,7 +51,7 @@ interface RFQFormData {
   inquiryDate: string;
   deliverySameAsCompany: boolean;
   endUserSameAsCompany: boolean;
-
+  rfqSource: string;
   shippingCompanyName: string;
   shippingContactName: string;
   shippingDesignation: string;
@@ -96,7 +96,7 @@ const INITIAL_FORM: RFQFormData = {
   inquiryDate: '',
   deliverySameAsCompany: false,
   endUserSameAsCompany: false,
-
+  rfqSource: '',
   shippingCompanyName: '',
   shippingContactName: '',
   shippingDesignation: '',
@@ -702,6 +702,7 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
       zipCode: form.zipCode,
       isReseller: form.isReseller,
       receivedVia: 'Email',
+      rfqSource: form.rfqSource,
       priority: 'normal',
       products: safeItems.map((it, i) => ({
         sl: i + 1,
@@ -1151,6 +1152,13 @@ function CompanyInfoStep({
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
+          <CheckboxRow
+            checked={form.isReseller}
+            onChange={(v) => setField('isReseller', v)}
+            label="I am a reseller"
+            hint="(Check if you are a reseller partner)"
+            className="mb-3"
+          />
           <InputField
             label="Company Name"
             placeholder="Company Name (e.g: NGen It)"
@@ -1158,13 +1166,6 @@ function CompanyInfoStep({
             onChange={(v) => setField('companyName', v)}
             error={errors.companyName}
             required
-          />
-          <CheckboxRow
-            checked={form.isReseller}
-            onChange={(v) => setField('isReseller', v)}
-            label="I am a reseller"
-            hint="(Check if you are a reseller partner)"
-            className="mt-3"
           />
         </div>
         <div className="pt-7">
@@ -1242,18 +1243,27 @@ function CompanyInfoStep({
           onChange={(v) => setField('inquiryDate', v)}
         />
       </div>
-      <div className="pt-2 space-y-2">
-        <CheckboxRow
-          checked={form.deliverySameAsCompany}
-          onChange={(v) => setField('deliverySameAsCompany', v)}
-          label="My delivery address is the same as the company address"
+      <div className="grid grid-cols-2 gap-4">
+        <SelectField
+          label="RFQ Source (Optional)"
+          placeholder="Select RFQ Source"
+          value={form.rfqSource}
+          onChange={(v) => setField('rfqSource', v)}
+          options={['Local', 'Web', 'Email', 'Deal']} // ⭐ আপনার স্ক্রিনশটের অপশনগুলো
         />
-        <CheckboxRow
-          checked={form.endUserSameAsCompany}
-          onChange={(v) => setField('endUserSameAsCompany', v)}
-          label="I am the end user and my information is the same as the company address"
-          disabled={form.isReseller}
-        />
+        <div className="pt-2 space-y-2">
+          <CheckboxRow
+            checked={form.deliverySameAsCompany}
+            onChange={(v) => setField('deliverySameAsCompany', v)}
+            label="My delivery address is the same as the company address"
+          />
+          <CheckboxRow
+            checked={form.endUserSameAsCompany}
+            onChange={(v) => setField('endUserSameAsCompany', v)}
+            label="I am the end user and my information is the same as the company address"
+            disabled={form.isReseller}
+          />
+        </div>
       </div>
     </div>
   );

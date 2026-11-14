@@ -353,8 +353,9 @@ export interface NotifyFinanceResult {
  * ============================================================ */
 
 export type SecurityType =
-  | "Tender Payments"
-  | "Security & Guarantees"
+  | "Tender Security"
+  | "Performance Security"
+  | "Payments";
 
 export interface TenderSecurity {
   _id: string;
@@ -362,13 +363,29 @@ export interface TenderSecurity {
   clientDescription: string;
   type: SecurityType;
   amount: number;
-  dueDate?: string;
+  currency?: string;
+
+  // ✅ নতুন ফিল্ডগুলো এখানে যোগ করুন (যা UI তে পাঠাচ্ছেন)
+  purchaseDate?: string | null;
+  securityClosingDate?: string | null;
+  purchaseFrom?: string;
+  purchaseType?: string;
+  validityDate?: string | null;
+  documentUrl?: string;
+
+  // Payment fields
+  invoiceNo?: string;
+  invoiceDate?: string | null;
+  receivedAmount?: number;
+  delivery?: string;
+  dueDate?: string | null;
   docsStatus: "Attached" | "Missing";
-  // ✅ Add these so TypeScript knows they exist on the row
+
+  // Extra UI fields
   paymentStatus?: "Invoiced" | "Part paid" | "Not invoiced" | "Paid in full" | "Closed";
   isOverdue?: boolean;
-  delivery?: string;
   history?: any[];
+  payments?: any[];
 }
 
 export interface TenderSecurityStats {
@@ -915,23 +932,20 @@ export const securityApi = {
     return handle<TenderSecurityStats>(r);
   },
 
-  async create(body: Partial<TenderSecurity>): Promise<TenderSecurity> {
+  async create(formData: FormData): Promise<TenderSecurity> {
     const r = await fetch(`${API_BASE}/tenders/security`, {
       method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify(body),
+      headers: authHeadersNoJson(), // ✅ Content-Type: application/json বাদ দিন
+      body: formData,
     });
     return handle<TenderSecurity>(r);
   },
 
-  async update(
-    id: string,
-    body: Partial<TenderSecurity>,
-  ): Promise<TenderSecurity> {
+  async update(id: string, formData: FormData): Promise<TenderSecurity> {
     const r = await fetch(`${API_BASE}/tenders/security/${id}`, {
       method: "PATCH",
-      headers: authHeaders(),
-      body: JSON.stringify(body),
+      headers: authHeadersNoJson(), // ✅ Content-Type: application/json বাদ দিন
+      body: formData,
     });
     return handle<TenderSecurity>(r);
   },
