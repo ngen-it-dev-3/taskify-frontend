@@ -20,6 +20,7 @@ import {
     Calendar,
     FileText,
     TrendingUp,
+    CheckCircle2,
 } from "lucide-react";
 
 /* ============================================================
@@ -107,25 +108,21 @@ const PRODUCT_LINES = [
 
 const TENDER_TYPES = ["eGP", "RFQ", "Direct"];
 
+// 🟢 FIX: সব ডিফল্ট ভ্যালু খালি করা হলো, যাতে প্রথমে কিছুই সিলেক্টেড না থাকে
 const DEFAULT_SETTINGS: TenderSettings = {
-    sectors: ["Government", "Power & Energy", "Financial"],
+    sectors: [],
     customSectors: [],
-    productLines: [
-        "Computer & Electronics",
-        "IoT Sensors",
-        "Industrial Sensors",
-        "Software Licensing",
-    ],
+    productLines: [],
     customProductLines: [],
-    valueMin: 500000,
+    valueMin: null,
     valueMax: null,
-    securityMin: 10000,
-    securityMax: 5000000,
+    securityMin: null,
+    securityMax: null,
     performanceMin: null,
-    performanceMax: 20000000,
-    tenderTypes: ["eGP", "RFQ"],
+    performanceMax: null,
+    tenderTypes: [],
     customTenderTypes: [],
-    crawlTime: "06:00",
+    crawlTime: "06:00", // শিডিউল টাইম ডিফল্ট থাকতে পারে
     notificationRecipientIds: [],
     customRangeNote: "",
 };
@@ -522,9 +519,9 @@ function CrawlResultCard({ result }: { result: CrawlResult }) {
                     {result.matchedOn.map((tag) => (
                         <span
                             key={tag}
-                            className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700"
+                            className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700"
                         >
-                            ✓ {tag}
+                            <CheckCircle2 className="h-2.5 w-2.5" /> {tag}
                         </span>
                     ))}
                 </div>
@@ -558,7 +555,7 @@ export default function TenderSettingsPage() {
                     if (r.ok) sRes = await r.json();
                 } catch { }
 
-                /* 2. Users — /users first, /auth/users fallback */
+                /* 2. Users */
                 let uRes: any = { data: [] };
                 try {
                     const r = await fetch(`${API_BASE}/users`, {
@@ -566,14 +563,6 @@ export default function TenderSettingsPage() {
                     });
                     if (r.ok) uRes = await r.json();
                 } catch { }
-                if (!Array.isArray(uRes?.data) || uRes.data.length === 0) {
-                    try {
-                        const r = await fetch(`${API_BASE}/auth/users`, {
-                            headers: authHeaders(),
-                        });
-                        if (r.ok) uRes = await r.json();
-                    } catch { }
-                }
 
                 /* 3. Last crawl */
                 let cRes: any = { data: null };
@@ -584,7 +573,34 @@ export default function TenderSettingsPage() {
                     if (r.ok) cRes = await r.json();
                 } catch { }
 
-                if (sRes?.data) setSettings({ ...DEFAULT_SETTINGS, ...sRes.data });
+                // 🟢 FIX: ডেটাবেসে পুরোনো ডেটা থাকলেও, যদি সেটা ডিফল্ট মান হয়, তবে তা ইগনোর করুন
+                if (sRes?.data) {
+                    const dbData = sRes.data;
+                    // যদি ডেটাবেসে ডিফল্ট সেক্টর/প্রোডাক্ট লাইন থাকে (অর্থাৎ আগের সেভ করা ডেটা), তবে সেটা বাদ দিন
+                    const isOldDefault = 
+                        dbData.sectors?.length === 3 && 
+                        dbData.sectors.includes("Government") && 
+                        dbData.sectors.includes("Power & Energy") && 
+                        dbData.sectors.includes("Financial") &&
+                        dbData.productLines?.length === 4 &&
+                        dbData.productLines.includes("Computer & Electronics");
+
+                    if (isOldDefault) {
+                        // পুরোনো ডিফল্ট ডেটা হলে, শুধু অন্যান্য ফিল্ড (যেমন crawlTime, recipients) রাখুন, চেকবক্সগুলো খালি রাখুন
+                        setSettings({
+                            ...DEFAULT_SETTINGS,
+                            crawlTime: dbData.crawlTime || "06:00",
+                            notificationRecipientIds: dbData.notificationRecipientIds || [],
+                            customSectors: dbData.customSectors || [],
+                            customProductLines: dbData.customProductLines || [],
+                            customTenderTypes: dbData.customTenderTypes || [],
+                            customRangeNote: dbData.customRangeNote || "",
+                        });
+                    } else {
+                        // নতুন সেভ করা ডেটা থাকলে সেটাই দেখান
+                        setSettings({ ...DEFAULT_SETTINGS, ...dbData });
+                    }
+                }
                 setUsers(Array.isArray(uRes?.data) ? uRes.data : []);
                 setLastCrawl(cRes?.data ?? null);
             } finally {

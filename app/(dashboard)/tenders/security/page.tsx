@@ -214,19 +214,19 @@ export default function TenderSecurityPage() {
     }
   };
 
-  const handleSaveEdit = async (id: string, data: any) => {
+const handleSaveEdit = async (id: string, formData: FormData) => { // ✅ FormData টাইপ
     const loadingId = toast.loading("Updating record...");
     try {
-      await securityApi.update(id, data);
-      toast.success("Record updated successfully", { id: loadingId });
-      await refetchRows();
-      await fetchStats();
-      setEditingRow(null);
+        await securityApi.update(id, formData); // ✅ API তে FormData পাঠান
+        toast.success("Record updated successfully", { id: loadingId });
+        await refetchRows();
+        await fetchStats();
+        setEditingRow(null);
     } catch (e: any) {
-      toast.error(e.message || "Failed to update record", { id: loadingId });
-      throw e;
+        toast.error(e.message || "Failed to update record", { id: loadingId });
+        throw e;
     }
-  };
+};
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
