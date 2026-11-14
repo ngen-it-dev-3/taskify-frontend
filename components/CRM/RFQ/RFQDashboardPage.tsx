@@ -182,7 +182,7 @@ export default function RFQDashboardPage() {
     setShowAssignModal(false);
   };
 
-    const submitRfq = async (data: any) => {
+  const submitRfq = async (data: any) => {
     try {
       if (editingRfqId) {
         const itemsArray = data.items || data.products || [];
@@ -198,6 +198,9 @@ export default function RFQDashboardPage() {
           city: data.city,
           zipCode: data.zipCode,
           isReseller: data.isReseller,
+          
+          // ⭐ ADDED: rfqSource mapped to update
+          rfqSource: data.rfqSource,
 
           projectName: data.projectName,
           tentativeBudget: data.tentativeBudget,
@@ -415,6 +418,10 @@ export default function RFQDashboardPage() {
                 city: selectedRFQ.clientInfo?.city || '',
                 zipCode: selectedRFQ.clientInfo?.zipCode || '',
                 isReseller: (selectedRFQ as any).isReseller || false,
+                
+                // ⭐ ADDED: rfqSource mapped to initialData
+                rfqSource: (selectedRFQ as any).rfqSource || '',
+                inquiryDate: (selectedRFQ as any).inquiryDate || '',
 
                 // Additional Details (The missing data!)
                 projectName: (selectedRFQ as any).projectName || (selectedRFQ as any).clientInfo?.projectName || '',

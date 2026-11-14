@@ -144,8 +144,14 @@ export default function RfqDetailPanel({
       <div className="lg:col-span-7 bg-white rounded-xl p-6 border border-[#EBE6DF] shadow-2xs">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 mb-4 border-b border-[#F0EBE3] gap-2">
           <div>
-            <div className="text-xs font-bold text-[#A06126] uppercase tracking-wider font-mono">
-              RFQ# {rfq.rfqNumber}
+            <div className="text-xs font-bold text-[#A06126] uppercase tracking-wider font-mono flex items-center gap-2">
+              <span>RFQ# {rfq.rfqNumber}</span>
+              {/* ⭐ ADDED: RFQ Source Badge */}
+              {rfq.rfqSource && (
+                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px] lowercase font-sans tracking-normal border border-slate-200">
+                  Source: {rfq.rfqSource}
+                </span>
+              )}
             </div>
             <h2 className="text-lg font-serif font-bold text-[#0F2D4A] mt-0.5">
               {rfq.company} · {rfq.country}

@@ -61,12 +61,10 @@ export interface RFQItem {
   salesman: string;
   assignedTo: string;
   inquiryDate?: string;
-
-  // ⭐ CRITICAL: These 3 fields were missing. Adding them fixes the UI.
   territory?: string;
   currency?: string;
   exchangeRate?: number;
-
+  rfqSource?: string;
   // Additional Details
   projectName?: string;
   tentativeBudget?: string;
