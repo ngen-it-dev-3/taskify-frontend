@@ -3,7 +3,6 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import {
   Calendar,
   Clock,
@@ -18,20 +17,14 @@ import {
   Eye,
   Loader2,
   FileText,
-  Plus,
   Trash2,
-  Check,
-  X,
   Ban,
-  UserPlus,
   PieChart,
   Home,
   ChevronRight as ChevronRightIcon,
   Star,
   Heart,
   Sun,
-  AlertTriangle as AlertTriangleIcon,
-  FileSignature,
 } from "lucide-react";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
@@ -40,10 +33,8 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import LeaveEligibilityModal from "@/components/HR/LeaveEligibilityModal";
 
-// ⭐ নতুন মডাল ইম্পোর্ট করুন
-
 // ============================================================================
-// TYPES
+// TYPES & CONSTANTS
 // ============================================================================
 
 interface LeaveRequest {
@@ -69,16 +60,6 @@ interface LeaveBalance {
 }
 
 type LeaveStatus = "all" | "pending" | "approved" | "rejected" | "cancelled";
-
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-const LEAVE_TYPES = [
-  { value: "sick", label: "Sick Leave" },
-  { value: "casual", label: "Casual Leave" },
-  { value: "earned", label: "Earned Leave" },
-];
 
 const leaveTypeLabels: Record<string, string> = {
   sick: "Sick Leave",
@@ -119,16 +100,11 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
+// ⭐ ফিক্সড বেস ব্যালেন্স (আপনি যা চেয়েছেন)
 const MAX_LEAVE_BALANCES: Record<string, number> = {
   sick: 10,
   casual: 8,
   earned: 6,
-};
-
-const ACCRUAL_RULES: Record<string, number> = {
-  sick: 36,
-  casual: 45,
-  earned: 60,
 };
 
 // ============================================================================
@@ -136,45 +112,18 @@ const ACCRUAL_RULES: Record<string, number> = {
 // ============================================================================
 
 export default function MyLeavesPage() {
-  const router = useRouter();
   const { user, isAuthenticated } = useAuth();
 
-  // State
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [leaveBalances, setLeaveBalances] = useState<LeaveBalance[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState<LeaveStatus>("all");
   const [filterType, setFilterType] = useState<string>("all");
-  const [showApplyModal, setShowApplyModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [signaturePreview, setSignaturePreview] = useState<string | null>(null);
-  const [users, setUsers] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
-
-  // ⭐ নতুন স্টেট: Eligibility Modal
   const [showEligibilityModal, setShowEligibilityModal] = useState(false);
-
-  const [applyForm, setApplyForm] = useState({
-    type: "sick",
-    startDate: "",
-    endDate: "",
-    isHalfDay: false,
-    halfDayType: "first_half",
-    isPreviousDayOff: false,
-    isNextDayOff: false,
-    isGovernmentHoliday: false,
-    holidayNote: "",
-    substituteId: "",
-    reason: "",
-    additionalDetails: "",
-    contactDuringLeave: "",
-    emergencyContact: { name: "", phone: "", relation: "" },
-    signatureText: "",
-    signatureImage: null as File | null,
-  });
 
   // ============================================================================
   // EFFECTS
@@ -183,33 +132,34 @@ export default function MyLeavesPage() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchLeaveData();
-      fetchUsers();
     }
   }, [isAuthenticated]);
 
   // ============================================================================
-  // DATA FETCHING
+  // ⭐ DATA FETCHING & BALANCE CALCULATION (FIXED)
   // ============================================================================
 
   const calculateBalances = (requests: LeaveRequest[]): LeaveBalance[] => {
     const leaveTypes = Object.keys(MAX_LEAVE_BALANCES);
-    const joinDate = user?.createdAt ? new Date(user.createdAt) : new Date();
-    const today = new Date();
-    const daysSinceJoining = Math.ceil(Math.abs(today.getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24));
 
     return leaveTypes.map((type) => {
-      const accruedDays = Math.floor(daysSinceJoining / ACCRUAL_RULES[type]);
-      const totalAllowed = Math.min(accruedDays, MAX_LEAVE_BALANCES[type]);
+      // ১. মোট ছুটি (সবসময় ফিক্সড ১০, ৮, ৬ থাকবে)
+      const totalAllowed = MAX_LEAVE_BALANCES[type];
 
+      // ২. ব্যবহৃত ছুটি (Approved)
       const used = requests
         .filter((r) => r.type === type && r.status === "approved")
         .reduce((sum, r) => sum + (r.totalDays || 0), 0);
 
+      // ৩. পেন্ডিং ছুটি
       const pending = requests
         .filter((r) => r.type === type && r.status === "pending")
         .reduce((sum, r) => sum + (r.totalDays || 0), 0);
 
+      // ৪. অবশিষ্ট ছুটি (Total - Used)
       const remaining = Math.max(0, totalAllowed - used);
+
+      // ৫. শতাংশ (প্রোগ্রেস বারের জন্য)
       const percentage = totalAllowed > 0 ? (used / totalAllowed) * 100 : 0;
 
       return {
@@ -249,32 +199,9 @@ export default function MyLeavesPage() {
     }
   };
 
-  const fetchUsers = async () => {
-    try {
-      const response = await api.get("/leaves/substitutes");
-      if (response.data.success) {
-        setUsers(response.data.data || []);
-      }
-    } catch (error: any) {
-      setUsers([]);
-    }
-  };
-
   // ============================================================================
   // HELPERS
   // ============================================================================
-
-  const getAvailableSubstitutes = useMemo(() => {
-    return users.filter((u) => u._id !== user?._id);
-  }, [users, user]);
-
-  const calculateDays = (start: string, end: string): number => {
-    if (!start || !end) return 0;
-    const startDate = new Date(start);
-    const endDate = new Date(end);
-    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  };
 
   const getRemainingBalance = (leaveType: string): number => {
     const balance = leaveBalances.find((b) => b.leaveType === leaveType);
@@ -312,88 +239,6 @@ export default function MyLeavesPage() {
   // HANDLERS
   // ============================================================================
 
-  const handleLeaveTypeChange = (type: string) => {
-    const remaining = getRemainingBalance(type);
-    const defaultBal = getDefaultBalance(type);
-    const used = getUsedBalance(type);
-    setApplyForm({ ...applyForm, type });
-
-    if (remaining === 0 && defaultBal > 0) {
-      toast.error(`You have no ${getLeaveTypeLabel(type)} remaining! (Used: ${used} of ${defaultBal})`);
-    } else if (remaining < 3 && defaultBal > 0) {
-      toast.error(`You only have ${remaining} ${getLeaveTypeLabel(type)} days remaining! (Used: ${used} of ${defaultBal})`);
-    }
-  };
-
-  const handleSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setApplyForm({ ...applyForm, signatureImage: file });
-      const reader = new FileReader();
-      reader.onloadend = () => { setSignaturePreview(reader.result as string); };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const validateForm = (): boolean => {
-    if (!applyForm.startDate || !applyForm.endDate) {
-      toast.error("Please select start and end dates"); return false;
-    }
-    if (!applyForm.reason) {
-      toast.error("Please provide a reason for your leave"); return false;
-    }
-    const days = calculateDays(applyForm.startDate, applyForm.endDate);
-    const remaining = getRemainingBalance(applyForm.type);
-
-    if (days > remaining) {
-      toast.error(`You only have ${remaining} ${getLeaveTypeLabel(applyForm.type)} days remaining!`);
-      return false;
-    }
-    return true;
-  };
-
-  const handleApplyLeave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        type: applyForm.type,
-        startDate: applyForm.startDate,
-        endDate: applyForm.endDate,
-        reason: applyForm.reason,
-        isHalfDay: applyForm.isHalfDay,
-        halfDayType: applyForm.halfDayType,
-        isPreviousDayOff: applyForm.isPreviousDayOff,
-        isNextDayOff: applyForm.isNextDayOff,
-        isGovernmentHoliday: applyForm.isGovernmentHoliday,
-        holidayNote: applyForm.holidayNote || undefined,
-        substituteId: applyForm.substituteId || undefined,
-        contactDuringLeave: applyForm.contactDuringLeave || undefined,
-        emergencyContact: {
-          name: applyForm.emergencyContact.name || undefined,
-          phone: applyForm.emergencyContact.phone || undefined,
-          relation: applyForm.emergencyContact.relation || undefined,
-        },
-        additionalDetails: applyForm.additionalDetails || undefined,
-        signatureText: applyForm.signatureText || undefined,
-      };
-
-      const response = await api.post("/leaves", payload);
-      if (response.data.success) {
-        toast.success("Leave request submitted successfully!");
-        setShowApplyModal(false);
-        resetForm();
-        fetchLeaveData();
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to submit leave request");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleDeleteLeave = async () => {
     if (!selectedLeave) return;
     try {
@@ -407,16 +252,6 @@ export default function MyLeavesPage() {
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to delete leave");
     }
-  };
-
-  const resetForm = () => {
-    setApplyForm({
-      type: "sick", startDate: "", endDate: "", isHalfDay: false, halfDayType: "first_half",
-      isPreviousDayOff: false, isNextDayOff: false, isGovernmentHoliday: false, holidayNote: "",
-      substituteId: "", reason: "", additionalDetails: "", contactDuringLeave: "",
-      emergencyContact: { name: "", phone: "", relation: "" }, signatureText: "", signatureImage: null,
-    });
-    setSignaturePreview(null);
   };
 
   // ============================================================================
@@ -489,14 +324,11 @@ export default function MyLeavesPage() {
               <Calendar className="w-6 h-6 text-green-600" />
               My Leaves
             </h1>
-            <p className="text-gray-500 text-sm mt-1">Manage and apply for leave requests</p>
+            <p className="text-gray-500 text-sm mt-1">Manage your leave requests</p>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => fetchLeaveData()} className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium flex items-center gap-2 shadow-sm">
               <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh
-            </button>
-            <button onClick={() => setShowApplyModal(true)} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-medium shadow-sm flex items-center gap-2">
-              <Plus className="w-4 h-4" /> Apply Leave
             </button>
           </div>
         </div>
@@ -535,7 +367,7 @@ export default function MyLeavesPage() {
           </div>
         </div>
 
-        {/* ⭐ LEAVE BALANCES & ELIGIBILITY BUTTON */}
+        {/* LEAVE BALANCES */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
@@ -545,7 +377,6 @@ export default function MyLeavesPage() {
                 (Sick: 1/36d, Casual: 1/45d, Earned: 1/60d)
               </span>
             </h3>
-            {/* ⭐ এই বাটনটি মডাল ওপেন করবে */}
             <button
               onClick={() => setShowEligibilityModal(true)}
               className="text-xs font-semibold text-[#A06126] hover:bg-[#A06126]/10 px-3 py-1.5 rounded-md border border-[#A06126]/30 transition-colors flex items-center gap-1.5"
@@ -664,7 +495,7 @@ export default function MyLeavesPage() {
                       <div className="flex flex-col items-center justify-center">
                         <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4"><Calendar className="w-8 h-8 text-gray-300" /></div>
                         <h3 className="text-lg font-medium text-gray-900 mb-1">No leave requests found</h3>
-                        <p className="text-sm text-gray-400">Try adjusting your filters or apply for a new leave.</p>
+                        <p className="text-sm text-gray-400">Try adjusting your filters.</p>
                       </div>
                     </td>
                   </tr>
@@ -690,15 +521,6 @@ export default function MyLeavesPage() {
         isOpen={showEligibilityModal}
         onClose={() => setShowEligibilityModal(false)}
       />
-
-      {/* APPLY LEAVE MODAL (আগের কোডটাই থাকবে, শুধু স্পেস বাঁচাতে ছোট করা হলো) */}
-      <AnimatePresence>
-        {showApplyModal && (
-          // ... আপনার আগের Apply Leave Modal এর কোড ...
-          // (এখানে হুবহু আগের মডালটি বসিয়ে দিন)
-          <></>
-        )}
-      </AnimatePresence>
 
       {/* DELETE MODAL */}
       <AnimatePresence>
