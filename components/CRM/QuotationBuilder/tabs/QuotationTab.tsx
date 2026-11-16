@@ -73,7 +73,7 @@ export default function QuotationTab({
     const displayGst = gst;
     const displayGrand = grand;
 
-    const sym = meta.currencySymbol || '৳';
+    const sym = meta.currencySymbol || 'BDT';
 
     const productLines = lines.filter((l) => l.type !== 'fixed');
     const displayLines = productLines.filter((l) => l.name.trim() !== '');
@@ -239,15 +239,26 @@ export default function QuotationTab({
                 {/* LETTERHEAD */}
                 <div className="bg-[#0F2D4A] px-10 py-7 flex items-center justify-between flex-wrap gap-4">
                     <div className="flex items-center gap-3.5">
-                        <div className="w-14 h-14 rounded-lg bg-[#A06126] flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                            NG
+                        <div className="overflow-hidden bg-white p-1 rounded-[5px] flex items-center justify-center shrink-0">
+                            <img
+                                src="https://www.ngenitltd.com/storage/LHhL5VKR2aoXEl2umO4UyKqj95qkKzvIPgZNfRNh.png"
+                                alt="Logo"
+                                className="w-22 h-12 object-contain"
+                            />
                         </div>
+                        {/* <div className="overflow-hidden  p-1 rounded-[5px] flex items-center justify-center shrink-0">
+                            <img
+                                src="/Logo(White).png"
+                                alt="Logo"
+                                className="w-22 h-12 object-contain"
+                            />
+                        </div> */}
                         <div>
                             <div className="text-white font-bold text-[20px] leading-tight tracking-tight">
                                 NGEN IT LIMITED
                             </div>
                             <div className="text-white/70 text-[12px] tracking-wide mt-0.5">
-                                Facing Next Generation IT
+                                Pacing Next Generation IT
                             </div>
                         </div>
                     </div>
@@ -259,7 +270,7 @@ export default function QuotationTab({
                 {/* BILL TO + QUOTE DETAILS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 px-10 py-8 border-b border-[#F0EBE3]">
                     <div>
-                        <div className="text-[10px] font-bold text-[#A06126] uppercase mb-5">
+                        <div className="text-[12px] font-bold text-[#A06126] uppercase mb-5">
                             Bill To
                         </div>
                         <div className="space-y-0">
@@ -303,30 +314,27 @@ export default function QuotationTab({
                     </div>
 
                     <div>
-                        <div className="text-[10px] font-bold text-[#A06126] uppercase mb-5">
+                        <div className="text-[12px] font-bold text-[#A06126] uppercase mb-5">
                             Quote Details
                         </div>
                         <div className="space-y-0">
-                            <EditableRow
+                            <ReadOnlyRow
                                 label="PQ #"
                                 value={meta.pqNumber || '—'}
-                                onChange={(v) => patchMeta({ pqNumber: v })}
                                 strong
                                 mono
                             />
-                            <EditableRow
+                            <ReadOnlyRow
                                 label="Date"
                                 value={displayDate}
-                                onChange={(v) => patchMeta({ pqDate: v })}
                                 mono
                             />
-                            <EditableRow
+                            <ReadOnlyRow
                                 label="PQR #"
                                 value={meta.pqrNumber || '—'}
-                                onChange={(v) => patchMeta({ pqrNumber: v })}
                                 mono
                             />
-                            <EditableRow
+                            <ReadOnlyRow
                                 label="RFQ Ref"
                                 value={
                                     meta.rfqRefOverride ||
@@ -334,7 +342,6 @@ export default function QuotationTab({
                                     meta.rfqNumber ||
                                     '—'
                                 }
-                                onChange={(v) => patchMeta({ rfqRefOverride: v })}
                                 mono
                             />
                         </div>
@@ -344,25 +351,25 @@ export default function QuotationTab({
                 {/* LINE ITEMS */}
                 <div className="px-10 py-8">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-[12.5px]">
+                        <table className="w-full text-[12px]">
                             <thead>
                                 <tr className="border-b border-[#E5DFD3]">
-                                    <th className="pb-3 text-left text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-12">
+                                    <th className="pb-3 text-left text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-12">
                                         SI
                                     </th>
-                                    <th className="pb-3 text-left text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold">
+                                    <th className="pb-3 text-left text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold">
                                         Product Name
                                     </th>
-                                    <th className="pb-3 text-center text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-20">
+                                    <th className="pb-3 text-center text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-20">
                                         Qty
                                     </th>
-                                    <th className="pb-3 text-right text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
+                                    <th className="pb-3 text-right text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
                                         Unit Price
                                     </th>
-                                    <th className="pb-3 text-center text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
+                                    <th className="pb-3 text-center text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
                                         Total
                                     </th>
-                                    <th className="pb-3 text-center text-[10px] uppercase tracking-[0.12em] text-slate-500 font-bold w-24">
+                                    <th className="pb-3 text-center text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-24">
                                         Action
                                     </th>
                                 </tr>
@@ -389,7 +396,7 @@ export default function QuotationTab({
                                                             })
                                                         }
                                                         placeholder="Enter product name…"
-                                                        className="w-full bg-white border border-[#A06126] rounded px-2.5 py-1.5 text-[12.5px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
+                                                        className="w-full bg-white border border-[#A06126] rounded px-2.5 py-1.5 text-[12px] text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
                                                         autoFocus
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter') saveEdit();
@@ -414,7 +421,7 @@ export default function QuotationTab({
                                                             if (e.key === 'Escape') cancelEdit();
                                                         }}
                                                         placeholder="0"
-                                                        className="w-16 bg-white border border-[#A06126] rounded px-2 py-1.5 text-center text-[12.5px] font-mono focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
+                                                        className="w-16 bg-white border border-[#A06126] rounded px-2 py-1.5 text-center text-[12px] font-mono focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
                                                     />
                                                 </td>
                                                 <td className="py-3.5 text-right">
@@ -434,11 +441,11 @@ export default function QuotationTab({
                                                             if (e.key === 'Escape') cancelEdit();
                                                         }}
                                                         placeholder="0"
-                                                        className="w-32 bg-white border border-[#A06126] rounded px-2 py-1.5 text-right text-[12.5px] font-mono focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
+                                                        className="w-32 bg-white border border-[#A06126] rounded px-2 py-1.5 text-right text-[12px] font-mono focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
                                                     />
                                                 </td>
                                                 <td className="py-3.5 text-center font-mono text-slate-500">
-                                                    {sym}
+                                                    <span className="pe-2">{sym}</span>
                                                     {(
                                                         (Number(editing.price) || 0) *
                                                         (Number(editing.qty) || 0)
@@ -476,13 +483,13 @@ export default function QuotationTab({
                                                 {l.qty}
                                             </td>
                                             <td className="py-2 text-right font-mono text-slate-700">
-                                                {sym}
+                                                <span className="pe-2">{sym}</span>
                                                 {baseUnitPrice.toLocaleString(undefined, {
                                                     maximumFractionDigits: 2,
                                                 })}
                                             </td>
                                             <td className="py-2 text-right font-mono font-semibold text-slate-900">
-                                                {sym}
+                                                <span className="pe-2">{sym}</span>
                                                 {baseTotal.toLocaleString(undefined, {
                                                     maximumFractionDigits: 2,
                                                 })}
@@ -544,11 +551,11 @@ export default function QuotationTab({
 
                     {/* TOTALS */}
                     <div className="mt-10 flex justify-end">
-                        <div className="w-full max-w-[360px] space-y-3 text-[12.5px]">
+                        <div className="w-full max-w-[360px] space-y-3 text-[12px]">
                             <div className="flex justify-between items-center">
                                 <span className="text-slate-600">Sub Total</span>
                                 <span className="font-mono text-slate-900">
-                                    {sym}
+                                     <span className="pe-2">−{sym}</span>
                                     {displaySubtotal.toLocaleString(undefined, {
                                         maximumFractionDigits: 2,
                                     })}
@@ -559,10 +566,10 @@ export default function QuotationTab({
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">
                                         Discount{' '}
-                                        <span className="text-black font-medium">(applied)</span>
+                                        <span className="text-slate-600font-medium">(applied)</span>
                                     </span>
                                     <span className="font-mono text-black">
-                                        −{sym}
+                                        <span className="pe-2">−{sym}</span>
                                         {displayDiscount.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
                                         })}
@@ -574,7 +581,7 @@ export default function QuotationTab({
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">Net Sub Total</span>
                                     <span className="font-mono text-slate-900">
-                                        {sym}
+                                         <span className="pe-2">{sym}</span>
                                         {displayNetSub.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
                                         })}
@@ -589,10 +596,11 @@ export default function QuotationTab({
                                         <span className="text-slate-400">
                                             ({rates?.taxPct ?? 15}%)
                                         </span>{' '}
-                                        <span className="text-slate-800 font-medium">(added)</span>
+                                        <span className="text-slate-600 font-medium">(added)</span>
                                     </span>
-                                    <span className="font-mono text-slate-800 font-semibold">
-                                        +{sym}
+                                    <span className="font-mono text-slate-600 font-semibold">
+                                        
+                                         <span className="pe-2">+{sym}</span>
                                         {displayGst.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
                                         })}
@@ -621,7 +629,8 @@ export default function QuotationTab({
                                     Grand Total
                                 </span>
                                 <span className="font-bold text-[#A06126] font-mono text-[20px]">
-                                    {sym}
+                                    {/* {sym}  */}
+                                    <span className="pe-2">BDT</span>
                                     {displayGrand.toLocaleString(undefined, {
                                         maximumFractionDigits: 2,
                                     })}
@@ -694,7 +703,7 @@ export default function QuotationTab({
 
                 {/* ACTION BAR */}
                 <div className="px-10 py-6 bg-[#FAF8F5] border-t border-[#F0EBE3]">
-                    <label className="flex items-center gap-2 text-[12.5px] text-slate-600 cursor-pointer mb-4">
+                    <label className="flex items-center gap-2 text-[12px] text-slate-600 cursor-pointer mb-4">
                         <input
                             type="checkbox"
                             checked={withAttachment}
@@ -709,7 +718,7 @@ export default function QuotationTab({
                             type="button"
                             onClick={() => onSend?.(withAttachment)}
                             disabled={sending}
-                            className="px-6 py-2.5 bg-[#A06126] hover:bg-[#88501E] text-white text-[12.5px] font-semibold rounded-lg transition shadow-sm disabled:opacity-60 inline-flex items-center gap-2"
+                            className="px-6 py-2.5 bg-[#A06126] hover:bg-[#88501E] text-white text-[12px] font-semibold rounded-lg transition shadow-sm disabled:opacity-60 inline-flex items-center gap-2"
                         >
                             {sending && (
                                 <span className="w-3 h-3 rounded-full border-2 border-white/40 border-t-white animate-spin" />
@@ -719,7 +728,7 @@ export default function QuotationTab({
                         <button
                             type="button"
                             onClick={onWhatsApp}
-                            className="px-6 py-2.5 bg-[#1E3A8A] hover:bg-[#1C3760] text-white text-[12.5px] font-semibold rounded-lg transition shadow-sm inline-flex items-center gap-2"
+                            className="px-6 py-2.5 bg-[#1E3A8A] hover:bg-[#1C3760] text-white text-[12px] font-semibold rounded-lg transition shadow-sm inline-flex items-center gap-2"
                         >
                             <span>💬</span>
                             Share on WhatsApp
@@ -727,7 +736,7 @@ export default function QuotationTab({
                         <button
                             type="button"
                             onClick={onGenerateLink}
-                            className="px-6 py-2.5 border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 text-[12.5px] font-semibold rounded-lg transition inline-flex items-center gap-2"
+                            className="px-6 py-2.5 border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 text-[12px] font-semibold rounded-lg transition inline-flex items-center gap-2"
                         >
                             <span>🔗</span>
                             Generate Shareable Link
@@ -742,6 +751,46 @@ export default function QuotationTab({
 /* =========================================================
    ATOMS
    ========================================================= */
+function ReadOnlyRow({
+    label,
+    value,
+    strong,
+    mono,
+}: {
+    label: string;
+    value: string;
+    strong?: boolean;
+    mono?: boolean;
+}) {
+    return (
+        <div className="grid grid-cols-[120px_1fr] gap-3 items-center py-2 border-b border-[#E5DFD3] last:border-b-0">
+            <span
+                style={{
+                    color: '#6b7280',
+                    fontSize: '12px',
+                    fontWeight: 400,
+                    lineHeight: '1.4',
+                }}
+            >
+                {label}
+            </span>
+            <div
+                className="break-words"
+                style={{
+                    color: '#0F2D4A',
+                    fontSize: mono ? '12px' : '13px',
+                    fontWeight: strong ? 700 : 500,
+                    fontFamily: mono
+                        ? 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace'
+                        : 'inherit',
+                    lineHeight: '1.45',
+                }}
+            >
+                {value}
+            </div>
+        </div>
+    );
+}
 
 function EditableRow({
     label,
@@ -788,7 +837,7 @@ function EditableRow({
             <div className="grid grid-cols-[120px_1fr] gap-3 items-start py-2 border-b border-[#E5DFD3] last:border-b-0">
                 <span
                     className="pt-1.5"
-                    style={{ color: '#A0AEC0', fontSize: '12px', fontWeight: 400 }}
+                    style={{ color: '#6b7280', fontSize: '12px', fontWeight: 400 }}
                 >
                     {label}
                 </span>
@@ -801,7 +850,7 @@ function EditableRow({
                             if (e.key === 'Enter') save();
                             if (e.key === 'Escape') cancel();
                         }}
-                        className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12.5px] text-[#0F2D4A] font-medium focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
+                        className="w-full bg-white border border-[#A06126] rounded px-2 py-1.5 text-[12px] text-[#0F2D4A] font-medium focus:outline-none focus:ring-2 focus:ring-[#A06126]/30"
                         style={{
                             fontFamily: mono
                                 ? 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace'
@@ -846,7 +895,7 @@ function EditableRow({
             <span
                 className="pt-0.5"
                 style={{
-                    color: '#A0AEC0',
+                    color: '#6b7280',
                     fontSize: '12px',
                     fontWeight: 400,
                     lineHeight: '1.4',
@@ -860,12 +909,9 @@ function EditableRow({
                     <div
                         className="break-words"
                         style={{
-                            color: '#0F2D4A',
-                            fontSize: mono ? '12.5px' : '13px',
+                            color: '#0d2137',
+                            fontSize: mono ? '12px' : '12px',
                             fontWeight: strong ? 700 : 500,
-                            fontFamily: mono
-                                ? 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace'
-                                : 'inherit',
                             lineHeight: '1.45',
                         }}
                     >
@@ -962,9 +1008,9 @@ function TermRow({
 
     return (
         <div className="grid grid-cols-[130px_1fr] gap-6 items-start py-2 group">
-            <span className="text-slate-800 font-bold text-[12.5px]">{label}</span>
+            <span className="text-slate-800 font-bold text-[12px]">{label}</span>
             <div className="flex items-start gap-2">
-                <span className="text-slate-600 leading-relaxed flex-1 text-[12.5px]">
+                <span className="text-slate-600 leading-relaxed flex-1 text-[12px]">
                     {value}
                 </span>
 

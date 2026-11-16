@@ -51,11 +51,11 @@ const LARGE_VALUE_THRESHOLD = 100_000_000;
 
 function formatBDT(value: number): string {
   const n = value || 0;
-  if (n >= 1_000_000_000) return `৳${(n / 1_000_000_000).toFixed(2)}B`;
-  if (n >= 10_000_000) return `৳${(n / 10_000_000).toFixed(2)}Cr`;
-  if (n >= 100_000) return `৳${(n / 100_000).toFixed(2)}L`;
-  if (n >= 1_000) return `৳${(n / 1_000).toFixed(2)}k`;
-  return `৳${n.toLocaleString()}`;
+  if (n >= 1_000_000_000) return `BDT${(n / 1_000_000_000).toFixed(2)}B`;
+  if (n >= 10_000_000) return `BDT${(n / 10_000_000).toFixed(2)}Cr`;
+  if (n >= 100_000) return `BDT${(n / 100_000).toFixed(2)}L`;
+  if (n >= 1_000) return `BDT${(n / 1_000).toFixed(2)}k`;
+  return `BDT${n.toLocaleString()}`;
 }
 
 export function EntryDrawer({
@@ -268,7 +268,7 @@ export function EntryDrawer({
                   <div className="mt-1.5 flex items-start gap-1.5 rounded-md bg-amber-50 border border-amber-200 px-2 py-1.5">
                     <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-amber-600" />
                     <span className="text-[10px] text-amber-700 leading-snug">
-                      Value exceeds <strong>৳10 Crore</strong>. Did you enter too
+                      Value exceeds <strong>BDT10 Crore</strong>. Did you enter too
                       many zeros?
                     </span>
                   </div>

@@ -449,7 +449,7 @@ export default function QuotesListTab() {
                   </td>
 
                   <td className="px-4 py-3 text-right font-mono font-semibold text-slate-900 whitespace-nowrap">
-                    ৳{(q.totals?.grandTotal || 0).toLocaleString()}
+                    BDT{(q.totals?.grandTotal || 0).toLocaleString()}
                   </td>
 
                   <td className="px-4 py-3 whitespace-nowrap">

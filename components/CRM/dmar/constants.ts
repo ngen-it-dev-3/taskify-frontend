@@ -37,15 +37,15 @@ export const STATUS_BADGE_STYLES: Record<string, string> = {
 
 export const formatMoney = (n: number | null | undefined): string => {
     if (n === null || n === undefined || n === 0) return '—';
-    if (n >= 10000000) return `৳${(n / 10000000).toFixed(2)}Cr`;
-    if (n >= 100000) return `৳${(n / 100000).toFixed(2)}L`;
-    if (n >= 1000) return `৳${(n / 1000).toFixed(1)}k`;
-    return `৳${n.toLocaleString()}`;
+    if (n >= 10000000) return `BDT${(n / 10000000).toFixed(2)}Cr`;
+    if (n >= 100000) return `BDT${(n / 100000).toFixed(2)}L`;
+    if (n >= 1000) return `BDT${(n / 1000).toFixed(1)}k`;
+    return `BDT${n.toLocaleString()}`;
 };
 
 export const formatFull = (n: number | null | undefined): string => {
     if (n === null || n === undefined) return '—';
-    return `৳${n.toLocaleString()}`;
+    return `BDT${n.toLocaleString()}`;
 };
 
 export const formatDate = (d: string | null): string => {

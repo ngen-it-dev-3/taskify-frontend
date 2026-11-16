@@ -52,7 +52,7 @@ export function KpiRow({
         <Card>
           <Title>Quoted Value</Title>
           <Big>
-            ৳{quotedValueBDT.toLocaleString()}
+            BDT{quotedValueBDT.toLocaleString()}
             {quotedValueUSD > 0 && (
               <span className="text-slate-400">
                 {' '}

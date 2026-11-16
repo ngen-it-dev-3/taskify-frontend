@@ -226,7 +226,7 @@ export function LogActivityModal({ constants, initial, onClose, onSaved }: Props
               className={inputCls}
             />
           </Field>
-          <Field label="Tentative Value (৳)">
+          <Field label="Tentative Value (BDT)">
             <input
               type="number"
               value={value}

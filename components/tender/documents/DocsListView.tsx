@@ -107,7 +107,7 @@ export function DocsListView({
                         {d.issuedOn ? new Date(d.issuedOn).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—"}
                       </td>
                       <td className="px-4 py-3 align-middle">
-                        <span className="font-semibold text-slate-800">{d.totalValue ? `৳${d.totalValue.toLocaleString()}` : "—"}</span>
+                        <span className="font-semibold text-slate-800">{d.totalValue ? `BDT${d.totalValue.toLocaleString()}` : "—"}</span>
                         <span className="block text-[9px] font-normal text-slate-400">{d.totalValue ? `${(d.totalValue / 100000).toFixed(1)} Lac` : ""}</span>
                       </td>
                       <td className="px-4 py-3 align-middle">

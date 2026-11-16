@@ -45,7 +45,7 @@ export function SecurityViewModal({ open, onOpenChange, row }: Props) {
                         </div>
                         <div>
                             <p className="text-[10px] font-bold text-slate-400 uppercase">Contract Value</p>
-                            <p className="font-mono font-semibold text-slate-800">৳{row.amount.toLocaleString('en-IN')}</p>
+                            <p className="font-mono font-semibold text-slate-800">BDT{row.amount.toLocaleString('en-IN')}</p>
                         </div>
                     </div>
 

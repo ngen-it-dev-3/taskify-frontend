@@ -59,7 +59,7 @@ function Row({
             : 'text-white'
         }`}
       >
-        ৳{value.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+        BDT{value.toLocaleString(undefined, { maximumFractionDigits: 2 })}
       </span>
     </div>
   );

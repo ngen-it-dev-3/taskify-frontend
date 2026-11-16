@@ -437,7 +437,7 @@ export default function DraftsListTab() {
                   </td>
 
                   <td className="px-4 py-3 text-right font-mono font-semibold text-slate-900 whitespace-nowrap">
-                    ৳{(d.totals?.grandTotal || 0).toLocaleString()}
+                    BDT{(d.totals?.grandTotal || 0).toLocaleString()}
                   </td>
 
                   <td

@@ -567,7 +567,7 @@ export default function ApprovalQueueTable({
                                             {/* Amount Column */}
                                             <td className="px-4 py-3.5 text-right whitespace-nowrap font-mono">
                                                 <span className="text-sm font-bold text-slate-950">
-                                                    ৳{formatCurrency(expense.amount)}
+                                                    BDT{formatCurrency(expense.amount)}
                                                 </span>
                                             </td>
 

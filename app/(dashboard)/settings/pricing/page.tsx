@@ -1047,7 +1047,7 @@ export default function PricingAdminPage() {
                                             onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                                             className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 dark:bg-gray-700 dark:text-white transition"
                                         >
-                                            <option value="BDT">BDT (৳)</option>
+                                            <option value="BDT">BDT (BDT)</option>
                                             <option value="USD">USD ($)</option>
                                             <option value="EUR">EUR (€)</option>
                                             <option value="GBP">GBP (£)</option>

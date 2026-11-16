@@ -145,7 +145,7 @@ function authHeaders(): HeadersInit {
 
 function formatBDT(n: number | null | undefined) {
     if (n == null || n === 0) return "—";
-    return `৳${n.toLocaleString("en-IN")}`;
+    return `BDT ${n.toLocaleString("en-IN")}`;
 }
 function parseBDT(v: string): number | null {
     const cleaned = v.replace(/[^\d]/g, "");
@@ -246,7 +246,7 @@ function RangeBox({
             <div className="grid grid-cols-2 gap-3">
                 <div>
                     <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                        Min (৳)
+                        Min (BDT)
                     </label>
                     <input
                         type="text"
@@ -260,7 +260,7 @@ function RangeBox({
                 </div>
                 <div>
                     <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                        Max (৳)
+                        Max (BDT)
                     </label>
                     <input
                         type="text"
@@ -833,7 +833,7 @@ export default function TenderSettingsPage() {
                         onChange={(e) => patch("customRangeNote", e.target.value)}
                         disabled={saving}
                         rows={3}
-                        placeholder="e.g. Prefer tenders with a value above ৳1,00,00,000 in the Power sector."
+                        placeholder="e.g. Prefer tenders with a value above BDT 1,00,00,000 in the Power sector."
                         className="mt-3 w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-700 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 disabled:cursor-not-allowed disabled:bg-slate-50"
                     />
                 </section>

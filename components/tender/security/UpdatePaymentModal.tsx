@@ -61,7 +61,7 @@ export function UpdatePaymentModal({ open, onOpenChange, row, onSave }: Props) {
                     <h2 className="font-serif text-xl font-bold text-slate-900">Update payment</h2>
                     <p className="mt-1 text-xs font-semibold text-slate-700">{row.clientDescription}</p>
                     <p className="mt-0.5 text-[11px] text-slate-500">
-                        Contract ৳{row.amount.toLocaleString("en-IN")} &middot; received ৳{(row.receivedAmount || 0).toLocaleString("en-IN")} &middot; balance ৳{balance.toLocaleString("en-IN")}
+                        Contract BDT{row.amount.toLocaleString("en-IN")} &middot; received BDT{(row.receivedAmount || 0).toLocaleString("en-IN")} &middot; balance BDT{balance.toLocaleString("en-IN")}
                     </p>
                 </div>
 
@@ -76,7 +76,7 @@ export function UpdatePaymentModal({ open, onOpenChange, row, onSave }: Props) {
                                 <label className="block text-[10px] text-slate-500 mb-1">Amount (BDT)</label>
                                 <input
                                     type="number"
-                                    placeholder={`up to ৳${balance.toLocaleString("en-IN")}`}
+                                    placeholder={`up to BDT${balance.toLocaleString("en-IN")}`}
                                     value={amount}
                                     onChange={(e) => setAmount(e.target.value ? Number(e.target.value) : "")}
                                     className="h-9 w-full rounded border border-slate-300 px-3 text-xs focus:border-slate-900 focus:outline-none"

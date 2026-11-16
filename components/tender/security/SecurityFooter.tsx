@@ -56,7 +56,7 @@ export function SecurityFooter({ rows = [] }: Props) {
       )
       .join("\r\n");
 
-    /* BOM so Excel reads UTF-8 correctly (৳, é, etc.) */
+    /* BOM so Excel reads UTF-8 correctly (BDT, é, etc.) */
     const bom = "\uFEFF";
     const blob = new Blob([bom + csv], {
       type: "text/csv;charset=utf-8",

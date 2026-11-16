@@ -125,6 +125,30 @@ export default function RFQDashboardPage() {
     [rfqs, selectedRFQId]
   );
 
+  // ⭐ নতুন লজিক: একই কোম্পানির সবচেয়ে পুরনো RFQ-এর তারিখ বের করা
+  const clientSinceDate = useMemo(() => {
+    if (!selectedRFQ) return null;
+    
+    const targetCompany = selectedRFQ.company?.trim().toLowerCase();
+
+    // ১. ওই কোম্পানির সব RFQ ফিল্টার করা (কেস-সেনসিটিভিটি ইগনোর করে)
+    const companyRfqs = rfqs.filter(
+      (r) => r.company?.trim().toLowerCase() === targetCompany
+    );
+
+    if (companyRfqs.length === 0) return selectedRFQ.createdAt;
+
+    // ২. createdAt বা inquiryDate এর ভিত্তিতে সবচেয়ে পুরনোটি বের করা
+    const oldestRfq = companyRfqs.reduce((oldest, current) => {
+      const oldestDate = new Date(oldest.inquiryDate || oldest.createdAt || 0).getTime();
+      const currentDate = new Date(current.inquiryDate || current.createdAt || 0).getTime();
+      return currentDate < oldestDate ? current : oldest;
+    }, companyRfqs[0]);
+
+    // ৩. সবচেয়ে পুরনো RFQ-এর তারিখ রিটার্ন করা (inquiryDate কে প্রায়োরিটি দেওয়া হলো)
+    return oldestRfq.inquiryDate || oldestRfq.createdAt;
+  }, [rfqs, selectedRFQ]);
+
   const [selectedProductModal, setSelectedProductModal] =
     useState<RFQProduct | null>(null);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -198,7 +222,7 @@ export default function RFQDashboardPage() {
           city: data.city,
           zipCode: data.zipCode,
           isReseller: data.isReseller,
-          
+
           // ⭐ ADDED: rfqSource mapped to update
           rfqSource: data.rfqSource,
 
@@ -361,6 +385,7 @@ export default function RFQDashboardPage() {
         {selectedRFQ ? (
           <RfqDetailPanel
             rfq={selectedRFQ}
+            clientSinceDate={clientSinceDate} // ⭐ নতুন প্রপ্স পাস করা হলো
             onProductDetails={setSelectedProductModal}
             onClientDetails={handleClientDetails}
             onReassign={() => setShowAssignModal(true)}
@@ -418,7 +443,7 @@ export default function RFQDashboardPage() {
                 city: selectedRFQ.clientInfo?.city || '',
                 zipCode: selectedRFQ.clientInfo?.zipCode || '',
                 isReseller: (selectedRFQ as any).isReseller || false,
-                
+
                 // ⭐ ADDED: rfqSource mapped to initialData
                 rfqSource: (selectedRFQ as any).rfqSource || '',
                 inquiryDate: (selectedRFQ as any).inquiryDate || '',

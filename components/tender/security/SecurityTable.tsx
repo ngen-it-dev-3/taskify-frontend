@@ -79,18 +79,18 @@ export function SecurityTable({
                   </p>
                 </td>
                 <td className="px-5 py-3.5 font-mono text-[11px] font-semibold text-slate-700">
-                  ৳{r.amount.toLocaleString('en-IN')}
+                  BDT{r.amount.toLocaleString('en-IN')}
                 </td>
                 <td className="px-5 py-3.5">
                   <div className="w-[130px] h-[3px] bg-[#e2e8f0] rounded-full mb-1.5 overflow-hidden">
                     <div className="h-full bg-[#10b981]" style={{ width: `${r.receivedPercent}%` }} />
                   </div>
                   <p className="text-[9px] text-slate-500 font-medium">
-                    ৳{r.receivedAmount.toLocaleString('en-IN')} received &middot; {r.receivedPercent}%
+                    BDT{r.receivedAmount.toLocaleString('en-IN')} received &middot; {r.receivedPercent}%
                   </p>
                 </td>
                 <td className="px-5 py-3.5 font-mono text-[11px] font-semibold text-slate-700">
-                  ৳{r.balance.toLocaleString('en-IN')}
+                  BDT{r.balance.toLocaleString('en-IN')}
                 </td>
                 <td className="px-5 py-3.5">
                   <p className="font-bold text-[#1e293b] text-[11px]">{r.dueDate}</p>

@@ -148,7 +148,7 @@ export function PaymentHistoryModal({ open, onOpenChange, row }: Props) {
                                             {new Date(p.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                                         </td>
                                         <td className="px-4 py-3 font-mono font-semibold text-slate-800">
-                                            ৳{Number(p.amount).toLocaleString("en-IN")}
+                                            BDT{Number(p.amount).toLocaleString("en-IN")}
                                         </td>
                                         <td className="px-4 py-3 text-slate-600">{p.mode}</td>
                                         <td className="px-4 py-3 font-mono text-slate-500">{p.reference || "—"}</td>

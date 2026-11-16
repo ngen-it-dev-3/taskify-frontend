@@ -230,7 +230,7 @@ export function ViewDocModal({ open, onOpenChange, doc }: Props) {
                 <DetailCard
                   icon={<Banknote className="h-3.5 w-3.5" />}
                   label="Total Value"
-                  value={doc.totalValue ? `৳${doc.totalValue.toLocaleString()}` : "—"}
+                  value={doc.totalValue ? `BDT${doc.totalValue.toLocaleString()}` : "—"}
                   tone="emerald"
                 />
                 <DetailCard

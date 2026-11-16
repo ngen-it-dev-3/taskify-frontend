@@ -157,7 +157,7 @@ export function DocCard({
             <p className="mt-1 text-[11px] text-slate-500">
               {doc.issuedOn ? new Date(doc.issuedOn).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "-"}
               {" · "}
-              {doc.totalValue ? `${(doc.totalValue / 100000).toFixed(1)} Lac (৳${doc.totalValue.toLocaleString()})` : "-"}
+              {doc.totalValue ? `${(doc.totalValue / 100000).toFixed(1)} Lac (BDT${doc.totalValue.toLocaleString()})` : "-"}
             </p>
             <div className="mt-2 flex flex-col gap-1.5 items-start">
               <div className="flex gap-1.5">

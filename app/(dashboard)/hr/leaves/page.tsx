@@ -6,81 +6,39 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Users,
   Clock,
   CheckCircle,
   XCircle,
   AlertCircle,
   Search,
-  Filter,
-  Download,
   RefreshCw,
-  User,
   Calendar as CalendarIcon,
   LayoutGrid,
   List,
   ChevronDown,
   Eye,
   Loader2,
-  Sparkles,
-  Building2,
-  Briefcase,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Activity,
-  Timer,
   UserCheck,
-  UserX,
   Clock as ClockIcon,
   FileText,
-  Printer,
-  Mail,
-  Phone,
-  MapPin,
-  Plus,
-  Edit,
-  Trash2,
   Check,
   X,
   MessageSquare,
-  Paperclip,
-  Send,
   Ban,
   UserPlus,
   UsersRound,
-  BarChart3,
-  PieChart,
-  FileSpreadsheet,
   Filter as FilterIcon,
   CalendarDays,
-  Hourglass,
-  Shield,
-  Crown,
-  UserCog,
   Home,
   ChevronRight as ChevronRightIcon,
-  MoreVertical,
   Star,
-  Bell,
   Clock8,
   CalendarClock,
-  Plane,
   Heart,
-  Stethoscope,
   Baby,
-  GraduationCap,
   Briefcase as BriefcaseIcon,
   Sun,
-  Moon,
-  Cloud,
   CloudRain,
-  Snowflake,
-  AlertTriangle,
-  Info,
-  FileCheck,
 } from "lucide-react";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
@@ -101,12 +59,12 @@ interface LeaveRequest {
     email: string;
     employeeId?: string;
     departmentId?:
-      | {
-          _id: string;
-          name: string;
-          code: string;
-        }
-      | string;
+    | {
+      _id: string;
+      name: string;
+      code: string;
+    }
+    | string;
     position?: string;
     profilePhoto?: string;
   };
@@ -659,7 +617,7 @@ export default function LeaveManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50/80">
+    <div className="min-h-screen bg-[#faf8f4]">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <motion.div
@@ -693,7 +651,6 @@ export default function LeaveManagementPage() {
               Leave Management
             </h1>
             <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
               Manage and approve leave requests
               {refreshing && (
                 <span className="text-xs text-green-500 animate-pulse ml-2">
@@ -722,11 +679,10 @@ export default function LeaveManagementPage() {
                     : "Auto-refresh enabled",
                 );
               }}
-              className={`cursor-pointer px-3 py-2 rounded-xl transition-all text-sm flex items-center gap-1.5 ${
-                autoRefreshEnabled
-                  ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                  : "bg-gray-50 text-gray-400 border border-gray-200"
-              }`}
+              className={`cursor-pointer px-3 py-2 rounded-xl transition-all text-sm flex items-center gap-1.5 ${autoRefreshEnabled
+                ? "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                : "bg-gray-50 text-gray-400 border border-gray-200"
+                }`}
               title={
                 autoRefreshEnabled
                   ? "Auto-refresh is on"
@@ -845,21 +801,19 @@ export default function LeaveManagementPage() {
               <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    viewMode === "grid"
-                      ? "bg-white shadow-sm text-green-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${viewMode === "grid"
+                    ? "bg-white shadow-sm text-green-600"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("table")}
-                  className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
-                    viewMode === "table"
-                      ? "bg-white shadow-sm text-green-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${viewMode === "table"
+                    ? "bg-white shadow-sm text-green-600"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
                 >
                   <List className="w-4 h-4" />
                 </button>
@@ -1209,11 +1163,10 @@ export default function LeaveManagementPage() {
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div
-                  className={`p-2.5 rounded-xl ${
-                    statusAction === "approved"
-                      ? "bg-emerald-100 text-emerald-600"
-                      : "bg-rose-100 text-rose-600"
-                  }`}
+                  className={`p-2.5 rounded-xl ${statusAction === "approved"
+                    ? "bg-emerald-100 text-emerald-600"
+                    : "bg-rose-100 text-rose-600"
+                    }`}
                 >
                   {statusAction === "approved" ? (
                     <CheckCircle className="w-6 h-6" />
@@ -1262,11 +1215,10 @@ export default function LeaveManagementPage() {
                   onClick={() =>
                     handleUpdateStatus(selectedLeave._id, statusAction)
                   }
-                  className={`flex-1 px-4 py-2.5 text-white rounded-xl transition-colors font-medium shadow-lg ${
-                    statusAction === "approved"
-                      ? "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 shadow-emerald-500/25"
-                      : "bg-linear-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 shadow-rose-500/25"
-                  }`}
+                  className={`flex-1 px-4 py-2.5 text-white rounded-xl transition-colors font-medium shadow-lg ${statusAction === "approved"
+                    ? "bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 shadow-emerald-500/25"
+                    : "bg-linear-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 shadow-rose-500/25"
+                    }`}
                 >
                   {statusAction === "approved" ? "Approve" : "Reject"} Request
                 </button>

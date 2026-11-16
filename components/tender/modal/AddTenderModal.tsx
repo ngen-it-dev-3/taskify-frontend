@@ -384,7 +384,7 @@ export function AddTenderModal({ open, onOpenChange, onCreated }: Props) {
             <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>Schedule Price (৳)</label>
+                  <label className={labelCls}>Schedule Price (BDT)</label>
                   <input
                     type="number"
                     className={inputCls}
@@ -394,7 +394,7 @@ export function AddTenderModal({ open, onOpenChange, onCreated }: Props) {
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>Tentative Budget (৳)</label>
+                  <label className={labelCls}>Tentative Budget (BDT)</label>
                   <input
                     type="number"
                     className={inputCls}
@@ -491,7 +491,7 @@ export function AddTenderModal({ open, onOpenChange, onCreated }: Props) {
             <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className={labelCls}>Security Amount (৳)</label>
+                  <label className={labelCls}>Security Amount (BDT)</label>
                   <input
                     type="number"
                     className={inputCls}

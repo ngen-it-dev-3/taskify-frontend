@@ -1249,7 +1249,7 @@ function CompanyInfoStep({
           placeholder="Select RFQ Source"
           value={form.rfqSource}
           onChange={(v) => setField('rfqSource', v)}
-          options={['Local', 'Web', 'Email', 'Deal']} // ⭐ আপনার স্ক্রিনশটের অপশনগুলো
+          options={['Web', 'Email', 'WhatsApp']} // ⭐ আপনার স্ক্রিনশটের অপশনগুলো
         />
         <div className="pt-2 space-y-2">
           <CheckboxRow

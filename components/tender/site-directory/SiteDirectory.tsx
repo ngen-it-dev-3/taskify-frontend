@@ -560,7 +560,7 @@ export default function SiteDirectory() {
         return all.filter((t) => t.tenderer === openSite.name).map((t) => ({
             tender: t.title,
             stage: t.stage === "potential" ? "Potential" : t.stage === "active" ? "Active" : "Submitted",
-            value: t.tentativeBudget ? `৳${t.tentativeBudget.toLocaleString("en-IN")}` : "—",
+            value: t.tentativeBudget ? `BDT${t.tentativeBudget.toLocaleString("en-IN")}` : "—",
             status: t.stage === "submitted" ? "Awaiting result" : t.stage === "active" ? `Docs: ${t.docStatus ?? "—"}` : "Under review",
         }));
     }, [openSite, groups]);

@@ -197,7 +197,7 @@ export function EditOrderModal({ order, onClose, onSaved }: Props) {
               />
             </Field>
 
-            <Field label="Sales Value (৳)">
+            <Field label="Sales Value (BDT)">
               <input
                 type="number"
                 value={salesValue}

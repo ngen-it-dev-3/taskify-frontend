@@ -798,7 +798,7 @@ function GeneralSection({
                         <option value="USD">USD - US Dollar ($)</option>
                         <option value="EUR">EUR - Euro (€)</option>
                         <option value="GBP">GBP - British Pound (£)</option>
-                        <option value="BDT">BDT - Bangladeshi Taka (৳)</option>
+                        <option value="BDT">BDT - Bangladeshi Taka (BDT)</option>
                         <option value="INR">INR - Indian Rupee (₹)</option>
                         <option value="CAD">CAD - Canadian Dollar (C$)</option>
                         <option value="AUD">AUD - Australian Dollar (A$)</option>

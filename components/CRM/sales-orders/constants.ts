@@ -49,16 +49,16 @@ export const SOURCE_LABELS: Record<string, string> = {
 // HELPERS
 // ============================================================
 export const fmtMoney = (n: number | null | undefined) => {
-  if (n === null || n === undefined || n === 0) return '৳0';
-  if (n >= 10000000) return `৳${(n / 10000000).toFixed(2)}Cr`;
-  if (n >= 100000) return `৳${(n / 100000).toFixed(2)}L`;
-  if (n >= 1000) return `৳${(n / 1000).toFixed(1)}k`;
-  return `৳${n.toLocaleString()}`;
+  if (n === null || n === undefined || n === 0) return 'BDT0';
+  if (n >= 10000000) return `BDT${(n / 10000000).toFixed(2)}Cr`;
+  if (n >= 100000) return `BDT${(n / 100000).toFixed(2)}L`;
+  if (n >= 1000) return `BDT${(n / 1000).toFixed(1)}k`;
+  return `BDT${n.toLocaleString()}`;
 };
 
 export const fmtFull = (n: number | null | undefined) => {
-  if (n === null || n === undefined) return '৳0';
-  return `৳${n.toLocaleString()}`;
+  if (n === null || n === undefined) return 'BDT0';
+  return `BDT${n.toLocaleString()}`;
 };
 
 export const fmtDate = (d: string | null | undefined) => {

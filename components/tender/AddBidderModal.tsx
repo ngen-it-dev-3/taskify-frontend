@@ -165,7 +165,7 @@ export function AddBidderModal({
 
                                 {/* Value */}
                                 <div>
-                                    <label className={labelCls}>Value (৳)</label>
+                                    <label className={labelCls}>Value (BDT)</label>
                                     <input
                                         type="number"
                                         min={0}

@@ -180,7 +180,7 @@ export default function QuotationBuilderPage({ rfqId }: Props) {
                     territory: assignedTerritory,
                     country: assignedTerritory,
                     currency: derivedCurrencyCode,
-                    currencySymbol: currencyData?.symbol || '৳',
+                    currencySymbol: currencyData?.symbol || 'BDT',
                     exchangeRate: derivedCurrencyCode === 'BDT' ? 1 : currencyData?.rateToBDT || 1,
 
                     crmManager: rfq.assignedTo || rfq.salesman || prev.crmManager,

@@ -165,7 +165,7 @@ function RangeBox({
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-            Min (৳)
+            Min (BDT)
           </label>
           <input
             type="text"
@@ -179,7 +179,7 @@ function RangeBox({
         </div>
         <div>
           <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-            Max (৳)
+            Max (BDT)
           </label>
           <input
             type="text"

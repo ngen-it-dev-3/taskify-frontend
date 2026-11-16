@@ -51,7 +51,7 @@ interface RejectModalState {
 const APPROVER_ROLES = ["super_admin", "admin", "hr_manager"] as const;
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-    BDT: "৳",
+    BDT: "BDT",
     SAR: "﷼",
     USD: "$",
     AED: "د.إ",
@@ -134,7 +134,7 @@ const renderSelectedCurrencyTotal = (
  */
 const renderCompactCurrencyTotals = (
     totals: { currency: string; total: number }[],
-    emptyText: string = "৳0 pending sign-off"
+    emptyText: string = "BDT 0 pending sign-off"
 ): React.ReactNode => {
     if (totals.length === 0) return <span>{emptyText}</span>;
 
@@ -608,7 +608,7 @@ export default function ExpensesPage() {
                             value={queueStats.pending}
                             subtext={renderCompactCurrencyTotals(
                                 queueStats.totals,
-                                "৳0 pending sign-off"
+                                "BDT 0 pending sign-off"
                             )}
                             valueColorClass="text-rose-600"
                             icon={AlertCircle}

@@ -195,9 +195,9 @@ export const MAIN_ITEMS = {
   ),
 
   humanResources: createNavItem(
-    "human-resources", "HR Management", "/hr", Users,
+    "human-resources", "HR & Admin", "/hr", Users,
     [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.EMPLOYEE],
-    { section: "hr", description: "HR management and employee self-service" }
+    { section: "hr", description: "HR & Admin and employee self-service" }
   ),
 
   system: createNavItem(
@@ -312,16 +312,16 @@ export const SUB_ITEMS = {
   // ==========================================================================
   // HR (Level 3)
   // ==========================================================================
-  leaveManagement: createSubNavItem("leave-management", "Leave Management", "/hr/leaves", FileCheck, "HR Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER], { badgeKey: "pendingLeaves", badgeColor: "bg-green-500" }),
-  myLeaves: createSubNavItem("my-leaves", "My Leaves", "/hr/leaves/my", Calendar, "HR Management", [ROLES.ALL]),
-  leaveHistory: createSubNavItem("leave-history", "Leave History", "/hr/leaves/history", Clock, "HR Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER]),
-  myAttendance: createSubNavItem("my-attendance", "My Attendance", "/hr/attendance/my", CalendarRange, "HR Management", [ROLES.ALL]),
-  employeeDirectory: createSubNavItem("employee-directory", "Employee Directory", "/hr/employees", Users, "HR Management", [ROLES.ALL]),
-  attendanceManagement: createSubNavItem("attendance-management", "Attendance Management", "/hr/attendance", Clock, "HR Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  recruitment: createSubNavItem("recruitment", "Recruitment", "/recruitment", UserPlus, "HR Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  employeeOnboarding: createSubNavItem("employee-onboarding", "Employee Onboarding", "/onboarding", HandHelping, "HR Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  trainingPrograms: createSubNavItem("training-programs", "Training Programs", "/training", GraduationCap, "HR Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  payrollManagement: createSubNavItem("payroll-management", "Payroll Management", "/payroll", DollarSign, "HR Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.ACCOUNTANT]),
+  leaveManagement: createSubNavItem("leave-management", "Leave Management", "/hr/leaves", FileCheck, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER], { badgeKey: "pendingLeaves", badgeColor: "bg-green-500" }),
+  myLeaves: createSubNavItem("my-leaves", "My Leaves", "/hr/leaves/my", Calendar, "HR & Admin", [ROLES.ALL]),
+  leaveHistory: createSubNavItem("leave-history", "Leave History", "/hr/leaves/history", Clock, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER]),
+  myAttendance: createSubNavItem("my-attendance", "My Attendance", "/hr/attendance/my", CalendarRange, "HR & Admin", [ROLES.ALL]),
+  employeeDirectory: createSubNavItem("employee-directory", "Employee Directory", "/hr/employees", Users, "HR & Admin", [ROLES.ALL]),
+  attendanceManagement: createSubNavItem("attendance-management", "Attendance Management", "/hr/attendance", Clock, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  recruitment: createSubNavItem("recruitment", "Recruitment", "/recruitment", UserPlus, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  employeeOnboarding: createSubNavItem("employee-onboarding", "Employee Onboarding", "/onboarding", HandHelping, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  trainingPrograms: createSubNavItem("training-programs", "Training Programs", "/training", GraduationCap, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  payrollManagement: createSubNavItem("payroll-management", "Payroll Management", "/payroll", DollarSign, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.ACCOUNTANT]),
 
   // ==========================================================================
   // SYSTEM SETTINGS (Level 3)

@@ -102,7 +102,7 @@ function daysLeft(d?: string | null) {
 
 function budgetLabel(n?: number) {
   if (!n) return "—";
-  return `৳${n.toLocaleString("en-IN")}`;
+  return `BDT ${n.toLocaleString("en-IN")}`;
 }
 
 function isCrawledTender(t: Tender) {

@@ -91,7 +91,7 @@ export function toSecurityUIRow(raw: any): SecurityRowUI {
         delivery: raw.delivery || "Pending",
         type: raw.type || "Tender Security",
         docsStatus: raw.docsStatus || "Missing",
-        currency: "৳",
+        currency: "BDT",
         purchaseDate: raw.purchaseDate ? fmtDate(raw.purchaseDate) : "",
         securityClosingDate: raw.securityClosingDate ? fmtDate(raw.securityClosingDate) : "",
         purchaseFrom: raw.purchaseFrom || "",

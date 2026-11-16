@@ -42,7 +42,7 @@ export function TenderOverviewPerformance({
     return acc;
   }, []);
 
-  const safeWonValueShort = wonValueShort || wonValue || "৳0";
+  const safeWonValueShort = wonValueShort || wonValue || "BDT0";
 
   return (
     <section className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200/80 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">

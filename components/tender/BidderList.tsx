@@ -13,7 +13,7 @@ interface Props {
 
 function fmtBDT(n: number) {
   if (!n) return "—";
-  return `৳${n.toLocaleString("en-IN")}`;
+  return `BDT${n.toLocaleString("en-IN")}`;
 }
 
 export function BidderList({ bidders, onAdd, onEdit, onDelete }: Props) {

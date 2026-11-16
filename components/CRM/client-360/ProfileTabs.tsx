@@ -960,7 +960,7 @@ function QuoteModal({ clientId, clientName, initialData, onClose, onSaved }: {
                         <input value={item} onChange={e => setItem(e.target.value)} className="w-full rounded-lg border border-[#E2DBD1] px-3 py-2 text-xs" placeholder="e.g. Acronis Backup" />
                     </div>
                     <div>
-                        <label className="text-[10px] font-bold uppercase text-slate-500">Value (৳)</label>
+                        <label className="text-[10px] font-bold uppercase text-slate-500">Value (BDT)</label>
                         <input type="number" value={value} onChange={e => setValue(e.target.value)} className="w-full rounded-lg border border-[#E2DBD1] px-3 py-2 text-xs" placeholder="e.g. 50000" />
                     </div>
                     <div>
@@ -1039,7 +1039,7 @@ function ContractModal({ clientId, initialData, onClose, onSaved }: { clientId: 
                         <input value={title} onChange={e => setTitle(e.target.value)} className="w-full rounded-lg border border-[#E2DBD1] px-3 py-2 text-xs" placeholder="e.g. Annual AMC" />
                     </div>
                     <div>
-                        <label className="text-[10px] font-bold uppercase text-slate-500">Value (৳)</label>
+                        <label className="text-[10px] font-bold uppercase text-slate-500">Value (BDT)</label>
                         <input type="number" value={value} onChange={e => setValue(e.target.value)} className="w-full rounded-lg border border-[#E2DBD1] px-3 py-2 text-xs" placeholder="e.g. 100000" />
                     </div>
                     <div className="grid grid-cols-2 gap-2">

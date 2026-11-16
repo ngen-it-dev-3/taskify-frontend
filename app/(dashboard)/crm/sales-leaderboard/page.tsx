@@ -83,7 +83,7 @@ function formatMoney(
 ): string {
     if (!Number.isFinite(amount)) return '—';
     const symbols: Record<string, string> = {
-        BDT: '৳',
+        BDT: 'BDT',
         USD: '$',
         EUR: '€',
         GBP: '£',

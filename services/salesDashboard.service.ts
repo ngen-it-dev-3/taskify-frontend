@@ -71,7 +71,7 @@ export interface SalesDashboardData {
 export type CurrencyCode = 'BDT' | 'USD' | 'GBP' | 'AED' | 'EUR';
 
 export const CURRENCY_META: Record<CurrencyCode, { symbol: string; rate: number }> = {
-    BDT: { symbol: '৳', rate: 1 },
+    BDT: { symbol: 'BDT', rate: 1 },
     USD: { symbol: '$', rate: 0.0091 },
     GBP: { symbol: '£', rate: 0.0076 },
     AED: { symbol: 'د.إ', rate: 0.0334 },
@@ -98,7 +98,7 @@ const safe = <T>(p: Promise<T>, fallback: T): Promise<T> =>
     p.catch(() => fallback);
 
 function fmtBDT(n: number): string {
-    return `৳${(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+    return `BDT${(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 }
 
 function daysBetween(dateISO?: string | null): number {

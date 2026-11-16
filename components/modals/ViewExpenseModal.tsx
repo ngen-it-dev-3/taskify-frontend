@@ -703,7 +703,7 @@ export default function ViewExpenseModal({
                                         Claim Total
                                     </span>
                                     <span className="text-2xl font-black font-mono tracking-tight text-white mt-0.5 block">
-                                        ৳{formattedAmount}
+                                        BDT{formattedAmount}
                                     </span>
                                 </div>
 

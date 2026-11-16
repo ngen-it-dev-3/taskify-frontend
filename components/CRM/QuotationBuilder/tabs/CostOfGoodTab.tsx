@@ -45,7 +45,7 @@ export default function CostOfGoodTab({
   // ⭐ FORCE the currency based on Territory, ignoring backend BDT defaults
   const territoryCurrency = COUNTRY_CURRENCY_MAP[meta.territory] || meta.currency || 'BDT';
   const currencyData = CURRENCIES.find(c => c.code === territoryCurrency);
-  const sym = currencyData?.symbol || meta.currencySymbol || '৳';
+  const sym = currencyData?.symbol || meta.currencySymbol || 'BDT';
 
   // Formatting function
   const fmt = (value: number) =>

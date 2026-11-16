@@ -49,7 +49,7 @@ export default function TenderOverviewPage() {
       }));
 
   const safeWinRate = performance?.winRate ?? 0;
-  const safeWonValue = performance?.wonValue ?? "৳0";
+  const safeWonValue = performance?.wonValue ?? "BDT0";
   const safeWonValueShort = performance?.wonValueShort ?? safeWonValue;
   const safeLostCount = performance?.lostCount ?? 0;
 

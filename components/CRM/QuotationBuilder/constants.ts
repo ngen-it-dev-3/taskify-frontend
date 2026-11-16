@@ -21,9 +21,9 @@ export const DEFAULT_META: QuotationMeta = {
     stage: 'Negotiation',
     // ⭐ Currency fields
     currency: 'BDT',
-    currencySymbol: '৳',
+    currencySymbol: 'BDT',
     baseCurrency: 'BDT',
-    baseCurrencySymbol: '৳',
+    baseCurrencySymbol: 'BDT',
     exchangeRate: 1,
     // Other fields
     clientType: 'new',
@@ -140,7 +140,7 @@ export interface Currency {
 export const CURRENCIES: Currency[] = [
     { code: 'USD', symbol: '$', label: 'Singapore Dollar ($)', country: 'Singapore', rateToBDT: 124.25 },
     { code: 'GBP', symbol: '£', label: 'Pound (£)', country: 'United Kingdom', rateToBDT: 167.37 },
-    { code: 'BDT', symbol: '৳', label: 'BDT (৳)', country: 'Bangladesh', rateToBDT: 1.00 },
+    { code: 'BDT', symbol: 'BDT', label: 'BDT (BDT)', country: 'Bangladesh', rateToBDT: 1.00 },
     { code: 'AED', symbol: 'د.إ', label: 'UAE Dirham (د.إ)', country: 'Middle East', rateToBDT: 33.83 },
     { code: 'EUR', symbol: '€', label: 'Euro (€)', country: 'Portugal', rateToBDT: 139.59 },
 ];
@@ -152,7 +152,7 @@ export const getCurrency = (code: string) => {
     // Safe fallback to BDT
     const fallback = CURRENCIES.find(c => c.code === 'BDT');
     if (!fallback) {
-        return { code: 'BDT', symbol: '৳', label: 'BDT', country: 'Bangladesh', rateToBDT: 1 };
+        return { code: 'BDT', symbol: 'BDT', label: 'BDT', country: 'Bangladesh', rateToBDT: 1 };
     }
     return fallback;
 };

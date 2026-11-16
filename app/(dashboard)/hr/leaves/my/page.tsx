@@ -92,15 +92,15 @@ import { motion, AnimatePresence } from "framer-motion";
 interface LeaveRequest {
   _id: string;
   type:
-    | "annual"
-    | "sick"
-    | "casual"
-    | "maternity"
-    | "paternity"
-    | "bereavement"
-    | "unpaid"
-    | "earned"
-    | "other";
+  | "annual"
+  | "sick"
+  | "casual"
+  | "maternity"
+  | "paternity"
+  | "bereavement"
+  | "unpaid"
+  | "earned"
+  | "other";
   startDate: string;
   endDate: string;
   totalDays: number;
@@ -729,7 +729,7 @@ export default function MyLeavesPage() {
   }, [leaveBalances, leaveRequests]);
 
   // ============================================================================
-  // RENDER
+  // RENDER (FULL RETURN)
   // ============================================================================
 
   if (loading) {
@@ -744,495 +744,277 @@ export default function MyLeavesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-50/80">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-[#faf8f4]">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
         {/* ============================================================
-            BREADCRUMB
+            BREADCRUMB & HEADER
             ============================================================ */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-2 text-sm mb-6"
+          className="flex items-center gap-2 text-sm mb-6 text-gray-500"
         >
-          <Link
-            href="/dashboard"
-            className="text-gray-400 hover:text-gray-600 transition flex items-center gap-1"
-          >
+          <Link href="/dashboard" className="hover:text-gray-900 transition flex items-center gap-1">
             <Home size={14} />
             Dashboard
           </Link>
           <ChevronRightIcon size={14} className="text-gray-300" />
-          <Link
-            href="/hr"
-            className="text-gray-400 hover:text-gray-600 transition"
-          >
+          <Link href="/hr" className="hover:text-gray-900 transition">
             HR
           </Link>
           <ChevronRightIcon size={14} className="text-gray-300" />
-          <span className="text-gray-700 font-medium">My Leaves</span>
+          <span className="text-gray-900 font-medium">Leave Management</span>
         </motion.div>
 
-        {/* ============================================================
-            HEADER
-            ============================================================ */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent flex items-center gap-3">
-              <Calendar className="w-7 h-7 text-green-500" />
-              My Leaves
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Calendar className="w-6 h-6 text-green-600" />
+              Leave Management
             </h1>
-            <p className="text-gray-500 mt-1 flex items-center gap-2">
-              <span className="inline-block w-1 h-1 rounded-full bg-green-400"></span>
-              Track your leave requests and balances
-              {refreshing && (
-                <span className="text-xs text-green-500 animate-pulse ml-2">
-                  <Loader2 className="w-3 h-3 inline animate-spin mr-1" />
-                  Updating...
-                </span>
-              )}
-            </p>
+            <p className="text-gray-500 text-sm mt-1">Manage and approve leave requests</p>
           </div>
-          <button
-            onClick={() => setShowApplyModal(true)}
-            className="cursor-pointer px-4 py-2 bg-linear-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all text-sm font-medium shadow-md shadow-green-500/25 flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Apply Leave
-          </button>
-        </div>
-
-        {/* ============================================================
-            STATS CARDS
-            ============================================================ */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold text-gray-800">
-                  {stats.total}
-                </p>
-                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
-                  Total Requests
-                </p>
-              </div>
-              <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center">
-                <FileText className="w-4 h-4 text-gray-600" />
-              </div>
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.05 }}
-            className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold text-amber-600">
-                  {stats.pending}
-                </p>
-                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
-                  Pending
-                </p>
-              </div>
-              <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
-                <Clock className="w-4 h-4 text-amber-600" />
-              </div>
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold text-emerald-600">
-                  {stats.approved}
-                </p>
-                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
-                  Approved
-                </p>
-              </div>
-              <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-4 h-4 text-emerald-600" />
-              </div>
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15 }}
-            className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold text-rose-600">
-                  {stats.rejected}
-                </p>
-                <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">
-                  Rejected
-                </p>
-              </div>
-              <div className="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center">
-                <XCircle className="w-4 h-4 text-rose-600" />
-              </div>
-            </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-linear-to-br from-green-600 to-purple-600 rounded-2xl p-4 shadow-md text-white"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-2xl font-bold">{totalAvailable}</p>
-                <p className="text-[10px] text-white/80 font-medium uppercase tracking-wider">
-                  Available Days
-                </p>
-              </div>
-              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <CalendarDays className="w-4 h-4 text-white" />
-              </div>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* ============================================================
-            LEAVE BALANCES
-            ============================================================ */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              <PieChart className="w-4 h-4 text-green-500" />
-              Leave Balances
-              <span className="text-xs font-normal text-gray-400 ml-2">
-                (Default: Annual 15, Sick 10, Casual 12, Earned 15)
-              </span>
-            </h3>
-            <button
-              onClick={() => fetchLeaveData()}
-              className="text-xs text-green-500 hover:text-green-600 transition-colors flex items-center gap-1"
-            >
-              <RefreshCw
-                className={`w-3 h-3 ${refreshing ? "animate-spin" : ""}`}
-              />
-              Refresh
-            </button>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-            {balanceCards.map((balance) => {
-              const Icon = getLeaveTypeIcon(balance.leaveType);
-              const label = getLeaveTypeLabel(balance.leaveType);
-              const isLow = balance.remaining < balance.total * 0.2;
-              const isCritical = balance.remaining === 0 && balance.total > 0;
-
-              return (
-                <motion.div
-                  key={balance.leaveType}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm hover:shadow-md transition-all relative"
-                >
-                  {isCritical && (
-                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-                  )}
-                  {isLow && !isCritical && (
-                    <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                  )}
-                  <div className="flex items-center gap-2 mb-1">
-                    <Icon
-                      className={`w-3.5 h-3.5 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-green-500"}`}
-                    />
-                    <span className="text-[10px] font-medium text-gray-500 uppercase truncate">
-                      {label}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`text-lg font-bold ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-gray-800"}`}
-                    >
-                      {balance.remaining}
-                    </span>
-                    <span className="text-[10px] text-gray-400">
-                      / {balance.total}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
-                    <div
-                      className={`h-1 rounded-full transition-all ${isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-green-500"}`}
-                      style={{
-                        width:
-                          balance.total > 0
-                            ? `${Math.min(100, (balance.used / balance.total) * 100)}%`
-                            : "0%",
-                      }}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between mt-0.5">
-                    <p className="text-[9px] text-gray-400">
-                      <span className="text-blue-500">Used:</span> {balance.used}
-                    </p>
-                    {balance.pending > 0 && (
-                      <p className="text-[9px] text-amber-500 flex items-center gap-0.5">
-                        <Clock className="w-2.5 h-2.5" />
-                        {balance.pending} pending
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ============================================================
-            SUMMARY CARDS
-            ============================================================ */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-linear-to-r from-blue-50 to-blue-100/50 rounded-xl p-4 border border-blue-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-200/50 rounded-lg">
-                <CalendarDays className="w-5 h-5 text-blue-700" />
-              </div>
-              <div>
-                <p className="text-sm text-blue-700">Total Days Taken</p>
-                <p className="text-2xl font-bold text-blue-900">
-                  {totalDaysTaken}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-linear-to-r from-amber-50 to-amber-100/50 rounded-xl p-4 border border-amber-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-200/50 rounded-lg">
-                <Clock className="w-5 h-5 text-amber-700" />
-              </div>
-              <div>
-                <p className="text-sm text-amber-700">Pending Approval</p>
-                <p className="text-2xl font-bold text-amber-900">
-                  {totalPendingDays} days
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-linear-to-r from-emerald-50 to-emerald-100/50 rounded-xl p-4 border border-emerald-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-200/50 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-emerald-700" />
-              </div>
-              <div>
-                <p className="text-sm text-emerald-700">Available Balance</p>
-                <p className="text-2xl font-bold text-emerald-900">
-                  {totalAvailable} days
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ============================================================
-            FILTERS
-            ============================================================ */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-4 mb-6">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search your leaves..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="text-black w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors"
-              />
-            </div>
-            <div className="flex gap-3 flex-wrap">
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value as LeaveStatus)}
-                className="text-gray-400 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
+          <div className="flex items-center gap-3">
+             <button onClick={() => fetchLeaveData()} className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium flex items-center gap-2 shadow-sm">
+                <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh
+             </button>
+             <button
+                onClick={() => setShowApplyModal(true)}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-medium shadow-sm flex items-center gap-2"
               >
-                <option value="all">All Status</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="text-gray-400 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-50 hover:bg-white transition-colors min-w-[140px]"
-              >
-                <option value="all">All Types</option>
-                {Object.entries(leaveTypeLabels).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setFilterStatus("all");
-                  setFilterType("all");
-                  fetchLeaveData();
-                }}
-                className="px-4 py-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
-                title="Refresh"
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`}
-                />
+                <Plus className="w-4 h-4" /> Apply Leave
               </button>
-            </div>
-          </div>
-          <div className="mt-3 text-xs text-gray-400">
-            Showing {filteredLeaves.length} of {leaveRequests.length} requests
           </div>
         </div>
 
         {/* ============================================================
-            LEAVE REQUESTS LIST
+            TOP SUMMARY CARDS (ছবির মত ৫টি কার্ড)
             ============================================================ */}
-        {filteredLeaves.length > 0 ? (
-          <div className="space-y-4">
-            {filteredLeaves.map((leave) => {
-              const TypeIcon = getLeaveTypeIcon(leave.type);
-              const typeColor = getLeaveTypeColor(leave.type);
-              const StatusIcon = getStatusIcon(leave.status);
-              const statusColor = getStatusColor(leave.status);
-              const isPending = leave.status === "pending";
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-[10px] text-gray-500 font-medium mt-1 uppercase tracking-wide">Total Requests</p>
+              </div>
+              <div className="p-1.5 bg-gray-50 rounded-md"><FileText className="w-4 h-4 text-gray-500" /></div>
+            </div>
+          </div>
+          
+          <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#FDE68A] shadow-sm">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-2xl font-bold text-amber-700">{stats.pending}</p>
+                <p className="text-[10px] text-amber-600 font-medium mt-1 uppercase tracking-wide">Pending</p>
+              </div>
+              <div className="p-1.5 bg-amber-100 rounded-md"><Clock className="w-4 h-4 text-amber-600" /></div>
+            </div>
+          </div>
 
-              return (
-                <motion.div
-                  key={leave._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100/80 hover:shadow-md transition-all p-5"
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1 min-w-0">
-                      <div className="p-2.5 rounded-xl bg-gray-50">
-                        <TypeIcon className="w-5 h-5 text-gray-600" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-semibold text-gray-900">
+          <div className="bg-[#ECFDF5] rounded-xl p-4 border border-[#A7F3D0] shadow-sm">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-2xl font-bold text-emerald-700">{stats.approved}</p>
+                <p className="text-[10px] text-emerald-600 font-medium mt-1 uppercase tracking-wide">Approved</p>
+              </div>
+              <div className="p-1.5 bg-emerald-100 rounded-md"><CheckCircle className="w-4 h-4 text-emerald-600" /></div>
+            </div>
+          </div>
+
+          <div className="bg-[#FEF2F2] rounded-xl p-4 border border-[#FECACA] shadow-sm">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-2xl font-bold text-rose-700">{stats.rejected}</p>
+                <p className="text-[10px] text-rose-600 font-medium mt-1 uppercase tracking-wide">Rejected</p>
+              </div>
+              <div className="p-1.5 bg-rose-100 rounded-md"><XCircle className="w-4 h-4 text-rose-600" /></div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-2xl font-bold text-gray-900">{stats.cancelled}</p>
+                <p className="text-[10px] text-gray-500 font-medium mt-1 uppercase tracking-wide">Cancelled</p>
+              </div>
+              <div className="p-1.5 bg-gray-50 rounded-md"><Ban className="w-4 h-4 text-gray-500" /></div>
+            </div>
+          </div>
+        </div>
+
+        {/* ============================================================
+            SEARCH & FILTER BAR
+            ============================================================ */}
+        <div className="bg-white rounded-t-xl border border-gray-200 p-4 border-b-0 flex flex-col md:flex-row gap-4 justify-between items-center">
+          <div className="relative w-full md:w-1/2 lg:w-1/3">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search leaves by name, reason, or type..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm bg-gray-50 hover:bg-white transition-colors outline-none text-gray-900"
+            />
+          </div>
+          
+          <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as LeaveStatus)}
+              className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-500 outline-none min-w-[120px] text-gray-700"
+            >
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-500 outline-none min-w-[120px] text-gray-700"
+            >
+              <option value="all">All Types</option>
+              {Object.entries(leaveTypeLabels).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+            <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white shrink-0">
+                <button className="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><LayoutGrid className="w-4 h-4" /></button>
+                <button className="p-1.5 text-green-600 bg-green-50 rounded transition-colors"><List className="w-4 h-4" /></button>
+            </div>
+          </div>
+        </div>
+
+        {/* ============================================================
+            DATA TABLE
+            ============================================================ */}
+        <div className="bg-white rounded-b-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse whitespace-nowrap">
+              <thead>
+                <tr className="bg-gray-50/50 border-b border-gray-200 text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 w-12 text-center">
+                    <input type="checkbox" className="rounded border-gray-300 text-green-600 focus:ring-green-500" />
+                  </th>
+                  <th className="px-6 py-4">Employee</th>
+                  <th className="px-6 py-4">Type</th>
+                  <th className="px-6 py-4">Duration</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Created</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filteredLeaves.length > 0 ? (
+                  filteredLeaves.map((leave) => {
+                    const TypeIcon = getLeaveTypeIcon(leave.type);
+                    const typeColor = getLeaveTypeColor(leave.type);
+                    const StatusIcon = getStatusIcon(leave.status);
+                    const statusColor = getStatusColor(leave.status);
+                    
+                    return (
+                      <tr key={leave._id} className="hover:bg-gray-50/50 transition-colors group">
+                        <td className="px-6 py-4 text-center">
+                          <input type="checkbox" className="rounded border-gray-300 text-green-600 focus:ring-green-500" />
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold shrink-0">
+                              {getInitials(leave.employeeName || user?.fullName || "U")}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900">{leave.employeeName || user?.fullName || "Unknown"}</p>
+                              <p className="text-xs text-gray-500">{leave.employeeEmail || user?.email || "N/A"}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${typeColor}`}>
+                            <TypeIcon className="w-3 h-3" />
                             {getLeaveTypeLabel(leave.type)}
-                            {/* {getLeaveTypeLabel(leave.type)} */}
-                          </h3>
-                          <span
-                            className={`text-xs font-medium px-2 py-0.5 rounded-full border ${typeColor}`}
-                          >
-                            {leave.totalDays || 0} days
                           </span>
-                          <span
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full border ${statusColor}`}
-                          >
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1.5 text-sm text-gray-700">
+                            <CalendarIcon className="w-4 h-4 text-gray-400" />
+                            {leave.totalDays || 0} days
+                          </div>
+                          <p className="text-[11px] text-gray-400 mt-0.5">
+                            {formatDate(leave.startDate)} - {formatDate(leave.endDate)}
+                          </p>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-md border ${statusColor}`}>
                             <StatusIcon className="w-3 h-3" />
                             {getStatusLabel(leave.status)}
                           </span>
-                          {leave.isHalfDay && (
-                            <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
-                              Half Day (
-                              {leave.halfDayType === "first_half"
-                                ? "First"
-                                : "Second"}
-                              )
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          {leave.reason}
-                        </p>
-                        <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {formatDate(leave.startDate)} -{" "}
-                            {formatDate(leave.endDate)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            {formatDate(leave.createdAt)}
-                          </span>
-                          {leave.substituteName && (
-                            <span className="flex items-center gap-1">
-                              <UserPlus className="w-3.5 h-3.5" />
-                              Substitute: {leave.substituteName}
-                            </span>
-                          )}
-                          {leave.departmentName && (
-                            <span className="flex items-center gap-1">
-                              <Building2 className="w-3.5 h-3.5" />
-                              {leave.departmentName}
-                            </span>
-                          )}
-                        </div>
-                        {leave.rejectionReason && (
-                          <div className="mt-2 p-2 bg-rose-50 border border-rose-200 rounded-lg">
-                            <p className="text-xs text-rose-600 flex items-start gap-1">
-                              <AlertCircle className="w-3 h-3 mt-0.5 shrink-0" />
-                              <span>
-                                Rejection Reason: {leave.rejectionReason}
-                              </span>
+                          {leave.rejectionReason && (
+                            <p className="text-[10px] text-rose-500 mt-1 max-w-[120px] truncate" title={leave.rejectionReason}>
+                              Reason: {leave.rejectionReason}
                             </p>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-500">
+                          {formatDate(leave.createdAt)}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            {leave.status === "pending" && (
+                              <button
+                                onClick={() => {
+                                  setSelectedLeave(leave);
+                                  setShowDeleteConfirm(true);
+                                }}
+                                className="p-1.5 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                                title="Delete Request"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button 
+                              onClick={() => {/* Add view details logic if needed */}}
+                              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors" 
+                              title="View Details"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {isPending && (
-                        <button
-                          onClick={() => {
-                            setSelectedLeave(leave);
-                            setShowDeleteConfirm(true);
-                          }}
-                          className="p-2 text-gray-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                      {leave.status === "approved" && leave.approvedByName && (
-                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <UserCheck className="w-3 h-3" />
-                          Approved by {leave.approvedByName}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={7} className="px-6 py-16 text-center text-gray-500">
+                       <div className="flex flex-col items-center justify-center">
+                          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <Calendar className="w-8 h-8 text-gray-300" />
+                          </div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-1">No leave requests found</h3>
+                          <p className="text-sm text-gray-400">Try adjusting your filters or apply for a new leave.</p>
+                       </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        ) : (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-100/80">
-            <div className="w-20 h-20 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Calendar className="w-10 h-10 text-gray-400" />
+          
+          {/* Table Footer */}
+          <div className="border-t border-gray-200 px-6 py-4 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
+            <div>
+              Showing <span className="font-medium text-gray-900">{filteredLeaves.length}</span> of <span className="font-medium text-gray-900">{leaveRequests.length}</span> requests
             </div>
-            <h3 className="text-lg font-medium text-gray-900">
-              No leave requests found
-            </h3>
-            <p className="text-gray-500 mt-1">
-              {searchTerm || filterStatus !== "all" || filterType !== "all"
-                ? "No requests match your filters"
-                : "You haven't submitted any leave requests yet"}
-            </p>
-            <button
-              onClick={() => setShowApplyModal(true)}
-              className="mt-4 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
-            >
-              <Plus className="w-4 h-4 inline mr-1" />
-              Apply for Leave
-            </button>
+            <div className="flex items-center gap-4">
+               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span> pending</span>
+               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400"></span> approved</span>
+               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-400"></span> rejected</span>
+            </div>
           </div>
-        )}
+        </div>
+
       </div>
 
       {/* ============================================================
@@ -1772,7 +1554,7 @@ export default function MyLeavesPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-1 bg-linear-to-r from-green-600 to-purple-600 hover:from-green-700 hover:to-purple-700 text-white py-2.5 rounded-lg transition shadow-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2.5 rounded-lg transition shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
                   >
                     {isSubmitting ? (
                       <Loader2 size={16} className="animate-spin" />
@@ -1789,7 +1571,7 @@ export default function MyLeavesPage() {
                       setShowApplyModal(false);
                       resetForm();
                     }}
-                    className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg transition"
+                    className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 rounded-lg transition font-medium"
                   >
                     Cancel
                   </button>
@@ -1810,7 +1592,7 @@ export default function MyLeavesPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-3xl max-w-md w-full shadow-2xl"
+              className="bg-white rounded-2xl max-w-md w-full shadow-2xl"
             >
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-4">
@@ -1821,14 +1603,14 @@ export default function MyLeavesPage() {
                     Delete Leave Request
                   </h2>
                 </div>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-6 text-sm">
                   Are you sure you want to delete this leave request? This
                   action cannot be undone.
                 </p>
                 <div className="flex gap-3">
                   <button
                     onClick={handleDeleteLeave}
-                    className="flex-1 px-4 py-2.5 bg-linear-to-r from-rose-600 to-rose-500 text-white rounded-xl hover:from-rose-700 hover:to-rose-600 transition-colors font-medium shadow-lg shadow-rose-500/25"
+                    className="flex-1 px-4 py-2.5 bg-rose-600 text-white rounded-xl hover:bg-rose-700 transition-colors font-medium shadow-sm"
                   >
                     Delete
                   </button>
@@ -1837,7 +1619,7 @@ export default function MyLeavesPage() {
                       setShowDeleteConfirm(false);
                       setSelectedLeave(null);
                     }}
-                    className="flex-1 text-gray-400 px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+                    className="flex-1 text-gray-600 px-4 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors font-medium"
                   >
                     Cancel
                   </button>

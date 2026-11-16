@@ -62,14 +62,14 @@ export const SOURCE_BADGES: Record<
 // ============================================================
 export const fmtMoney = (n: number | null | undefined) => {
   if (n === null || n === undefined) return '—';
-  if (n >= 10000000) return `৳${(n / 10000000).toFixed(2)}Cr`;
-  if (n >= 100000) return `৳${(n / 100000).toFixed(2)}L`;
-  if (n >= 1000) return `৳${(n / 1000).toFixed(1)}k`;
-  return `৳${n.toLocaleString()}`;
+  if (n >= 10000000) return `BDT${(n / 10000000).toFixed(2)}Cr`;
+  if (n >= 100000) return `BDT${(n / 100000).toFixed(2)}L`;
+  if (n >= 1000) return `BDT${(n / 1000).toFixed(1)}k`;
+  return `BDT${n.toLocaleString()}`;
 };
 
 export const fmtFull = (n: number | null | undefined) =>
-  n === null || n === undefined ? '—' : `৳${n.toLocaleString()}`;
+  n === null || n === undefined ? '—' : `BDT${n.toLocaleString()}`;
 
 export const fmtDate = (d: string) =>
   new Date(d).toLocaleDateString('en-GB', {

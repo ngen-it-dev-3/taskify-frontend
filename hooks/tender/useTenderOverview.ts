@@ -159,9 +159,9 @@ function shortDescription(t: any): string {
 function formatBudget(val?: number | string | null): string {
   const n = Number(val ?? 0);
   if (!n || isNaN(n)) return "—";
-  if (n >= 1_00_00_000) return `৳${(n / 1_00_00_000).toFixed(2)} Cr`;
-  if (n >= 1_00_000) return `৳${(n / 1_00_000).toFixed(2)} L`;
-  return `৳${n.toLocaleString("en-IN")}`;
+  if (n >= 1_00_00_000) return `BDT ${(n / 1_00_00_000).toFixed(2)} Cr`;
+  if (n >= 1_00_000) return `BDT ${(n / 1_00_000).toFixed(2)} L`;
+  return `BDT ${n.toLocaleString("en-IN")}`;
 }
 
 function daysUntil(iso?: string | null): number {

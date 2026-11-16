@@ -48,7 +48,7 @@ export function daysLeft(d?: string | null): number {
 
 export function budgetLabel(n?: number | null): string {
     if (!n) return "—";
-    return `৳${n.toLocaleString("en-IN")}`;
+    return `BDT${n.toLocaleString("en-IN")}`;
 }
 
 export function normalizeAttachments(

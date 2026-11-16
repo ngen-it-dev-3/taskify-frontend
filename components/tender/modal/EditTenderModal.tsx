@@ -298,7 +298,7 @@ export function EditTenderModal({
                 />
               </div>
               <div>
-                <label className={labelCls}>Tentative Budget (৳)</label>
+                <label className={labelCls}>Tentative Budget (BDT)</label>
                 <input
                   type="number"
                   className={inputCls}
@@ -327,7 +327,7 @@ export function EditTenderModal({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>
-                  Tender Security Amount (৳)
+                  Tender Security Amount (BDT)
                 </label>
                 <input
                   type="number"
@@ -340,7 +340,7 @@ export function EditTenderModal({
               </div>
               <div>
                 <label className={labelCls}>
-                  Performance Security (৳)
+                  Performance Security (BDT)
                 </label>
                 <input
                   type="number"

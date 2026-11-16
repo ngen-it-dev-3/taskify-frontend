@@ -243,7 +243,7 @@ export default function EditExpenseModal({
 
                                 <div>
                                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-600 mb-1.5">
-                                        Amount (৳) <span className="text-rose-500">*</span>
+                                        Amount (BDT) <span className="text-rose-500">*</span>
                                     </label>
                                     <input
                                         type="number"

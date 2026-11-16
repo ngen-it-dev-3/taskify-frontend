@@ -177,7 +177,7 @@ export function AddWorkExperienceModal({ open, onOpenChange, onSave }: Props) {
               />
             </div>
             <div>
-              <label className={labelCls}>Volume (৳ Lakh)</label>
+              <label className={labelCls}>Volume (BDT Lakh)</label>
               <input
                 type="number"
                 min={0}

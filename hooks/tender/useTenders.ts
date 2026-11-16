@@ -159,7 +159,7 @@
 // //     },
 // //     {
 // //       label: "Tender Security Pending",
-// //       value: `৳${securityPending.amount.toLocaleString("en-IN")}`,
+// //       value: `BDT${securityPending.amount.toLocaleString("en-IN")}`,
 // //       hint: `Across ${securityPending.entities} ${
 // //         securityPending.entities === 1 ? "entity" : "entities"
 // //       }`,
@@ -382,7 +382,7 @@
 //     },
 //     {
 //       label: "Tender Security Pending",
-//       value: `৳${securityPending.amount.toLocaleString("en-IN")}`,
+//       value: `BDT${securityPending.amount.toLocaleString("en-IN")}`,
 //       hint: `Across ${securityPending.entities} ${securityPending.entities === 1 ? "entity" : "entities"
 //         }`,
 //       highlighted: true,
@@ -614,7 +614,7 @@ export function useTenderStats() {
     },
     {
       label: "Tender Security Pending",
-      value: `৳${securityPending.amount.toLocaleString("en-IN")}`,
+      value: `BDT ${securityPending.amount.toLocaleString("en-IN")}`,
       hint: `Across ${securityPending.entities} ${
         securityPending.entities === 1 ? "entity" : "entities"
       }`,

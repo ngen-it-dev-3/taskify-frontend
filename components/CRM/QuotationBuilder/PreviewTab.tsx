@@ -82,15 +82,19 @@ export default function PreviewTab({
         {/* ---------- HEADER ---------- */}
         <div className="bg-[#0F2D4A] px-8 py-6 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-md bg-[#A06126] flex items-center justify-center text-white font-bold text-lg shadow-lg">
-              NG
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center shrink-0 border border-gray-200">
+              <img
+                src="/orvix-logo.png"
+                alt="Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <div className="text-white font-bold text-lg leading-tight">
                 NGEN IT LIMITED
               </div>
               <div className="text-white/60 text-[11px] tracking-wide">
-                Facing Next Generation IT
+                Pacing Next Generation IT
               </div>
             </div>
           </div>
@@ -188,10 +192,10 @@ export default function PreviewTab({
                       <td className="py-4 font-medium text-slate-800 pr-3">{l.name}</td>
                       <td className="py-4 text-center font-mono text-slate-700">{l.qty}</td>
                       <td className="py-4 text-right font-mono text-slate-700">
-                        ৳{unitPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        BDT{unitPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                       </td>
                       <td className="py-4 text-right font-mono font-semibold text-slate-900">
-                        ৳{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        BDT{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                       </td>
                     </tr>
                   );
@@ -206,7 +210,7 @@ export default function PreviewTab({
               <div className="flex justify-between items-center py-1">
                 <span className="text-slate-500">Sub Total</span>
                 <span className="font-mono text-slate-800">
-                  ৳{subtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  BDT{subtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between items-center py-1">
@@ -214,13 +218,13 @@ export default function PreviewTab({
                   GST / VAT (15%) <span className="text-slate-800">(added)</span>
                 </span>
                 <span className="font-mono text-slate-800">
-                  ৳{gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  BDT{gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between items-baseline pt-3 border-t-2 border-[#A06126]">
                 <span className="font-bold text-[#0F2D4A] text-sm">Grand Total</span>
                 <span className="font-bold text-[#A06126] font-mono text-lg">
-                  ৳{grand.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  BDT{grand.toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </span>
               </div>
             </div>

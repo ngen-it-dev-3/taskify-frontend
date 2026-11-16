@@ -211,7 +211,7 @@ export function AddDocModal({
                   <input type="date" className={inputCls} value={form.issuedOn} onChange={(e) => set("issuedOn", e.target.value)} />
                 </div>
                 <div>
-                  <label className={labelCls}>Total Sales Value (৳) *</label>
+                  <label className={labelCls}>Total Sales Value (BDT) *</label>
                   <input type="number" className={inputCls} placeholder="e.g. 2000000" value={form.totalValue} onChange={(e) => set("totalValue", e.target.value)} />
                 </div>
               </div>

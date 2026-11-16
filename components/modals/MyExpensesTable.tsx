@@ -27,7 +27,7 @@ import type { Expense } from "@/types/expense";
 const APPROVER_ROLES = ["super_admin", "admin", "hr_manager"];
 
 const CURRENCY_SYMBOLS: Record<string, string> = {
-    BDT: "৳",
+    BDT: "BDT",
     SAR: "﷼",
     USD: "$",
     AED: "د.إ",
