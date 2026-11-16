@@ -555,7 +555,7 @@ export default function QuotationTab({
                             <div className="flex justify-between items-center">
                                 <span className="text-slate-600">Sub Total</span>
                                 <span className="font-mono text-slate-900">
-                                     <span className="pe-2">−{sym}</span>
+                                    <span className="pe-2">−{sym}</span>
                                     {displaySubtotal.toLocaleString(undefined, {
                                         maximumFractionDigits: 2,
                                     })}
@@ -581,7 +581,7 @@ export default function QuotationTab({
                                 <div className="flex justify-between items-center">
                                     <span className="text-slate-600">Net Sub Total</span>
                                     <span className="font-mono text-slate-900">
-                                         <span className="pe-2">{sym}</span>
+                                        <span className="pe-2">{sym}</span>
                                         {displayNetSub.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
                                         })}
@@ -599,8 +599,8 @@ export default function QuotationTab({
                                         <span className="text-slate-600 font-medium">(added)</span>
                                     </span>
                                     <span className="font-mono text-slate-600 font-semibold">
-                                        
-                                         <span className="pe-2">+{sym}</span>
+
+                                        <span className="pe-2">+{sym}</span>
                                         {displayGst.toLocaleString(undefined, {
                                             maximumFractionDigits: 2,
                                         })}
@@ -628,9 +628,8 @@ export default function QuotationTab({
                                 <span className="font-bold text-[#0F2D4A] text-[14px]">
                                     Grand Total
                                 </span>
-                                <span className="font-bold text-[#A06126] font-mono text-[20px]">
-                                    {/* {sym}  */}
-                                    <span className="pe-2">BDT</span>
+                                <span className="font-bold text-[#A06126] font-mono text-[20px] flex items-center justify-end">
+                                    <span className="pe-2">{sym}</span>
                                     {displayGrand.toLocaleString(undefined, {
                                         maximumFractionDigits: 2,
                                     })}

@@ -138,7 +138,7 @@ export interface Currency {
 
 // ⭐ Strictly the 5 requested countries & currencies
 export const CURRENCIES: Currency[] = [
-    { code: 'USD', symbol: '$', label: 'Singapore Dollar ($)', country: 'Singapore', rateToBDT: 124.25 },
+    { code: 'USD', symbol: '$', label: 'United States Dollar ($)', country: 'Singapore', rateToBDT: 124.25 },
     { code: 'GBP', symbol: '£', label: 'Pound (£)', country: 'United Kingdom', rateToBDT: 167.37 },
     { code: 'BDT', symbol: 'BDT', label: 'BDT (BDT)', country: 'Bangladesh', rateToBDT: 1.00 },
     { code: 'AED', symbol: 'د.إ', label: 'UAE Dirham (د.إ)', country: 'Middle East', rateToBDT: 33.83 },

@@ -78,7 +78,7 @@ const CURRENCY_OPTIONS: {
     label: string;
 }[] = [
     { value: "BDT", symbol: "BDT", label: "BDT — Bangladeshi Taka" },
-    { value: "USD", symbol: "$", label: "USD — Singapore Dollar" }, // ⭐ সিঙ্গাপুরের জন্য USD
+    { value: "USD", symbol: "$", label: "USD — United States Dollar" }, // ⭐ সিঙ্গাপুরের জন্য USD
     { value: "GBP", symbol: "£", label: "GBP — British Pound" },
     { value: "AED", symbol: "د.إ", label: "AED — UAE Dirham" },
     { value: "EUR", symbol: "€", label: "EUR — Euro" },
