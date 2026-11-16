@@ -144,7 +144,7 @@ export default function Header({ onMenuClick }: { onMenuClick?: () => void }) {
     if (!imagePath) return null;
     if (imagePath.startsWith("data:image/")) return imagePath;
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath;
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1";
     const baseUrl = apiUrl.replace("/api/v1", "");
     const path = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
     return `${baseUrl}${path}?v=${user?._id || Date.now()}`;

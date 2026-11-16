@@ -1,7 +1,7 @@
 // services/quotation.service.ts
 
 const API_BASE =
-  (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1') +
+  (process.env.NEXT_PUBLIC_API_URL || 'https://taskify-server-5gat.onrender.com/api/v1') +
   '/crm/quotation';
 
 // ============================================================
