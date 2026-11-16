@@ -179,25 +179,25 @@ export default function CostOfGoodTab({
                   </td>
 
                   <td className="px-3 py-2 font-mono text-right">
-                    {fmt(lineTotal)}
+                    {fmt(lineTotal).replace(sym, `${sym} `)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    {fmt(office)}
+                    {fmt(office).replace(sym, `${sym} `)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    {fmt(profit)}
+                    {fmt(profit).replace(sym, `${sym} `)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    {fmt(others)}
+                    {fmt(others).replace(sym, `${sym} `)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    {fmt(sub)}
+                    {fmt(sub).replace(sym, `${sym} `)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    {fmt(lineTax)}
+                    {fmt(lineTax).replace(sym, `${sym} `)}
                   </td>
                   <td className="px-3 py-2 font-mono text-right">
-                    {fmt(sub)}
+                    {fmt(sub).replace(sym, `${sym} `)}
                   </td>
 
                   <td className="px-3 py-2 text-center">
@@ -238,31 +238,31 @@ export default function CostOfGoodTab({
                 Total:
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(calc.costOfGoods)}
+                {fmt(calc.costOfGoods).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(calc.remittanceOfficeExp)}
+                {fmt(calc.remittanceOfficeExp).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(calc.netProfit)}
+                {fmt(calc.netProfit).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(calc.commissionOthers)}
+                {fmt(calc.commissionOthers).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(calc.subTotal)}
+                {fmt(calc.subTotal).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(meta.vatEnabled ? calc.taxVatGst : 0)}
+                {fmt(meta.vatEnabled ? calc.taxVatGst : 0).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right">
-                {fmt(calc.subTotal)}
+                {fmt(calc.subTotal).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right text-rose-600">
-                −{fmt(discountEnabled ? calc.discountTotal : 0)}
+                −{fmt(discountEnabled ? calc.discountTotal : 0).replace(sym, `${sym} `)}
               </td>
               <td className="px-3 py-3 font-mono text-right text-[#A06126]">
-                {fmt(calc.grandTotal)}
+                {fmt(calc.grandTotal).replace(sym, `${sym} `)}
               </td>
               <td></td>
             </tr>

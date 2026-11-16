@@ -231,10 +231,8 @@ export default function Sidebar({ isMobileOpen, onClose, onCollapseChange }: Sid
         return items.map((item) => {
           const children = getSubMenuItems(item.name, userRole);
           if (children.length > 0) {
-            // ⭐ এখানে as NavItem যুক্ত করুন
             return { ...item, children: attachChildren(children, level + 1) } as NavItem;
           }
-          // ⭐ এখানেও as NavItem যুক্ত করুন
           return item as NavItem;
         });
       };
@@ -263,6 +261,52 @@ export default function Sidebar({ isMobileOpen, onClose, onCollapseChange }: Sid
       onCollapseChange?.(initialState);
     }
   }, [onCollapseChange]);
+
+  // ⭐ Auto-Expand Logic: পেজ রিলোড বা সরাসরি লিংকে ঢুকলে প্যারেন্ট মেনু অটো ওপেন হবে
+  useEffect(() => {
+    if (!pathname || isCollapsed) return;
+
+    const autoExpand = () => {
+      const toExpand = new Set<string>();
+
+      const checkActive = (items: (NavItem | SubNavItem)[], parentNames: string[] = []) => {
+        items.forEach((item) => {
+          const hasActiveChild = item.children?.some(
+            (child) =>
+              pathname === child.href ||
+              (child.href !== "#" && pathname.startsWith(`${child.href}/`)) ||
+              child.children?.some((grandChild) => 
+                pathname === grandChild.href || (grandChild.href !== "#" && pathname.startsWith(`${grandChild.href}/`))
+              )
+          );
+
+          if (hasActiveChild) {
+            toExpand.add(item.name);
+            parentNames.forEach((p) => toExpand.add(p));
+          }
+
+          if (item.children) {
+            checkActive(item.children, [...parentNames, item.name]);
+          }
+        });
+      };
+
+      Object.values(menuTree.grouped).forEach((items) => {
+        checkActive(items);
+      });
+
+      if (toExpand.size > 0) {
+        setExpandedItems((prev) => {
+          const newSet = new Set(prev);
+          toExpand.forEach((name) => newSet.add(name));
+          return newSet;
+        });
+      }
+    };
+
+    autoExpand();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, isCollapsed, menuTree]);
 
   const toggleCollapse = useCallback(() => {
     const newState = !isCollapsed;
@@ -299,11 +343,8 @@ export default function Sidebar({ isMobileOpen, onClose, onCollapseChange }: Sid
       } else {
         // Level 1 & 2 (Sub-items): 
         // Close ALL other Level 1 & 2 items, but keep their Level 0 parents open.
-
-        // 1. Start with the newly opened item.
         const newSet = new Set<string>([name]);
 
-        // 2. Keep all Level 0 items that are currently open. 
         Object.values(menuTree.grouped).flat().forEach((rootItem) => {
           if (prev.has(rootItem.name)) {
             newSet.add(rootItem.name);

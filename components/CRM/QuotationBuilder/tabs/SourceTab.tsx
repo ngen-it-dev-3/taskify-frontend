@@ -654,7 +654,8 @@ export default function SourceTab({
                                         {hasS1 ? ((l.source1 as any)?.manualRate || '—') : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-right font-mono font-bold text-[#0F2D4A] border-r border-[#F0EBE3]">
-                                        {hasS1 ? <>{v1.symbol}{v1.value.toFixed(2)}</> : `${targetSymbol}0.00`}
+                                        {/* ⭐ এখানে স্পেস যোগ করা হয়েছে */}
+                                        {hasS1 ? <>{v1.symbol} {v1.value.toFixed(2)}</> : `${targetSymbol} 0.00`}
                                     </td>
 
                                     <td className="px-2 py-2 text-slate-700">
@@ -673,7 +674,8 @@ export default function SourceTab({
                                         {hasS2 ? ((l.source2 as any)?.manualRate || '—') : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-right font-mono font-bold text-[#0F2D4A] border-r border-[#F0EBE3]">
-                                        {hasS2 ? <>{v2.symbol}{v2.value.toFixed(2)}</> : `${targetSymbol}0.00`}
+                                        {/* ⭐ এখানে স্পেস যোগ করা হয়েছে */}
+                                        {hasS2 ? <>{v2.symbol} {v2.value.toFixed(2)}</> : `${targetSymbol} 0.00`}
                                     </td>
 
                                     <td className="px-2 py-2 text-slate-700">
@@ -692,7 +694,8 @@ export default function SourceTab({
                                         {hasS3 ? ((l.source3 as any)?.manualRate || '—') : '—'}
                                     </td>
                                     <td className="px-2 py-2 text-right font-mono font-bold text-[#0F2D4A] border-r border-[#F0EBE3]">
-                                        {hasS3 ? <>{v3.symbol}{v3.value.toFixed(2)}</> : `${targetSymbol}0.00`}
+                                        {/* ⭐ এখানে স্পেস যোগ করা হয়েছে */}
+                                        {hasS3 ? <>{v3.symbol} {v3.value.toFixed(2)}</> : `${targetSymbol} 0.00`}
                                     </td>
 
                                     <td className="px-2 py-2 text-center whitespace-nowrap">

@@ -3,7 +3,7 @@
 import api from '@/lib/axios';
 
 // ⭐ HARDCODED to force local development
-const API_BASE = 'https://taskify-server-5gat.onrender.com/api/v1/crm/rfq';
+const API_BASE = 'http://localhost:5000/api/v1/crm/rfq';
 // ============================================================
 // TYPES
 // ============================================================

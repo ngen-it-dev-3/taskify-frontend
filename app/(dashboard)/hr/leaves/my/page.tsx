@@ -92,15 +92,9 @@ import { motion, AnimatePresence } from "framer-motion";
 interface LeaveRequest {
   _id: string;
   type:
-  | "annual"
   | "sick"
   | "casual"
-  | "maternity"
-  | "paternity"
-  | "bereavement"
-  | "unpaid"
-  | "earned"
-  | "other";
+  | "earned";
   startDate: string;
   endDate: string;
   totalDays: number;
@@ -166,51 +160,27 @@ type LeaveStatus = "all" | "pending" | "approved" | "rejected" | "cancelled";
 // ============================================================================
 
 const LEAVE_TYPES = [
-  { value: "annual", label: "Annual Leave" },
   { value: "sick", label: "Sick Leave" },
   { value: "casual", label: "Casual Leave" },
   { value: "earned", label: "Earned Leave" },
-  { value: "maternity", label: "Maternity Leave" },
-  { value: "paternity", label: "Paternity Leave" },
-  { value: "bereavement", label: "Bereavement Leave" },
-  { value: "unpaid", label: "Unpaid Leave" },
-  { value: "other", label: "Other Leave" },
 ];
 
 const leaveTypeLabels: Record<string, string> = {
-  annual: "Annual Leave",
   sick: "Sick Leave",
   casual: "Casual Leave",
-  maternity: "Maternity Leave",
-  paternity: "Paternity Leave",
-  bereavement: "Bereavement Leave",
-  unpaid: "Unpaid Leave",
   earned: "Earned Leave",
-  other: "Other Leave",
 };
 
 const leaveTypeColors: Record<string, string> = {
-  annual: "bg-blue-100 text-blue-700 border-blue-200",
   sick: "bg-rose-100 text-rose-700 border-rose-200",
   casual: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  maternity: "bg-pink-100 text-pink-700 border-pink-200",
-  paternity: "bg-purple-100 text-purple-700 border-purple-200",
-  bereavement: "bg-gray-100 text-gray-700 border-gray-200",
-  unpaid: "bg-amber-100 text-amber-700 border-amber-200",
   earned: "bg-green-100 text-green-700 border-green-200",
-  other: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
 const leaveTypeIcons: Record<string, any> = {
-  annual: CalendarDays,
   sick: Heart,
   casual: Sun,
-  maternity: Baby,
-  paternity: Baby,
-  bereavement: CloudRain,
-  unpaid: Clock8,
   earned: Star,
-  other: CalendarClock,
 };
 
 const statusColors: Record<string, string> = {
@@ -234,17 +204,11 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-// DEFAULT LEAVE BALANCES (These should match backend entitlements)
+// ⭐ নতুন আপডেট করা LEAVE BALANCES
 const DEFAULT_LEAVE_BALANCES: Record<string, number> = {
-  annual: 15,
   sick: 10,
-  casual: 12,
-  earned: 15,
-  maternity: 90,
-  paternity: 5,
-  bereavement: 0,
-  unpaid: 0,
-  other: 0,
+  casual: 8,
+  earned: 6,
 };
 
 // ============================================================================
@@ -273,7 +237,7 @@ export default function MyLeavesPage() {
   const [refreshing, setRefreshing] = useState(false);
 
   const [applyForm, setApplyForm] = useState({
-    type: "annual",
+    type: "sick",
     startDate: "",
     endDate: "",
     isHalfDay: false,
@@ -368,18 +332,20 @@ export default function MyLeavesPage() {
         // Silent fail for stats
       }
 
+      // ⭐ এই অংশটুকু পরিবর্তন করুন
       // Fetch leave balances
       try {
         const balanceResponse = await api.get("/leaves/balances");
         if (balanceResponse.data.success) {
           const balances = balanceResponse.data.data;
-          // Convert balances to our format
+
+          // ⭐ API-এর ডেটা ইগনোর করে শুধু DEFAULT_LEAVE_BALANCES ব্যবহার করুন
           const formattedBalances: LeaveBalance[] = Object.keys(
-            balances.entitlements || {},
+            DEFAULT_LEAVE_BALANCES
           ).map((type) => {
-            const total = balances.entitlements[type] || 0;
-            const used = balances.used[type] || 0;
-            const remaining = balances.remaining[type] || 0;
+            const total = DEFAULT_LEAVE_BALANCES[type] || 0; // API-এর total ইগনোর করে ডিফল্ট নিন
+            const used = balances.used[type] || 0; // Used ডেটা API থেকেই নিন
+            const remaining = total - used; // Remaining ক্যালকুলেট করুন
             const pending = requests
               .filter((r) => r.type === type && r.status === "pending")
               .reduce((sum, r) => sum + (r.totalDays || 0), 0);
@@ -395,11 +361,9 @@ export default function MyLeavesPage() {
           });
           setLeaveBalances(formattedBalances);
         } else {
-          // Calculate from requests if API fails
           setLeaveBalances(calculateBalances(requests));
         }
       } catch (error) {
-        // Calculate from requests on error
         setLeaveBalances(calculateBalances(requests));
       }
     } catch (error: any) {
@@ -633,7 +597,7 @@ export default function MyLeavesPage() {
 
   const resetForm = () => {
     setApplyForm({
-      type: "annual",
+      type: "sick",
       startDate: "",
       endDate: "",
       isHalfDay: false,
@@ -746,7 +710,7 @@ export default function MyLeavesPage() {
   return (
     <div className="min-h-screen bg-[#faf8f4]">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        
+
         {/* ============================================================
             BREADCRUMB & HEADER
             ============================================================ */}
@@ -764,32 +728,32 @@ export default function MyLeavesPage() {
             HR
           </Link>
           <ChevronRightIcon size={14} className="text-gray-300" />
-          <span className="text-gray-900 font-medium">Leave Management</span>
+          <span className="text-gray-900 font-medium">My Leaves</span>
         </motion.div>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <Calendar className="w-6 h-6 text-green-600" />
-              Leave Management
+              My Leaves
             </h1>
-            <p className="text-gray-500 text-sm mt-1">Manage and approve leave requests</p>
+            <p className="text-gray-500 text-sm mt-1">Manage and apply for leave requests</p>
           </div>
           <div className="flex items-center gap-3">
-             <button onClick={() => fetchLeaveData()} className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium flex items-center gap-2 shadow-sm">
-                <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh
-             </button>
-             <button
-                onClick={() => setShowApplyModal(true)}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-medium shadow-sm flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" /> Apply Leave
-              </button>
+            <button onClick={() => fetchLeaveData()} className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium flex items-center gap-2 shadow-sm">
+              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} /> Refresh
+            </button>
+            <button
+              onClick={() => setShowApplyModal(true)}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition text-sm font-medium shadow-sm flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" /> Apply Leave
+            </button>
           </div>
         </div>
 
         {/* ============================================================
-            TOP SUMMARY CARDS (ছবির মত ৫টি কার্ড)
+            TOP SUMMARY CARDS
             ============================================================ */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
@@ -801,7 +765,7 @@ export default function MyLeavesPage() {
               <div className="p-1.5 bg-gray-50 rounded-md"><FileText className="w-4 h-4 text-gray-500" /></div>
             </div>
           </div>
-          
+
           <div className="bg-[#FFF9E6] rounded-xl p-4 border border-[#FDE68A] shadow-sm">
             <div className="flex justify-between items-start">
               <div>
@@ -844,6 +808,85 @@ export default function MyLeavesPage() {
         </div>
 
         {/* ============================================================
+            LEAVE BALANCES
+            ============================================================ */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <PieChart className="w-4 h-4 text-green-500" />
+              Leave Balances
+              <span className="text-xs font-normal text-gray-400 ml-2">
+                (Sick: 10, Casual: 8, Earned: 6)
+              </span>
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {balanceCards.map((balance) => {
+              const Icon = getLeaveTypeIcon(balance.leaveType);
+              const label = getLeaveTypeLabel(balance.leaveType);
+              const isLow = balance.remaining < balance.total * 0.2;
+              const isCritical = balance.remaining === 0 && balance.total > 0;
+
+              return (
+                <motion.div
+                  key={balance.leaveType}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm hover:shadow-md transition-all relative"
+                >
+                  {isCritical && (
+                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                  )}
+                  {isLow && !isCritical && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  )}
+                  <div className="flex items-center gap-2 mb-1">
+                    <Icon
+                      className={`w-3.5 h-3.5 ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-green-500"}`}
+                    />
+                    <span className="text-[10px] font-medium text-gray-500 uppercase truncate">
+                      {label}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span
+                      className={`text-lg font-bold ${isCritical ? "text-red-500" : isLow ? "text-amber-500" : "text-gray-800"}`}
+                    >
+                      {balance.remaining}
+                    </span>
+                    <span className="text-[10px] text-gray-400">
+                      / {balance.total}
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
+                    <div
+                      className={`h-1 rounded-full transition-all ${isCritical ? "bg-red-500" : isLow ? "bg-amber-500" : "bg-green-500"}`}
+                      style={{
+                        width:
+                          balance.total > 0
+                            ? `${Math.min(100, (balance.used / balance.total) * 100)}%`
+                            : "0%",
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mt-0.5">
+                    <p className="text-[9px] text-gray-400">
+                      <span className="text-blue-500">Used:</span> {balance.used}
+                    </p>
+                    {balance.pending > 0 && (
+                      <p className="text-[9px] text-amber-500 flex items-center gap-0.5">
+                        <Clock className="w-2.5 h-2.5" />
+                        {balance.pending} pending
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ============================================================
             SEARCH & FILTER BAR
             ============================================================ */}
         <div className="bg-white rounded-t-xl border border-gray-200 p-4 border-b-0 flex flex-col md:flex-row gap-4 justify-between items-center">
@@ -857,7 +900,7 @@ export default function MyLeavesPage() {
               className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm bg-gray-50 hover:bg-white transition-colors outline-none text-gray-900"
             />
           </div>
-          
+
           <div className="flex items-center gap-3 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
             <select
               value={filterStatus}
@@ -881,8 +924,8 @@ export default function MyLeavesPage() {
               ))}
             </select>
             <div className="flex items-center gap-1 border border-gray-200 rounded-lg p-1 bg-white shrink-0">
-                <button className="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><LayoutGrid className="w-4 h-4" /></button>
-                <button className="p-1.5 text-green-600 bg-green-50 rounded transition-colors"><List className="w-4 h-4" /></button>
+              <button className="p-1.5 text-gray-400 hover:bg-gray-100 rounded transition-colors"><LayoutGrid className="w-4 h-4" /></button>
+              <button className="p-1.5 text-green-600 bg-green-50 rounded transition-colors"><List className="w-4 h-4" /></button>
             </div>
           </div>
         </div>
@@ -913,7 +956,7 @@ export default function MyLeavesPage() {
                     const typeColor = getLeaveTypeColor(leave.type);
                     const StatusIcon = getStatusIcon(leave.status);
                     const statusColor = getStatusColor(leave.status);
-                    
+
                     return (
                       <tr key={leave._id} className="hover:bg-gray-50/50 transition-colors group">
                         <td className="px-6 py-4 text-center">
@@ -973,9 +1016,9 @@ export default function MyLeavesPage() {
                                 <Trash2 className="w-4 h-4" />
                               </button>
                             )}
-                            <button 
-                              onClick={() => {/* Add view details logic if needed */}}
-                              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors" 
+                            <button
+                              onClick={() => {/* Add view details logic if needed */ }}
+                              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors"
                               title="View Details"
                             >
                               <Eye className="w-4 h-4" />
@@ -988,29 +1031,29 @@ export default function MyLeavesPage() {
                 ) : (
                   <tr>
                     <td colSpan={7} className="px-6 py-16 text-center text-gray-500">
-                       <div className="flex flex-col items-center justify-center">
-                          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                            <Calendar className="w-8 h-8 text-gray-300" />
-                          </div>
-                          <h3 className="text-lg font-medium text-gray-900 mb-1">No leave requests found</h3>
-                          <p className="text-sm text-gray-400">Try adjusting your filters or apply for a new leave.</p>
-                       </div>
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                          <Calendar className="w-8 h-8 text-gray-300" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-900 mb-1">No leave requests found</h3>
+                        <p className="text-sm text-gray-400">Try adjusting your filters or apply for a new leave.</p>
+                      </div>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
-          
+
           {/* Table Footer */}
           <div className="border-t border-gray-200 px-6 py-4 bg-gray-50/30 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-4">
             <div>
               Showing <span className="font-medium text-gray-900">{filteredLeaves.length}</span> of <span className="font-medium text-gray-900">{leaveRequests.length}</span> requests
             </div>
             <div className="flex items-center gap-4">
-               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span> pending</span>
-               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400"></span> approved</span>
-               <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-400"></span> rejected</span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span> pending</span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-400"></span> approved</span>
+              <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-rose-400"></span> rejected</span>
             </div>
           </div>
         </div>
@@ -1255,23 +1298,22 @@ export default function MyLeavesPage() {
                                 Remaining after request:
                               </span>
                               <span
-                                className={`font-semibold ${
-                                  getRemainingBalance(applyForm.type) -
+                                className={`font-semibold ${getRemainingBalance(applyForm.type) -
                                     calculateDays(
                                       applyForm.startDate,
                                       applyForm.endDate,
                                     ) <
-                                  0
+                                    0
                                     ? "text-rose-600"
                                     : getRemainingBalance(applyForm.type) -
-                                          calculateDays(
-                                            applyForm.startDate,
-                                            applyForm.endDate,
-                                          ) <
-                                        3
+                                      calculateDays(
+                                        applyForm.startDate,
+                                        applyForm.endDate,
+                                      ) <
+                                      3
                                       ? "text-amber-600"
                                       : "text-emerald-600"
-                                }`}
+                                  }`}
                               >
                                 {getRemainingBalance(applyForm.type) -
                                   calculateDays(

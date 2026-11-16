@@ -73,7 +73,7 @@ export interface Currency {
 }
 
 export const CURRENCIES: Record<string, Currency> = {
-  BDT: { code: 'BDT', symbol: 'BDT', name: 'Bangladeshi Taka', rate: 1 },
+  BDT: { code: 'BDT', symbol: '৳', name: 'Bangladeshi Taka', rate: 1 },
   USD: { code: 'USD', symbol: '$', name: 'Singapore Dollar (USD)', rate: 1 / 124.25 },
   GBP: { code: 'GBP', symbol: '£', name: 'British Pound', rate: 1 / 167.37 },
   AED: { code: 'AED', symbol: 'د.إ', name: 'UAE Dirham', rate: 1 / 33.83 },
