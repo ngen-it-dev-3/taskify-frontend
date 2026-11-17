@@ -89,6 +89,21 @@ export default function StepperTimeline({ rfq }: Props) {
           <div className="text-[10.5px] text-slate-500 mt-0.5">
             {step1Subtext}
           </div>
+
+          {/* ⭐ নতুন যোগ করা ডেট ও টাইম লজিক */}
+          <div className="text-[10.5px] text-slate-400 mt-1 font-medium">
+            {rfq.source === 'online'
+              ? `${rfq.date || 'N/A'} · ${rfq.time || 'N/A'}`
+              : new Date(rfq.createdAt || new Date()).toLocaleString('en-US', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+              })
+            }
+          </div>
         </div>
 
         {/* ---------- Step 2 — Assigned To ---------- */}
@@ -191,20 +206,20 @@ export default function StepperTimeline({ rfq }: Props) {
 
           <div
             className={`mt-2 font-semibold text-[12px] ${isLost
-                ? 'text-rose-700'
-                : step3Done
-                  ? 'text-slate-800'
-                  : 'text-slate-700'
+              ? 'text-rose-700'
+              : step3Done
+                ? 'text-slate-800'
+                : 'text-slate-700'
               }`}
           >
             {isLost ? 'Status: Lost' : 'Status Closed'}
           </div>
           <div
             className={`text-[10.5px] mt-0.5 ${isLost
-                ? 'text-rose-600'
-                : step3Done
-                  ? 'text-slate-500'
-                  : 'text-slate-400'
+              ? 'text-rose-600'
+              : step3Done
+                ? 'text-slate-500'
+                : 'text-slate-400'
               }`}
           >
             {finalSubtext}

@@ -23,6 +23,7 @@ interface Props {
   onSubmit: (data: CreateRFQPayload) => void;
   initialData?: Partial<RFQFormData>; // ⭐ ADD THIS
   isEditing?: boolean;
+  onSyncSuccess?: () => void;
 }
 
 interface LineItem {
@@ -392,7 +393,7 @@ type Step = 0 | 1 | 2 | 3;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing }: Props) {
+export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing, onSyncSuccess }: Props) {
   const [tab, setTab] = useState<Tab>(initialData ? 'manual' : 'sync');
   const [step, setStep] = useState<Step>(0);
   const [form, setForm] = useState<RFQFormData>({
@@ -402,13 +403,15 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
     items: initialData?.items || INITIAL_FORM.items,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [toast, setToast] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
   const panelRef = useRef<HTMLDivElement>(null);
-
+  const [lastSyncTime, setLastSyncTime] = useState<string>('Today, 09:02 AM');
+  const [totalRfqs, setTotalRfqs] = useState<number>(28);
+  const [syncedData, setSyncedData] = useState<any[]>([]);
   // ---- ESC to close ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -578,7 +581,7 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
       ),
     }));
     setEditingProductId(null);
-    setToast('Product details updated.');
+    setToast({ msg: 'Product details updated.', type: 'success' });
   };
 
   // ============================================================
@@ -660,12 +663,70 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
     setStep(target);
   };
 
-  const handleSync = () => {
+  const handleSync = async () => {
     setSyncing(true);
-    setTimeout(() => {
+    try {
+      // আপনার .env.local থেকে https://taskify-server-5gat.onrender.com/api/v1 আসবে
+      const baseApiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://taskify-server-5gat.onrender.com/api/v1';
+
+      // ⭐ যেহেতু base URL এর ভেতরেই /api/v1 আছে, তাই এখানে শুধু /crm/rfq/sync দিলেই হবে
+      const syncUrl = `${baseApiUrl}/crm/rfq/sync`;
+
+      const res = await fetch(syncUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      // content-type চেক — HTML এরর পেজ ধরার জন্য
+      const contentType = res.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await res.text();
+        console.error('Non-JSON response:', text.slice(0, 300));
+        setToast({
+          msg: `❌ Server error (${res.status}). Check if backend is running.`,
+          type: 'error'
+        });
+        return;
+      }
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        const synced = data.data?.synced ?? 0;
+
+        // ⭐ এখানে ডেটা স্টেটে সেভ করছি (ধরে নিচ্ছি ব্যাকএন্ড থেকে data.data.items বা data.data.data আসছে, যদি না আসে তবে এমপ্টি অ্যারে থাকবে)
+        setSyncedData(data.data?.items || data.data?.data || []);
+
+        if (synced > 0) {
+          setToast({
+            msg: `✅ Successfully synced ${synced} new RFQ${synced > 1 ? 's' : ''}!`,
+            type: 'success'
+          });
+        } else {
+          setToast({
+            msg: `ℹ️ Sync complete — no new RFQs found.`,
+            type: 'info'
+          });
+        }
+
+        setLastSyncTime(new Date().toLocaleTimeString());
+        if (onSyncSuccess) onSyncSuccess();
+      } else {
+        setToast({
+          msg: `❌ ${data.message || 'Sync failed. Please try again.'}`,
+          type: 'error'
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      setToast({
+        msg: `❌ Network error — could not reach server.`,
+        type: 'error'
+      });
+    } finally {
       setSyncing(false);
-      setToast('Synced 2 new RFQs from the Web Portal.');
-    }, 1400);
+    }
   };
 
   // ============================================================
@@ -754,6 +815,16 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
           ref={panelRef}
           className="bg-white rounded-2xl max-w-3xl w-full shadow-2xl relative max-h-[92vh] overflow-y-auto animate-in zoom-in-95 duration-200"
         >
+          {/* ⭐ SYNC LOADING OVERLAY */}
+          {syncing && (
+            <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] flex flex-col items-center justify-center z-30 rounded-2xl">
+              <RefreshCw className="w-8 h-8 animate-spin text-[#A06126]" />
+              <p className="text-xs font-semibold text-slate-700 mt-3">
+                Syncing from Web Portal…
+              </p>
+              <p className="text-[11px] text-slate-500 mt-1">This may take a few seconds</p>
+            </div>
+          )}
           {/* HEADER */}
           <div className="sticky top-0 bg-white z-10 flex items-start justify-between px-8 pt-6 pb-4 border-b border-slate-100 rounded-t-2xl">
             <div>
@@ -797,7 +868,13 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
           {/* BODY */}
           <div className="px-8 py-6">
             {tab === 'sync' ? (
-              <SyncPanel syncing={syncing} onSync={handleSync} />
+              <SyncPanel
+                syncing={syncing}
+                onSync={handleSync}
+                lastSyncTime={lastSyncTime}
+                totalRfqs={totalRfqs}
+                syncedData={syncedData}
+              />
             ) : (
               <ManualPanel
                 step={step}
@@ -824,15 +901,27 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
           </div>
 
           {/* TOAST */}
+          {/* TOAST */}
           {toast && (
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs rounded-lg px-4 py-2.5 shadow-xl flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
-              <span className="w-5 h-5 rounded-full bg-rose-500 flex items-center justify-center font-bold text-[10px]">
-                ✕
+            <div
+              className={`absolute top-4 left-1/2 -translate-x-1/2 text-white text-xs rounded-lg px-4 py-2.5 shadow-xl flex items-center gap-2 animate-in slide-in-from-top-2 duration-200 z-30 ${toast.type === 'success'
+                ? 'bg-emerald-600'
+                : toast.type === 'error'
+                  ? 'bg-rose-600'
+                  : 'bg-slate-900'
+                }`}
+            >
+              <span
+                className={`w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px] ${toast.type === 'success'
+                  ? 'bg-emerald-400 text-emerald-900'
+                  : toast.type === 'error'
+                    ? 'bg-rose-400 text-rose-900'
+                    : 'bg-slate-600'
+                  }`}
+              >
+                {toast.type === 'success' ? '✓' : toast.type === 'error' ? '✕' : 'ℹ'}
               </span>
-              <span>
-                <span className="text-rose-300 font-bold">Notice</span>{' '}
-                <span className="ml-1">{toast}</span>
-              </span>
+              <span>{toast.msg}</span>
             </div>
           )}
         </div>
@@ -862,18 +951,29 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing 
 /* =========================================================
    SYNC PANEL
    ========================================================= */
-function SyncPanel({ syncing, onSync }: { syncing: boolean; onSync: () => void }) {
+function SyncPanel({
+  syncing,
+  onSync,
+  lastSyncTime = 'Today, 09:02 AM',
+  totalRfqs = 28,
+  syncedData = [],
+}: {
+  syncing: boolean;
+  onSync: () => void;
+  lastSyncTime?: string;
+  totalRfqs?: number;
+  syncedData?: any[]; // ⭐ প্রপ্স টাইপ
+}) {
   return (
     <div className="space-y-4">
       <p className="text-xs text-slate-600 leading-relaxed">
-        Pulls any new RFQs submitted through the NGEN IT website's RFQ form via API since your
-        last sync.
+        Pulls any new RFQs submitted through the NGEN IT website's RFQ form via API since your last sync.
         <br />
         <span className="text-slate-500">
-          Last synced: <strong className="text-slate-700">Today, 09:02 AM</strong> · 28 RFQs on
-          file
+          Last synced: <strong className="text-slate-700">{lastSyncTime}</strong> · {totalRfqs} RFQs on file
         </span>
       </p>
+
       <button
         onClick={onSync}
         disabled={syncing}
@@ -882,6 +982,51 @@ function SyncPanel({ syncing, onSync }: { syncing: boolean; onSync: () => void }
         <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin' : ''}`} />
         {syncing ? 'Syncing…' : 'Sync Now'}
       </button>
+
+      {/* ⭐ এখানে আমরা টেবিল দেখাবো */}
+      {syncedData && syncedData.length > 0 && (
+        <div className="mt-4 border border-slate-200 rounded-lg overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center">
+            <h4 className="text-xs font-semibold text-slate-700">Newly Synced Data ({syncedData.length})</h4>
+            <span className="text-[10px] text-emerald-600 font-bold bg-emerald-100 px-2 py-0.5 rounded-full">Success</span>
+          </div>
+          <div className="max-h-48 overflow-y-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-white sticky top-0 border-b border-slate-100 text-slate-500">
+                <tr>
+                  <th className="px-4 py-2 font-medium">Company</th>
+                  <th className="px-4 py-2 font-medium">Contact</th>
+                  <th className="px-4 py-2 font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {syncedData.map((item, idx) => (
+                  <tr key={idx} className="hover:bg-slate-50">
+                    <td className="px-4 py-2 text-slate-700 font-medium truncate max-w-[150px]">
+                      {item.company || item.companyName || 'Unknown'}
+                    </td>
+                    <td className="px-4 py-2 text-slate-500 truncate max-w-[120px]">
+                      {item.contactName || item.email || '—'}
+                    </td>
+                    <td className="px-4 py-2">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">
+                        {item.stage || 'Pending'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ⭐ যদি নতুন ডেটা না থাকে তবে মেসেজ */}
+      {!syncing && syncedData.length === 0 && lastSyncTime !== 'Today, 09:02 AM' && (
+        <div className="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-lg text-center animate-in fade-in duration-300">
+          <p className="text-xs text-slate-500">No new data found in this sync.</p>
+        </div>
+      )}
     </div>
   );
 }

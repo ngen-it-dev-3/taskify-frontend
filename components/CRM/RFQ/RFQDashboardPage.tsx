@@ -111,24 +111,58 @@ export default function RFQDashboardPage() {
 
   useEffect(() => {
     if (!selectedFromUrl) return;
-    if (selectedRFQId === selectedFromUrl) return;
     if (!rfqs || rfqs.length === 0) return;
 
     const match = rfqs.find((r) => r.id === selectedFromUrl);
-    if (match) {
+    if (match && match.id !== selectedRFQId) {
       setSelectedRFQId(match.id);
     }
   }, [selectedFromUrl, rfqs, selectedRFQId]);
 
+  // ⭐ ১. প্রথমে ডেটা লেটেস্ট অনুযায়ী সর্ট করা (Robust Version)
+  const sortedRfqs = React.useMemo(() => {
+    if (!rfqs) return [];
+
+    return [...rfqs].sort((a, b) => {
+      const getDateTime = (item: any) => {
+        // ১. ওয়েব RFQ-এর জন্য date এবং time ফিল্ড একসাথে করা
+        if (item.date) {
+          const dateStr = String(item.date).trim();
+          const timeStr = item.time ? String(item.time).trim() : '00:00:00';
+
+          // যদি YYYY-MM-DD ফরম্যাটে থাকে
+          if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            const t = new Date(`${dateStr}T${timeStr}`).getTime();
+            if (!isNaN(t)) return t;
+          }
+
+          // যদি অন্য ফরম্যাটে থাকে (যেমন 17 Nov 2026)
+          const parsed = new Date(dateStr).getTime();
+          if (!isNaN(parsed)) return parsed;
+        }
+
+        // ২. ম্যানুয়াল RFQ বা date না থাকলে inquiryDate বা createdAt
+        return new Date(item.inquiryDate || item.createdAt || 0).getTime();
+      };
+
+      const timeA = getDateTime(a);
+      const timeB = getDateTime(b);
+
+      // Descending Order (বড় টাইমস্ট্যাম্প আগে আসবে, মানে লেটেস্ট আগে)
+      return timeB - timeA;
+    });
+  }, [rfqs]);
+
+  // ⭐ ২. এরপর সর্ট হওয়া ডেটা থেকে selectedRFQ বের করা
   const selectedRFQ: RFQItem | undefined = useMemo(
-    () => rfqs.find((r) => r.id === selectedRFQId) ?? rfqs[0],
-    [rfqs, selectedRFQId]
+    () => sortedRfqs.find((r) => r.id === selectedRFQId) ?? sortedRfqs[0],
+    [sortedRfqs, selectedRFQId]
   );
 
   // ⭐ নতুন লজিক: একই কোম্পানির সবচেয়ে পুরনো RFQ-এর তারিখ বের করা
   const clientSinceDate = useMemo(() => {
     if (!selectedRFQ) return null;
-    
+
     const targetCompany = selectedRFQ.company?.trim().toLowerCase();
 
     // ১. ওই কোম্পানির সব RFQ ফিল্টার করা (কেস-সেনসিটিভিটি ইগনোর করে)
@@ -314,6 +348,8 @@ export default function RFQDashboardPage() {
     }
   };
 
+
+
   const updateStage = async (id: string, stage: RFQStage) => {
     const { RfqApi } = await import('@/services/rfq.service');
     await RfqApi.update(id, { stage });
@@ -374,7 +410,7 @@ export default function RFQDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         <RfqListPanel
-          rfqs={rfqs}
+          rfqs={sortedRfqs}
           selectedRFQId={selectedRFQ?.id ?? ''}
           showArchived={filters.viewMode === 'archived'}
           onSelect={handleSelect}
