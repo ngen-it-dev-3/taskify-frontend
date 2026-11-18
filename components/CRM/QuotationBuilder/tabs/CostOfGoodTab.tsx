@@ -53,6 +53,11 @@ export default function CostOfGoodTab({
 
   const effectiveTaxPct = meta.vatEnabled ? (rates.taxPct || 0) : 0;
   const discountEnabled = meta.discountEnabled !== false;
+  // কম্পোনেন্টের ভেতরে যেখানে Total Weight দেখাচ্ছেন
+  const actualProductWeight = lines
+    .filter(l => l.type !== 'fixed')
+    .reduce((sum, l) => sum + (l.weightKg || 0), 0);
+
 
   return (
     <div className="space-y-4">
@@ -170,12 +175,16 @@ export default function CostOfGoodTab({
                   </td>
 
                   <td className="px-3 py-2 text-right">
-                    <CellInput
-                      value={l.weightKg}
-                      onChange={(v) => onChangeLine(l.id, { weightKg: v })}
-                      className="w-20 text-right"
-                      step="0.1"
-                    />
+                    {isFixed ? (
+                      <span className="text-slate-300 text-[10px] pr-2">—</span>
+                    ) : (
+                      <CellInput
+                        value={l.weightKg}
+                        onChange={(v) => onChangeLine(l.id, { weightKg: v })}
+                        className="w-20 text-right"
+                        step="0.1"
+                      />
+                    )}
                   </td>
 
                   <td className="px-3 py-2 font-mono text-right">
@@ -286,7 +295,7 @@ export default function CostOfGoodTab({
           <div className="divide-y divide-[#F0EBE3] text-xs">
             <Row label="Total Weight">
               <span className="font-mono font-semibold text-slate-800">
-                {(calc.totalWeight || 0).toFixed(1)} Kg
+                {actualProductWeight.toFixed(1)} Kg
               </span>
             </Row>
             <Row label="Total Dimension">

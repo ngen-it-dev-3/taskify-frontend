@@ -63,7 +63,7 @@ interface SiteSource {
     siteInfoPortalType?: string;
     siteInfoContact?: string;
     sectionSelector?: string;
-    
+
     username?: string;
     password?: string;
     credentialType?: "Enlisted" | "Open bid";
@@ -169,8 +169,8 @@ function StagePill({ stage }: { stage: string }) {
     const s = stage.toLowerCase();
     const cls =
         s === "submitted" ? "bg-[#1e3a5f] text-white" :
-        s === "active" ? "bg-[#f5ecd8] text-[#a97400]" :
-        "bg-[#fff3d6] text-[#8a5a00]";
+            s === "active" ? "bg-[#f5ecd8] text-[#a97400]" :
+                "bg-[#fff3d6] text-[#8a5a00]";
     return (
         <span className={`inline-block rounded-full px-2.5 py-[3px] text-[10.5px] font-bold uppercase tracking-[0.04em] ${cls}`}>
             {stage}
@@ -452,7 +452,7 @@ export default function SiteDirectory() {
     const [sites, setSites] = useState<SiteSource[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<string | null>(null);
-    
+
     const [category, setCategory] = useState<string>("banks");
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(0);
@@ -487,7 +487,7 @@ export default function SiteDirectory() {
             const r = await fetch(`${API_BASE}/tenders/sites`, { headers: authHeaders() });
             const json = await r.json();
             if (json.success) setSites(json.data);
-        } catch (err) { toast.error("Failed to load sites"); } 
+        } catch (err) { toast.error("Failed to load sites"); }
         finally { setLoading(false); }
     }, []);
 
@@ -505,7 +505,7 @@ export default function SiteDirectory() {
             const lJson = await lRes.json();
             if (uJson.success) setCredUsers(uJson.data);
             if (lJson.success) setCredLogs(lJson.data);
-        } catch (err) { toast.error("Failed to load credential data"); } 
+        } catch (err) { toast.error("Failed to load credential data"); }
         finally { setLoadingCreds(false); }
     }, []);
 
@@ -573,7 +573,7 @@ export default function SiteDirectory() {
 
     // Handlers
     const openNew = () => { setDraft({ ...EMPTY_DRAFT, sector: category }); setModalOpen(true); };
-    
+
     const openEdit = (site: SiteSource) => {
         setDraft({
             _id: site._id, name: site.name, url: site.url, listSelector: site.listSelector || "", titleSelector: site.titleSelector || "",
@@ -589,10 +589,10 @@ export default function SiteDirectory() {
     };
 
     // ⭐ Crawler Handlers
-    const openNewCrawler = () => { 
-        setCrawlerDraft({ ...EMPTY_DRAFT, renderMode: "cheerio" }); 
+    const openNewCrawler = () => {
+        setCrawlerDraft({ ...EMPTY_DRAFT, renderMode: "cheerio" });
         setPreview(null);
-        setCrawlerModalOpen(true); 
+        setCrawlerModalOpen(true);
     };
 
     const openEditCrawler = (site: SiteSource) => {
@@ -727,7 +727,7 @@ export default function SiteDirectory() {
             toast.success(isEdit ? "Site updated" : "Site added");
             setModalOpen(false);
             loadSites();
-        } catch (e: any) { toast.error(e.message || "Save failed"); } 
+        } catch (e: any) { toast.error(e.message || "Save failed"); }
         finally { setModalSaving(false); }
     };
 
@@ -738,7 +738,7 @@ export default function SiteDirectory() {
             await fetch(`${API_BASE}/tenders/sites/${site._id}`, { method: "DELETE", headers: authHeaders() });
             toast.success("Site deleted");
             loadSites();
-        } catch (e) { toast.error("Delete failed"); } 
+        } catch (e) { toast.error("Delete failed"); }
         finally { setDeletingId(null); }
     };
 
@@ -827,28 +827,55 @@ export default function SiteDirectory() {
                             {loading && sites.length === 0 && <div className="p-10 text-center text-slate-400"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></div>}
                             {!loading && filtered.map((e, idx) => {
                                 const isHighlighted = e._id === openDetailId;
+
+                                // 👇 সাইটের নাম দিয়ে টেন্ডার ফিল্টার করে কাউন্ট বের করা হচ্ছে
+                                const allTenders = [...(groups?.potential ?? []), ...(groups?.active ?? []), ...(groups?.submitted ?? []), ...(groups?.won ?? []), ...(groups?.lost ?? [])];
+                                const siteTenders = allTenders.filter(t => t.tenderer === e.name);
+
+                                const liveCount = siteTenders.filter(t => t.stage === "potential" || t.stage === "active" || t.stage === "submitted").length;
+                                const wonCount = siteTenders.filter(t => t.stage === "won").length;
+                                const lostCount = siteTenders.filter(t => t.stage === "lost").length;
+
                                 return (
                                     <div key={e._id} style={{ borderTop: idx === 0 ? "none" : "1px solid #f1f5f9" }}>
-                                        <div 
-                                            role="button" 
-                                            tabIndex={0} 
-                                            onClick={() => setOpenDetailId(e._id)} 
+                                        <div
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={() => setOpenDetailId(e._id)}
                                             className={`group flex cursor-pointer items-center justify-between px-4 py-[11px] transition ${isHighlighted ? "bg-[#f5ecd8]" : "hover:bg-slate-50/60"}`}
                                         >
+                                            {/* বাম দিকের সাইটের নাম */}
                                             <div className="flex min-w-0 items-center gap-2">
                                                 <span className="truncate text-[12.5px] font-bold text-slate-900">{e.name}</span>
                                                 {!e.active && <span className="rounded-full bg-slate-100 px-2 py-[2px] text-[9.5px] font-bold text-slate-500">Inactive</span>}
                                             </div>
-                                            
+
+                                            {/* ডান দিকের ব্যাজ এবং অ্যাকশন বাটন */}
                                             <div className="flex items-center gap-3" onClick={(ev) => ev.stopPropagation()}>
-                                                <span className={`rounded-full px-2.5 py-[3px] text-[10.5px] font-bold ${(e.lastItemCount ?? 0) > 0 ? "bg-[#f5ecd8] text-[#a97400]" : "bg-[#e6ebf3] text-[#1e3a5f]"}`}>
-                                                    {e.lastItemCount ?? 0} {(e.lastItemCount ?? 0) === 1 ? "Tender" : "Tenders"}
+
+                                                {/* 👇 লাল দাগের জায়গায় নতুন ব্যাজগুলো */}
+                                                <span className="inline-flex items-center rounded-full bg-red-50 px-2.5 py-[3px] text-[10px] font-bold text-red-600">
+                                                    Live Tenders ({liveCount})
                                                 </span>
-                                                <a href={e.portalUrl || e.url} target="_blank" rel="noreferrer" className="text-[12px] font-semibold text-[#1e3a5f] hover:underline">Open Portal →</a>
-                                                <button type="button" onClick={() => setInfoKey(e._id)} className="inline-flex items-center gap-1 text-[12px] font-medium text-[#1e3a5f] hover:underline">
-                                                    <span className="text-[13px] leading-none">ⓘ</span> Info
+                                                <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-[3px] text-[10px] font-bold text-emerald-600">
+                                                    Won ({wonCount})
+                                                </span>
+                                                <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-[3px] text-[10px] font-bold text-slate-500">
+                                                    Lost ({lostCount})
+                                                </span>
+
+                                               
+
+                                                <a href={e.portalUrl || e.url} target="_blank" rel="noreferrer" className="text-[12px] font-semibold text-[#1e3a5f] hover:underline">
+                                                    Go to Portal →
+                                                </a>
+
+                                                <button type="button" onClick={() => setInfoKey(e._id)} className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-2 py-1 text-[11px] font-medium text-[#1e3a5f] hover:bg-slate-50">
+                                                    <span className="text-[12px] leading-none">ⓘ</span> Info
                                                 </button>
-                                                <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100">
+
+                                                {/* এডিট এবং ডিলিট বাটন (হোভার করলে দেখা যাবে) */}
+                                                <div className="flex items-center gap-1 opacity-0 transition group-hover:opacity-100 ml-2">
                                                     <button onClick={() => openEdit(e)} className="p-1 text-slate-600 hover:bg-slate-100 rounded"><Pencil className="h-3.5 w-3.5" /></button>
                                                     <button onClick={() => handleDelete(e)} disabled={deletingId === e._id} className="p-1 text-rose-600 hover:bg-rose-50 rounded"><Trash2 className="h-3.5 w-3.5" /></button>
                                                 </div>

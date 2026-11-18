@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import type { RFQItem, RFQProduct, FilterState, RFQStage } from './types';
 import toast from 'react-hot-toast';
-
+import { Settings } from 'lucide-react';
 import Header from './Header';
 import FilterToolbar from './FilterToolbar';
 import { TotalRfqCard, RfqStatusCard, RfqByCountryCard } from './KpiCards';
@@ -31,7 +31,12 @@ export default function RFQDashboardPage() {
 
   const selectedFromUrl = searchParams.get('selected');
   const stageFromUrl = searchParams.get('stage');
-
+  const [visibleCards, setVisibleCards] = useState({
+    total: true,
+    status: true,
+    country: true,
+  });
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const initialViewMode: FilterState['viewMode'] =
     stageFromUrl === 'lost' ? 'lost' :
       stageFromUrl === 'archived' ? 'archived' :
@@ -388,16 +393,30 @@ export default function RFQDashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#1E293B] font-sans antialiased p-6 lg:p-8 selection:bg-[#EFE8DA]">
-      <Header onAddRfq={() => {
-        setEditingRfqId(null);
-        setShowAddRfqModal(true);
-      }} />
+      <div className="flex justify-between items-start">
+        <Header
+          onAddRfq={() => {
+            setEditingRfqId(null);
+            setShowAddRfqModal(true);
+            // 👇 এখান থেকে setShowSettingsModal(true) বাদ দিন
+          }}
+          setShowSettingsModal={setShowSettingsModal} // 👈 প্রপ হিসেবে পাস করুন
+        />
+      </div>
+      {/* 👇 কার্ড রেন্ডারিং (কন্ডিশনালি) */}
+      {(visibleCards.total || visibleCards.status || visibleCards.country) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 mt-4">
+          {visibleCards.total && <TotalRfqCard stats={stats} />}
+          {visibleCards.status && <RfqStatusCard stats={stats} />}
+          {visibleCards.country && <RfqByCountryCard stats={stats} />}
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
         <TotalRfqCard stats={stats} />
         <RfqStatusCard stats={stats} />
         <RfqByCountryCard stats={stats} />
-      </div>
+      </div> */}
 
       <FilterToolbar
         filters={filters}
@@ -514,6 +533,62 @@ export default function RFQDashboardPage() {
           clientInfo={selectedRFQ.clientInfo}
           onClose={() => setShowClientInfoModal(false)}
         />
+      )}
+
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden border border-slate-200">
+            <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h3 className="text-sm font-bold text-slate-800">Dashboard Settings</h3>
+              <button onClick={() => setShowSettingsModal(false)} className="text-slate-400 hover:text-slate-700">
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4">
+              <p className="text-xs text-slate-500 mb-2">Choose which KPI cards to show on your dashboard:</p>
+
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={visibleCards.total}
+                  onChange={(e) => setVisibleCards(prev => ({ ...prev, total: e.target.checked }))}
+                  className="w-4 h-4 text-[#A06126] rounded border-slate-300 focus:ring-[#A06126] cursor-pointer"
+                />
+                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">Total RFQs Card</span>
+              </label>
+
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={visibleCards.status}
+                  onChange={(e) => setVisibleCards(prev => ({ ...prev, status: e.target.checked }))}
+                  className="w-4 h-4 text-[#A06126] rounded border-slate-300 focus:ring-[#A06126] cursor-pointer"
+                />
+                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">RFQ Status Card</span>
+              </label>
+
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={visibleCards.country}
+                  onChange={(e) => setVisibleCards(prev => ({ ...prev, country: e.target.checked }))}
+                  className="w-4 h-4 text-[#A06126] rounded border-slate-300 focus:ring-[#A06126] cursor-pointer"
+                />
+                <span className="text-sm font-medium text-slate-700 group-hover:text-slate-900">RFQ By Country Card</span>
+              </label>
+            </div>
+
+            <div className="px-5 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end">
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="px-4 py-2 bg-[#A06126] hover:bg-[#88501E] text-white text-xs font-semibold rounded-lg transition"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

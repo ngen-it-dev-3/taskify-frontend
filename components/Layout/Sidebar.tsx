@@ -91,21 +91,21 @@ function SidebarItem({
       text: "text-[14px] font-semibold",
       iconSize: 18,
       activeBg: "bg-green-600/10 text-green-700 shadow-sm ring-1 ring-green-600/20",
-      hoverBg: "hover:bg-black/[0.04] text-slate-600 hover:text-slate-900"
+      hoverBg: "hover:bg-black/[0.04] text-black hover:text-black"
     },
     1: {
       padding: isCollapsed ? "justify-center px-0" : "pl-2 pr-3",
       text: "text-[13px] font-medium",
       iconSize: 16,
       activeBg: "bg-white/60 text-green-700 shadow-sm ring-1 ring-black/5",
-      hoverBg: "hover:bg-black/[0.03] text-slate-500 hover:text-slate-800"
+      hoverBg: "hover:bg-black/[0.03] text-black hover:text-black"
     },
     2: {
       padding: isCollapsed ? "justify-center px-0" : "pl-6 pr-3",
       text: "text-[13px] font-medium",
       iconSize: 14,
       activeBg: "bg-green-600/10 text-green-600 ring-1 ring-green-600/20",
-      hoverBg: "hover:bg-black/[0.03] text-slate-500 hover:text-slate-800"
+      hoverBg: "hover:bg-black/[0.03] text-black hover:text-black"
     }
   };
 
@@ -130,7 +130,7 @@ function SidebarItem({
       <div className="shrink-0 flex items-center justify-center w-6 h-6">
         <Icon
           size={styles.iconSize}
-          className={`transition-colors duration-200 ${active || isParentActive ? (level === 0 ? "text-green-600" : "text-green-500") : "text-slate-400 group-hover:text-slate-600"
+          className={`transition-colors duration-200 ${active || isParentActive ? (level === 0 ? "text-green-600" : "text-green-500") : "text-black group-hover:text-black"
             }`}
         />
       </div>
@@ -139,14 +139,14 @@ function SidebarItem({
         <div className="flex-1 flex items-center justify-between ml-2 min-w-0 pr-1">
           <span className="truncate">{itemName}</span>
           <div className="flex items-center gap-1.5 ml-auto">
-            {isExternal && <ExternalLink size={12} className="text-slate-400 shrink-0" />}
+            {isExternal && <ExternalLink size={12} className="text-black shrink-0" />}
             {showBadge && (
               <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold tracking-wide ${item.badgeColor || "bg-green-500/20 text-green-700"}`}>
                 {badgeText}
               </span>
             )}
             {hasChildren && (
-              <ChevronDown size={14} className={`text-slate-400 transition-transform duration-300 ${isExpanded ? "rotate-180 text-slate-600" : ""}`} />
+              <ChevronDown size={14} className={`text-black transition-transform duration-300 ${isExpanded ? "rotate-180 text-black" : ""}`} />
             )}
           </div>
         </div>
@@ -275,7 +275,7 @@ export default function Sidebar({ isMobileOpen, onClose, onCollapseChange }: Sid
             (child) =>
               pathname === child.href ||
               (child.href !== "#" && pathname.startsWith(`${child.href}/`)) ||
-              child.children?.some((grandChild) => 
+              child.children?.some((grandChild) =>
                 pathname === grandChild.href || (grandChild.href !== "#" && pathname.startsWith(`${grandChild.href}/`))
               )
           );

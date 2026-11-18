@@ -1,7 +1,7 @@
 // components/tender/security/SecurityTable.tsx
 "use client";
 
-import { Loader2, Pencil, Trash2, History, Bell, Eye } from "lucide-react"; // ✅ Eye ইম্পোর্ট
+import { Loader2, Pencil, Trash2, History, Bell } from "lucide-react"; // 👈 Eye ইম্পোর্ট রিমুভ করা হয়েছে
 import type { SecurityType } from "@/lib/api/tender.api";
 import type { SecurityRowUI } from "@/lib/api/mappers";
 
@@ -15,7 +15,7 @@ interface Props {
   onEdit?: (row: SecurityRow) => void;
   onRecordPayment?: (row: SecurityRow) => void;
   onViewHistory?: (row: SecurityRow) => void;
-  onViewDetails?: (row: SecurityRow) => void; // ✅ নতুন প্রপ
+  onViewDetails?: (row: SecurityRow) => void;
   deletingId?: string | null;
   notifyingId?: string | null;
 }
@@ -39,7 +39,7 @@ export function SecurityTable({
   onEdit,
   onRecordPayment,
   onViewHistory,
-  onViewDetails, // ✅ রিসিভ করা হলো
+  onViewDetails,
   deletingId = null,
   notifyingId = null,
 }: Props) {
@@ -51,7 +51,7 @@ export function SecurityTable({
             <th className="px-5 py-3 w-[80px]">Entity</th>
             <th className="px-5 py-3">Tender / invoice</th>
             <th className="px-5 py-3 w-[210px]">Contract value</th>
-            <th className="px-5 py-3 w-[180px]">Received</th>
+            <th className="px-5 py-3 w-[180px]">Validity Date</th>
             <th className="px-5 py-3 w-[110px]">Balance</th>
             <th className="px-5 py-3 w-[110px]">Payment due</th>
             <th className="px-5 py-3 w-[140px]">Payment status</th>
@@ -65,8 +65,15 @@ export function SecurityTable({
             const isNotifying = notifyingId === r.id;
             const rowBusy = isDeleting || isNotifying;
 
+            const validityDate = (r as any).validityDate || (r as any).validity || "—";
+
             return (
-              <tr key={r.id} className={`transition-colors ${rowBusy ? "bg-slate-50/60" : "hover:bg-slate-50/50"}`}>
+              <tr 
+                key={r.id} 
+                // 👇 পুরো রো-তে ক্লিক করলে onViewDetails কল হবে
+                onClick={() => onViewDetails?.(r)}
+                className={`cursor-pointer transition-colors ${rowBusy ? "bg-slate-50/60" : "hover:bg-slate-50/50"}`}
+              >
                 <td className="px-5 py-3.5">
                   <EntityBadge entity={r.entity} />
                 </td>
@@ -82,11 +89,8 @@ export function SecurityTable({
                   BDT{r.amount.toLocaleString('en-IN')}
                 </td>
                 <td className="px-5 py-3.5">
-                  <div className="w-[130px] h-[3px] bg-[#e2e8f0] rounded-full mb-1.5 overflow-hidden">
-                    <div className="h-full bg-[#10b981]" style={{ width: `${r.receivedPercent}%` }} />
-                  </div>
-                  <p className="text-[9px] text-slate-500 font-medium">
-                    BDT{r.receivedAmount.toLocaleString('en-IN')} received &middot; {r.receivedPercent}%
+                  <p className="text-[11px] font-semibold text-[#1e293b]">
+                    {validityDate}
                   </p>
                 </td>
                 <td className="px-5 py-3.5 font-mono text-[11px] font-semibold text-slate-700">
@@ -116,11 +120,12 @@ export function SecurityTable({
                   </span>
                 </td>
                 <td className="px-5 py-3.5 text-right pr-6">
-                  <div className="flex items-center justify-end gap-1.5">
+                  {/* 👇 Actions area-তে e.stopPropagation() যোগ করা হয়েছে যাতে বাটনে ক্লিক করলে View Modal না ওপেন হয় */}
+                  <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
 
                     {r.balance > 0 ? (
                       <button
-                        onClick={() => onRecordPayment?.(r)}
+                        onClick={(e) => { e.stopPropagation(); onRecordPayment?.(r); }}
                         className="inline-flex h-[26px] items-center rounded bg-[#a97400] px-3 text-[10px] font-bold text-white hover:bg-[#8f6100]"
                       >
                         Update
@@ -130,7 +135,7 @@ export function SecurityTable({
                     )}
 
                     <button
-                      onClick={() => onViewHistory?.(r)}
+                      onClick={(e) => { e.stopPropagation(); onViewHistory?.(r); }}
                       className="inline-flex h-[26px] items-center rounded px-1.5 text-[10px] font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-800"
                     >
                       History
@@ -141,7 +146,7 @@ export function SecurityTable({
                     {onNotify && (
                       <button
                         type="button"
-                        onClick={() => onNotify(r.id)}
+                        onClick={(e) => { e.stopPropagation(); onNotify(r.id); }}
                         disabled={rowBusy}
                         className="rounded p-1 text-amber-500 hover:bg-amber-50 hover:text-amber-600 disabled:opacity-40"
                         title="Notify Finance"
@@ -149,19 +154,13 @@ export function SecurityTable({
                         {isNotifying ? <Loader2 className="h-3 w-3 animate-spin" /> : <Bell className="h-3 w-3" />}
                       </button>
                     )}
-                    {/* ✅ View Details Icon (Eye) */}
-                    <button
-                      onClick={() => onViewDetails?.(r)}
-                      className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-40"
-                      title="View Details"
-                    >
-                      <Eye className="h-3.5 w-3.5" />
-                    </button>
+                    
+                    {/* ❌ Eye বাটনটি রিমুভ করা হয়েছে */}
 
                     {onEdit && (
                       <button
                         type="button"
-                        onClick={() => onEdit(r)}
+                        onClick={(e) => { e.stopPropagation(); onEdit(r); }}
                         disabled={rowBusy}
                         className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-40"
                         title="Edit Record"
@@ -170,11 +169,10 @@ export function SecurityTable({
                       </button>
                     )}
 
-
                     {onDelete && (
                       <button
                         type="button"
-                        onClick={() => onDelete(r.id)}
+                        onClick={(e) => { e.stopPropagation(); onDelete(r.id); }}
                         disabled={rowBusy}
                         className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
                         title="Delete Record"

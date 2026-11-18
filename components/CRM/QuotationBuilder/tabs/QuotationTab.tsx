@@ -66,7 +66,6 @@ export default function QuotationTab({
     const gst = calc?.taxVatGst || 0;
     const grand = calc?.grandTotal || netSub + gst;
 
-    // ⭐ REMOVED convertToDisplay — values are already in Territory Currency
     const displaySubtotal = subtotal;
     const displayDiscount = discountAmt;
     const displayNetSub = netSub;
@@ -154,7 +153,7 @@ export default function QuotationTab({
         }
 
         prevLineCount.current = currentCount;
-    }, [productLines.length]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [productLines.length]);
 
     const startEdit = (l: QuotationLineItem) => {
         const baseUnitPrice = computeClientUnitPrice(l);
@@ -180,7 +179,6 @@ export default function QuotationTab({
         }
 
         const qtyNum = Number(editing.qty) || 0;
-        // ⭐ Price typed is already in the correct currency
         const priceNum = Number(editing.price) || 0;
 
         const principalCost = derivePrincipalCost(
@@ -246,13 +244,6 @@ export default function QuotationTab({
                                 className="w-22 h-12 object-contain"
                             />
                         </div>
-                        {/* <div className="overflow-hidden  p-1 rounded-[5px] flex items-center justify-center shrink-0">
-                            <img
-                                src="/Logo(White).png"
-                                alt="Logo"
-                                className="w-22 h-12 object-contain"
-                            />
-                        </div> */}
                         <div>
                             <div className="text-white font-bold text-[20px] leading-tight tracking-tight">
                                 NGEN IT LIMITED
@@ -309,6 +300,7 @@ export default function QuotationTab({
                                 label="Address"
                                 value={fullAddress}
                                 onChange={(v) => patchMeta({ billToAddress: v })}
+                                truncateLines={true}
                             />
                         </div>
                     </div>
@@ -354,6 +346,10 @@ export default function QuotationTab({
                         <table className="w-full text-[12px]">
                             <thead>
                                 <tr className="border-b border-[#E5DFD3]">
+                                    {/* 👇 ১. অ্যাকশন কলাম সবার আগে নিয়ে আসা হয়েছে */}
+                                    <th className="pb-3 text-start text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-24">
+                                        Action
+                                    </th>
                                     <th className="pb-3 text-left text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-12">
                                         SI
                                     </th>
@@ -366,11 +362,8 @@ export default function QuotationTab({
                                     <th className="pb-3 text-right text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
                                         Unit Price
                                     </th>
-                                    <th className="pb-3 text-center text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
+                                    <th className="pb-3 text-end text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-32">
                                         Total
-                                    </th>
-                                    <th className="pb-3 text-center text-[12px] uppercase tracking-[0.12em] text-slate-500 font-bold w-24">
-                                        Action
                                     </th>
                                 </tr>
                             </thead>
@@ -383,6 +376,24 @@ export default function QuotationTab({
                                     if (isEditing && editing) {
                                         return (
                                             <tr key={l.id} className="bg-[#FAF6EE]/70">
+                                                <td className="py-3.5 text-start whitespace-nowrap flex items-start">
+                                                    <div className="inline-flex justify-start items-start gap-1">
+                                                        <button
+                                                            type="button"
+                                                            onClick={saveEdit}
+                                                            className="px-2.5 py-1 rounded bg-[#0F2D4A] hover:bg-[#1C3760] text-white text-[10px] font-semibold transition"
+                                                        >
+                                                            Save
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={cancelEdit}
+                                                            className="px-2.5 py-1 rounded border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 text-[10px] font-semibold transition"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+                                                </td>
                                                 <td className="py-3.5 text-slate-500 font-mono">
                                                     {i + 1}
                                                 </td>
@@ -453,49 +464,21 @@ export default function QuotationTab({
                                                         maximumFractionDigits: 2,
                                                     })}
                                                 </td>
-                                                <td className="py-3.5 text-center whitespace-nowrap">
-                                                    <button
-                                                        type="button"
-                                                        onClick={saveEdit}
-                                                        className="px-2.5 py-1 rounded bg-[#0F2D4A] hover:bg-[#1C3760] text-white text-[10px] font-semibold mr-1 transition"
-                                                    >
-                                                        Save
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={cancelEdit}
-                                                        className="px-2.5 py-1 rounded border border-[#E2DBD1] bg-white hover:bg-slate-50 text-slate-700 text-[10px] font-semibold transition"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </td>
                                             </tr>
                                         );
                                     }
 
                                     return (
-                                        <tr key={l.id} className="hover:bg-[#FDFBF7]">
-                                            <td className="py-2 font-mono text-slate-500">{i + 1}</td>
-                                            <td className="py-2 font-medium text-slate-800 pr-3">
-                                                {l.name}
-                                            </td>
-                                            <td className="py-2 text-center font-mono text-slate-700">
-                                                {l.qty}
-                                            </td>
-                                            <td className="py-2 text-right font-mono text-slate-700">
-                                                <span className="pe-2">{sym}</span>
-                                                {baseUnitPrice.toLocaleString(undefined, {
-                                                    maximumFractionDigits: 2,
-                                                })}
-                                            </td>
-                                            <td className="py-2 text-right font-mono font-semibold text-slate-900">
-                                                <span className="pe-2">{sym}</span>
-                                                {baseTotal.toLocaleString(undefined, {
-                                                    maximumFractionDigits: 2,
-                                                })}
-                                            </td>
-                                            <td className="py-2 text-center whitespace-nowrap">
-                                                <div className="inline-flex items-center gap-1">
+                                        <tr
+                                            key={l.id}
+                                            className="hover:bg-[#FDFBF7]"
+                                            // 👇 ২. পুরো রো-তে ডাবল ক্লিক করলে এডিট মোড অন হবে
+                                            onDoubleClick={() => startEdit(l)}
+                                            title="Double-click to edit"
+                                        >
+                                            {/* Actions Column */}
+                                            <td className="py-2 text-start whitespace-nowrap">
+                                                <div className="inline-flex items-start gap-1">
                                                     <button
                                                         type="button"
                                                         onClick={() => startEdit(l)}
@@ -521,6 +504,35 @@ export default function QuotationTab({
                                                         <X className="w-3.5 h-3.5" />
                                                     </button>
                                                 </div>
+                                            </td>
+
+                                            {/* SI Column */}
+                                            <td className="py-2 font-mono text-slate-500">{i + 1}</td>
+
+                                            {/* Product Name */}
+                                            <td className="py-2 font-medium text-slate-800 pr-3">
+                                                {l.name}
+                                            </td>
+
+                                            {/* Qty */}
+                                            <td className="py-2 text-center font-mono text-slate-700">
+                                                {l.qty}
+                                            </td>
+
+                                            {/* Unit Price */}
+                                            <td className="py-2 text-right font-mono text-slate-700">
+                                                <span className="pe-2">{sym}</span>
+                                                {baseUnitPrice.toLocaleString(undefined, {
+                                                    maximumFractionDigits: 2,
+                                                })}
+                                            </td>
+
+                                            {/* Total */}
+                                            <td className="py-2 text-right font-mono font-semibold text-slate-900">
+                                                <span className="pe-2">{sym}</span>
+                                                {baseTotal.toLocaleString(undefined, {
+                                                    maximumFractionDigits: 2,
+                                                })}
                                             </td>
                                         </tr>
                                     );
@@ -628,7 +640,7 @@ export default function QuotationTab({
                                 <span className="font-bold text-[#0F2D4A] text-[14px]">
                                     Grand Total
                                 </span>
-                                <span className="font-bold text-[#A06126] font-mono text-[20px] flex items-center justify-end">
+                                <span className="font-bold text-[#A06126] font-mono text-[14px] flex items-center justify-end">
                                     <span className="pe-2">{sym}</span>
                                     {displayGrand.toLocaleString(undefined, {
                                         maximumFractionDigits: 2,
@@ -799,6 +811,7 @@ function EditableRow({
     mono,
     onChange,
     onSubChange,
+    truncateLines, // 👈 নতুন প্রপ
 }: {
     label: string;
     value: string;
@@ -807,6 +820,7 @@ function EditableRow({
     mono?: boolean;
     onChange?: (v: string) => void;
     onSubChange?: (v: string) => void;
+    truncateLines?: boolean; // 👈 নতুন প্রপ টাইপ
 }) {
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(value);
@@ -906,7 +920,9 @@ function EditableRow({
             <div className="min-w-0 flex items-start gap-2">
                 <div className="flex-1 min-w-0">
                     <div
-                        className="break-words"
+                        // 👇 ২ লাইন ট্রাঙ্কেট এবং হোভার টুলটিপ
+                        className={`break-words ${truncateLines ? 'line-clamp-2' : ''}`}
+                        title={truncateLines ? value : undefined}
                         style={{
                             color: '#0d2137',
                             fontSize: mono ? '12px' : '12px',
@@ -974,14 +990,23 @@ function TermRow({
         return (
             <div className="grid grid-cols-[130px_1fr] gap-6 items-start py-4">
                 <input
+                    autoFocus
                     value={draftLabel}
                     onChange={(e) => setDraftLabel(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') save();
+                        if (e.key === 'Escape') cancel();
+                    }}
                     className="bg-[#FDFBF7] border border-[#E2DBD1] rounded px-2 py-1 text-[12px] font-bold text-slate-700"
                 />
                 <div className="space-y-2">
                     <input
                         value={draftValue}
                         onChange={(e) => setDraftValue(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') save();
+                            if (e.key === 'Escape') cancel();
+                        }}
                         className="w-full bg-[#FDFBF7] border border-[#E2DBD1] rounded px-2 py-1 text-[12px] text-slate-700"
                     />
                     <div className="flex gap-2">
@@ -1006,8 +1031,13 @@ function TermRow({
     }
 
     return (
-        <div className="grid grid-cols-[130px_1fr] gap-6 items-start py-2 group">
-            <span className="text-slate-800 font-bold text-[12px]">{label}</span>
+        // 👇 এখানে onDoubleClick যোগ করা হয়েছে
+        <div
+            className="grid grid-cols-[130px_1fr] gap-6 items-start py-2 group cursor-pointer hover:bg-slate-50/50 rounded transition-colors"
+            onDoubleClick={() => setEditing(true)}
+            title="Double-click to edit"
+        >
+            <span className="text-slate-800 font-bold text-[12px] pt-0.5">{label}</span>
             <div className="flex items-start gap-2">
                 <span className="text-slate-600 leading-relaxed flex-1 text-[12px]">
                     {value}
@@ -1016,7 +1046,10 @@ function TermRow({
                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition shrink-0">
                     <button
                         type="button"
-                        onClick={() => setEditing(true)}
+                        onClick={(e) => {
+                            e.stopPropagation(); // যাতে রো-এর ডাবল ক্লিক ট্রিগার না হয়
+                            setEditing(true);
+                        }}
                         className="text-slate-400 hover:text-[#A06126] transition"
                         title="Edit term"
                     >
@@ -1024,7 +1057,10 @@ function TermRow({
                     </button>
                     <button
                         type="button"
-                        onClick={onRemove}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onRemove?.();
+                        }}
                         className="text-slate-400 hover:text-rose-600 transition"
                         title="Remove term"
                     >

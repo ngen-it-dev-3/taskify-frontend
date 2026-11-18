@@ -12,7 +12,6 @@ import {
   TenderTable,
   TenderTypeBadge,
   DocsStatusBadge,
-  DeadlineCell,
   AutoDiscoveredBadge,
   ManualBadge,
 } from "@/components/tender/TenderTable";
@@ -36,68 +35,71 @@ import { tenderApi } from "@/lib/api/tender.api";
 import { confirmToast } from "@/lib/confirmToast";
 import { UploadAgreementModal } from "@/components/tender/modal/UploadAgreementModal";
 
-
 /* ---------- Column schemas ---------- */
 const COLUMNS_POTENTIAL = [
-  { key: "tenderer", label: "Tenderer", width: "22%" },
-  { key: "description", label: "Description", width: "34%" },
+  { key: "tenderer", label: "Tenderer", width: "20%" },
+  { key: "description", label: "Description", width: "28%" },
+  { key: "deadline", label: "Submission Deadline", width: "16%" }, // 👈 নতুন কলাম
   { key: "type", label: "Type", width: "10%" },
-  { key: "recorded", label: "Recorded", width: "14%" },
-  { key: "budget", label: "Tentative Budget", width: "16%" },
+  { key: "recorded", label: "Recorded", width: "12%" },
+  { key: "budget", label: "Tentative Budget", width: "14%" },
 ];
 
 const COLUMNS_ACTIVE = [
-  { key: "tenderer", label: "Tenderer", width: "32%" },
+  { key: "tenderer", label: "Tenderer", width: "26%" },
+  { key: "deadline", label: "Submission Deadline", width: "16%" }, // 👈 নতুন কলাম
   { key: "type", label: "Type", width: "10%" },
-  { key: "deadline", label: "Deadline", width: "14%" },
   { key: "value", label: "Value", width: "16%" },
   { key: "status", label: "Docs Status", width: "14%" },
 ];
 
 const COLUMNS_SUBMITTED = [
   { key: "tenderer", label: "Tenderer", width: "20%" },
-  { key: "description", label: "Description", width: "40%" },
-  { key: "submitted", label: "Submitted", width: "15%" },
-  { key: "awaiting", label: "Awaiting Result Since", width: "20%" },
+  { key: "description", label: "Description", width: "28%" },
+  { key: "deadline", label: "Submission Deadline", width: "16%" }, // 👈 নতুন কলাম
+  { key: "submitted", label: "Submitted", width: "16%" },
+  { key: "awaiting", label: "Awaiting Since", width: "20%" },
 ];
 
 const COLUMNS_LOST = [
   { key: "tenderer", label: "Tenderer", width: "18%" },
-  { key: "description", label: "Description", width: "30%" },
-  { key: "reason", label: "Loss Reason", width: "32%" },
+  { key: "description", label: "Description", width: "26%" },
+  { key: "deadline", label: "Submission Deadline", width: "16%" }, // 👈 নতুন কলাম
+  { key: "reason", label: "Loss Reason", width: "28%" },
   { key: "date", label: "Date", width: "12%" },
 ];
 
 const COLUMNS_WON = [
-  { key: "tenderer", label: "Tenderer", width: "22%" },
-  { key: "description", label: "Description", width: "38%" },
-  { key: "bidValue", label: "Winning Bid", width: "18%" },
+  { key: "tenderer", label: "Tenderer", width: "20%" },
+  { key: "description", label: "Description", width: "30%" },
+  { key: "deadline", label: "Submission Deadline", width: "16%" }, // 👈 নতুন কলাম
+  { key: "bidValue", label: "Winning Bid", width: "16%" },
   { key: "date", label: "Awarded On", width: "18%" },
 ];
 
 const COLUMNS_DRAFTS = [
-  { key: "tenderer", label: "Tenderer", width: "24%" },
-  { key: "description", label: "Description", width: "40%" },
+  { key: "tenderer", label: "Tenderer", width: "20%" },
+  { key: "description", label: "Description", width: "34%" },
+  { key: "deadline", label: "Submission Deadline", width: "16%" }, // 👈 নতুন কলাম
   { key: "type", label: "Type", width: "12%" },
-  { key: "recorded", label: "Created", width: "20%" },
+  { key: "recorded", label: "Created", width: "18%" },
 ];
 
 /* ---------- Helpers ---------- */
 function fmtDate(d?: string | null) {
   if (!d) return "—";
-  return new Date(d).toLocaleDateString("en-GB", {
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
 }
 
-function daysLeft(d?: string | null) {
-  if (!d) return 0;
-  return Math.max(
-    0,
-    Math.ceil((new Date(d).getTime() - Date.now()) / 86400000),
-  );
+// ⭐ ডেডলাইনের জন্য ফাংশন (এটি API এর ডাটা থেকে তারিখ বের করবে)
+function getDeadlineValue(t: Tender) {
+  return t.lastDateOfSubmission || (t as any).deadline || (t as any).submissionDate;
 }
 
 function budgetLabel(n?: number) {
@@ -113,10 +115,7 @@ function isCrawledTender(t: Tender) {
     const r = anyT.recordedBy.toLowerCase();
     if (r.includes("auto") || r.includes("crawl")) return true;
   }
-  if (
-    typeof anyT.note === "string" &&
-    anyT.note.toLowerCase().includes("auto")
-  ) {
+  if (typeof anyT.note === "string" && anyT.note.toLowerCase().includes("auto")) {
     return true;
   }
   return false;
@@ -148,14 +147,21 @@ function mapRows(
       .join(" ");
 
     const tendererCell = <TendererCell t={t} />;
+    
+    // ⭐ এখানে সঠিক ডেডলাইন তারিখ বের করা হচ্ছে
+    const deadlineValue = getDeadlineValue(t);
+    const deadlineCell = <span className="text-[11.5px] font-medium text-slate-700">{fmtDate(deadlineValue)}</span>;
+    const deadlineSort = deadlineValue ? new Date(deadlineValue).getTime() : 0;
 
     if (stage === "potential") {
       return {
         id: t._id,
         searchText,
+        sortValues: { deadline: deadlineSort },
         cells: {
           tenderer: tendererCell,
           description: t.title,
+          deadline: deadlineCell, // 👈 এখানে ডেডলাইন সেল পাস
           type: <TenderTypeBadge type={t.tenderType} />,
           recorded: fmtDate(t.createdAt),
           budget: budgetLabel(t.tentativeBudget),
@@ -166,10 +172,11 @@ function mapRows(
       return {
         id: t._id,
         searchText,
+        sortValues: { deadline: deadlineSort },
         cells: {
           tenderer: tendererCell,
+          deadline: deadlineCell, // 👈 এখানে ডেডলাইন সেল পাস
           type: <TenderTypeBadge type={t.tenderType} />,
-          deadline: <DeadlineCell days={daysLeft(t.lastDateOfSubmission)} />,
           value: t.tentativeBudget ? budgetLabel(t.tentativeBudget) : "—",
           status: <DocsStatusBadge status={t.docStatus} />,
         },
@@ -179,11 +186,13 @@ function mapRows(
       return {
         id: t._id,
         searchText,
+        sortValues: { deadline: deadlineSort },
         cells: {
           tenderer: tendererCell,
           description: t.title,
+          deadline: deadlineCell, // 👈 এখানে ডেডলাইন সেল পাস
           submitted: fmtDate(t.submittedAt ?? t.updatedAt),
-          awaiting: `${daysLeft(t.submittedAt)} days`,
+          awaiting: `${Math.max(0, Math.ceil(((t.submittedAt ? new Date(t.submittedAt).getTime() : Date.now()) - Date.now()) / 86400000))} days`,
         },
       };
     }
@@ -191,9 +200,11 @@ function mapRows(
       return {
         id: t._id,
         searchText,
+        sortValues: { deadline: deadlineSort },
         cells: {
           tenderer: tendererCell,
           description: t.title,
+          deadline: deadlineCell, // 👈 এখানে ডেডলাইন সেল পাস
           bidValue: t.bidValue ? budgetLabel(t.bidValue) : "—",
           date: fmtDate(t.updatedAt),
         },
@@ -203,9 +214,11 @@ function mapRows(
       return {
         id: t._id,
         searchText,
+        sortValues: { deadline: deadlineSort },
         cells: {
           tenderer: tendererCell,
           description: t.title,
+          deadline: deadlineCell, // 👈 এখানে ডেডলাইন সেল পাস
           type: <TenderTypeBadge type={t.tenderType} />,
           recorded: fmtDate(t.createdAt),
         },
@@ -215,9 +228,11 @@ function mapRows(
     return {
       id: t._id,
       searchText: `${searchText} ${t.lossReason ?? ""}`,
+      sortValues: { deadline: deadlineSort },
       cells: {
         tenderer: tendererCell,
         description: t.title,
+        deadline: deadlineCell, // 👈 এখানে ডেডলাইন সেল পাস
         reason: t.lossReason || "—",
         date: fmtDate(t.lostAt ?? t.updatedAt),
       },
@@ -233,7 +248,6 @@ export default function TenderManagePage() {
 /* ---------- Sub-tab type for Potential ---------- */
 type PotentialSource = "all" | "manual" | "crawled";
 
-// ✅ Removed "site-directory" from the VALID_TABS
 const VALID_TABS: TenderTab[] = [
   "potential",
   "active",
@@ -246,19 +260,13 @@ const VALID_TABS: TenderTab[] = [
 function TenderManageContent() {
   const { groups, stats, loading, refetch } = useTenderStats();
   const [tab, setTab] = useState<TenderTab>("potential");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null); 
   const [addOpen, setAddOpen] = useState(false);
   const [editTender, setEditTender] = useState<Tender | null>(null);
-  const [eligibilityTender, setEligibilityTender] = useState<Tender | null>(
-    null,
-  );
-  const [checklistTender, setChecklistTender] = useState<Tender | null>(
-    null,
-  );
+  const [eligibilityTender, setEligibilityTender] = useState<Tender | null>(null);
+  const [checklistTender, setChecklistTender] = useState<Tender | null>(null);
 
-  const [potentialSource, setPotentialSource] = useState<PotentialSource>(
-    "manual",
-  );
+  const [potentialSource, setPotentialSource] = useState<PotentialSource>("manual");
 
   const [eligibilityResults, setEligibilityResults] = useState<
     Record<string, { requirement: string; match: string }[]>
@@ -289,6 +297,7 @@ function TenderManageContent() {
     }
   }, [urlTab, urlStage]);
 
+  // ✅ urlTenderId থাকলে শুধুমাত্র তখনই অটো সিলেক্ট হবে
   useEffect(() => {
     if (!urlTenderId) return;
     if (loading) return;
@@ -351,8 +360,17 @@ function TenderManageContent() {
   }, [potentialSource, manualRows, crawledRows, groups.potential]);
 
   const currentRows = groups[tab] ?? [];
-  const selected =
-    currentRows.find((t) => t._id === selectedId) ?? currentRows[0] ?? null;
+
+  // ✅ selectedId না থাকলে selected null — ফলে প্যানেল ওপেন হবে না
+  const selected = useMemo(() => {
+    if (!selectedId) return null;
+    return currentRows.find((t) => t._id === selectedId) ?? null;
+  }, [currentRows, selectedId]);
+
+  // ✅ টগল হ্যান্ডলার: একই রো-তে ক্লিক করলে হাইড হবে
+  const handleRowSelect = (id: string) => {
+    setSelectedId((prev) => (prev === id ? null : id));
+  };
 
   const counts = useMemo(
     () => ({
@@ -442,6 +460,7 @@ function TenderManageContent() {
           await tenderApi.remove(id);
           toast.success("Tender deleted", { id: loadingId });
           await refetch();
+          setSelectedId(null);
         } catch (e) {
           toast.error(
             (e as Error).message || "Failed to delete tender",
@@ -578,7 +597,7 @@ function TenderManageContent() {
                   columns={COLUMNS_POTENTIAL}
                   rows={mapRows("potential", potentialRows)}
                   selectedId={selected?._id ?? null}
-                  onRowClick={setSelectedId}
+                  onRowClick={handleRowSelect} 
                   onDelete={handleDelete}
                   onView={handleViewPotential}
                   onEdit={handleEdit}
@@ -700,7 +719,7 @@ function TenderManageContent() {
                   columns={COLUMNS_ACTIVE}
                   rows={mapRows("active", groups.active)}
                   selectedId={selected?._id ?? null}
-                  onRowClick={setSelectedId}
+                  onRowClick={handleRowSelect} 
                   onDelete={handleDelete}
                   onView={handleViewActive}
                   onEdit={handleEdit}
@@ -726,7 +745,7 @@ function TenderManageContent() {
                   columns={COLUMNS_SUBMITTED}
                   rows={mapRows("submitted", groups.submitted)}
                   selectedId={selected?._id ?? null}
-                  onRowClick={setSelectedId}
+                  onRowClick={handleRowSelect} 
                   showActions
                   searchable
                   searchPlaceholder="Search submitted tenders…"
@@ -740,7 +759,6 @@ function TenderManageContent() {
                     onDownloadAll={async () => {
                       await tenderApi.downloadAgreementZip(selected._id);
                     }}
-                    // ⭐ নতুন প্রপস
                     onUpdateAgreement={handleUpdateAgreement}
                     onDeleteAgreement={handleDeleteAgreement}
                   />
@@ -755,7 +773,7 @@ function TenderManageContent() {
                   columns={COLUMNS_LOST}
                   rows={mapRows("lost", groups.lost)}
                   selectedId={selected?._id ?? null}
-                  onRowClick={setSelectedId}
+                  onRowClick={handleRowSelect} 
                   onDelete={handleDelete}
                   showActions
                   searchable
@@ -778,7 +796,7 @@ function TenderManageContent() {
                   columns={COLUMNS_WON}
                   rows={mapRows("won", groups.won)}
                   selectedId={selected?._id ?? null}
-                  onRowClick={setSelectedId}
+                  onRowClick={handleRowSelect} 
                   onDelete={handleDelete}
                   showActions
                   searchable
@@ -793,7 +811,6 @@ function TenderManageContent() {
                       await tenderApi.downloadAgreementZip(selected._id);
                     }}
                     onAddDocument={() => setAgreementTender(selected)}
-                    // ⭐ নতুন প্রপস
                     onUpdateAgreement={handleUpdateAgreement}
                     onDeleteAgreement={handleDeleteAgreement}
                   />
@@ -821,7 +838,7 @@ function TenderManageContent() {
                       columns={COLUMNS_DRAFTS}
                       rows={mapRows("drafts", groups.drafts)}
                       selectedId={selected?._id ?? null}
-                      onRowClick={setSelectedId}
+                      onRowClick={handleRowSelect} 
                       searchable
                       searchPlaceholder="Search drafts…"
                       pageSize={10}

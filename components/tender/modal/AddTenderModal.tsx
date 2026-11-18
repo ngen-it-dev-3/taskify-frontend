@@ -50,6 +50,8 @@ interface FormState {
   contactPhone: string;
   contactEmail: string;
   contactAddress: string;
+  clientAddress: string;
+  clientEmail: string;
   note: string;
 }
 
@@ -80,6 +82,8 @@ const INITIAL: FormState = {
   contactPhone: "",
   contactEmail: "",
   contactAddress: "",
+  clientAddress: "",
+  clientEmail: "",
   note: "",
 };
 
@@ -177,6 +181,8 @@ export function AddTenderModal({ open, onOpenChange, onCreated }: Props) {
         : undefined,
       mode: form.mode,
       note: form.note.trim() || undefined,
+      clientAddress: form.clientAddress.trim() || undefined,
+      clientEmail: form.clientEmail.trim() || undefined,
     };
   };
 
@@ -416,7 +422,7 @@ export function AddTenderModal({ open, onOpenChange, onCreated }: Props) {
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>Schedule Closing Date</label>
+                  <label className={labelCls}>Submission Last Date</label>
                   <input
                     type="date"
                     className={inputCls}
@@ -559,12 +565,34 @@ export function AddTenderModal({ open, onOpenChange, onCreated }: Props) {
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>Phone</label>
+                  <label className={labelCls}>Client Phone</label>
                   <input
                     className={inputCls}
                     placeholder="e.g. 01711-000000"
                     value={form.contactPhone}
                     onChange={(e) => set("contactPhone", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className={labelCls}>Client Email</label>
+                  <input
+                    type="email"
+                    className={inputCls}
+                    placeholder="e.g. client@example.com"
+                    value={form.clientEmail}
+                    onChange={(e) => set("clientEmail", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Client Address</label>
+                  <input
+                    className={inputCls}
+                    placeholder="e.g. 123 Main St, Dhaka"
+                    value={form.clientAddress}
+                    onChange={(e) => set("clientAddress", e.target.value)}
                   />
                 </div>
               </div>

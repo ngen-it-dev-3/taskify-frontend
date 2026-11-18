@@ -116,6 +116,8 @@ export interface CreateRFQPayload {
   currentProjectStatus?: string;
   tentativePurchaseDate?: string;
   comment?: string;
+  scheduleClosingDate?: string | null;
+  submissionTime?: string;
   inquiryDate?: string;
 }
 

@@ -18,6 +18,8 @@ export interface ActionItem {
   id: string;
   label: string;
   icon: "bell" | "shield" | "receipt";
+  count: number;
+  href: string;
 }
 
 export interface AIMatch {
@@ -388,7 +390,6 @@ export function useRecentActivity(_limit = 10) {
   return { data, loading, error };
 }
 
-/* ---------- Action Items (derived from tenders) ---------- */
 export function useTenderActionItems() {
   const [data, setData] = useState<ActionItem[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -412,9 +413,10 @@ export function useTenderActionItems() {
         if (newRfqs.length > 0) {
           items.push({
             id: "rfq",
-            label: `${newRfqs.length} new RFQ${newRfqs.length === 1 ? "" : "s"
-              } to review`,
+            label: `${newRfqs.length} new RFQ${newRfqs.length === 1 ? "" : "s"} to review`,
             icon: "bell",
+            count: newRfqs.length,
+            href: "/tenders/manage?tab=potential&source=crawler",
           });
         }
 
@@ -427,9 +429,11 @@ export function useTenderActionItems() {
         if (pendingSecurity.length > 0) {
           items.push({
             id: "security",
-            label: `${pendingSecurity.length} tender security notice${pendingSecurity.length === 1 ? "" : "s"
-              } to send`,
+            // label: `${pendingSecurity.length} tender security notice${pendingSecurity.length === 1 ? "" : "s"} to send`,
+            label: `Active tender to submit`,
             icon: "shield",
+            count: pendingSecurity.length,
+            href: "/tenders/manage?tab=active&security=missing",
           });
         }
 
@@ -440,9 +444,10 @@ export function useTenderActionItems() {
         if (readyToInvoice.length > 0) {
           items.push({
             id: "invoice",
-            label: `${readyToInvoice.length} order${readyToInvoice.length === 1 ? "" : "s"
-              } ready to invoice`,
+            label: `${readyToInvoice.length} order${readyToInvoice.length === 1 ? "" : "s"} ready to invoice`,
             icon: "receipt",
+            count: readyToInvoice.length,
+            href: "/tenders/manage?tab=won&invoice=pending",
           });
         }
 

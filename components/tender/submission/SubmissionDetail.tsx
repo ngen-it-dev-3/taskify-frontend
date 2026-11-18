@@ -201,12 +201,13 @@ export function SubmissionDetail({
   const activeSectionTasks = useMemo(
     () =>
       activeSectionId
-        ? tasks.filter((t) => (t.sectionId ?? "") === activeSectionId)
+        ? tasks.filter((t) => String(t.sectionId) === String(activeSectionId))
         : [],
     [tasks, activeSectionId]
   );
 
-  const unsectionedTasks = tasks.filter((t) => !t.sectionId);
+  // Unsectioned এর ক্ষেত্রে (যেগুলোতে sectionId নেই বা খালি স্ট্রিং আছে)
+  const unsectionedTasks = tasks.filter((t) => !t.sectionId || t.sectionId === "");
 
   const addTask = () => {
     if (!activeSectionId) return toast.error("Create a section first");
@@ -563,13 +564,14 @@ export function SubmissionDetail({
 
     const loadingId = toast.loading(`Adding ${selectedIds.length} documents...`);
     try {
+      // ✅ এখানে sectionId নিশ্চিত করুন
       await tenderApi.addCompanyDocsToTender(data.id, {
         documentIds: selectedIds,
         sectionId: targetSection.id,
       });
 
       toast.success("Documents added to section", { id: loadingId });
-      onPreparationChanged?.();
+      onPreparationChanged?.(); // এটি কল করলে parent থেকে ডাটা রিফ্রেশ হবে
     } catch (e) {
       toast.error((e as Error).message || "Failed to add documents", { id: loadingId });
       throw e;
@@ -669,7 +671,7 @@ export function SubmissionDetail({
                   ) : (
                     <Bell className="h-4 w-4" />
                   )}
-                  Notify Accounts - tender security
+                  Notify Team
                 </button>
               )}
               {submitAction && (
@@ -1009,59 +1011,116 @@ export function SubmissionDetail({
           <div className="flex h-full flex-col gap-4">
             <div>
               <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                File Attachments ({data.info.attachments.length})
+                File Attachments ({tasks.filter(t => t.fileUrl).length})
               </p>
-              <ul className="space-y-1.5">
-                {data.info.attachments.length === 0 && (
-                  <li className="rounded-md border border-dashed border-slate-200 px-3 py-3 text-center text-[11px] text-slate-400">
-                    No attachments yet.
-                  </li>
-                )}
-                {data.info.attachments.map((f) => {
-                  const deleting = deletingAttId === f._id;
+
+              {/* ================= SECTION-WISE GROUPING ================= */}
+              <div className="space-y-4">
+                {sections.map((section) => {
+                  const sectionAttachments = tasks.filter(
+                    (t) => String(t.sectionId) === String(section.id) && t.fileUrl
+                  );
+
+                  if (sectionAttachments.length === 0) return null;
+
                   return (
-                    <li
-                      key={f._id}
-                      className="flex items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2"
-                    >
-                      <span className="flex min-w-0 items-center gap-2 truncate text-[11px] font-medium text-slate-700">
-                        <FileText className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-                        <span className="truncate">{f.name}</span>
-                        {typeof f.size === "number" && f.size > 0 && (
-                          <span className="shrink-0 text-[10px] text-slate-400">
-                            ({fileSizeLabel(f.size)})
-                          </span>
-                        )}
-                      </span>
-                      <div className="flex shrink-0 items-center gap-1.5">
-                        {f.url && (
-                          <a
-                            href={fullFileUrl(f.url)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[10px] font-semibold text-green-600 hover:underline"
-                          >
-                            View
-                          </a>
-                        )}
-                        {typeof f._id === "string" && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              deleteAttachment(f._id!, f.name)
-                            }
-                            disabled={deleting}
-                            className="rounded-md p-1 text-slate-300 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </li>
+                    <div key={section.id} className="space-y-1.5">
+                      <h4 className="text-[11px] font-bold text-slate-700 uppercase tracking-wide">
+                        {section.title}
+                      </h4>
+                      <ul className="space-y-1.5">
+                        {sectionAttachments.map((f) => {
+                          const deleting = deletingAttId === f.id;
+                          return (
+                            <li
+                              key={f.id}
+                              className="flex items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2"
+                            >
+                              <span className="flex min-w-0 items-center gap-2 truncate text-[11px] font-medium text-slate-700">
+                                <FileText className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                                <span className="truncate">{f.fileName || "Unnamed file"}</span>
+                              </span>
+                              <div className="flex shrink-0 items-center gap-1.5">
+                                {f.fileUrl && (
+                                  <a
+                                    href={fullFileUrl(f.fileUrl)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] font-semibold text-green-600 hover:underline"
+                                  >
+                                    View
+                                  </a>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => removeTask(f.id)}
+                                  disabled={deleting}
+                                  className="rounded-md p-1 text-slate-300 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
                   );
                 })}
-              </ul>
-              <div className="mt-3">
+
+                {/* ================= UNSECTIONED FILES ================= */}
+                {(() => {
+                  const unsectionedAttachments = tasks.filter(
+                    (t) => (!t.sectionId || t.sectionId === "") && t.fileUrl
+                  );
+
+                  if (unsectionedAttachments.length === 0) return null;
+
+                  return (
+                    <div className="space-y-1.5">
+                      <h4 className="text-[11px] font-bold text-rose-600 uppercase tracking-wide">
+                        Unsectioned Files
+                      </h4>
+                      <ul className="space-y-1.5">
+                        {unsectionedAttachments.map((f) => (
+                          <li
+                            key={f.id}
+                            className="flex items-center justify-between rounded-md border border-rose-100 bg-rose-50/30 px-3 py-2"
+                          >
+                            <span className="flex min-w-0 items-center gap-2 truncate text-[11px] font-medium text-slate-700">
+                              <FileText className="h-3.5 w-3.5 shrink-0 text-rose-400" />
+                              <span className="truncate">{f.fileName || "Unnamed file"}</span>
+                            </span>
+                            <div className="flex shrink-0 items-center gap-1.5">
+                              {f.fileUrl && (
+                                <a
+                                  href={fullFileUrl(f.fileUrl)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[10px] font-semibold text-green-600 hover:underline"
+                                >
+                                  View
+                                </a>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => removeTask(f.id)}
+                                disabled={deletingAttId === f.id}
+                                className="rounded-md p-1 text-slate-300 transition hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* ================= UPLOAD NEW FILE ================= */}
+              <div className="mt-4">
                 <input
                   ref={attachInputRef}
                   type="file"
@@ -1085,9 +1144,7 @@ export function SubmissionDetail({
                     </span>
                     <span className="min-w-0">
                       <span className="block text-[12px] font-semibold text-slate-700">
-                        {uploadingAtt
-                          ? "Uploading…"
-                          : "Choose a file to upload"}
+                        {uploadingAtt ? "Uploading…" : "Choose a file to upload"}
                       </span>
                       <span className="block text-[10px] text-slate-400">
                         PDF, images, Word, Excel — up to 25 MB

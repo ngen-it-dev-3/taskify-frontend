@@ -38,11 +38,11 @@ export default function TenderSubmissionPage() {
     const [filterMode, setFilterMode] = useState<FilterType>("all");
     const [showFilterMenu, setShowFilterMenu] = useState(false);
 
-    useEffect(() => {
-        if (!selectedId && rows.length > 0) {
-            setSelectedId(rows[0].id);
-        }
-    }, [rows, selectedId]);
+    // useEffect(() => {
+    //     if (!selectedId && rows.length > 0) {
+    //         setSelectedId(rows[0].id);
+    //     }
+    // }, [rows, selectedId]);
 
     const {
         data: detail,
@@ -185,6 +185,10 @@ export default function TenderSubmissionPage() {
         await refetchRows();
     };
 
+    const handleSelectToggle = (id: string) => {
+        setSelectedId((prev) => (prev === id ? null : id));
+    };
+
     return (
         <main className="min-h-screen bg-[#faf7f0] pb-16 text-slate-900">
             <div className="mx-auto max-w-[1600px] space-y-6 p-6 lg:p-8">
@@ -239,9 +243,9 @@ export default function TenderSubmissionPage() {
                     <SubmissionTable
                         rows={filteredRows}
                         selectedId={selectedId}
-                        onSelect={setSelectedId}
+                        onSelect={handleSelectToggle}
                         onDelete={handleDelete}
-                        onView={setSelectedId}
+                        onView={handleSelectToggle}
                     />
                 )}
 

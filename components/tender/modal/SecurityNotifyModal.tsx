@@ -125,8 +125,8 @@ export function SecurityNotifyModal({
     /* ---------- Variant-aware copy ---------- */
     const defaultTitle =
         variant === "submission"
-            ? "Notify Finance — Submission"
-            : "Notify Finance";
+            ? "Notify Team — Submission"
+            : "Notify Team";
 
     const defaultSubtitle =
         variant === "submission"
@@ -614,11 +614,11 @@ export function SecurityNotifyModal({
                                                                                         u.fullName
                                                                                     }
                                                                                 </p>
-                                                                                <p className="truncate text-[10.5px] text-slate-500">
+                                                                                {/* <p className="truncate text-[10.5px] text-slate-500">
                                                                                     {
                                                                                         u.email
                                                                                     }
-                                                                                </p>
+                                                                                </p> */}
                                                                             </div>
                                                                         </div>
                                                                         <div className="flex shrink-0 items-center gap-2">

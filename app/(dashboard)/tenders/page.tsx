@@ -37,16 +37,14 @@ export default function TenderOverviewPage() {
   const { data: alerts, loading: alertsLoading } = useTenderAlerts();
 
   /* ---------------- Derived pipelineMix ---------------- */
-  // Prefer the API's pipelineMix. If empty, derive from overview.pipeline
-  // (which already powers the KPI strip).
   const derivedPipelineMix: PipelineSegment[] =
     performance?.pipelineMix && performance.pipelineMix.length > 0
       ? performance.pipelineMix
       : (overview?.pipeline ?? []).map((row) => ({
-        label: row.label,
-        value: row.count,
-        color: STAGE_COLORS[row.label] ?? "#94a3b8",
-      }));
+          label: row.label,
+          value: row.count,
+          color: STAGE_COLORS[row.label] ?? "#94a3b8",
+        }));
 
   const safeWinRate = performance?.winRate ?? 0;
   const safeWonValue = performance?.wonValue ?? "BDT0";
@@ -54,11 +52,31 @@ export default function TenderOverviewPage() {
   const safeLostCount = performance?.lostCount ?? 0;
 
   /* ---------------- AI crawl time ---------------- */
-  // If the API returns a timestamp, use it. Otherwise default to "now".
   const crawledAt =
     (performance as any)?.aiCrawledAt ??
     (overview as any)?.aiCrawledAt ??
     new Date().toISOString();
+
+  /* ---------------- KPI Cards Action Links ---------------- */
+  // API থেকে আসা stats এর সাথে ট্যাব লিংক যুক্ত করা হচ্ছে
+  const enhancedStats = (overview?.stats ?? []).map((stat: any) => {
+    let href = undefined;
+    const label = stat.label.toUpperCase();
+
+    if (label.includes("TOTAL TENDERS")) {
+      href = "/tenders/manage?tab=potential";
+    } else if (label.includes("ACTIVE")) {
+      href = "/tenders/manage?tab=active";
+    } else if (label.includes("AWAITING") || label.includes("RESULT")) {
+      href = "/tenders/manage?tab=submitted";
+    } else if (label.includes("WIN RATE")) {
+      href = "/tenders/manage?tab=won";
+    } else if (label.includes("BID VALUE")) {
+      href = "/tenders/manage?tab=won"; // Total Bid Value ও Won ট্যাবে নিয়ে যাবে
+    }
+
+    return { ...stat, href };
+  });
 
   return (
     <main className="min-h-screen bg-[#faf7f0] pb-16 text-slate-900">
@@ -66,8 +84,10 @@ export default function TenderOverviewPage() {
         <TenderHeader onAddTender={() => router.push("/tenders/manage")} />
 
         {/* Action Banner */}
-        {actionLoading || !actionItems ? (
-          <div className="h-[88px] animate-pulse rounded-xl bg-[#0a1f2e]" />
+        {actionLoading || !actionItems || actionItems.length === 0 ? (
+          actionLoading ? (
+            <div className="h-[88px] animate-pulse rounded-xl bg-[#0a1f2e]" />
+          ) : null
         ) : (
           <TenderActionBanner items={actionItems} />
         )}
@@ -94,15 +114,12 @@ export default function TenderOverviewPage() {
             {aiLoading || !aiMatches ? (
               <div className="h-[350px] animate-pulse rounded-xl border border-slate-200/80 bg-white" />
             ) : (
-              <TenderAIIntelligence
-                matches={aiMatches}
-                crawledAt={crawledAt}
-              />
+              <TenderAIIntelligence matches={aiMatches} crawledAt={crawledAt} />
             )}
           </div>
         </div>
 
-        {/* KPI strip */}
+        {/* KPI strip (Clickable) */}
         {overviewLoading || !overview ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -113,7 +130,7 @@ export default function TenderOverviewPage() {
             ))}
           </div>
         ) : (
-          <TenderOverviewStats stats={overview.stats as any} />
+          <TenderOverviewStats stats={enhancedStats as any} />
         )}
 
         {/* Alert Lists Grid */}
