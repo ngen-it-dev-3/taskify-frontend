@@ -30,7 +30,7 @@ import api from "@/lib/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import ApplyLeaveModal from "@/components/hr/ApplyLeaveModal";
+import ApplyLeaveModal from "@/components/HR/ApplyLeaveModal";
 
 // ============================================================================
 // CONSTANTS & TYPES
