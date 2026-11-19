@@ -1,7 +1,7 @@
 // components/HR/Attendance/AttendanceList.tsx
 "use client";
 
-import { AttendanceRecord, AttendanceStats } from "@/app/(dashboard)/hr/attendance/page";
+import { AttendanceRecord, AttendanceStats } from "@/app/(dashboard)/hr/attendance/dashboard/page";
 import {
   Eye,
   Timer,
