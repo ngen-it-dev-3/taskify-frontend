@@ -1,6 +1,6 @@
 "use client";
 
-import { AttendanceStats } from "@/app/(dashboard)/hr/attendance/page";
+import { AttendanceStats } from "@/app/(dashboard)/hr/attendance/dashboard/page";
 import { Users, CheckCircle, UserX, Activity } from "lucide-react";
 
 interface Props {
