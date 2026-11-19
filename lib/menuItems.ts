@@ -323,11 +323,11 @@ export const SUB_ITEMS = {
   leavesDashboard: createSubNavItem("leaves-dashboard", "Dashboard", "/hr/leaves/dashboard", Calendar, "Leave Management", [ROLES.ALL]),
   myLeaves: createSubNavItem("my-leaves", "My Leaves", "/hr/leaves/my", Calendar, "Leave Management", [ROLES.ALL]),
   leaveRecord: createSubNavItem("leave-record", "Leave Record", "/hr/leaves/record", FileText, "Leave Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER]),
-  monthWiseLeave: createSubNavItem("month-wise-leave", "Month wise Employee Leave", "/hr/leaves/month-wise", CalendarDays, "Leave Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  monthWiseLeave: createSubNavItem("month-wise-leave", "Leave Calendar", "/hr/leaves/month-wise", CalendarDays, "Leave Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   // --- Attendance Management (Level 2) ---
   attendanceManagement: createSubNavItem("attendance-management", "Attendance Management", "#", Clock, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   // Level 3 under Attendance Management
-  allEmployeeAttendance: createSubNavItem("all-employee-attendance", "All Employee Attendance", "/hr/attendance", ListChecks, "Attendance Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  allEmployeeAttendance: createSubNavItem("all-employee-attendance", "All Employee Attendance", "/hr/attendance/dashboard", ListChecks, "Attendance Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   myAttendance: createSubNavItem("my-attendance", "My Attendance", "/hr/attendance/my", CalendarRange, "Attendance Management", [ROLES.ALL]),
   monthWiseAttendance: createSubNavItem("month-wise-attendance", "Month Wise Attendance", "/hr/attendance/month-wise", BarChart3, "Attendance Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   movementRecord: createSubNavItem("movement-record", "Movement Record", "/hr/attendance/movement", MapPin, "Attendance Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
@@ -336,7 +336,7 @@ export const SUB_ITEMS = {
   employeeAndDocuments: createSubNavItem("employee-and-documents", "Employee & Documents", "#", Folder, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   // Level 3 under Employee & Documents
   employeeDirectory: createSubNavItem("employee-directory", "Employee Directory", "/hr/employees", Users, "Employee & Documents", [ROLES.ALL]),
-  employeeFiles: createSubNavItem("employee-files", "Employee Files", "/hr/employees/files", FolderOpen, "Employee & Documents", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  employeeFiles: createSubNavItem("employee-files", "Employee Files", "/hr/employee-file", FolderOpen, "Employee & Documents", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   hrFormsPolicies: createSubNavItem("hr-forms-policies", "HR Forms & Policies", "/hr/forms", FileSignature, "Employee & Documents", [ROLES.ALL]),
 
   // --- Jobs & Recruitment (Level 2) ---

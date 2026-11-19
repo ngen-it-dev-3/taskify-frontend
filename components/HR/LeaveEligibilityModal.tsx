@@ -93,8 +93,8 @@ export default function LeaveEligibilityModal({ isOpen, onClose }: LeaveEligibil
                     <div className="bg-amber-50 border-b border-amber-100 p-4 flex gap-3 text-amber-800 text-sm">
                         <Info className="w-5 h-5 shrink-0" />
                         <p>
-                            চলতি বছরে (১ জানুয়ারি থেকে) আজ পর্যন্ত মোট <strong>{daysSinceYearStart} দিন</strong> পার হয়েছে।
-                            নিচে দেখুন কোন তারিখে কত নাম্বার ছুটি অর্জিত হয়েছে বা হবে।
+                            So far in the current year (since January 1), a total of <strong>{daysSinceYearStart} days</strong> have passed.
+                            See below which leave number has been or will be earned on which date.
                         </p>
                     </div>
 

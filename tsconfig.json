@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+,     "components/HR/attendance"  ],
   "exclude": ["node_modules"]
 }
