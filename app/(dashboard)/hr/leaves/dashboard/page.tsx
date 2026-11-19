@@ -237,11 +237,11 @@ export default function LeaveManagementDashboardPage() {
     // ১. প্রথমে লিভ রিকোয়ার্ডগুলো প্রসেস করি (এটাই মূল ডেটা)
     leaveRequests.forEach((req) => {
       const rawEmpId = req.employeeId || req.employee?._id;
-      
+
       // 👇 Populated Object বা String থেকে সঠিক ID বের করা
-      const empIdStr = typeof rawEmpId === 'object' && rawEmpId !== null 
-          ? String((rawEmpId as any)._id) 
-          : String(rawEmpId || "");
+      const empIdStr = typeof rawEmpId === 'object' && rawEmpId !== null
+        ? String((rawEmpId as any)._id)
+        : String(rawEmpId || "");
 
       const empEmail = req.employeeEmail || req.employee?.email || "";
       const empName = req.employeeName || req.employee?.fullName || "Unknown Employee";
@@ -272,7 +272,7 @@ export default function LeaveManagementDashboardPage() {
         if (req.type === "casual") entry.casualUsed += days;
         if (req.type === "earned") entry.earnedUsed += days;
         entry.totalUsed += days;
-      } 
+      }
       // পেন্ডিং লিভ আলাদা করে রাখি
       else if (req.status === "pending") {
         entry.pendingDays += days;
@@ -289,12 +289,12 @@ export default function LeaveManagementDashboardPage() {
 
       // চেক করি এই এমপ্লয়ি ইতিমধ্যে লিভ ডেটা থেকে ম্যাপে অ্যাড হয়েছে কিনা
       let exists = map.has(empId) || map.has(empEmail) || map.has(empName);
-      
+
       if (!exists) {
         for (const [mKey, mVal] of map.entries()) {
           if (
-            (normalize(mKey) === normalize(empId)) || 
-            (normalize(mVal.email) === normalize(empEmail)) || 
+            (normalize(mKey) === normalize(empId)) ||
+            (normalize(mVal.email) === normalize(empEmail)) ||
             (normalize(mVal.name) === normalize(empName))
           ) {
             exists = true;
@@ -488,7 +488,18 @@ export default function LeaveManagementDashboardPage() {
                     <Pie data={pieChartData} cx="50%" cy="50%" innerRadius={65} outerRadius={90} paddingAngle={4} dataKey="value" stroke="none">
                       {pieChartData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                     </Pie>
-                    <RechartsTooltip formatter={(value: number) => [`${value} Days`, 'Taken']} contentStyle={{ borderRadius: '8px', border: '1px solid #e7e5e4', fontSize: '12px' }} />
+                    <RechartsTooltip
+                      formatter={(value) => {
+                        const raw = Array.isArray(value) ? value[0] : value;
+                        const displayValue = raw ?? 0;
+                        return [`${displayValue} Days`, 'Taken'];
+                      }}
+                      contentStyle={{
+                        borderRadius: '8px',
+                        border: '1px solid #e7e5e4',
+                        fontSize: '12px',
+                      }}
+                    />
                     <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '12px' }} />
                   </PieChart>
                 </ResponsiveContainer>
