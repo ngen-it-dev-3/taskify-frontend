@@ -2,7 +2,17 @@
 
 import { memo } from "react";
 import { BarChart3, TrendingUp } from "lucide-react";
-import { AttendanceRecord, AttendanceStats } from "@/app/(dashboard)/hr/attendance/page";
+import type { AttendanceRecord } from "@/app/(dashboard)/hr/attendance/dashboard/page";
+
+export interface AttendanceStats {
+  totalEmployees?: number;
+  present?: number;
+  late?: number;
+  doubleLate?: number;
+  halfDay?: number;
+  onLeave?: number;
+  absent?: number;
+}
 
 interface DonutSegment {
   label: string;
@@ -118,7 +128,7 @@ const HoursBarChart = memo(function HoursBarChart({ bars }: { bars: BarItem[] })
   return (
     <div>
       <div className="flex items-end justify-around gap-3 h-[190px] px-2">
-        {safeBars.map((bar) => {
+        {safeBars.map((bar, idx) => {
           const hoursNum = Number(bar.hours) || 0;
           const overtimeNum = Number(bar.overtime) || 0;
           const totalH = hoursNum + overtimeNum;
@@ -127,7 +137,7 @@ const HoursBarChart = memo(function HoursBarChart({ bars }: { bars: BarItem[] })
 
           return (
             <div
-              key={`${bar.name}-${totalH}`}
+              key={`${bar.name}-${totalH}-${idx}`}
               className="flex flex-col items-center gap-1.5 flex-1 max-w-[72px] h-full justify-end group"
             >
               <span className="text-[11px] font-bold text-[#8B5A2B] opacity-0 group-hover:opacity-100 transition-opacity tabular-nums">
