@@ -11,7 +11,6 @@ import {
   Calendar as CalendarIcon,
   LayoutGrid,
   List,
-  Eye,
   Loader2,
   Trash2,
   Ban,
@@ -63,7 +62,7 @@ interface LeaveRequest {
   employeeId?: string;
   employeeName?: string;
   employeeEmail?: string;
-  employee?: { _id: string; fullName: string; email: string; department?: any }; // Handle populated data
+  employee?: { _id: string; fullName: string; email: string; department?: any };
   department?: string;
 }
 
@@ -170,26 +169,31 @@ export default function LeaveManagementDashboardPage() {
       setRefreshing(true);
 
       let requests: LeaveRequest[] = [];
-      try {
-        const allRes = await api.get("/leaves");
-        if (allRes.data?.success) {
-          requests = allRes.data.data || [];
-        }
-      } catch {
-        const myRes = await api.get("/leaves/my-leaves");
-        if (myRes.data?.success) {
-          requests = myRes.data.data || [];
-        }
-      }
-      setLeaveRequests(requests);
+
+      const isAdmin = user?.role === 'super_admin' || user?.role === 'admin';
+      const endpoint = isAdmin ? "/leaves/all" : "/leaves/my-leaves";
 
       try {
-        const userRes = await api.get("/auth/users");
-        if (userRes.data?.success) {
-          setAllEmployees(userRes.data.data || []);
+        const res = await api.get(endpoint);
+        if (res.data?.success) {
+          requests = res.data.data || [];
         }
       } catch (err) {
-        console.warn("Could not fetch total employees list", err);
+        console.error("Failed to fetch leaves from", endpoint, err);
+        toast.error("Failed to load leave data");
+      }
+
+      setLeaveRequests(requests);
+
+      if (isAdmin) {
+        try {
+          const userRes = await api.get("/auth/users");
+          if (userRes.data?.success) {
+            setAllEmployees(userRes.data.data || []);
+          }
+        } catch (err) {
+          console.warn("Could not fetch total employees list", err);
+        }
       }
 
     } catch (e: any) {
@@ -229,16 +233,14 @@ export default function LeaveManagementDashboardPage() {
     }
   };
 
-  /* ---------------- Employee-wise Analytics (ROBUST FIX) ---------------- */
+  /* ---------------- Employee-wise Analytics ---------------- */
   const employeeSummaries = useMemo<EmployeeLeaveSummary[]>(() => {
     const map = new Map<string, EmployeeLeaveSummary>();
     const normalize = (str: string) => (str || "").trim().toLowerCase();
 
-    // ১. প্রথমে লিভ রিকোয়ার্ডগুলো প্রসেস করি (এটাই মূল ডেটা)
     leaveRequests.forEach((req) => {
       const rawEmpId = req.employeeId || req.employee?._id;
 
-      // 👇 Populated Object বা String থেকে সঠিক ID বের করা
       const empIdStr = typeof rawEmpId === 'object' && rawEmpId !== null
         ? String((rawEmpId as any)._id)
         : String(rawEmpId || "");
@@ -246,12 +248,10 @@ export default function LeaveManagementDashboardPage() {
       const empEmail = req.employeeEmail || req.employee?.email || "";
       const empName = req.employeeName || req.employee?.fullName || "Unknown Employee";
 
-      // যেকোনো একটি ইউনিক আইডেন্টিফায়ার খুঁজি
       const empKey = empIdStr || empEmail || empName;
 
       if (!empKey || empKey === "undefined" || empKey === "unknown") return;
 
-      // যদি এই এমপ্লয়ি আগে থেকে ম্যাপে না থাকে, তবে নতুন এড করি
       if (!map.has(empKey)) {
         map.set(empKey, {
           key: empKey,
@@ -266,14 +266,12 @@ export default function LeaveManagementDashboardPage() {
       const entry = map.get(empKey)!;
       const days = req.totalDays || 0;
 
-      // লিভ টাইপ অনুযায়ী ডেটা যোগ করি (শুধু Approved হলে)
       if (req.status === "approved") {
         if (req.type === "sick") entry.sickUsed += days;
         if (req.type === "casual") entry.casualUsed += days;
         if (req.type === "earned") entry.earnedUsed += days;
         entry.totalUsed += days;
       }
-      // পেন্ডিং লিভ আলাদা করে রাখি
       else if (req.status === "pending") {
         entry.pendingDays += days;
       }
@@ -281,13 +279,11 @@ export default function LeaveManagementDashboardPage() {
       entry.remaining = Math.max(0, entry.totalAllowed - entry.totalUsed);
     });
 
-    // ২. এবার allEmployees লিস্ট চেক করি। যাদের কোনো লিভ নেই, তাদের 0 দিয়ে ম্যাপে অ্যাড করি
     allEmployees.forEach((emp) => {
       const empId = String(emp._id);
       const empEmail = emp.email || "";
       const empName = emp.fullName || emp.name || "Unknown Employee";
 
-      // চেক করি এই এমপ্লয়ি ইতিমধ্যে লিভ ডেটা থেকে ম্যাপে অ্যাড হয়েছে কিনা
       let exists = map.has(empId) || map.has(empEmail) || map.has(empName);
 
       if (!exists) {
@@ -303,7 +299,6 @@ export default function LeaveManagementDashboardPage() {
         }
       }
 
-      // যদি লিভ ডেটাতে না থাকে, তবে 0 ডিফল্ট দিয়ে অ্যাড করি
       if (!exists) {
         map.set(empId, {
           key: empId,
@@ -383,7 +378,7 @@ export default function LeaveManagementDashboardPage() {
     if (filterType !== "all") f = f.filter((l) => l.type === filterType);
 
     return f.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }, [leaveRequests, selectedEmployeeKey, searchTerm, filterStatus, filterType]); // ✅ user ডিপেন্ডেন্সি সরানো হয়েছে
+  }, [leaveRequests, selectedEmployeeKey, searchTerm, filterStatus, filterType]);
 
   if (loading) {
     return (
@@ -461,7 +456,7 @@ export default function LeaveManagementDashboardPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white p-5 rounded-2xl border border-stone-200/90 shadow-sm flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[#f0fdf4] rounded-bl-full -z-0 opacity-80 pointer-events-none"></div>
+            
             <div className="flex justify-between items-start relative z-10">
               <span className="text-[11px] font-bold text-stone-500 uppercase tracking-widest">Total Employees</span>
               <div className="p-2 bg-[#dcfce7] rounded-xl shadow-sm">
@@ -673,9 +668,12 @@ export default function LeaveManagementDashboardPage() {
                         const displayName = leave.employeeName || leave.employee?.fullName || "Unknown Employee";
                         const displayEmail = leave.employeeEmail || leave.employee?.email || "N/A";
 
-
                         return (
-                          <tr key={leave._id} className="hover:bg-stone-50 transition-colors group">
+                          <tr
+                            key={leave._id}
+                            onClick={() => setDetailLeave(leave)}
+                            className="hover:bg-stone-50 transition-colors group cursor-pointer"
+                          >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 rounded-full bg-stone-100 border border-stone-200 text-stone-600 flex items-center justify-center text-xs font-bold shrink-0">
@@ -707,9 +705,18 @@ export default function LeaveManagementDashboardPage() {
                             <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                 {leave.status === "pending" && (
-                                  <button onClick={() => { setSelectedLeave(leave); setShowDeleteConfirm(true); }} className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Delete Request"><Trash2 className="w-4 h-4" /></button>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedLeave(leave);
+                                      setShowDeleteConfirm(true);
+                                    }}
+                                    className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                    title="Delete Request"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
                                 )}
-                                <button onClick={() => setDetailLeave(leave)} className="p-1.5 text-stone-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer" title="View Details"><Eye className="w-4 h-4" /></button>
                               </div>
                             </td>
                           </tr>
@@ -725,7 +732,11 @@ export default function LeaveManagementDashboardPage() {
                     const StatusIcon = getStatusIcon(leave.status);
                     const displayName = leave.employeeName || leave.employee?.fullName || "Employee";
                     return (
-                      <div key={leave._id} className="bg-white rounded-xl p-4 border border-stone-200/90 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-3 group">
+                      <div
+                        key={leave._id}
+                        onClick={() => setDetailLeave(leave)}
+                        className="bg-white rounded-xl p-4 border border-stone-200/90 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-3 group cursor-pointer"
+                      >
                         <div className="flex items-start justify-between gap-2">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border ${getLeaveTypeColor(leave.type)}`}><TypeIcon className="w-3 h-3" /> {getLeaveTypeLabel(leave.type)}</span>
                           <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] font-semibold rounded-full border ${getStatusColor(leave.status)}`}><StatusIcon className="w-3 h-3" /> {getStatusLabel(leave.status)}</span>
@@ -740,9 +751,18 @@ export default function LeaveManagementDashboardPage() {
                           <span>Applied {formatDate(leave.createdAt)}</span>
                           <div className="flex items-center gap-1">
                             {leave.status === "pending" && (
-                              <button onClick={() => { setSelectedLeave(leave); setShowDeleteConfirm(true); }} className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-md cursor-pointer transition-colors" title="Delete"><Trash2 className="w-3.5 h-3.5" /></button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedLeave(leave);
+                                  setShowDeleteConfirm(true);
+                                }}
+                                className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-md cursor-pointer transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
                             )}
-                            <button onClick={() => setDetailLeave(leave)} className="p-1.5 text-stone-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-md cursor-pointer transition-colors" title="Details"><Eye className="w-3.5 h-3.5" /></button>
                           </div>
                         </div>
                       </div>

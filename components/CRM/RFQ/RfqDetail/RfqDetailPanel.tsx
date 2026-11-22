@@ -291,6 +291,10 @@ export default function RfqDetailPanel({
                 <p className="text-[10px] font-bold text-[#A06126] uppercase tracking-wider mb-3">RFQ Information</p>
                 <div className="space-y-3">
                   <DetailRow label="Client RFQ Ref:" value={`RFQ#${rfq.rfqNumber}`} />
+                  <DetailRow
+                    label="RFQ Reference ID:"
+                    value={rawRfq.rfqReferenceId || (rfq as any).rfqReferenceId || 'N/A'}
+                  />
                   <DetailRow label="Client RFQ Date:" value={formatDate(rawRfq.clientRfqDate || rawRfq.inquiryDate || rawRfq.queryDate || rawRfq.createdAt) || 'N/A'} />
                   <DetailRow label="RFQ Source Type:" value={rawRfq.rfqSourceType || rfq.rfqSource || 'N/A'} />
                 </div>

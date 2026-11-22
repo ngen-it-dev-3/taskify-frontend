@@ -21,7 +21,6 @@ import {
   LayoutGrid,
   List,
   Trash2,
-  Eye,
   Loader2,
   Calendar as CalendarIcon,
   X,
@@ -322,7 +321,7 @@ export default function MyLeavesPage() {
   return (
     <div className="min-h-screen bg-[#faf8f4]">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Top Breadcrumb (Matching Orvix Enterprise Style) */}
+        {/* Top Breadcrumb */}
         <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-3">
           <Link
             href="/dashboard"
@@ -369,9 +368,8 @@ export default function MyLeavesPage() {
           </div>
         </div>
 
-        {/* 4 KPI Stat Cards (Exact Screenshot Card Layout) */}
+        {/* 4 KPI Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {/* Card 1: Total Requests */}
           <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-2xs">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
@@ -385,7 +383,6 @@ export default function MyLeavesPage() {
             <p className="text-xs text-gray-400 mt-1">Across all leave types</p>
           </div>
 
-          {/* Card 2: Pending Requests */}
           <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-2xs">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
@@ -401,7 +398,6 @@ export default function MyLeavesPage() {
             </p>
           </div>
 
-          {/* Card 3: Approved Leaves */}
           <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-2xs">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
@@ -417,7 +413,6 @@ export default function MyLeavesPage() {
             </p>
           </div>
 
-          {/* Card 4: Available Balance */}
           <div className="bg-white rounded-xl border border-gray-200/80 p-5 shadow-2xs">
             <div className="flex items-center justify-between mb-3">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
@@ -522,7 +517,7 @@ export default function MyLeavesPage() {
           </div>
         </div>
 
-        {/* Bottom Requests Container (Matches Bottom Section in Screenshot) */}
+        {/* Bottom Requests Container */}
         <div className="bg-white rounded-xl border border-gray-200/80 shadow-2xs overflow-hidden">
           {/* Search & Filter Toolbar */}
           <div className="p-4 border-b border-gray-100 flex flex-col md:flex-row gap-3 justify-between items-center">
@@ -563,7 +558,6 @@ export default function MyLeavesPage() {
                 ))}
               </select>
 
-              {/* View Mode Switcher (Table / Grid like in Screenshot) */}
               <div className="flex items-center border border-gray-200 rounded-lg p-0.5 bg-[#FAFBFB]">
                 <button
                   onClick={() => setViewMode("grid")}
@@ -616,7 +610,11 @@ export default function MyLeavesPage() {
                       return (
                         <tr
                           key={leave._id}
-                          className="hover:bg-gray-50/70 transition-colors group"
+                          onClick={() => {
+                            setSelectedLeave(leave);
+                            setShowViewModal(true);
+                          }}
+                          className="hover:bg-gray-50/70 transition-colors group cursor-pointer"
                         >
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
@@ -634,7 +632,7 @@ export default function MyLeavesPage() {
 
                           <td className="px-6 py-4">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
+                              className={`inline-flex items-center capitalize gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
                                 leaveTypeColors[leave.type] ||
                                 "bg-gray-50 text-gray-700 border-gray-200"
                               }`}
@@ -673,19 +671,10 @@ export default function MyLeavesPage() {
 
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                onClick={() => {
-                                  setSelectedLeave(leave);
-                                  setShowViewModal(true);
-                                }}
-                                className="cursor-pointer p-1.5 text-gray-400 hover:text-[#107E57] hover:bg-emerald-50 rounded-lg transition-colors"
-                                title="View Details"
-                              >
-                                <Eye className="w-4 h-4" />
-                              </button>
                               {leave.status === "pending" && (
                                 <button
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     setSelectedLeave(leave);
                                     setShowDeleteConfirm(true);
                                   }}
@@ -732,7 +721,11 @@ export default function MyLeavesPage() {
                   return (
                     <div
                       key={leave._id}
-                      className="bg-white rounded-xl border border-gray-200/80 p-4 shadow-2xs flex flex-col justify-between"
+                      onClick={() => {
+                        setSelectedLeave(leave);
+                        setShowViewModal(true);
+                      }}
+                      className="bg-white rounded-xl border border-gray-200/80 p-4 shadow-2xs flex flex-col justify-between cursor-pointer hover:shadow-md transition-shadow"
                     >
                       <div>
                         <div className="flex items-center justify-between mb-3">
@@ -772,18 +765,10 @@ export default function MyLeavesPage() {
                           {empName} • {fmt(leave.createdAt)}
                         </span>
                         <div className="flex items-center gap-1">
-                          <button
-                            onClick={() => {
-                              setSelectedLeave(leave);
-                              setShowViewModal(true);
-                            }}
-                            className="cursor-pointer p-1.5 text-gray-400 hover:text-[#107E57] hover:bg-emerald-50 rounded-lg"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
                           {leave.status === "pending" && (
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedLeave(leave);
                                 setShowDeleteConfirm(true);
                               }}
@@ -805,7 +790,7 @@ export default function MyLeavesPage() {
             </div>
           )}
 
-          {/* Table Footer (Exact Screenshot Footer) */}
+          {/* Table Footer */}
           <div className="border-t border-gray-100 px-6 py-3.5 bg-white flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-3">
             <div>
               Showing{" "}

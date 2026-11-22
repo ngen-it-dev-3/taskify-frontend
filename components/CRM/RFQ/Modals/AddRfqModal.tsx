@@ -39,6 +39,7 @@ interface LineItem {
 }
 
 interface RFQFormData {
+  rfqReferenceId: string;
   companyName: string;
   isReseller: boolean;
   contactName: string;
@@ -84,6 +85,7 @@ interface RFQFormData {
 }
 
 const INITIAL_FORM: RFQFormData = {
+  rfqReferenceId: '',
   companyName: '',
   isReseller: false,
   contactName: '',
@@ -761,6 +763,7 @@ export default function AddRfqModal({ onClose, onSubmit, initialData, isEditing,
       address: form.address,
       city: form.city,
       zipCode: form.zipCode,
+      rfqReferenceId: form.rfqReferenceId?.trim() || undefined,
       isReseller: form.isReseller,
       receivedVia: 'Email',
       rfqSource: form.rfqSource,
@@ -1373,7 +1376,7 @@ function CompanyInfoStep({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <InputField
           label="ZIP Code"
           placeholder="ZIP Code (e.g: 1207)"
@@ -1381,11 +1384,17 @@ function CompanyInfoStep({
           onChange={(v) => setField('zipCode', v)}
         />
         <InputField
-          label="Query Date & Time (Client Inquiry Date)"
-          type="datetime-local" // অথবা "date" যদি শুধু তারিখ চান
+          label="Query (Client Inquiry Date)"
+          type="datetime-local"
           placeholder="Select Date"
           value={form.inquiryDate || ''}
           onChange={(v) => setField('inquiryDate', v)}
+        />
+        <InputField
+          label="RFQ Reference ID"
+          placeholder="e.g. REF-2026-001"
+          value={form.rfqReferenceId || ''}
+          onChange={(v) => setField('rfqReferenceId', v)}
         />
       </div>
       <div className="grid grid-cols-2 gap-4">

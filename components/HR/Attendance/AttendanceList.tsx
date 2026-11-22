@@ -3,7 +3,6 @@
 
 import { AttendanceRecord, AttendanceStats } from "@/app/(dashboard)/hr/attendance/dashboard/page";
 import {
-  Eye,
   Timer,
   TrendingUp,
   MapPin,
@@ -151,7 +150,10 @@ const AttendanceRow = ({
   const overtimeNum = Number(record?.overtime ?? 0);
 
   return (
-    <tr className="hover:bg-[#FAF8F4]/80 transition-colors">
+    <tr
+      onClick={() => onView(record)}
+      className="hover:bg-[#FAF8F4]/80 transition-colors cursor-pointer group"
+    >
       {/* Employee */}
       <td className="px-3.5 py-2">
         <div className="flex items-center gap-2.5">
@@ -226,16 +228,11 @@ const AttendanceRow = ({
         {renderAttendanceDetailBadge(statusKey)}
       </td>
 
-      {/* Actions */}
+      {/* Actions — Eye button removed; row click handles view */}
       <td className="px-3.5 py-2 text-right whitespace-nowrap">
-        <button
-          type="button"
-          onClick={() => onView(record)}
-          title="View Details"
-          className="cursor-pointer p-1 text-gray-400 hover:text-[#107E57] hover:bg-emerald-50 rounded-md transition-colors"
-        >
-          <Eye className="w-3.5 h-3.5" />
-        </button>
+        <span className="text-[10px] font-medium text-gray-400 group-hover:text-[#107E57] transition-colors">
+          View
+        </span>
       </td>
     </tr>
   );

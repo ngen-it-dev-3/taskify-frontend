@@ -50,6 +50,7 @@ export type RFQPriority = 'low' | 'normal' | 'high' | 'urgent';
 export interface RFQItem {
   id: string;
   rfqNumber: string;
+  rfqReferenceId?: string;
   company: string;
   country: string;
   date: string;
@@ -95,6 +96,7 @@ export interface RFQListParams {
 
 export interface CreateRFQPayload {
   source?: RFQSource;
+  rfqReferenceId?: string;
   company: string;
   country: string;
   rfqSource?: string;
@@ -133,6 +135,9 @@ export interface AssignRFQPayload {
 
 // ⭐ UPDATED: Added all the fields sent from the Edit Form
 export interface UpdateRFQPayload {
+  // Reference ID
+  rfqReferenceId?: string;
+
   // Status
   stage?: RFQStage;
   priority?: RFQPriority;
@@ -187,7 +192,13 @@ export interface RFQStats {
   quoteRate: number;
   byCountry: { country: string; count: number; pct: number }[];
   bySalesman: { salesman: string; count: number }[];
-  recent: { id: string; company: string; rfqNumber: string; createdAt: string }[];
+  recent: {
+    id: string;
+    company: string;
+    rfqNumber: string;
+    rfqReferenceId?: string;
+    createdAt: string;
+  }[];
 }
 
 // ============================================================

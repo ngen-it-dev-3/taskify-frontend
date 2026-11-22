@@ -264,7 +264,8 @@ export default function RFQDashboardPage() {
 
           // ⭐ ADDED: rfqSource mapped to update
           rfqSource: data.rfqSource,
-
+          rfqReferenceId: data.rfqReferenceId ?? '',
+          inquiryDate: data.inquiryDate,
           projectName: data.projectName,
           tentativeBudget: data.tentativeBudget,
           currentProjectStatus: data.currentProjectStatus,
@@ -501,8 +502,8 @@ export default function RFQDashboardPage() {
 
                 // ⭐ ADDED: rfqSource mapped to initialData
                 rfqSource: (selectedRFQ as any).rfqSource || '',
+                rfqReferenceId: (selectedRFQ as any).rfqReferenceId || '',
                 inquiryDate: (selectedRFQ as any).inquiryDate || '',
-
                 // Additional Details (The missing data!)
                 projectName: (selectedRFQ as any).projectName || (selectedRFQ as any).clientInfo?.projectName || '',
                 tentativeBudget: (selectedRFQ as any).tentativeBudget || (selectedRFQ as any).clientInfo?.tentativeBudget || '',

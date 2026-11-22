@@ -83,7 +83,6 @@ export default function StatsCards({ stats }: Props) {
 
       {/* Attendance Rate — Orvix Emerald Green + Warm Brown OT */}
       <div className="relative overflow-hidden bg-white rounded-xl shadow-2xs border border-[#107E57]/25 p-5 hover:border-[#107E57]/45 hover:shadow-sm transition-all">
-        <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-[#FAF8F4] border border-[#A06126]/10 pointer-events-none" />
         <div className="relative flex items-center justify-between mb-3">
           <p className="text-[11px] font-semibold tracking-wider uppercase text-gray-400">
             Attendance Rate

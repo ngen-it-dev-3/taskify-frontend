@@ -15,13 +15,16 @@ import {
   Clock,
   XCircle,
   AlertCircle,
-  FileText,
   Calendar,
+  X,
+  FileText,
+  UserCircle2,
 } from "lucide-react";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion, AnimatePresence } from "framer-motion";
 
 // ============================================================================
 // TYPES & CONSTANTS
@@ -51,7 +54,6 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-// Reference Saturday Off: 21 Nov 2026 is OFF, 28 Nov 2026 is OPEN (every 2nd Saturday)
 const ANCHOR_SAT_OFF_STR = "2026-11-21";
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
@@ -129,6 +131,15 @@ export default function MonthWiseLeavePage() {
   const [allLeaveRecords, setAllLeaveRecords] = useState<LeaveRequest[]>([]);
   const [loadingData, setLoadingData] = useState(false);
 
+  // Modal state
+  const [selectedDay, setSelectedDay] = useState<{
+    dateStr: string;
+    dateLabel: string;
+    leaves: LeaveRequest[];
+    isOffDay: boolean;
+    isOpenSaturday: boolean;
+  } | null>(null);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -159,6 +170,16 @@ export default function MonthWiseLeavePage() {
   useEffect(() => {
     fetchAllLeaveData();
   }, [fetchAllLeaveData]);
+
+  // Close modal on Escape
+  useEffect(() => {
+    if (!selectedDay) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedDay(null);
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [selectedDay]);
 
   const employeeOptions = useMemo(() => {
     const map = new Map<string, Employee>();
@@ -256,6 +277,9 @@ export default function MonthWiseLeavePage() {
   const totalApprovedDays = filteredRecords
     .filter((l) => (l.status || "").toLowerCase() === "approved")
     .reduce((sum, l) => sum + (Number(l.totalDays) || 0), 0);
+  const totalPendingDays = filteredRecords
+    .filter((l) => (l.status || "").toLowerCase() === "pending")
+    .reduce((sum, l) => sum + (Number(l.totalDays) || 0), 0);
 
   const handlePrevMonth = () => {
     if (selectedMonth === 0) {
@@ -271,14 +295,37 @@ export default function MonthWiseLeavePage() {
     } else setSelectedMonth((m) => m + 1);
   };
 
+  const openDayModal = (day: {
+    dateStr: string;
+    date: number;
+    leaves: LeaveRequest[];
+    isOffDay: boolean;
+    isOpenSaturday: boolean;
+  }) => {
+    const d = new Date(day.dateStr);
+    const dateLabel = d.toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+    setSelectedDay({
+      dateStr: day.dateStr,
+      dateLabel,
+      leaves: day.leaves,
+      isOffDay: day.isOffDay,
+      isOpenSaturday: day.isOpenSaturday,
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-12">
+    <div className="min-h-screen bg-slate-50/50 pb-12 font-sans">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         
         {/* Header & Breadcrumb */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-200 pb-5">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-slate-200 pb-5 print:border-none print:pb-0">
           <div>
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2 print:hidden">
               <Link href="/dashboard" className="hover:text-[#A06126] flex items-center gap-1 transition-colors">
                 <Home className="w-3.5 h-3.5" /> Dashboard
               </Link>
@@ -292,7 +339,7 @@ export default function MonthWiseLeavePage() {
             </h1>
             <p className="text-sm text-slate-500 mt-1 flex items-center gap-1.5">
               <CalendarDays className="w-4 h-4" />
-              View monthly leave records and alternate Saturday schedules.
+              Click any date to view leave details for that day.
             </p>
           </div>
           
@@ -300,14 +347,14 @@ export default function MonthWiseLeavePage() {
             <button
               onClick={fetchAllLeaveData}
               disabled={loadingData}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-sm font-medium rounded-lg shadow-sm transition-all duration-200 disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 text-sm font-medium rounded-lg shadow-sm transition-all duration-200 disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 ${loadingData ? "animate-spin" : ""}`} />
               Refresh
             </button>
             <button
               onClick={() => window.print()}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#A06126] hover:bg-[#88501E] text-white text-sm font-medium rounded-lg shadow-md shadow-[#A06126]/20 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#A06126] hover:bg-[#88501E] text-white text-sm font-medium rounded-lg shadow-md shadow-[#A06126]/20 transition-all duration-200 cursor-pointer"
             >
               <Printer className="w-4 h-4" /> Print
             </button>
@@ -315,7 +362,7 @@ export default function MonthWiseLeavePage() {
         </div>
 
         {/* Filter & Summary Bar */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 print:shadow-none print:border-none">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-end">
             {/* Employee Select */}
             <div className="md:col-span-5">
@@ -332,7 +379,7 @@ export default function MonthWiseLeavePage() {
                   <select
                     value={selectedEmployeeId}
                     onChange={(e) => setSelectedEmployeeId(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#A06126]/20 focus:border-[#A06126] transition-all cursor-pointer"
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#A06126]/20 focus:border-[#A06126] transition-all cursor-pointer appearance-none"
                   >
                     {employeeOptions.map((u) => (
                       <option key={u._id} value={u._id}>
@@ -341,6 +388,7 @@ export default function MonthWiseLeavePage() {
                     ))}
                   </select>
                 )}
+                <ChevronRight className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 rotate-90 pointer-events-none" />
               </div>
             </div>
 
@@ -349,26 +397,27 @@ export default function MonthWiseLeavePage() {
               <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
                 Month & Year
               </label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-1">
                 <button
                   onClick={handlePrevMonth}
-                  className="p-2.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 text-slate-600 transition-all"
+                  className="p-2 hover:bg-white rounded-lg text-slate-600 transition-all cursor-pointer hover:shadow-sm"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <select
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                  className="flex-1 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#A06126]/20 focus:border-[#A06126] cursor-pointer"
+                  className="flex-1 px-2 py-1.5 bg-transparent text-sm font-semibold text-slate-800 focus:outline-none cursor-pointer text-center appearance-none"
                 >
                   {MONTHS.map((m, i) => (
                     <option key={m} value={i}>{m}</option>
                   ))}
                 </select>
+                <span className="text-slate-300">/</span>
                 <select
                   value={selectedYear}
                   onChange={(e) => setSelectedYear(Number(e.target.value))}
-                  className="w-24 px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#A06126]/20 focus:border-[#A06126] cursor-pointer"
+                  className="w-20 px-2 py-1.5 bg-transparent text-sm font-semibold text-slate-800 focus:outline-none cursor-pointer text-center appearance-none"
                 >
                   {[2024, 2025, 2026, 2027].map((y) => (
                     <option key={y} value={y}>{y}</option>
@@ -376,34 +425,39 @@ export default function MonthWiseLeavePage() {
                 </select>
                 <button
                   onClick={handleNextMonth}
-                  className="p-2.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 hover:border-slate-300 text-slate-600 transition-all"
+                  className="p-2 hover:bg-white rounded-lg text-slate-600 transition-all cursor-pointer hover:shadow-sm"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Summary Card */}
-            <div className="md:col-span-3 bg-gradient-to-br from-[#A06126] to-[#88501E] rounded-xl px-4 py-3 flex items-center justify-between text-white shadow-lg shadow-[#A06126]/20">
-              <div>
-                <p className="text-[11px] font-medium text-white/80 uppercase tracking-wider">
-                  Total Approved
+            {/* Summary Cards */}
+            <div className="md:col-span-3 grid grid-cols-2 gap-2">
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl px-4 py-3 text-white shadow-lg shadow-emerald-500/20">
+                <p className="text-[10px] font-medium text-white/80 uppercase tracking-wider">
+                  Approved
                 </p>
-                <p className="text-2xl font-bold leading-tight mt-1">
-                  {totalApprovedDays} <span className="text-base font-normal text-white/80">Days</span>
+                <p className="text-xl font-bold leading-tight mt-0.5">
+                  {totalApprovedDays} <span className="text-xs font-normal text-white/80">Days</span>
                 </p>
               </div>
-              <div className="bg-white/20 p-2.5 rounded-lg backdrop-blur-sm">
-                <Calendar className="w-6 h-6 text-white" />
+              <div className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl px-4 py-3 text-white shadow-lg shadow-amber-500/20">
+                <p className="text-[10px] font-medium text-white/80 uppercase tracking-wider">
+                  Pending
+                </p>
+                <p className="text-xl font-bold leading-tight mt-0.5">
+                  {totalPendingDays} <span className="text-xs font-normal text-white/80">Days</span>
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Calendar & Details Section */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* Calendar Section */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print:shadow-none print:border-slate-300">
           {/* Calendar Header */}
-          <div className="bg-slate-50/80 border-b border-slate-200 px-6 py-4 flex flex-wrap justify-between items-center gap-3">
+          <div className="bg-gradient-to-r from-slate-50 to-white border-b border-slate-200 px-6 py-4 flex flex-wrap justify-between items-center gap-3">
             <div>
               <h2 className="text-base font-bold text-slate-900">
                 {selectedEmployee?.fullName || "Employee"}&apos;s Leave Sheet
@@ -455,17 +509,19 @@ export default function MonthWiseLeavePage() {
                     const isApproved = (primaryLeave?.status || "").toLowerCase() === "approved";
 
                     return (
-                      <div
+                      <button
                         key={day.dateStr}
-                        className={`relative h-20 sm:h-24 rounded-xl border p-2.5 flex flex-col justify-between transition-all duration-200 hover:shadow-md
+                        type="button"
+                        onClick={() => openDayModal(day)}
+                        className={`relative h-20 sm:h-24 rounded-xl border p-2.5 flex flex-col justify-between text-left transition-all duration-200 hover:shadow-md hover:scale-[1.02] cursor-pointer
                           ${
                             hasLeave && isApproved
-                              ? "border-emerald-200 bg-emerald-50/40 hover:border-emerald-300 hover:bg-emerald-50/80"
+                              ? "border-emerald-200 bg-emerald-50/40 hover:border-emerald-400 hover:bg-emerald-50/90"
                               : hasLeave && !isApproved
-                              ? "border-amber-200 bg-amber-50/40 hover:border-amber-300 hover:bg-amber-50/80"
+                              ? "border-amber-200 bg-amber-50/40 hover:border-amber-400 hover:bg-amber-50/90"
                               : day.isOffDay
-                              ? "border-slate-200 bg-slate-50/80"
-                              : "border-slate-200 bg-white hover:border-[#A06126]/30 hover:bg-[#A06126]/5"
+                              ? "border-slate-200 bg-slate-50/80 hover:border-slate-300"
+                              : "border-slate-200 bg-white hover:border-[#A06126]/40 hover:bg-[#A06126]/5"
                           }
                         `}
                       >
@@ -509,71 +565,153 @@ export default function MonthWiseLeavePage() {
                             )}
                           </div>
                         )}
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
+
+                {filteredRecords.length === 0 && (
+                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400">
+                    <CalendarDays className="w-4 h-4" />
+                    No leaves recorded for {selectedEmployee?.fullName || "this employee"} in {MONTHS[selectedMonth]} {selectedYear}.
+                  </div>
+                )}
               </>
             )}
           </div>
-
-          {/* Details Table */}
-          <div className="border-t border-slate-200 bg-slate-50/50 px-6 py-5">
-            <div className="flex items-center gap-2 mb-4">
-              <FileText className="w-4 h-4 text-[#A06126]" />
-              <h3 className="text-sm font-bold text-slate-900">
-                Leave Details <span className="text-slate-400 font-normal">({filteredRecords.length})</span>
-              </h3>
-            </div>
-            
-            {filteredRecords.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-10 text-center bg-white rounded-xl border border-dashed border-slate-300">
-                <CalendarDays className="w-10 h-10 text-slate-300 mb-3" />
-                <p className="text-sm font-medium text-slate-600">No leaves found</p>
-                <p className="text-xs text-slate-400 mt-1">
-                  No leave records for {selectedEmployee?.fullName || "this employee"} in {MONTHS[selectedMonth]} {selectedYear}.
-                </p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-                <table className="w-full text-left text-sm">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                    <tr>
-                      <th className="px-5 py-3.5">Status</th>
-                      <th className="px-5 py-3.5">Leave Type</th>
-                      <th className="px-5 py-3.5">Duration</th>
-                      <th className="px-5 py-3.5">Reason</th>
-                      <th className="px-5 py-3.5 text-right">Total Days</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredRecords.map((r) => (
-                      <tr key={r._id} className="hover:bg-[#A06126]/5 transition-colors duration-150 group">
-                        <td className="px-5 py-3.5">
-                          <StatusBadge status={r.status} />
-                        </td>
-                        <td className="px-5 py-3.5 font-semibold text-slate-800">
-                          {leaveTypeLabels[r.type] || r.type}
-                        </td>
-                        <td className="px-5 py-3.5 text-slate-600 font-medium">
-                          {new Date(r.startDate).toLocaleDateString("en-GB", { day: 'numeric', month: 'short' })} –{" "}
-                          {new Date(r.endDate).toLocaleDateString("en-GB", { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </td>
-                        <td className="px-5 py-3.5 text-slate-500 max-w-[250px] truncate" title={r.reason || "No reason provided"}>
-                          {r.reason || <span className="text-slate-300 italic">No reason provided</span>}
-                        </td>
-                        <td className="px-5 py-3.5 text-right font-bold text-slate-900 tabular-nums">
-                          {r.totalDays} <span className="text-xs font-normal text-slate-500">d</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+        </div>
+        
+        {/* Print Footer */}
+        <div className="hidden print:block text-center text-[10px] text-slate-400 mt-4">
+          Generated on {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} • Leave Management System
         </div>
       </div>
+
+      {/* Day Details Modal */}
+      <AnimatePresence>
+        {selectedDay && (
+          <div
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={() => setSelectedDay(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ duration: 0.18 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden flex flex-col max-h-[90vh]"
+            >
+              {/* Modal Header */}
+              <div className="px-6 py-4 border-b border-slate-100 bg-gradient-to-r from-[#A06126]/5 to-transparent flex justify-between items-start">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#A06126] mb-1">
+                    Leave Details
+                  </p>
+                  <h2 className="text-lg font-bold text-slate-900">
+                    {selectedDay.dateLabel}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedDay(null)}
+                  className="p-1.5 hover:bg-slate-100 rounded-full text-slate-500 transition cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 overflow-y-auto">
+                {selectedDay.leaves.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-10 text-center">
+                    <div className="p-3 bg-slate-100 rounded-full mb-3">
+                      {selectedDay.isOffDay ? (
+                        <Calendar className="w-8 h-8 text-slate-400" />
+                      ) : (
+                        <FileText className="w-8 h-8 text-slate-400" />
+                      )}
+                    </div>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {selectedDay.isOffDay
+                        ? "Saturday Off"
+                        : selectedDay.isOpenSaturday
+                        ? "Open Saturday (Working Day)"
+                        : "No Leaves"}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1 max-w-xs">
+                      {selectedDay.isOffDay
+                        ? "This day is an alternate Saturday off."
+                        : selectedDay.isOpenSaturday
+                        ? "This is a working Saturday. No leave applications on this day."
+                        : "No approved or pending leave applications on this day."}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {selectedDay.leaves.map((leave) => (
+                      <div
+                        key={leave._id}
+                        className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-slate-50 transition"
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-2 bg-white rounded-lg border border-slate-200">
+                              <UserCircle2 className="w-5 h-5 text-[#A06126]" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-slate-900">
+                                {leaveTypeLabels[leave.type] || leave.type} Leave
+                              </p>
+                              <p className="text-[11px] text-slate-500">
+                                {leave.totalDays} {leave.totalDays === 1 ? "Day" : "Days"}
+                              </p>
+                            </div>
+                          </div>
+                          <StatusBadge status={leave.status} />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                          <div className="bg-white rounded-lg px-2.5 py-1.5 border border-slate-100">
+                            <p className="text-[9px] font-bold uppercase text-slate-400 tracking-wider">From</p>
+                            <p className="font-semibold text-slate-800 mt-0.5">
+                              {new Date(leave.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                            </p>
+                          </div>
+                          <div className="bg-white rounded-lg px-2.5 py-1.5 border border-slate-100">
+                            <p className="text-[9px] font-bold uppercase text-slate-400 tracking-wider">To</p>
+                            <p className="font-semibold text-slate-800 mt-0.5">
+                              {new Date(leave.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                            </p>
+                          </div>
+                        </div>
+
+                        {leave.reason && (
+                          <div className="bg-white rounded-lg p-2.5 border border-slate-100">
+                            <p className="text-[9px] font-bold uppercase text-slate-400 tracking-wider mb-1">Reason</p>
+                            <p className="text-xs text-slate-700 leading-relaxed">{leave.reason}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 py-3 border-t border-slate-100 bg-slate-50 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setSelectedDay(null)}
+                  className="px-4 py-2 bg-[#A06126] hover:bg-[#88501E] text-white rounded-lg text-xs font-semibold transition cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -281,13 +281,6 @@ export default function MyAttendancePage() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setCurrentDate(new Date())}
-                className="cursor-pointer px-3 py-1.5 bg-white border border-gray-300 rounded-md text-xs font-semibold text-gray-700 hover:bg-gray-50 transition shadow-2xs"
-              >
-                Today
-              </button>
-              <button
-                type="button"
                 onClick={fetchAttendanceData}
                 disabled={refreshing}
                 className="cursor-pointer px-3.5 py-1.5 bg-[#A06126] text-white rounded-md text-xs font-semibold hover:bg-[#88501E] transition flex items-center gap-1.5 shadow-2xs disabled:opacity-50"

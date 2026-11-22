@@ -13,6 +13,53 @@ interface Props {
   hideActions?: boolean;
 }
 
+const DHAKA_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  day: '2-digit',
+  month: 'short',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true,
+  timeZone: 'Asia/Dhaka',
+};
+
+function formatInDhaka(dateObj: Date): string {
+  return dateObj.toLocaleString('en-US', DHAKA_FORMAT_OPTIONS);
+}
+
+// ⭐ Helper: Parse Web RFQ exact client timestamp cleanly without double timezone offset
+function getWebInquiryDisplay(rfq: RFQItem): string {
+  // ১. যদি inquiryDate-তে আসল সময় থাকে (midnight 00:00:00 বা শুধু YYYY-MM-DD না হয়), সরাসরি Dhaka টাইমে দেখান
+  if (rfq.inquiryDate) {
+    const raw = String(rfq.inquiryDate).trim();
+    const isMidnightOrDateOnly =
+      /^\d{4}-\d{2}-\d{2}$/.test(raw) ||
+      /T00:00:00(\.000)?(Z|[+-]\d{2}:?\d{2})?$/i.test(raw);
+
+    const parsedInquiry = new Date(raw);
+    if (!isMidnightOrDateOnly && !isNaN(parsedInquiry.getTime())) {
+      return formatInDhaka(parsedInquiry);
+    }
+  }
+
+  // ২. rfq.date এবং rfq.time ইতিমধ্যে সঠিক ফরম্যাটে থাকলে (যেমন "07 Nov 2026" ও "11:45 AM") UTC না ধরে সরাসরি দেখান
+  if (rfq.date && rfq.time) {
+    const datePart = String(rfq.date).trim();
+    const timePart = String(rfq.time).trim();
+    return `${datePart} · ${timePart}`;
+  }
+
+  // ৩. ফলব্যাক: createdAt (UTC ISO string -> Asia/Dhaka)
+  if (rfq.createdAt) {
+    const created = new Date(rfq.createdAt);
+    if (!isNaN(created.getTime())) {
+      return formatInDhaka(created);
+    }
+  }
+
+  return '';
+}
+
 export default function RfqListItem({
   rfq,
   isSelected,
@@ -68,38 +115,36 @@ export default function RfqListItem({
     if (!rfq.inquiryDate || !rfq.createdAt) return null;
 
     try {
-      // ১. এন্ট্রি টাইম (createdAt) থেকে লোকাল টাইম
       const entryDate = new Date(rfq.createdAt);
-
-      // ২. ইনকোয়ারি টাইম (inquiryDate) থেকে লোকাল টাইম
-      // ⭐ যেহেতু inquiryDate এখন ISO ফরম্যাটে (যেমন: 2026-11-11T05:00:00.000Z), 
-      // new Date() সেটিকে লোকাল টাইমে কনভার্ট করবে (11:00 AM)।
       const inquiryDate = new Date(rfq.inquiryDate);
 
       if (isNaN(inquiryDate.getTime()) || isNaN(entryDate.getTime())) {
         return 'Invalid Date';
       }
 
-      // ৩. পার্থক্য বের করা
       const diffTime = Math.abs(entryDate.getTime() - inquiryDate.getTime());
 
-      // ৪. দিন, ঘণ্টা, মিনিট
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const diffHours = Math.floor((diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const diffHours = Math.floor(
+        (diffTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
       const diffMins = Math.floor((diffTime % (1000 * 60 * 60)) / (1000 * 60));
 
-      // ৫. রিটার্ন স্ট্রিং
       if (diffDays > 0) return `${diffDays}d ${diffHours}h gap`;
       if (diffHours > 0) return `${diffHours}h ${diffMins}m gap`;
       if (diffMins > 0) return `${diffMins}m gap`;
       return 'Just now';
-    } catch (e) {
+    } catch {
       return 'Invalid Date';
     }
   };
 
   const aging = calculateAging();
   const responseGap = calculateResponseGap();
+  const webInquiryTime = getWebInquiryDisplay(rfq);
+  const manualCreatedTime = rfq.createdAt
+    ? formatInDhaka(new Date(rfq.createdAt))
+    : formatInDhaka(new Date());
 
   const agingBadge = () => {
     if (rfq.stage === 'archived') return 'bg-slate-100 text-slate-600';
@@ -128,30 +173,23 @@ export default function RfqListItem({
       </div>
 
       <div className="text-[11.5px] text-slate-500 mt-1 mb-2.5 flex flex-wrap items-center gap-2">
-        <span>RFQ# {rfq.rfqNumber} | {rfq.country}</span>
+        <span>
+          RFQ# {rfq.rfqNumber}
+          {rfq.rfqReferenceId ? ` · Ref: ${rfq.rfqReferenceId}` : ''} | {rfq.country}
+        </span>
 
         <span className="text-slate-300">·</span>
 
-        {/* ⭐ Web RFQ এর জন্য date & time, ম্যানুয়ালের জন্য createdAt */}
         <span>
           {rfq.source === 'online'
-            ? `Client Inquiry: ${rfq.date || ''} ${rfq.time || ''}`
-            : new Date(rfq.createdAt || new Date()).toLocaleString('en-US', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: true,
-              timeZone: 'Asia/Dhaka',
-            })
-          }
+            ? `Client Inquiry: ${webInquiryTime}`
+            : manualCreatedTime}
         </span>
 
         <span
           className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${rfq.source === 'manual'
-            ? 'bg-amber-50 text-amber-700'
-            : 'bg-blue-50 text-blue-700'
+              ? 'bg-amber-50 text-amber-700'
+              : 'bg-blue-50 text-blue-700'
             }`}
         >
           {rfq.source === 'manual' ? '✍️ Manual' : '🌐 Web RFQ'}
@@ -165,19 +203,15 @@ export default function RfqListItem({
             <div className="text-[11px] text-slate-500 font-medium flex items-center gap-2 flex-wrap">
               <span className="shrink-0">Client Inquiry Time</span>
               <span className="badge bg-amber-500 rounded-2xl px-2.5 py-0.5 text-white text-[10px] font-semibold shrink-0">
-                {new Date(rfq.inquiryDate).toLocaleString('en-US', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                  timeZone: 'Asia/Dhaka',
-                })}
+                {formatInDhaka(new Date(rfq.inquiryDate))}
               </span>
               {responseGap && (
                 <span className="text-slate-400 text-[10px] shrink-0">
-                  (Entry: <span className="text-emerald-600 font-semibold">{responseGap}</span>)
+                  (Entry:{' '}
+                  <span className="text-emerald-600 font-semibold">
+                    {responseGap}
+                  </span>
+                  )
                 </span>
               )}
             </div>
@@ -224,18 +258,18 @@ export default function RfqListItem({
               disabled={!isAssigned}
               title={!isAssigned ? 'Please assign this RFQ first' : 'Create Quote'}
               className={`px-3.5 py-1 rounded text-[11px] font-semibold transition ${!isAssigned
-                ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
-                : 'bg-[#0F2D4A] hover:bg-[#1C3760] text-white shadow-2xs cursor-pointer'
+                  ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200'
+                  : 'bg-[#0F2D4A] hover:bg-[#1C3760] text-white shadow-2xs cursor-pointer'
                 }`}
             >
-              {!isAssigned ? 'Quote' : 'Quote'}
+              Quote
             </button>
           </div>
         ) : (
           <span
             className={`px-2.5 py-1 rounded text-[10px] font-semibold border shrink-0 ${rfq.stage === 'lost'
-              ? 'bg-rose-50 text-rose-600 border-rose-200'
-              : 'bg-slate-100 text-slate-500 border-slate-200'
+                ? 'bg-rose-50 text-rose-600 border-rose-200'
+                : 'bg-slate-100 text-slate-500 border-slate-200'
               }`}
           >
             {rfq.stage === 'lost' ? '🔒 Lost — no actions' : '🔒 Already Quoted'}
