@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import {
@@ -68,9 +68,9 @@ export default function InactiveUsersPage() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const [selectedUser, setSelectedUser] = useState<InactiveUser | null>(null);
   const [showUserDetails, setShowUserDetails] = useState(false);
-
   const canManage = hasRole(["super_admin", "admin", "hr_manager"]);
-
+  const deleteConfirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [pendingDeleteUserId, setPendingDeleteUserId] = useState<string | null>(null);
   // ============ FETCH FUNCTIONS ============
   const fetchInactiveUsers = useCallback(async () => {
     try {
@@ -116,8 +116,28 @@ export default function InactiveUsersPage() {
   };
 
   const handleDelete = async (userId: string) => {
-    if (!confirm("Are you sure you want to permanently delete this user?"))
+    if (processingAction?.userId === userId) return;
+
+    if (pendingDeleteUserId !== userId) {
+      setPendingDeleteUserId(userId);
+      toast("Click delete again within 3s to permanently delete this user", {
+        icon: "⚠️",
+      });
+
+      if (deleteConfirmTimerRef.current) {
+        clearTimeout(deleteConfirmTimerRef.current);
+      }
+      deleteConfirmTimerRef.current = setTimeout(() => {
+        setPendingDeleteUserId((prev) => (prev === userId ? null : prev));
+      }, 3000);
       return;
+    }
+
+    if (deleteConfirmTimerRef.current) {
+      clearTimeout(deleteConfirmTimerRef.current);
+      deleteConfirmTimerRef.current = null;
+    }
+    setPendingDeleteUserId(null);
 
     setProcessingAction({ userId, action: "delete" });
     try {
@@ -125,8 +145,11 @@ export default function InactiveUsersPage() {
       toast.success("User deleted successfully");
       await fetchInactiveUsers();
       setShowUserDetails(false);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete user");
+    } catch (error: unknown) {
+      const message =
+        (error as { response?: { data?: { message?: string } } })?.response?.data
+          ?.message || "Failed to delete user";
+      toast.error(message);
     } finally {
       setProcessingAction(null);
     }
@@ -195,7 +218,7 @@ export default function InactiveUsersPage() {
 
   // ============ FILTER LOGIC ============
   const filteredUsers = (() => {
-    let filtered = inactiveUsers.filter((user) => {
+    const filtered = inactiveUsers.filter((user) => {
       const matchesSearch =
         user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -284,7 +307,7 @@ export default function InactiveUsersPage() {
                   className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm rounded-xl flex items-center gap-2 transition shadow-md shadow-emerald-500/20 disabled:opacity-50"
                 >
                   {processingAction?.userId === "bulk" &&
-                  processingAction?.action === "activate" ? (
+                    processingAction?.action === "activate" ? (
                     <Loader2 size={16} className="animate-spin" />
                   ) : (
                     <UserCheck size={16} />
@@ -603,11 +626,10 @@ export default function InactiveUsersPage() {
                         <button
                           key={pageNum}
                           onClick={() => setCurrentPage(pageNum)}
-                          className={`px-3 py-2 rounded-lg text-sm transition ${
-                            currentPage === pageNum
+                          className={`px-3 py-2 rounded-lg text-sm transition ${currentPage === pageNum
                               ? "bg-green-600 text-white shadow-sm"
                               : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
-                          }`}
+                            }`}
                         >
                           {pageNum}
                         </button>
