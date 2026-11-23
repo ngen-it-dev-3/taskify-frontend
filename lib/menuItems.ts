@@ -350,9 +350,8 @@ export const SUB_ITEMS = {
   // --- Notices & Meetings (Level 2) ---
   noticesAndMeetings: createSubNavItem("notices-and-meetings", "Notices & Meetings", "#", Megaphone, "HR & Admin", [ROLES.ALL]),
   // Level 3 under Notices & Meetings
-  noticeBoard: createSubNavItem("notice-board", "Notice Board", "/hr/notices", Newspaper, "Notices & Meetings", [ROLES.ALL]),
-  meetingsSchedule: createSubNavItem("meetings-schedule", "Meetings Schedule", "/hr/meetings", Video, "Notices & Meetings", [ROLES.ALL]),
-
+  noticeBoard: createSubNavItem("notice-board", "Notice Board", "/hr/notices-meeting", Newspaper, "Notices & Meetings", [ROLES.ALL]),
+  
   // ==========================================================================
   // SYSTEM SETTINGS (Level 3 under System Settings)
   // ==========================================================================
