@@ -338,16 +338,14 @@ export const SUB_ITEMS = {
   employeeDirectory: createSubNavItem("employee-directory", "Employee Directory", "/hr/employees", Users, "Employee & Documents", [ROLES.ALL]),
   employeeFiles: createSubNavItem("employee-files", "Employee Files", "/hr/employee-file", FolderOpen, "Employee & Documents", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   hrFormsPolicies: createSubNavItem("hr-forms-policies", "HR Forms & Policies", "/hr/forms", FileSignature, "Employee & Documents", [ROLES.ALL]),
-
-  // --- Jobs & Recruitment (Level 2) ---
-  jobsAndRecruitment: createSubNavItem("jobs-and-recruitment", "Jobs & Recruitment", "#", Briefcase, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  // Level 3 under Jobs & Recruitment
-  openPositions: createSubNavItem("open-positions", "Open Positions", "/recruitment/positions", ClipboardList, "Jobs & Recruitment", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  onlineTests: createSubNavItem("online-tests", "Online Tests", "/recruitment/tests", CheckSquare, "Jobs & Recruitment", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  cvBank: createSubNavItem("cv-bank", "CV Bank", "/recruitment/cv-bank", Contact, "Jobs & Recruitment", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  recruitment: createSubNavItem("recruitment", "Recruitment", "/recruitment", UserPlus, "Jobs & Recruitment", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  employeeOnboarding: createSubNavItem("employee-onboarding", "Employee Onboarding", "/onboarding", HandHelping, "Jobs & Recruitment", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  trainingPrograms: createSubNavItem("training-programs", "Training Program", "/training", GraduationCap, "Jobs & Recruitment", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
+  recruitmentOnboarding: createSubNavItem(
+    "recruitment-onboarding",
+    "Recruitment & Onboarding",
+    "/hr/recruitment",
+    ClipboardList,
+    "Employee & Documents",
+    [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]
+  ),
 
   // --- Notices & Meetings (Level 2) ---
   noticesAndMeetings: createSubNavItem("notices-and-meetings", "Notices & Meetings", "#", Megaphone, "HR & Admin", [ROLES.ALL]),
