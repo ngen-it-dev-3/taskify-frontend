@@ -310,7 +310,7 @@ export default function LoginPage() {
             <Shield className="w-8 h-8 text-white" />
           </div> */}
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            Task<span className="text-[#1A60FF]">Flow</span> Pro
+            Off<span className="text-[#29965a]">tica</span>
           </h1>
           <p className="text-gray-400 text-sm mt-1.5 font-normal">
             Sign in to your workspace
