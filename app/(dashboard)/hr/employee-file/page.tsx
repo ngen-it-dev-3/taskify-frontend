@@ -3,9 +3,9 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
     FileText, Upload, Trash2, Calendar, Award, BookOpen, ShieldCheck,
-    Loader2, Plus, X, User, ChevronDown, File, Image as ImageIcon,
-    FileSpreadsheet, Search, CheckCircle2, ShieldAlert, BadgeCheck,
-    Download, ArrowRight, Filter, Edit3, FileType
+    Loader2, Plus, X, User, ChevronDown, ChevronLeft, ChevronRight, File,
+    Image as ImageIcon, FileSpreadsheet, Search, CheckCircle2, ShieldAlert,
+    BadgeCheck, Download, ArrowRight, Filter, Edit3, FileType
 } from "lucide-react";
 import api from "@/lib/axios";
 import toast from "react-hot-toast";
@@ -50,11 +50,53 @@ const DEFAULT_CATEGORIES = [
     "Other",
 ];
 
+const PROTECTED_CATEGORIES = new Set([
+    "document",
+    "cv / resume",
+    "blue book",
+    "360 analysis",
+    "pre-evaluation",
+]);
+
 const toCategoryKey = (value?: string) =>
     String(value || "")
         .trim()
         .toLowerCase()
         .replace(/\s+/g, " ");
+
+const getDismissedStorageKey = (empId: string) =>
+    `employee_file_dismissed_categories_${empId || "default"}`;
+
+const getCustomTabsStorageKey = (empId: string) =>
+    `employee_file_custom_tabs_${empId || "default"}`;
+
+const readDismissedCategories = (empId: string): string[] => {
+    if (typeof window === "undefined") return [];
+    try {
+        const raw = window.localStorage.getItem(getDismissedStorageKey(empId));
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed)
+            ? parsed.map((item) => toCategoryKey(String(item))).filter(Boolean)
+            : [];
+    } catch {
+        return [];
+    }
+};
+
+const readCustomTabs = (empId: string): string[] => {
+    if (typeof window === "undefined") return [];
+    try {
+        const raw = window.localStorage.getItem(getCustomTabsStorageKey(empId));
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed)
+            ? parsed.map((item) => String(item).trim()).filter(Boolean)
+            : [];
+    } catch {
+        return [];
+    }
+};
 
 const getTabIcon = (categoryName: string) => {
     const key = toCategoryKey(categoryName);
@@ -85,13 +127,20 @@ const formatBytes = (bytes?: number) => {
 export default function EmployeeFilePage() {
     const { user } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const tabNavRef = useRef<HTMLDivElement>(null);
 
     // Data States
     const [activeCategory, setActiveCategory] = useState<string>("Document");
     const [customTabs, setCustomTabs] = useState<string[]>([]);
+    const [dismissedCategories, setDismissedCategories] = useState<string[]>([]);
+    const tabStorageHydratedForRef = useRef<string>("");
     const [allFiles, setAllFiles] = useState<FileRecord[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+
+    // Tab Slide States
+    const [canSlideLeft, setCanSlideLeft] = useState(false);
+    const [canSlideRight, setCanSlideRight] = useState(false);
 
     // Employee States
     const [employees, setEmployees] = useState<Employee[]>([]);
@@ -102,9 +151,13 @@ export default function EmployeeFilePage() {
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [viewingFile, setViewingFile] = useState<FileRecord | null>(null);
     const [editingFile, setEditingFile] = useState<FileRecord | null>(null);
+
     const pendingDeleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+
+    const pendingCategoryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [pendingDeleteCategory, setPendingDeleteCategory] = useState<string | null>(null);
 
     // Form State
     const [submitting, setSubmitting] = useState(false);
@@ -126,6 +179,9 @@ export default function EmployeeFilePage() {
         return () => {
             if (pendingDeleteTimerRef.current) {
                 clearTimeout(pendingDeleteTimerRef.current);
+            }
+            if (pendingCategoryTimerRef.current) {
+                clearTimeout(pendingCategoryTimerRef.current);
             }
         };
     }, []);
@@ -163,6 +219,38 @@ export default function EmployeeFilePage() {
         fetchEmployees();
     }, [canSelectEmployee, user?._id, selectedEmployeeId]);
 
+    // Hydrate & Persist per-employee dismissed + custom category tabs in localStorage
+    useEffect(() => {
+        if (!selectedEmployeeId) {
+            setDismissedCategories([]);
+            setCustomTabs([]);
+            tabStorageHydratedForRef.current = "";
+            return;
+        }
+        setDismissedCategories(readDismissedCategories(selectedEmployeeId));
+        setCustomTabs(readCustomTabs(selectedEmployeeId));
+        tabStorageHydratedForRef.current = selectedEmployeeId;
+    }, [selectedEmployeeId]);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        if (!selectedEmployeeId || tabStorageHydratedForRef.current !== selectedEmployeeId) {
+            return;
+        }
+        try {
+            window.localStorage.setItem(
+                getDismissedStorageKey(selectedEmployeeId),
+                JSON.stringify(dismissedCategories)
+            );
+            window.localStorage.setItem(
+                getCustomTabsStorageKey(selectedEmployeeId),
+                JSON.stringify(customTabs)
+            );
+        } catch {
+            // Ignore storage errors
+        }
+    }, [dismissedCategories, customTabs, selectedEmployeeId]);
+
     // Fetch All Files for Selected Employee
     const fetchFiles = useCallback(async () => {
         if (!selectedEmployeeId) {
@@ -191,6 +279,9 @@ export default function EmployeeFilePage() {
 
         for (const cat of DEFAULT_CATEGORIES) {
             const key = toCategoryKey(cat);
+            const count = allFiles.filter((f) => toCategoryKey(f.category) === key).length;
+            const isDismissed = dismissedCategories.some((d) => toCategoryKey(d) === key);
+            if (isDismissed && count === 0) continue;
             if (!map.has(key)) map.set(key, cat);
         }
 
@@ -198,6 +289,9 @@ export default function EmployeeFilePage() {
             const clean = cat.trim();
             if (!clean) continue;
             const key = toCategoryKey(clean);
+            const count = allFiles.filter((f) => toCategoryKey(f.category) === key).length;
+            const isDismissed = dismissedCategories.some((d) => toCategoryKey(d) === key);
+            if (isDismissed && count === 0) continue;
             if (!map.has(key)) map.set(key, clean);
         }
 
@@ -209,7 +303,7 @@ export default function EmployeeFilePage() {
         }
 
         return Array.from(map.values());
-    }, [customTabs, allFiles]);
+    }, [customTabs, allFiles, dismissedCategories]);
 
     // Ensure activeCategory always points to a valid tab
     useEffect(() => {
@@ -222,6 +316,30 @@ export default function EmployeeFilePage() {
         }
     }, [categoryTabs, activeCategory]);
 
+    // Tab Slide Controls
+    const updateTabSlideButtons = useCallback(() => {
+        const el = tabNavRef.current;
+        if (!el) return;
+        setCanSlideLeft(el.scrollLeft > 2);
+        setCanSlideRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
+    }, []);
+
+    useEffect(() => {
+        updateTabSlideButtons();
+        window.addEventListener("resize", updateTabSlideButtons);
+        return () => window.removeEventListener("resize", updateTabSlideButtons);
+    }, [updateTabSlideButtons, categoryTabs]);
+
+    const handleSlideTabs = (direction: "left" | "right") => {
+        const el = tabNavRef.current;
+        if (!el) return;
+        const distance = Math.max(180, Math.floor(el.clientWidth * 0.6));
+        el.scrollBy({
+            left: direction === "left" ? -distance : distance,
+            behavior: "smooth",
+        });
+    };
+
     const getCategoryCount = useCallback(
         (categoryName: string) => {
             const targetKey = toCategoryKey(categoryName);
@@ -229,6 +347,55 @@ export default function EmployeeFilePage() {
         },
         [allFiles]
     );
+
+    // Remove unused non-core category tab with 3s 2-click confirmation
+    const handleRemoveCategoryTab = (categoryName: string, e: React.MouseEvent) => {
+        e.stopPropagation();
+        const key = toCategoryKey(categoryName);
+
+        if (PROTECTED_CATEGORIES.has(key)) {
+            toast.error(`"${categoryName}" is a core tab and cannot be removed.`);
+            return;
+        }
+
+        const fileCount = getCategoryCount(categoryName);
+        if (fileCount > 0) {
+            toast.error(`Delete or move the ${fileCount} file(s) in "${categoryName}" first.`);
+            return;
+        }
+
+        if (pendingDeleteCategory !== key) {
+            setPendingDeleteCategory(key);
+            toast(`Click × again within 3s to remove "${categoryName}" tab`, {
+                icon: "⚠️",
+            });
+
+            if (pendingCategoryTimerRef.current) {
+                clearTimeout(pendingCategoryTimerRef.current);
+            }
+            pendingCategoryTimerRef.current = setTimeout(() => {
+                setPendingDeleteCategory((prev) => (prev === key ? null : prev));
+            }, 3000);
+            return;
+        }
+
+        if (pendingCategoryTimerRef.current) {
+            clearTimeout(pendingCategoryTimerRef.current);
+            pendingCategoryTimerRef.current = null;
+        }
+        setPendingDeleteCategory(null);
+
+        setCustomTabs((prev) => prev.filter((item) => toCategoryKey(item) !== key));
+        setDismissedCategories((prev) => (prev.includes(key) ? prev : [...prev, key]));
+
+        if (toCategoryKey(activeCategory) === key) {
+            const fallbackTab =
+                categoryTabs.find((tab) => toCategoryKey(tab) !== key) || "Document";
+            setActiveCategory(fallbackTab);
+        }
+
+        toast.success(`"${categoryName}" tab removed`);
+    };
 
     // Filter Files by Active Category Tab + Search Query
     const files = useMemo(() => {
@@ -333,11 +500,12 @@ export default function EmployeeFilePage() {
                 toast.success(`Uploaded to "${finalCategory}"!`);
             }
 
+            const finalKey = toCategoryKey(finalCategory);
+            setDismissedCategories((prev) => prev.filter((item) => item !== finalKey));
+
             if (formData.isCustomCategory) {
                 setCustomTabs((prev) => {
-                    const exists = prev.some(
-                        (item) => toCategoryKey(item) === toCategoryKey(finalCategory)
-                    );
+                    const exists = prev.some((item) => toCategoryKey(item) === finalKey);
                     return exists ? prev : [...prev, finalCategory];
                 });
             }
@@ -485,47 +653,98 @@ export default function EmployeeFilePage() {
                     </div>
                 </div>
 
-                {/* Dynamic Category Tabs */}
-                <div className="border-b border-slate-200">
-                    <nav className="flex gap-7 overflow-x-auto hide-scrollbar">
+                {/* Dynamic Category Tabs with Hover BG, Remove Button & Left/Right Slide Arrows */}
+                <div className="border-b border-slate-200 flex items-center gap-1.5">
+                    {canSlideLeft && (
+                        <button
+                            type="button"
+                            onClick={() => handleSlideTabs("left")}
+                            aria-label="Slide categories left"
+                            className="cursor-pointer shrink-0 mb-1.5 w-7 h-7 rounded-full bg-white hover:bg-[#5D4037]/10 border border-slate-200 text-slate-600 hover:text-[#5D4037] flex items-center justify-center shadow-2xs transition-colors"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
+                    )}
+
+                    <nav
+                        ref={tabNavRef}
+                        onScroll={updateTabSlideButtons}
+                        className="flex-1 flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth"
+                    >
                         {categoryTabs.map((categoryName) => {
-                            const isActive =
-                                toCategoryKey(activeCategory) === toCategoryKey(categoryName);
+                            const key = toCategoryKey(categoryName);
+                            const isActive = key === toCategoryKey(activeCategory);
                             const count = getCategoryCount(categoryName);
                             const TabIcon = getTabIcon(categoryName);
+                            const canRemoveTab = !PROTECTED_CATEGORIES.has(key) && count === 0;
+                            const isConfirmingCategory = pendingDeleteCategory === key;
 
                             return (
-                                <button
-                                    key={toCategoryKey(categoryName)}
-                                    type="button"
-                                    onClick={() => setActiveCategory(categoryName)}
-                                    className={`cursor-pointer pb-3 text-sm font-medium transition-all whitespace-nowrap relative flex items-center gap-2 ${isActive
-                                            ? "text-[#5D4037] font-semibold"
-                                            : "text-slate-500 hover:text-slate-800"
+                                <div
+                                    key={key}
+                                    className={`group/tab relative shrink-0 pb-3 px-3 pt-1.5 rounded-t-md flex items-center gap-1.5 transition-colors ${isActive
+                                            ? "text-[#5D4037] font-semibold bg-[#5D4037]/5"
+                                            : "text-slate-500 hover:text-slate-800 hover:bg-[#5D4037]/[0.06]"
                                         }`}
                                 >
-                                    <TabIcon className="w-3.5 h-3.5 opacity-80" />
-                                    <span>{categoryName}</span>
-                                    {count > 0 && (
-                                        <span
-                                            className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${isActive
-                                                    ? "bg-[#5D4037] text-white"
-                                                    : "bg-slate-200 text-slate-600"
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveCategory(categoryName)}
+                                        className="cursor-pointer text-sm font-medium whitespace-nowrap flex items-center gap-2"
+                                    >
+                                        <TabIcon className="w-3.5 h-3.5 opacity-80" />
+                                        <span>{categoryName}</span>
+                                        {count > 0 && (
+                                            <span
+                                                className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${isActive
+                                                        ? "bg-[#5D4037] text-white"
+                                                        : "bg-slate-200 text-slate-600"
+                                                    }`}
+                                            >
+                                                {count}
+                                            </span>
+                                        )}
+                                    </button>
+
+                                    {canRemoveTab && (
+                                        <button
+                                            type="button"
+                                            onClick={(e) => handleRemoveCategoryTab(categoryName, e)}
+                                            title={
+                                                isConfirmingCategory
+                                                    ? "Click again to remove tab"
+                                                    : `Remove ${categoryName} tab`
+                                            }
+                                            className={`cursor-pointer p-0.5 rounded transition-all ${isConfirmingCategory
+                                                    ? "opacity-100 bg-rose-600 text-white"
+                                                    : "opacity-0 group-hover/tab:opacity-100 text-slate-400 hover:text-rose-600 hover:bg-rose-50"
                                                 }`}
                                         >
-                                            {count}
-                                        </span>
+                                            <X className="w-3 h-3" />
+                                        </button>
                                     )}
+
                                     {isActive && (
                                         <motion.div
                                             layoutId="activeTab"
                                             className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#5D4037]"
                                         />
                                     )}
-                                </button>
+                                </div>
                             );
                         })}
                     </nav>
+
+                    {canSlideRight && (
+                        <button
+                            type="button"
+                            onClick={() => handleSlideTabs("right")}
+                            aria-label="Slide categories right"
+                            className="cursor-pointer shrink-0 mb-1.5 w-7 h-7 rounded-full bg-white hover:bg-[#5D4037]/10 border border-slate-200 text-slate-600 hover:text-[#5D4037] flex items-center justify-center shadow-2xs transition-colors"
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
+                    )}
                 </div>
 
                 {/* Toolbar */}
