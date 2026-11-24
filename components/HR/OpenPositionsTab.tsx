@@ -139,7 +139,7 @@ export default function OpenPositionsTab({
     setTitle(pos.title || "");
     setDepartment(pos.department || "");
     setStage(pos.stage || "interviewing");
-    setTargetStartDate(formatDateInputValue(pos.targetStartDate));
+    setTargetStartDate(formatDateInputValue(pos.targetStartDate ?? undefined));
     setShowPositionModal(true);
   };
 
@@ -323,20 +323,19 @@ export default function OpenPositionsTab({
                     pos.stage === "interviewing"
                       ? "Interviewing"
                       : pos.stage === "offer"
-                      ? "Offer"
-                      : pos.stage === "closed"
-                      ? "Closed"
-                      : "Open";
+                        ? "Offer"
+                        : pos.stage === "closed"
+                          ? "Closed"
+                          : "Open";
 
                   return (
                     <tr
                       key={pos._id}
                       onClick={() => onSelectPositionId(pos._id)}
-                      className={`cursor-pointer transition-colors ${
-                        isSelected
+                      className={`cursor-pointer transition-colors ${isSelected
                           ? "bg-[#FAF5EB]/60"
                           : "hover:bg-[#FCFBF8]"
-                      }`}
+                        }`}
                     >
                       <td className="py-3.5 px-5 font-bold text-[#1E1E1E]">
                         {pos.title}
@@ -494,13 +493,12 @@ export default function OpenPositionsTab({
                               isNotSelected || updatingId === cand._id
                             }
                             onClick={() => handleSelectCandidate(cand)}
-                            className={`px-3 py-1 rounded-md border text-xs font-medium transition-colors ${
-                              isNotSelected
+                            className={`px-3 py-1 rounded-md border text-xs font-medium transition-colors ${isNotSelected
                                 ? "border-[#EFECE6] text-[#C5BFB2] bg-[#FAF9F7] cursor-not-allowed"
                                 : isSelected
-                                ? "cursor-pointer border-emerald-600 bg-emerald-600 text-white"
-                                : "cursor-pointer border-[#E5DFD3] bg-white hover:bg-[#FAF5EB] text-[#1E1E1E]"
-                            }`}
+                                  ? "cursor-pointer border-emerald-600 bg-emerald-600 text-white"
+                                  : "cursor-pointer border-[#E5DFD3] bg-white hover:bg-[#FAF5EB] text-[#1E1E1E]"
+                              }`}
                           >
                             {updatingId === cand._id ? (
                               <Loader2 className="w-3.5 h-3.5 animate-spin inline" />
