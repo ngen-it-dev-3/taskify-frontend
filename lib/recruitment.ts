@@ -191,6 +191,26 @@ export async function createPosition(payload: {
     return res.data?.data;
 }
 
+export async function updatePosition(
+    id: string,
+    payload: Partial<{
+        title: string;
+        department: string;
+        region: string;
+        vacancies: number;
+        stage: PositionStage;
+        targetStartDate?: string | null;
+        description?: string;
+    }>
+): Promise<JobPositionItem> {
+    const res = await api.patch(`/recruitment/positions/${id}`, payload);
+    return res.data?.data;
+}
+
+export async function deletePosition(id: string): Promise<void> {
+    await api.delete(`/recruitment/positions/${id}`);
+}
+
 export async function fetchCandidates(params?: {
     positionId?: string;
     stage?: string;

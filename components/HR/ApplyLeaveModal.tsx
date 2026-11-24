@@ -170,7 +170,7 @@ export default function ApplyLeaveModal({
                 <select
                   value={form.type}
                   onChange={(e) => handleTypeChange(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
+                  className="w-full px-3 py-2.5 text-black bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 transition-all"
                   required
                 >
                   <option value="" disabled hidden>Select leave type...</option>
@@ -245,7 +245,7 @@ export default function ApplyLeaveModal({
                   type="date"
                   value={form.startDate}
                   onChange={(e) => handleStartDateChange(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none"
+                  className="w-full px-3 py-2.5 text-black bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none"
                   required
                 />
               </div>
@@ -260,7 +260,7 @@ export default function ApplyLeaveModal({
                     value={form.endDate}
                     min={form.startDate}
                     onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none"
+                    className="w-full px-3 py-2.5 text-black bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none"
                     required
                   />
                 </div>
@@ -305,7 +305,7 @@ export default function ApplyLeaveModal({
               ))}
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Holiday Note</label>
-                <input type="text" value={form.holidayNote} onChange={(e) => setForm({ ...form, holidayNote: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 outline-none" placeholder="Specify details..." />
+                <input type="text" value={form.holidayNote} onChange={(e) => setForm({ ...form, holidayNote: e.target.value })} className="w-full px-3 py-2 text-black bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 outline-none" placeholder="Specify details..." />
               </div>
             </div>
           </div>
@@ -315,7 +315,7 @@ export default function ApplyLeaveModal({
             <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
               <UserPlus size={14} className="text-blue-500" /> Substitute / Backup
             </h3>
-            <select value={form.substituteId} onChange={(e) => setForm({ ...form, substituteId: e.target.value })} className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 outline-none">
+            <select value={form.substituteId} onChange={(e) => setForm({ ...form, substituteId: e.target.value })} className="w-full px-3 py-2.5 text-black bg-white border border-gray-200 rounded-lg text-sm focus:border-emerald-500 outline-none">
               <option value="">Select a substitute (Optional)</option>
               {substitutes.map((s) => (
                 <option key={s._id} value={s._id}>
@@ -333,17 +333,17 @@ export default function ApplyLeaveModal({
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1.5">Reason <span className="text-rose-500">*</span></label>
-                <textarea value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} rows={3} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm resize-none focus:border-emerald-500 outline-none" placeholder="Why are you taking leave?" required />
+                <textarea value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} rows={3} className="w-full px-3 py-2 text-black bg-white border border-gray-200 rounded-lg text-sm resize-none focus:border-emerald-500 outline-none" placeholder="Why are you taking leave?" required />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1.5">Emergency Contact Name</label>
-                  <input type="text" value={form.emergencyContact.name} onChange={(e) => setForm({ ...form, emergencyContact: { ...form.emergencyContact, name: e.target.value } })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm outline-none" />
+                  <input type="text" value={form.emergencyContact.name} onChange={(e) => setForm({ ...form, emergencyContact: { ...form.emergencyContact, name: e.target.value } })} className="w-full px-3 py-2  text-black bg-white border border-gray-200 rounded-lg text-sm outline-none" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1.5">Emergency Phone</label>
-                  <input type="text" value={form.emergencyContact.phone} onChange={(e) => setForm({ ...form, emergencyContact: { ...form.emergencyContact, phone: e.target.value } })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm outline-none" />
+                  <input type="text" value={form.emergencyContact.phone} onChange={(e) => setForm({ ...form, emergencyContact: { ...form.emergencyContact, phone: e.target.value } })} className="w-full px-3 py-2  text-black bg-white border border-gray-200 rounded-lg text-sm outline-none" />
                 </div>
               </div>
             </div>
@@ -354,7 +354,7 @@ export default function ApplyLeaveModal({
             <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
               <FileSignature size={14} className="text-emerald-600" /> Digital Signature
             </h3>
-            <input type="text" value={form.signatureText} onChange={(e) => setForm({ ...form, signatureText: e.target.value })} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm outline-none" placeholder="Type your full name to sign" />
+            <input type="text" value={form.signatureText} onChange={(e) => setForm({ ...form, signatureText: e.target.value })} className="w-full px-3 py-2 text-black bg-white border border-gray-200 rounded-lg text-sm outline-none" placeholder="Type your full name to sign" />
           </div>
 
           {/* Actions */}

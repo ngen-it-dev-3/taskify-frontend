@@ -1436,7 +1436,7 @@ export default function EmployeeFilePage() {
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 px-5 py-2 bg-[#5D4037] hover:bg-[#4E342E] text-white rounded-md text-sm font-semibold shadow-sm transition-all active:scale-[0.98]"
                                     >
-                                        <Download className="w-4 h-4" /> Download
+                                        <Download className="w-4 h-4" /> View & Save
                                     </a>
                                 </div>
                             </div>

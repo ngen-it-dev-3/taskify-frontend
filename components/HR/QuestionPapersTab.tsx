@@ -206,27 +206,27 @@ export default function QuestionPapersTab({
 
             <form onSubmit={handleCreatePaper} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold mb-1">Paper Title *</label>
+                <label className="block font-semibold text-black mb-1">Paper Title *</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Accounting Fundamentals — Screening"
-                  className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                  className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">Position</label>
+                  <label className="block font-semibold text-black mb-1">Position</label>
                   <input
                     type="text"
                     list="recruitment-position-suggestions"
                     value={positionLabel}
                     onChange={(e) => setPositionLabel(e.target.value)}
                     placeholder="Junior Accountant"
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                   <datalist id="recruitment-position-suggestions">
                     <option value="All Positions" />
@@ -237,18 +237,18 @@ export default function QuestionPapersTab({
                 </div>
 
                 <div>
-                  <label className="block font-semibold mb-1">Type</label>
+                  <label className="block font-semibold text-black mb-1">Type</label>
                   <input
                     type="text"
                     value={paperType}
                     onChange={(e) => setPaperType(e.target.value)}
                     placeholder="Aptitude"
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold mb-1">
+                  <label className="block font-semibold text-black mb-1">
                     Total Questions
                   </label>
                   <input
@@ -256,7 +256,7 @@ export default function QuestionPapersTab({
                     min={0}
                     value={questionsCountOverride}
                     onChange={(e) => setQuestionsCountOverride(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
               </div>
@@ -301,7 +301,7 @@ export default function QuestionPapersTab({
                         handleQaChange(idx, "question", e.target.value)
                       }
                       placeholder="What is the accounting equation?"
-                      className="w-full px-3 py-1.5 rounded-lg border border-[#E5DFD3] bg-white"
+                      className="w-full px-3 text-black py-1.5 rounded-lg border border-[#E5DFD3] bg-white"
                     />
                     <input
                       type="text"
@@ -310,7 +310,7 @@ export default function QuestionPapersTab({
                         handleQaChange(idx, "answer", e.target.value)
                       }
                       placeholder="Assets = Liabilities + Equity"
-                      className="w-full px-3 py-1.5 rounded-lg border border-[#E5DFD3] bg-white"
+                      className="w-full px-3 py-1.5 text-black rounded-lg border border-[#E5DFD3] bg-white"
                     />
                   </div>
                 ))}

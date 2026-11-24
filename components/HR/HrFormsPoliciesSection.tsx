@@ -5,7 +5,6 @@ import {
   ClipboardList,
   Plus,
   Download,
-  Upload,
   Loader2,
   Trash2,
   Search,
@@ -22,6 +21,7 @@ import {
   Calendar,
   Filter,
   ShieldCheck,
+  Pencil,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -30,10 +30,9 @@ import {
   HrDocumentItem,
   fetchHrDocuments,
   deleteHrDocumentTemplate,
-  downloadHrDocumentTemplate,
   formatUpdatedMonthYear,
 } from "@/lib/hrDocuments";
-import { UploadFilledCopyModal, UploadTemplateModal } from "./HrDocumentModals";
+import { UploadTemplateModal } from "./HrDocumentModals";
 
 interface ExtendedHrDocumentItem extends HrDocumentItem {
   fileUrl?: string;
@@ -44,7 +43,8 @@ const DEFAULT_FALLBACK_TEMPLATES: ExtendedHrDocumentItem[] = [
   {
     _id: "sample-form-1",
     title: "Leave Application Form",
-    description: "Standard employee annual, casual, and sick leave request template",
+    description:
+      "Standard employee annual, casual, and sick leave request template",
     category: "form",
     fileName: "Leave_Application_Form.xlsx",
     fileExt: ".xlsx",
@@ -180,12 +180,32 @@ function getFileStyle(ext: string) {
   };
 }
 
+const getAbsoluteFileUrl = (fileUrl?: string, fallbackId?: string) => {
+  const baseApi =
+    process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1";
+
+  if (!fileUrl) {
+    const cleanApi = baseApi.replace(/\/+$/, "");
+    return fallbackId ? `${cleanApi}/hr-documents/${fallbackId}/preview` : null;
+  }
+
+  if (fileUrl.startsWith("http")) return fileUrl;
+
+  const origin = baseApi.replace(/\/api\/v1\/?$/, "");
+
+  if (fileUrl.startsWith("/uploads")) {
+    return `${origin}${fileUrl}`;
+  }
+
+  return `${origin}${fileUrl.startsWith("/") ? "" : "/"}${fileUrl}`;
+};
+
 export default function HrFormsPoliciesSection() {
   const { user, isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<HrDocumentCategory>("form");
   const [allCounts, setAllCounts] = useState<{ form: number; policy: number }>({
-    form: 4,
-    policy: 2,
+    form: 0,
+    policy: 0,
   });
   const [documents, setDocuments] = useState<ExtendedHrDocumentItem[]>([]);
   const [usingFallback, setUsingFallback] = useState(false);
@@ -203,8 +223,9 @@ export default function HrFormsPoliciesSection() {
     useState<ExtendedHrDocumentItem | null>(null);
 
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [selectedDocForFilledCopy, setSelectedDocForFilledCopy] =
-    useState<ExtendedHrDocumentItem | null>(null);
+  const [editingDoc, setEditingDoc] = useState<ExtendedHrDocumentItem | null>(
+    null
+  );
   const [previewDoc, setPreviewDoc] = useState<ExtendedHrDocumentItem | null>(
     null
   );
@@ -289,25 +310,77 @@ export default function HrFormsPoliciesSection() {
 
     try {
       setDownloadingId(doc._id);
-      await downloadHrDocumentTemplate(doc._id, doc.fileName);
+
+      const fileUrl = getAbsoluteFileUrl(doc.fileUrl, doc._id);
+      if (!fileUrl) throw new Error("File URL not found");
+
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error("Network response was not ok");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = doc.fileName || `document-${doc._id}`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
       toast.success(`Downloading ${doc.fileName}...`);
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message || "Failed to download template."
-      );
+      console.error("Download Error:", error);
+      toast.error("Failed to download. Please try again.");
     } finally {
       setDownloadingId(null);
     }
   };
 
-  const handleOpenFilledCopy = (doc: ExtendedHrDocumentItem) => {
+  const handlePrint = async (doc: ExtendedHrDocumentItem) => {
+    if (usingFallback || doc._id.startsWith("sample-")) {
+      toast.error("Cannot print sample templates.");
+      return;
+    }
+
+    try {
+      toast.loading("Preparing document for print...", { id: "print-loader" });
+
+      const fileUrl = getAbsoluteFileUrl(doc.fileUrl, doc._id);
+      if (!fileUrl) throw new Error("File URL not found");
+
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const printWindow = window.open(url, "_blank");
+      if (!printWindow) {
+        toast.error("Pop-up blocked. Please allow pop-ups to print.", {
+          id: "print-loader",
+        });
+        return;
+      }
+
+      printWindow.onload = () => {
+        toast.dismiss("print-loader");
+        printWindow.print();
+      };
+    } catch (error) {
+      console.error("Print Error:", error);
+      toast.error("Failed to prepare print document.", { id: "print-loader" });
+    }
+  };
+
+  const handleOpenEditModal = (doc: ExtendedHrDocumentItem) => {
     if (usingFallback || doc._id.startsWith("sample-")) {
       toast.error(
-        "Please upload a live template first before submitting a filled copy."
+        "Sample templates cannot be edited. Upload a real template first."
       );
       return;
     }
-    setSelectedDocForFilledCopy(doc);
+    setEditingDoc(doc);
+    setShowUploadModal(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -358,6 +431,7 @@ export default function HrFormsPoliciesSection() {
                 );
                 return;
               }
+              setEditingDoc(null);
               setShowUploadModal(true);
             }}
             className="cursor-pointer inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#5C4033] hover:bg-[#4A3328] text-white text-xs font-semibold transition-all shadow-xs"
@@ -377,12 +451,12 @@ export default function HrFormsPoliciesSection() {
           <span>
             <strong>Sample Preview Mode:</strong> Showing sample HR templates.
             Upload real templates to enable live preview, PDF export, and
-            submissions.
+            downloads.
           </span>
         </div>
       )}
 
-      {/* 2. TABS BAR WITH RECORD COUNTS */}
+      {/* 2. TABS BAR */}
       <div className="border-b border-[#EAE4D7] flex items-center gap-7">
         <button
           type="button"
@@ -503,7 +577,7 @@ export default function HrFormsPoliciesSection() {
         </div>
       </div>
 
-      {/* 4. MAIN CONTENT LISTING (TABLE VIEW & CARD GRID VIEW) */}
+      {/* 4. MAIN CONTENT LISTING */}
       {loading ? (
         <div className="bg-white border border-[#EAE4D7] rounded-xl p-14 flex flex-col items-center justify-center text-center shadow-2xs">
           <Loader2 className="w-7 h-7 animate-spin text-[#5C4033] mb-2.5" />
@@ -635,7 +709,7 @@ export default function HrFormsPoliciesSection() {
                         className="py-4 px-5 text-right"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <div className="inline-flex items-center justify-end gap-2">
+                        <div className="inline-flex items-center justify-end gap-1.5">
                           <button
                             type="button"
                             onClick={() => setPreviewDoc(doc)}
@@ -651,41 +725,37 @@ export default function HrFormsPoliciesSection() {
                             onClick={() => handleDownload(doc)}
                             disabled={downloadingId === doc._id}
                             title="Download Template"
-                            className="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#FAF8F5] hover:bg-[#EFECE6] border border-[#E5DFD3] text-[#1E1E1E] font-medium transition-colors disabled:opacity-50"
+                            className="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#5C4033] hover:bg-[#4A3328] text-white font-medium transition-colors disabled:opacity-50"
                           >
                             {downloadingId === doc._id ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#5C4033]" />
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
                             ) : (
                               <Download className="w-3.5 h-3.5" />
                             )}
                             <span className="hidden sm:inline">Download</span>
                           </button>
 
-                          {activeTab === "form" && (
-                            <button
-                              type="button"
-                              onClick={() => handleOpenFilledCopy(doc)}
-                              title="Upload Filled Copy"
-                              className="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#5C4033] hover:bg-[#4A3328] text-white font-medium transition-colors"
-                            >
-                              <Upload className="w-3.5 h-3.5" />
-                              <span className="hidden lg:inline">
-                                Submit Copy
-                              </span>
-                            </button>
-                          )}
-
                           {canManageTemplates &&
                             !usingFallback &&
                             !doc._id.startsWith("sample-") && (
-                              <button
-                                type="button"
-                                onClick={() => setConfirmDeleteDoc(doc)}
-                                title="Delete Template"
-                                className="cursor-pointer p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenEditModal(doc)}
+                                  title="Edit Template"
+                                  className="cursor-pointer p-1.5 rounded-lg text-gray-500 hover:text-[#5C4033] hover:bg-[#FAF5EB] transition-colors"
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setConfirmDeleteDoc(doc)}
+                                  title="Delete Template"
+                                  className="cursor-pointer p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
                             )}
                         </div>
                       </td>
@@ -697,7 +767,7 @@ export default function HrFormsPoliciesSection() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {filteredDocuments.map((doc) => {
             const extLabel =
               doc.fileExt ||
@@ -751,14 +821,24 @@ export default function HrFormsPoliciesSection() {
                       {canManageTemplates &&
                         !usingFallback &&
                         !doc._id.startsWith("sample-") && (
-                          <button
-                            type="button"
-                            onClick={() => setConfirmDeleteDoc(doc)}
-                            title="Remove template"
-                            className="cursor-pointer p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditModal(doc)}
+                              title="Edit template"
+                              className="cursor-pointer p-1.5 rounded-lg text-gray-500 hover:text-[#5C4033] hover:bg-[#FAF5EB] transition-colors"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setConfirmDeleteDoc(doc)}
+                              title="Remove template"
+                              className="cursor-pointer p-1.5 rounded-lg text-gray-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
                         )}
                     </div>
                   </div>
@@ -777,47 +857,6 @@ export default function HrFormsPoliciesSection() {
                     {formatFileSize(doc.fileSize)} · Updated {updatedLabel}
                   </p>
                 </div>
-
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="mt-4 pt-3 border-t border-[#F3EFE6] flex items-center justify-between gap-2"
-                >
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setPreviewDoc(doc)}
-                      className="cursor-pointer inline-flex items-center gap-1 text-xs font-semibold text-[#5C4033] hover:underline"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>Preview</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDownload(doc)}
-                      disabled={downloadingId === doc._id}
-                      className="cursor-pointer inline-flex items-center gap-1 text-xs font-medium text-[#4A4640] hover:text-[#1E1E1E]"
-                    >
-                      {downloadingId === doc._id ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-[#5C4033]" />
-                      ) : (
-                        <Download className="w-3.5 h-3.5" />
-                      )}
-                      <span>Download</span>
-                    </button>
-                  </div>
-
-                  {activeTab === "form" && (
-                    <button
-                      type="button"
-                      onClick={() => handleOpenFilledCopy(doc)}
-                      className="cursor-pointer inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#FAF5EB] hover:bg-[#EFE5D1] text-xs font-semibold text-[#5C4033] transition-colors"
-                    >
-                      <Upload className="w-3 h-3" />
-                      <span>Upload Filled</span>
-                    </button>
-                  )}
-                </div>
               </div>
             );
           })}
@@ -830,24 +869,25 @@ export default function HrFormsPoliciesSection() {
           document={previewDoc}
           isFallback={usingFallback || previewDoc._id.startsWith("sample-")}
           isDownloading={downloadingId === previewDoc._id}
+          canEdit={
+            canManageTemplates &&
+            !usingFallback &&
+            !previewDoc._id.startsWith("sample-")
+          }
           canDelete={
             canManageTemplates &&
             !usingFallback &&
             !previewDoc._id.startsWith("sample-")
           }
           onClose={() => setPreviewDoc(null)}
+          onEdit={() => {
+            const target = previewDoc;
+            setPreviewDoc(null);
+            handleOpenEditModal(target);
+          }}
           onDownloadOriginal={() => handleDownload(previewDoc)}
-          onDownloadPdf={() => handleDownload(previewDoc)}
+          onPrint={() => handlePrint(previewDoc)}
           onDelete={() => setConfirmDeleteDoc(previewDoc)}
-          onSubmitFilled={
-            activeTab === "form"
-              ? () => {
-                const target = previewDoc;
-                setPreviewDoc(null);
-                handleOpenFilledCopy(target);
-              }
-              : undefined
-          }
         />
       )}
 
@@ -896,21 +936,17 @@ export default function HrFormsPoliciesSection() {
         </div>
       )}
 
-      {/* 7. UPLOAD TEMPLATE MODAL */}
+      {/* 7. UPLOAD / EDIT TEMPLATE MODAL */}
       <UploadTemplateModal
         isOpen={showUploadModal}
         defaultCategory={activeTab}
-        onClose={() => setShowUploadModal(false)}
-        onSuccess={() => {
-          loadDocuments();
+        editDocument={editingDoc}
+        onClose={() => {
+          setShowUploadModal(false);
+          setEditingDoc(null);
         }}
-      />
-
-      {/* 8. UPLOAD FILLED COPY MODAL */}
-      <UploadFilledCopyModal
-        document={selectedDocForFilledCopy}
-        onClose={() => setSelectedDocForFilledCopy(null)}
         onSuccess={() => {
+          setEditingDoc(null);
           loadDocuments();
         }}
       />
@@ -918,28 +954,33 @@ export default function HrFormsPoliciesSection() {
   );
 }
 
+/* ============================================================================
+   SPLIT-PANEL PREVIEW MODAL (Edit, Print & PDF Download)
+   ============================================================================ */
 interface DocumentPreviewModalProps {
   document: ExtendedHrDocumentItem;
   isFallback: boolean;
   isDownloading: boolean;
+  canEdit?: boolean;
   canDelete: boolean;
   onClose: () => void;
+  onEdit?: () => void;
   onDownloadOriginal: () => void;
-  onDownloadPdf: () => void;
+  onPrint: () => void;
   onDelete: () => void;
-  onSubmitFilled?: () => void;
 }
 
 function DocumentPreviewModal({
   document: doc,
   isFallback,
   isDownloading,
+  canEdit,
   canDelete,
   onClose,
+  onEdit,
   onDownloadOriginal,
-  onDownloadPdf,
+  onPrint,
   onDelete,
-  onSubmitFilled,
 }: DocumentPreviewModalProps) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
@@ -954,18 +995,7 @@ function DocumentPreviewModal({
 
   const resolvedPreviewUrl = useMemo(() => {
     if (isFallback) return null;
-    if (doc.previewUrl) return doc.previewUrl;
-    if (doc.fileUrl) {
-      if (doc.fileUrl.startsWith("http")) return doc.fileUrl;
-      const origin = (
-        process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1"
-      ).replace(/\/api\/v1\/?$/, "");
-      return `${origin}${doc.fileUrl.startsWith("/") ? "" : "/"}${doc.fileUrl}`;
-    }
-    const baseApi = (
-      process.env.NEXT_PUBLIC_API_URL || "https://taskify-server-5gat.onrender.com/api/v1"
-    ).replace(/\/+$/, "");
-    return `${baseApi}/hr-documents/${doc._id}/preview`;
+    return getAbsoluteFileUrl(doc.previewUrl || doc.fileUrl, doc._id);
   }, [doc, isFallback]);
 
   useEffect(() => {
@@ -976,81 +1006,15 @@ function DocumentPreviewModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  const handlePrint = () => {
-    if (isPdf && iframeRef.current?.contentWindow && resolvedPreviewUrl) {
-      try {
-        iframeRef.current.contentWindow.focus();
-        iframeRef.current.contentWindow.print();
-        return;
-      } catch {
-        const win = window.open(resolvedPreviewUrl, "_blank");
-        if (win) {
-          win.onload = () => win.print();
-          return;
-        }
-      }
-    }
-
-    const printWindow = window.open("", "_blank", "width=900,height=700");
-    if (!printWindow) {
-      toast.error("Pop-up blocked. Please allow pop-ups to print.");
-      return;
-    }
-
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>${doc.title} - Print</title>
-          <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #1E1E1E; }
-            .header { border-bottom: 2px solid #5C4033; padding-bottom: 16px; margin-bottom: 24px; }
-            .badge { display: inline-block; background: #FAF5EB; color: #5C4033; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-            h1 { margin: 10px 0 6px; font-size: 22px; }
-            .meta { color: #6E6A63; font-size: 13px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-            td { padding: 11px 12px; border: 1px solid #EAE4D7; }
-            td.label { font-weight: 600; width: 190px; background: #FAF8F5; color: #5A554E; }
-            .footer { margin-top: 40px; font-size: 11px; color: #8A8478; border-top: 1px solid #EAE4D7; padding-top: 12px; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <span class="badge">HR ${doc.category} Template</span>
-            <h1>${doc.title}</h1>
-            <div class="meta">${doc.description || "Official Human Resources Document"}</div>
-          </div>
-          <table>
-            <tr><td class="label">File Name</td><td>${doc.fileName}</td></tr>
-            <tr><td class="label">Document Category</td><td style="text-transform:capitalize;">${doc.category}</td></tr>
-            <tr><td class="label">Version</td><td>v${doc.version || "1.0"}</td></tr>
-            <tr><td class="label">File Size</td><td>${formatFileSize(doc.fileSize)}</td></tr>
-            <tr><td class="label">Last Updated</td><td>${formatUpdatedMonthYear(doc.updatedAt || doc.createdAt)}</td></tr>
-            <tr><td class="label">Verification Status</td><td>Active &amp; Approved</td></tr>
-          </table>
-          ${isImage && resolvedPreviewUrl
-        ? `<div style="margin-top:24px;text-align:center;"><img src="${resolvedPreviewUrl}" style="max-width:100%;max-height:600px;" /></div>`
-        : ""
-      }
-          <div class="footer">Printed from HR Management System • ${new Date().toLocaleDateString()}</div>
-          <script>
-            window.onload = function() { window.print(); window.close(); };
-          </script>
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
-  };
-
   const handleSaveAsPdf = () => {
     if (isPdf) {
       onDownloadOriginal();
       return;
     }
-    toast("Print dialog khulche — destination-e 'Save as PDF' select koro.", {
+    toast("Print dialog opening — select 'Save as PDF' as destination.", {
       icon: "📄",
     });
-    handlePrint();
+    onPrint();
   };
 
   return (
@@ -1138,7 +1102,7 @@ function DocumentPreviewModal({
                 <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5">
                   <button
                     type="button"
-                    onClick={handlePrint}
+                    onClick={onPrint}
                     className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#EAE4D7] bg-[#FAF8F5] hover:bg-[#F2ECE1] text-xs font-semibold text-[#1E1E1E] transition-colors"
                   >
                     <Printer className="w-3.5 h-3.5 text-[#5C4033]" />
@@ -1260,9 +1224,20 @@ function DocumentPreviewModal({
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            {canEdit && onEdit && (
+              <button
+                type="button"
+                onClick={onEdit}
+                className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#E5DFD3] bg-white hover:bg-[#FAF5EB] hover:border-[#5C4033] text-xs font-semibold text-[#1E1E1E] transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5 text-[#5C4033]" />
+                <span>Edit</span>
+              </button>
+            )}
+
             <button
               type="button"
-              onClick={handlePrint}
+              onClick={onPrint}
               className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[#E5DFD3] bg-white hover:bg-[#FAF8F5] text-xs font-semibold text-[#1E1E1E] transition-colors"
             >
               <Printer className="w-3.5 h-3.5 text-[#5C4033]" />
@@ -1292,17 +1267,6 @@ function DocumentPreviewModal({
               )}
               <span>Download</span>
             </button>
-
-            {onSubmitFilled && (
-              <button
-                type="button"
-                onClick={onSubmitFilled}
-                className="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#9A6B26] hover:bg-[#82581E] text-white text-xs font-semibold transition-colors"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Upload Filled Copy</span>
-              </button>
-            )}
           </div>
         </div>
       </div>

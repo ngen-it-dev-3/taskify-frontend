@@ -259,7 +259,7 @@ export default function OnboardingTab({
 
             <form onSubmit={handleCreateHire} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold mb-1">
+                <label className="block font-semibold text-black mb-1">
                   New Hire Name *
                 </label>
                 <input
@@ -268,13 +268,13 @@ export default function OnboardingTab({
                   value={employeeName}
                   onChange={(e) => setEmployeeName(e.target.value)}
                   placeholder="e.g., Farhana Yasmin"
-                  className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                  className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">
+                  <label className="block font-semibold text-black mb-1">
                     Department *
                   </label>
                   <input
@@ -283,11 +283,11 @@ export default function OnboardingTab({
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
                     placeholder="Supply Chain"
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">
+                  <label className="block font-semibold text-black mb-1">
                     Start Date *
                   </label>
                   <input
@@ -295,14 +295,14 @@ export default function OnboardingTab({
                     required
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">
+                  <label className="block font-semibold text-black mb-1">
                     Steps Done
                   </label>
                   <input
@@ -310,11 +310,11 @@ export default function OnboardingTab({
                     min={0}
                     value={completedSteps}
                     onChange={(e) => setCompletedSteps(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">
+                  <label className="block font-semibold text-black mb-1">
                     Total Steps
                   </label>
                   <input
@@ -322,17 +322,17 @@ export default function OnboardingTab({
                     min={1}
                     value={totalSteps}
                     onChange={(e) => setTotalSteps(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">NDA</label>
+                  <label className="block font-semibold text-black mb-1">NDA</label>
                   <select
                     value={ndaStatus}
                     onChange={(e) =>
                       setNdaStatus(e.target.value as "Signed" | "Pending")
                     }
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3] bg-white"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3] bg-white"
                   >
                     <option value="Signed">Signed</option>
                     <option value="Pending">Pending</option>
@@ -341,7 +341,7 @@ export default function OnboardingTab({
               </div>
 
               <div>
-                <label className="block font-semibold mb-1">Status</label>
+                <label className="block font-semibold text-black mb-1">Status</label>
                 <select
                   value={status}
                   onChange={(e) =>
@@ -352,7 +352,7 @@ export default function OnboardingTab({
                         | "On Hold"
                     )
                   }
-                  className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3] bg-white"
+                  className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3] bg-white"
                 >
                   <option value="In Progress">In Progress</option>
                   <option value="Completed">Completed</option>

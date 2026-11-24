@@ -217,24 +217,24 @@ export default function OnlineTestsTab({
 
             <form onSubmit={handleCreateTest} className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold mb-1">Test Title *</label>
+                <label className="block font-semibold text-black mb-1">Test Title *</label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Accounting Fundamentals — Screening"
-                  className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                  className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">Position</label>
+                  <label className="block font-semibold text-black mb-1">Position</label>
                   <select
                     value={positionId}
                     onChange={(e) => setPositionId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3] bg-white"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3] bg-white"
                   >
                     <option value="">General</option>
                     {positions
@@ -248,13 +248,13 @@ export default function OnlineTestsTab({
                 </div>
 
                 <div>
-                  <label className="block font-semibold mb-1">
+                  <label className="block font-semibold text-black mb-1">
                     Question Paper
                   </label>
                   <select
                     value={questionPaperId}
                     onChange={(e) => setQuestionPaperId(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3] bg-white"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3] bg-white"
                   >
                     <option value="">Select paper</option>
                     {papers
@@ -270,27 +270,27 @@ export default function OnlineTestsTab({
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-semibold mb-1">Taken</label>
+                  <label className="block font-semibold text-black mb-1">Taken</label>
                   <input
                     type="number"
                     min={0}
                     value={candidatesTaken}
                     onChange={(e) => setCandidatesTaken(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">Total</label>
+                  <label className="block font-semibold text-black mb-1">Total</label>
                   <input
                     type="number"
                     min={0}
                     value={candidatesTotal}
                     onChange={(e) => setCandidatesTotal(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3]"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3]"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold mb-1">Status</label>
+                  <label className="block font-semibold text-black mb-1">Status</label>
                   <select
                     value={status}
                     onChange={(e) =>
@@ -298,7 +298,7 @@ export default function OnlineTestsTab({
                         e.target.value as "Active" | "Completed" | "Draft"
                       )
                     }
-                    className="w-full px-3.5 py-2 rounded-lg border border-[#E5DFD3] bg-white"
+                    className="w-full px-3.5 py-2 text-black rounded-lg border border-[#E5DFD3] bg-white"
                   >
                     <option value="Active">Active</option>
                     <option value="Completed">Completed</option>

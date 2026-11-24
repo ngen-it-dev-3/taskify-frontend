@@ -21,9 +21,11 @@ import {
     ListFilter,
     Sparkles,
     Link2,
+    Pencil,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import api from "@/lib/axios";
 import {
     noticesMeetingsApi,
     NoticeRecord,
@@ -61,7 +63,10 @@ const getBadgeStyle = (badge: NoticeBadgeType) => {
     return "bg-amber-50 text-amber-800 border-amber-200";
 };
 
-const getCardBorderAccent = (source: NoticeSourceType, badge: NoticeBadgeType) => {
+const getCardBorderAccent = (
+    source: NoticeSourceType,
+    badge: NoticeBadgeType
+) => {
     if (badge === "Warning") return "border-l-4 border-l-rose-600";
     if (source === "Management") return "border-l-4 border-l-amber-600";
     if (source === "Supervisor") return "border-l-4 border-l-slate-700";
@@ -103,6 +108,13 @@ const formatNoticeDate = (iso?: string) => {
     });
 };
 
+const formatDateInputValue = (iso?: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toISOString().split("T")[0];
+};
+
 const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
@@ -118,16 +130,23 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 export default function NoticesMeetingsPage() {
     const { user } = useAuth();
 
-    const [activeSection, setActiveSection] = useState<"notices" | "meetings">("notices");
+    const [activeSection, setActiveSection] = useState<"notices" | "meetings">(
+        "notices"
+    );
 
     // --- Notices State ---
     const [noticeFilter, setNoticeFilter] = useState<NoticeFilterType>("all");
     const [notices, setNotices] = useState<NoticeRecord[]>([]);
     const [loadingNotices, setLoadingNotices] = useState(false);
-    const [selectedNotice, setSelectedNotice] = useState<NoticeRecord | null>(null);
-    const [isPostNoticeOpen, setIsPostNoticeOpen] = useState(false);
-    const [postingNotice, setPostingNotice] = useState(false);
-    const [pendingDeleteNoticeId, setPendingDeleteNoticeId] = useState<string | null>(null);
+    const [selectedNotice, setSelectedNotice] = useState<NoticeRecord | null>(
+        null
+    );
+    const [isNoticeModalOpen, setIsNoticeModalOpen] = useState(false);
+    const [editingNotice, setEditingNotice] = useState<NoticeRecord | null>(null);
+    const [savingNotice, setSavingNotice] = useState(false);
+    const [deletingNotice, setDeletingNotice] = useState<NoticeRecord | null>(
+        null
+    );
     const [busyNoticeId, setBusyNoticeId] = useState<string | null>(null);
 
     const [noticeForm, setNoticeForm] = useState({
@@ -151,12 +170,19 @@ export default function NoticesMeetingsPage() {
     });
     const [loadingMeetings, setLoadingMeetings] = useState(false);
     const [calendarMode, setCalendarMode] = useState<"week" | "month">("week");
-    const [listRangeFilter, setListRangeFilter] = useState<MeetingRangeFilter>("all");
+    const [listRangeFilter, setListRangeFilter] =
+        useState<MeetingRangeFilter>("all");
     const [copiedMeetingId, setCopiedMeetingId] = useState<string | null>(null);
     const [busyMeetingId, setBusyMeetingId] = useState<string | null>(null);
 
     const [isMeetingModalOpen, setIsMeetingModalOpen] = useState(false);
     const [isDirectScheduleMode, setIsDirectScheduleMode] = useState(false);
+    const [editingMeeting, setEditingMeeting] = useState<MeetingRecord | null>(
+        null
+    );
+    const [deletingMeeting, setDeletingMeeting] = useState<MeetingRecord | null>(
+        null
+    );
     const [submittingMeeting, setSubmittingMeeting] = useState(false);
 
     const [meetingForm, setMeetingForm] = useState({
@@ -168,6 +194,7 @@ export default function NoticesMeetingsPage() {
         preferredDateText: "",
         venue: "",
         meetingLink: "",
+        status: "Confirmed" as MeetingStatus,
         notes: "",
     });
 
@@ -198,7 +225,9 @@ export default function NoticesMeetingsPage() {
     const fetchNotices = useCallback(async () => {
         try {
             setLoadingNotices(true);
-            const data = await noticesMeetingsApi.getNotices({ filter: noticeFilter });
+            const data = await noticesMeetingsApi.getNotices({
+                filter: noticeFilter,
+            });
             setNotices(data);
         } catch (error: unknown) {
             toast.error(getErrorMessage(error, "Failed to load notices"));
@@ -231,27 +260,71 @@ export default function NoticesMeetingsPage() {
     }, [activeSection, fetchNotices, fetchMeetings]);
 
     // --- Notice Handlers ---
-    const handleCreateNotice = async (e: React.FormEvent) => {
+    const openCreateNoticeModal = () => {
+        setEditingNotice(null);
+        setNoticeForm({
+            title: "",
+            sourceType: "HR",
+            badgeType: "Notice",
+            audience: "All Staff",
+            department: "All",
+            postedByLabel: "",
+            expiresAt: "",
+            description: "",
+        });
+        setIsNoticeModalOpen(true);
+    };
+
+    const openEditNoticeModal = (notice: NoticeRecord, e?: React.MouseEvent) => {
+        if (e) e.stopPropagation();
+        setSelectedNotice(null);
+        setEditingNotice(notice);
+        setNoticeForm({
+            title: notice.title || "",
+            sourceType: notice.sourceType || "HR",
+            badgeType: notice.badgeType || "Notice",
+            audience: notice.audience || "All Staff",
+            department: notice.department || "All",
+            postedByLabel: notice.postedByLabel || "",
+            expiresAt: formatDateInputValue(notice.expiresAt),
+            description: notice.description || "",
+        });
+        setIsNoticeModalOpen(true);
+    };
+
+    const handleSaveNotice = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!noticeForm.title.trim() || !noticeForm.description.trim()) {
             toast.error("Title and description are required");
             return;
         }
 
+        const payload = {
+            title: noticeForm.title.trim(),
+            description: noticeForm.description.trim(),
+            sourceType: noticeForm.sourceType,
+            badgeType: noticeForm.badgeType,
+            audience: noticeForm.audience.trim() || "All Staff",
+            department: noticeForm.department.trim() || "All",
+            postedByLabel: noticeForm.postedByLabel.trim() || undefined,
+            expiresAt: noticeForm.expiresAt || null,
+        };
+
         try {
-            setPostingNotice(true);
-            await noticesMeetingsApi.createNotice({
-                title: noticeForm.title.trim(),
-                description: noticeForm.description.trim(),
-                sourceType: noticeForm.sourceType,
-                badgeType: noticeForm.badgeType,
-                audience: noticeForm.audience.trim() || "All Staff",
-                department: noticeForm.department.trim() || "All",
-                postedByLabel: noticeForm.postedByLabel.trim() || undefined,
-                expiresAt: noticeForm.expiresAt || null,
-            });
-            toast.success("Notice published");
-            setIsPostNoticeOpen(false);
+            setSavingNotice(true);
+            if (editingNotice) {
+                await api.patch(
+                    `/notices-meetings/notices/${editingNotice._id}`,
+                    payload
+                );
+                toast.success("Notice updated");
+            } else {
+                await noticesMeetingsApi.createNotice(payload);
+                toast.success("Notice published");
+            }
+
+            setIsNoticeModalOpen(false);
+            setEditingNotice(null);
             setNoticeForm({
                 title: "",
                 sourceType: "HR",
@@ -262,25 +335,37 @@ export default function NoticesMeetingsPage() {
                 expiresAt: "",
                 description: "",
             });
-            if (noticeFilter === "archive") {
+
+            if (!editingNotice && noticeFilter === "archive") {
                 setNoticeFilter("all");
             } else {
                 await fetchNotices();
             }
         } catch (error: unknown) {
-            toast.error(getErrorMessage(error, "Failed to post notice"));
+            toast.error(
+                getErrorMessage(
+                    error,
+                    editingNotice ? "Failed to update notice" : "Failed to post notice"
+                )
+            );
         } finally {
-            setPostingNotice(false);
+            setSavingNotice(false);
         }
     };
 
-    const handleToggleArchive = async (notice: NoticeRecord, e?: React.MouseEvent) => {
+    const handleToggleArchive = async (
+        notice: NoticeRecord,
+        e?: React.MouseEvent
+    ) => {
         if (e) e.stopPropagation();
         if (busyNoticeId === notice._id) return;
 
         try {
             setBusyNoticeId(notice._id);
-            await noticesMeetingsApi.toggleArchiveNotice(notice._id, !notice.isArchived);
+            await noticesMeetingsApi.toggleArchiveNotice(
+                notice._id,
+                !notice.isArchived
+            );
             toast.success(
                 !notice.isArchived ? "Moved to archive" : "Restored to active board"
             );
@@ -295,27 +380,16 @@ export default function NoticesMeetingsPage() {
         }
     };
 
-    const handleDeleteNotice = async (id: string, e?: React.MouseEvent) => {
-        if (e) e.stopPropagation();
-        if (busyNoticeId === id) return;
+    const handleConfirmDeleteNotice = async () => {
+        if (!deletingNotice) return;
+        const targetId = deletingNotice._id;
 
-        if (pendingDeleteNoticeId !== id) {
-            setPendingDeleteNoticeId(id);
-            toast("Click delete again within 3s to permanently delete notice", {
-                icon: "⚠️",
-            });
-            setTimeout(() => {
-                setPendingDeleteNoticeId((prev) => (prev === id ? null : prev));
-            }, 3000);
-            return;
-        }
-
-        setPendingDeleteNoticeId(null);
         try {
-            setBusyNoticeId(id);
-            await noticesMeetingsApi.deleteNotice(id);
+            setBusyNoticeId(targetId);
+            await noticesMeetingsApi.deleteNotice(targetId);
             toast.success("Notice deleted");
-            if (selectedNotice?._id === id) setSelectedNotice(null);
+            if (selectedNotice?._id === targetId) setSelectedNotice(null);
+            setDeletingNotice(null);
             await fetchNotices();
         } catch (error: unknown) {
             toast.error(getErrorMessage(error, "Failed to delete notice"));
@@ -325,7 +399,8 @@ export default function NoticesMeetingsPage() {
     };
 
     // --- Meeting Handlers ---
-    const openMeetingModal = (directSchedule: boolean) => {
+    const openCreateMeetingModal = (directSchedule: boolean) => {
+        setEditingMeeting(null);
         setIsDirectScheduleMode(directSchedule);
         setMeetingForm({
             title: "",
@@ -336,12 +411,31 @@ export default function NoticesMeetingsPage() {
             preferredDateText: "",
             venue: "",
             meetingLink: "",
+            status: directSchedule && canManage ? "Confirmed" : "Pending Approval",
             notes: "",
         });
         setIsMeetingModalOpen(true);
     };
 
-    const handleCreateMeeting = async (e: React.FormEvent) => {
+    const openEditMeetingModal = (meeting: MeetingRecord) => {
+        setEditingMeeting(meeting);
+        setIsDirectScheduleMode(true);
+        setMeetingForm({
+            title: meeting.title || "",
+            withAttendees: meeting.withAttendees || "",
+            type: meeting.type || "Video Call",
+            scheduledDate: formatDateInputValue(meeting.scheduledDate),
+            timeSlotLabel: meeting.timeSlotLabel || "",
+            preferredDateText: meeting.preferredDateText || "",
+            venue: meeting.venue || "",
+            meetingLink: meeting.meetingLink || "",
+            status: meeting.status || "Pending Approval",
+            notes: meeting.notes || "",
+        });
+        setIsMeetingModalOpen(true);
+    };
+
+    const handleSaveMeeting = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!meetingForm.title.trim() || !meetingForm.withAttendees.trim()) {
             toast.error("Title/Purpose and Attendees are required");
@@ -350,27 +444,58 @@ export default function NoticesMeetingsPage() {
 
         try {
             setSubmittingMeeting(true);
-            await noticesMeetingsApi.createMeeting({
-                title: meetingForm.title.trim(),
-                withAttendees: meetingForm.withAttendees.trim(),
-                type: meetingForm.type,
-                scheduledDate: meetingForm.scheduledDate || null,
-                timeSlotLabel: meetingForm.timeSlotLabel.trim(),
-                preferredDateText: meetingForm.preferredDateText.trim(),
-                venue: meetingForm.venue.trim(),
-                meetingLink: meetingForm.meetingLink.trim(),
-                notes: meetingForm.notes.trim(),
-                directSchedule: isDirectScheduleMode && canManage,
-            });
-            toast.success(
-                isDirectScheduleMode && canManage
-                    ? "Meeting scheduled & confirmed"
-                    : "Meeting request submitted"
-            );
+
+            if (editingMeeting) {
+                await api.patch(
+                    `/notices-meetings/meetings/${editingMeeting._id}/status`,
+                    {
+                        title: meetingForm.title.trim(),
+                        withAttendees: meetingForm.withAttendees.trim(),
+                        type: meetingForm.type,
+                        scheduledDate: meetingForm.scheduledDate || null,
+                        timeSlotLabel: meetingForm.timeSlotLabel.trim(),
+                        preferredDateText: meetingForm.preferredDateText.trim(),
+                        venue:
+                            meetingForm.type === "In-Person" ? meetingForm.venue.trim() : "",
+                        meetingLink:
+                            meetingForm.type === "Video Call"
+                                ? meetingForm.meetingLink.trim()
+                                : "",
+                        status: meetingForm.status,
+                        notes: meetingForm.notes.trim(),
+                    }
+                );
+                toast.success("Meeting updated");
+            } else {
+                await noticesMeetingsApi.createMeeting({
+                    title: meetingForm.title.trim(),
+                    withAttendees: meetingForm.withAttendees.trim(),
+                    type: meetingForm.type,
+                    scheduledDate: meetingForm.scheduledDate || null,
+                    timeSlotLabel: meetingForm.timeSlotLabel.trim(),
+                    preferredDateText: meetingForm.preferredDateText.trim(),
+                    venue: meetingForm.venue.trim(),
+                    meetingLink: meetingForm.meetingLink.trim(),
+                    notes: meetingForm.notes.trim(),
+                    directSchedule: isDirectScheduleMode && canManage,
+                });
+                toast.success(
+                    isDirectScheduleMode && canManage
+                        ? "Meeting scheduled & confirmed"
+                        : "Meeting request submitted"
+                );
+            }
+
+            setEditingMeeting(null);
             setIsMeetingModalOpen(false);
             await fetchMeetings();
         } catch (error: unknown) {
-            toast.error(getErrorMessage(error, "Failed to save meeting"));
+            toast.error(
+                getErrorMessage(
+                    error,
+                    editingMeeting ? "Failed to update meeting" : "Failed to save meeting"
+                )
+            );
         } finally {
             setSubmittingMeeting(false);
         }
@@ -388,6 +513,23 @@ export default function NoticesMeetingsPage() {
             await fetchMeetings();
         } catch (error: unknown) {
             toast.error(getErrorMessage(error, "Failed to update meeting status"));
+        } finally {
+            setBusyMeetingId(null);
+        }
+    };
+
+    const handleConfirmDeleteMeeting = async () => {
+        if (!deletingMeeting) return;
+        const targetId = deletingMeeting._id;
+
+        try {
+            setBusyMeetingId(targetId);
+            await api.delete(`/notices-meetings/meetings/${targetId}`);
+            toast.success("Meeting deleted");
+            setDeletingMeeting(null);
+            await fetchMeetings();
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error, "Failed to delete meeting"));
         } finally {
             setBusyMeetingId(null);
         }
@@ -436,7 +578,8 @@ export default function NoticesMeetingsPage() {
                         Notices &amp; Meetings
                     </h1>
                     <p className="text-sm text-slate-500 mt-1">
-                        Company-wide notices and the meeting / presentation scheduler, together in one place.
+                        Company-wide notices and the meeting / presentation scheduler,
+                        together in one place.
                     </p>
                 </div>
 
@@ -493,9 +636,7 @@ export default function NoticesMeetingsPage() {
                                                 }`}
                                         >
                                             <span
-                                                className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${active
-                                                        ? "border-[#8D6E63]"
-                                                        : "border-slate-300"
+                                                className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${active ? "border-[#8D6E63]" : "border-slate-300"
                                                     }`}
                                             >
                                                 {active && (
@@ -524,7 +665,7 @@ export default function NoticesMeetingsPage() {
 
                             <button
                                 type="button"
-                                onClick={() => setIsPostNoticeOpen(true)}
+                                onClick={openCreateNoticeModal}
                                 className="cursor-pointer px-4 py-2 rounded-md bg-[#8D6E63] hover:bg-[#795548] text-white text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors"
                             >
                                 <Plus className="w-3.5 h-3.5" />
@@ -540,12 +681,13 @@ export default function NoticesMeetingsPage() {
                         ) : notices.length === 0 ? (
                             <div className="h-52 bg-white border border-slate-200 rounded-xl flex flex-col items-center justify-center text-slate-400">
                                 <Megaphone className="w-8 h-8 mb-2 opacity-40" />
-                                <p className="text-sm font-medium">No notices found in this view.</p>
+                                <p className="text-sm font-medium">
+                                    No notices found in this view.
+                                </p>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 {notices.map((notice) => {
-                                    const isConfirming = pendingDeleteNoticeId === notice._id;
                                     const isBusy = busyNoticeId === notice._id;
 
                                     return (
@@ -596,22 +738,33 @@ export default function NoticesMeetingsPage() {
                                                         </button>
 
                                                         {canManage && (
-                                                            <button
-                                                                type="button"
-                                                                disabled={isBusy}
-                                                                onClick={(e) => handleDeleteNotice(notice._id, e)}
-                                                                className={`cursor-pointer p-1 rounded text-[10px] font-semibold transition-colors ${isConfirming
-                                                                        ? "bg-rose-600 text-white px-1.5"
-                                                                        : "text-slate-400 hover:text-rose-600 hover:bg-rose-50"
-                                                                    }`}
-                                                                title={
-                                                                    isConfirming
-                                                                        ? "Click again to delete"
-                                                                        : "Delete notice"
-                                                                }
-                                                            >
-                                                                <Trash2 className="w-3 h-3" />
-                                                            </button>
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={isBusy}
+                                                                    onClick={(e) =>
+                                                                        openEditNoticeModal(notice, e)
+                                                                    }
+                                                                    className="cursor-pointer p-1 rounded text-slate-500 hover:text-[#8D6E63] hover:bg-amber-50 transition-colors disabled:opacity-50"
+                                                                    title="Edit notice"
+                                                                    aria-label={`Edit ${notice.title}`}
+                                                                >
+                                                                    <Pencil className="w-3 h-3" />
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={isBusy}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setDeletingNotice(notice);
+                                                                    }}
+                                                                    className="cursor-pointer p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50"
+                                                                    title="Delete notice"
+                                                                    aria-label={`Delete ${notice.title}`}
+                                                                >
+                                                                    <Trash2 className="w-3 h-3" />
+                                                                </button>
+                                                            </>
                                                         )}
                                                     </div>
                                                 </div>
@@ -695,12 +848,14 @@ export default function NoticesMeetingsPage() {
 
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <p className="text-xs text-slate-500">
-                                Anyone can request a meeting or presentation slot. HR/Admin can also fix a meeting directly and share the link once it&apos;s confirmed.
+                                Anyone can request a meeting or presentation slot. HR/Admin can
+                                also fix a meeting directly and share the link once it&apos;s
+                                confirmed.
                             </p>
                             <div className="flex items-center gap-2.5 shrink-0">
                                 <button
                                     type="button"
-                                    onClick={() => openMeetingModal(false)}
+                                    onClick={() => openCreateMeetingModal(false)}
                                     className="cursor-pointer px-3.5 py-2 rounded-md bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
                                 >
                                     <Plus className="w-3.5 h-3.5" />
@@ -709,7 +864,7 @@ export default function NoticesMeetingsPage() {
                                 {canManage && (
                                     <button
                                         type="button"
-                                        onClick={() => openMeetingModal(true)}
+                                        onClick={() => openCreateMeetingModal(true)}
                                         className="cursor-pointer px-4 py-2 rounded-md bg-[#8D6E63] hover:bg-[#795548] text-white text-xs font-semibold inline-flex items-center gap-1.5 shadow-2xs transition-colors"
                                     >
                                         <Plus className="w-3.5 h-3.5" />
@@ -826,9 +981,7 @@ export default function NoticesMeetingsPage() {
                                                     }`}
                                             >
                                                 <span
-                                                    className={`w-3 h-3 rounded-full border flex items-center justify-center ${active
-                                                            ? "border-[#8D6E63]"
-                                                            : "border-slate-300"
+                                                    className={`w-3 h-3 rounded-full border flex items-center justify-center ${active ? "border-[#8D6E63]" : "border-slate-300"
                                                         }`}
                                                 >
                                                     {active && (
@@ -922,66 +1075,92 @@ export default function NoticesMeetingsPage() {
                                                             </span>
                                                         </td>
                                                         <td className="py-3.5 pl-4 text-right whitespace-nowrap">
-                                                            {m.status === "Pending Approval" &&
-                                                                canManage ? (
-                                                                <div className="inline-flex items-center gap-2">
+                                                            <div className="inline-flex items-center justify-end gap-2">
+                                                                {m.status === "Pending Approval" &&
+                                                                    canManage ? (
+                                                                    <>
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={isBusy}
+                                                                            onClick={() =>
+                                                                                handleMeetingDecision(
+                                                                                    m._id,
+                                                                                    "Confirmed"
+                                                                                )
+                                                                            }
+                                                                            className="cursor-pointer px-2.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-[11px] inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                        >
+                                                                            <CheckCircle2 className="w-3 h-3" />
+                                                                            <span>Approve</span>
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={isBusy}
+                                                                            onClick={() =>
+                                                                                handleMeetingDecision(
+                                                                                    m._id,
+                                                                                    "Declined"
+                                                                                )
+                                                                            }
+                                                                            className="cursor-pointer px-2.5 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-[11px] inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                        >
+                                                                            <XCircle className="w-3 h-3" />
+                                                                            <span>Decline</span>
+                                                                        </button>
+                                                                    </>
+                                                                ) : m.type === "Video Call" && m.meetingLink ? (
                                                                     <button
                                                                         type="button"
-                                                                        disabled={isBusy}
-                                                                        onClick={() =>
-                                                                            handleMeetingDecision(
-                                                                                m._id,
-                                                                                "Confirmed"
-                                                                            )
-                                                                        }
-                                                                        className="cursor-pointer px-2.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-[11px] inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                                        onClick={() => handleCopyLink(m)}
+                                                                        className="cursor-pointer inline-flex items-center gap-1 text-slate-600 hover:text-[#5D4037] font-medium text-[11px]"
                                                                     >
-                                                                        <CheckCircle2 className="w-3 h-3" />
-                                                                        <span>Approve</span>
+                                                                        {copiedMeetingId === m._id ? (
+                                                                            <>
+                                                                                <Check className="w-3 h-3 text-emerald-600" />
+                                                                                <span className="text-emerald-700">
+                                                                                    Copied
+                                                                                </span>
+                                                                            </>
+                                                                        ) : (
+                                                                            <>
+                                                                                <Copy className="w-3 h-3" />
+                                                                                <span>Copy Link</span>
+                                                                            </>
+                                                                        )}
                                                                     </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        disabled={isBusy}
-                                                                        onClick={() =>
-                                                                            handleMeetingDecision(
-                                                                                m._id,
-                                                                                "Declined"
-                                                                            )
-                                                                        }
-                                                                        className="cursor-pointer px-2.5 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-[11px] inline-flex items-center gap-1 transition-colors disabled:opacity-50"
-                                                                    >
-                                                                        <XCircle className="w-3 h-3" />
-                                                                        <span>Decline</span>
-                                                                    </button>
-                                                                </div>
-                                                            ) : m.type === "Video Call" &&
-                                                                m.meetingLink ? (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleCopyLink(m)}
-                                                                    className="cursor-pointer inline-flex items-center gap-1 text-slate-600 hover:text-[#5D4037] font-medium text-[11px]"
-                                                                >
-                                                                    {copiedMeetingId === m._id ? (
-                                                                        <>
-                                                                            <Check className="w-3 h-3 text-emerald-600" />
-                                                                            <span className="text-emerald-700">
-                                                                                Copied
-                                                                            </span>
-                                                                        </>
-                                                                    ) : (
-                                                                        <>
-                                                                            <Copy className="w-3 h-3" />
-                                                                            <span>Copy Link</span>
-                                                                        </>
-                                                                    )}
-                                                                </button>
-                                                            ) : (
-                                                                <span className="text-[11px] text-slate-400">
-                                                                    {m.status === "Confirmed"
-                                                                        ? "No link needed"
-                                                                        : "—"}
-                                                                </span>
-                                                            )}
+                                                                ) : (
+                                                                    <span className="text-[11px] text-slate-400">
+                                                                        {m.status === "Confirmed"
+                                                                            ? "No link needed"
+                                                                            : "—"}
+                                                                    </span>
+                                                                )}
+
+                                                                {canManage && (
+                                                                    <>
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={isBusy}
+                                                                            onClick={() => openEditMeetingModal(m)}
+                                                                            title="Edit Meeting"
+                                                                            aria-label={`Edit ${m.title}`}
+                                                                            className="cursor-pointer p-1.5 rounded text-slate-500 hover:text-[#8D6E63] hover:bg-amber-50 transition-colors disabled:opacity-50"
+                                                                        >
+                                                                            <Pencil className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={isBusy}
+                                                                            onClick={() => setDeletingMeeting(m)}
+                                                                            title="Delete Meeting"
+                                                                            aria-label={`Delete ${m.title}`}
+                                                                            className="cursor-pointer p-1.5 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50"
+                                                                        >
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 );
@@ -997,8 +1176,14 @@ export default function NoticesMeetingsPage() {
 
             {/* MODAL 1: VIEW NOTICE DETAIL */}
             {selectedNotice && (
-                <div className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl border border-slate-200 overflow-hidden">
+                <div
+                    className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+                    onClick={() => setSelectedNotice(null)}
+                >
+                    <div
+                        className="bg-white rounded-xl shadow-xl w-full max-w-2xl border border-slate-200 overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="p-6 space-y-4">
                             <div className="flex items-center justify-between gap-3">
                                 <span
@@ -1009,11 +1194,35 @@ export default function NoticesMeetingsPage() {
                                     {selectedNotice.badgeType}
                                 </span>
 
-                                <div className="flex items-center gap-3">
-                                    <span className="text-xs text-slate-400">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-slate-400 mr-1">
                                         Posted {formatNoticeDate(selectedNotice.createdAt)} by{" "}
                                         {selectedNotice.postedByLabel || selectedNotice.sourceType}
                                     </span>
+                                    {canManage && (
+                                        <>
+                                            <button
+                                                type="button"
+                                                onClick={() => openEditNoticeModal(selectedNotice)}
+                                                className="cursor-pointer px-2.5 py-1 rounded bg-amber-50 hover:bg-amber-100 text-[#8D6E63] text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                                            >
+                                                <Pencil className="w-3 h-3" />
+                                                <span>Edit</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const target = selectedNotice;
+                                                    setSelectedNotice(null);
+                                                    setDeletingNotice(target);
+                                                }}
+                                                className="cursor-pointer px-2.5 py-1 rounded bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                                <span>Delete</span>
+                                            </button>
+                                        </>
+                                    )}
                                     <button
                                         type="button"
                                         onClick={() => setSelectedNotice(null)}
@@ -1039,29 +1248,46 @@ export default function NoticesMeetingsPage() {
                 </div>
             )}
 
-            {/* MODAL 2: POST NOTICE */}
-            {isPostNoticeOpen && (
-                <div className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-xl border border-slate-200 overflow-hidden">
+            {/* MODAL 2: POST / EDIT NOTICE */}
+            {isNoticeModalOpen && (
+                <div
+                    className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+                    onClick={() => {
+                        if (!savingNotice) {
+                            setIsNoticeModalOpen(false);
+                            setEditingNotice(null);
+                        }
+                    }}
+                >
+                    <div
+                        className="bg-white rounded-xl shadow-xl w-full max-w-xl border border-slate-200 overflow-hidden"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="px-6 py-4 border-b border-slate-100 bg-[#FDFBF7] flex items-center justify-between">
                             <div>
                                 <h2 className="text-lg font-bold text-[#1A1A1A]">
-                                    Post New Notice
+                                    {editingNotice ? "Edit Notice" : "Post New Notice"}
                                 </h2>
                                 <p className="text-xs text-slate-500">
-                                    Publish an HR, Management, or Supervisor notice.
+                                    {editingNotice
+                                        ? "Update notice details, audience, or badge."
+                                        : "Publish an HR, Management, or Supervisor notice."}
                                 </p>
                             </div>
                             <button
                                 type="button"
-                                onClick={() => setIsPostNoticeOpen(false)}
+                                disabled={savingNotice}
+                                onClick={() => {
+                                    setIsNoticeModalOpen(false);
+                                    setEditingNotice(null);
+                                }}
                                 className="cursor-pointer p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
                             >
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
 
-                        <form onSubmit={handleCreateNotice} className="p-6 space-y-4">
+                        <form onSubmit={handleSaveNotice} className="p-6 space-y-4">
                             <div>
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1">
                                     Notice Title *
@@ -1144,7 +1370,10 @@ export default function NoticesMeetingsPage() {
                                         type="date"
                                         value={noticeForm.expiresAt}
                                         onChange={(e) =>
-                                            setNoticeForm({ ...noticeForm, expiresAt: e.target.value })
+                                            setNoticeForm({
+                                                ...noticeForm,
+                                                expiresAt: e.target.value,
+                                            })
                                         }
                                         className="w-full px-3.5 py-2 border border-slate-300 rounded-md text-sm focus:ring-1 focus:ring-[#8D6E63] focus:border-[#8D6E63] outline-none"
                                     />
@@ -1173,20 +1402,26 @@ export default function NoticesMeetingsPage() {
                             <div className="pt-2 flex items-center justify-end gap-2.5">
                                 <button
                                     type="button"
-                                    onClick={() => setIsPostNoticeOpen(false)}
+                                    disabled={savingNotice}
+                                    onClick={() => {
+                                        setIsNoticeModalOpen(false);
+                                        setEditingNotice(null);
+                                    }}
                                     className="cursor-pointer px-4 py-2 rounded-md border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={postingNotice}
+                                    disabled={savingNotice}
                                     className="cursor-pointer px-5 py-2 rounded-md bg-[#8D6E63] hover:bg-[#795548] text-white text-xs font-semibold inline-flex items-center gap-1.5 disabled:opacity-50"
                                 >
-                                    {postingNotice && (
+                                    {savingNotice && (
                                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                                     )}
-                                    <span>Publish Notice</span>
+                                    <span>
+                                        {editingNotice ? "Update Notice" : "Publish Notice"}
+                                    </span>
                                 </button>
                             </div>
                         </form>
@@ -1194,26 +1429,100 @@ export default function NoticesMeetingsPage() {
                 </div>
             )}
 
-            {/* MODAL 3: REQUEST / SCHEDULE MEETING */}
+            {/* MODAL 3: DELETE NOTICE CONFIRMATION */}
+            {deletingNotice && (
+                <div
+                    className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+                    onClick={() => {
+                        if (!busyNoticeId) setDeletingNotice(null);
+                    }}
+                >
+                    <div
+                        className="bg-white rounded-xl shadow-xl w-full max-w-sm border border-slate-200 p-6 space-y-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                                <Trash2 className="w-4 h-4" />
+                            </div>
+                            <div className="space-y-1 text-xs">
+                                <h3 className="text-sm font-bold text-[#1A1A1A]">
+                                    Delete Notice?
+                                </h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Are you sure you want to permanently delete{" "}
+                                    <span className="font-semibold text-[#1A1A1A]">
+                                        &ldquo;{deletingNotice.title}&rdquo;
+                                    </span>
+                                    ? This action cannot be undone.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-1 text-xs">
+                            <button
+                                type="button"
+                                disabled={Boolean(busyNoticeId)}
+                                onClick={() => setDeletingNotice(null)}
+                                className="cursor-pointer px-4 py-2 rounded-md border border-slate-300 font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={Boolean(busyNoticeId)}
+                                onClick={handleConfirmDeleteNotice}
+                                className="cursor-pointer px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white font-semibold inline-flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                                {busyNoticeId && (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                )}
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL 4: REQUEST / SCHEDULE / EDIT MEETING */}
             {isMeetingModalOpen && (
-                <div className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col">
+                <div
+                    className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+                    onClick={() => {
+                        if (!submittingMeeting) {
+                            setIsMeetingModalOpen(false);
+                            setEditingMeeting(null);
+                        }
+                    }}
+                >
+                    <div
+                        className="bg-white rounded-xl shadow-xl w-full max-w-xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                             <div>
                                 <h2 className="text-lg font-bold text-[#1A1A1A]">
-                                    {isDirectScheduleMode && canManage
-                                        ? "Schedule & Confirm Meeting"
-                                        : "Request a Meeting / Presentation"}
+                                    {editingMeeting
+                                        ? "Edit Meeting"
+                                        : isDirectScheduleMode && canManage
+                                            ? "Schedule & Confirm Meeting"
+                                            : "Request a Meeting / Presentation"}
                                 </h2>
                                 <p className="text-xs text-slate-500 mt-0.5">
-                                    {isDirectScheduleMode && canManage
-                                        ? "Fix a slot directly — it will be marked Confirmed immediately."
-                                        : 'HR will review and confirm — you\'ll see it move to "Confirmed" once fixed.'}
+                                    {editingMeeting
+                                        ? "Modify meeting details, schedule slot, or status."
+                                        : isDirectScheduleMode && canManage
+                                            ? "Fix a slot directly — it will be marked Confirmed immediately."
+                                            : 'HR will review and confirm — you\'ll see it move to "Confirmed" once fixed.'}
                                 </p>
                             </div>
                             <button
                                 type="button"
-                                onClick={() => setIsMeetingModalOpen(false)}
+                                disabled={submittingMeeting}
+                                onClick={() => {
+                                    setIsMeetingModalOpen(false);
+                                    setEditingMeeting(null);
+                                }}
                                 className="cursor-pointer w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors"
                             >
                                 <X className="w-4 h-4" />
@@ -1221,7 +1530,7 @@ export default function NoticesMeetingsPage() {
                         </div>
 
                         <form
-                            onSubmit={handleCreateMeeting}
+                            onSubmit={handleSaveMeeting}
                             className="p-6 overflow-y-auto space-y-4"
                         >
                             <div>
@@ -1318,6 +1627,29 @@ export default function NoticesMeetingsPage() {
                                 </div>
                             </div>
 
+                            {editingMeeting && canManage && (
+                                <div>
+                                    <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
+                                        Status
+                                    </label>
+                                    <select
+                                        value={meetingForm.status}
+                                        onChange={(e) =>
+                                            setMeetingForm({
+                                                ...meetingForm,
+                                                status: e.target.value as MeetingStatus,
+                                            })
+                                        }
+                                        className="w-full px-3.5 py-2 border border-slate-300 rounded-md text-sm bg-white focus:ring-1 focus:ring-[#8D6E63] focus:border-[#8D6E63] outline-none"
+                                    >
+                                        <option value="Pending Approval">Pending Approval</option>
+                                        <option value="Confirmed">Confirmed</option>
+                                        <option value="Completed">Completed</option>
+                                        <option value="Declined">Declined</option>
+                                    </select>
+                                </div>
+                            )}
+
                             {meetingForm.type === "In-Person" && (
                                 <div>
                                     <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1">
@@ -1379,7 +1711,11 @@ export default function NoticesMeetingsPage() {
                             <div className="pt-2 flex items-center justify-end gap-2.5">
                                 <button
                                     type="button"
-                                    onClick={() => setIsMeetingModalOpen(false)}
+                                    disabled={submittingMeeting}
+                                    onClick={() => {
+                                        setIsMeetingModalOpen(false);
+                                        setEditingMeeting(null);
+                                    }}
                                     className="cursor-pointer px-4 py-2 rounded-md border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                 >
                                     Cancel
@@ -1394,13 +1730,70 @@ export default function NoticesMeetingsPage() {
                                     )}
                                     <Sparkles className="w-3.5 h-3.5" />
                                     <span>
-                                        {isDirectScheduleMode && canManage
-                                            ? "Confirm Schedule"
-                                            : "Submit Request"}
+                                        {editingMeeting
+                                            ? "Update Meeting"
+                                            : isDirectScheduleMode && canManage
+                                                ? "Confirm Schedule"
+                                                : "Submit Request"}
                                     </span>
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL 5: DELETE MEETING CONFIRMATION */}
+            {deletingMeeting && (
+                <div
+                    className="fixed inset-0 bg-[#1A1A1A]/45 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+                    onClick={() => {
+                        if (!busyMeetingId) setDeletingMeeting(null);
+                    }}
+                >
+                    <div
+                        className="bg-white rounded-xl shadow-xl w-full max-w-sm border border-slate-200 p-6 space-y-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                                <Trash2 className="w-4 h-4" />
+                            </div>
+                            <div className="space-y-1 text-xs">
+                                <h3 className="text-sm font-bold text-[#1A1A1A]">
+                                    Delete Meeting?
+                                </h3>
+                                <p className="text-slate-600 leading-relaxed">
+                                    Are you sure you want to permanently delete{" "}
+                                    <span className="font-semibold text-[#1A1A1A]">
+                                        &ldquo;{deletingMeeting.title}&rdquo;
+                                    </span>
+                                    ?
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-1 text-xs">
+                            <button
+                                type="button"
+                                disabled={Boolean(busyMeetingId)}
+                                onClick={() => setDeletingMeeting(null)}
+                                className="cursor-pointer px-4 py-2 rounded-md border border-slate-300 font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                disabled={Boolean(busyMeetingId)}
+                                onClick={handleConfirmDeleteMeeting}
+                                className="cursor-pointer px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-700 text-white font-semibold inline-flex items-center gap-1.5 disabled:opacity-50"
+                            >
+                                {busyMeetingId && (
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                )}
+                                <span>Delete</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
