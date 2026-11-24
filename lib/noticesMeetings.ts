@@ -20,6 +20,7 @@ export interface NoticeRecord {
     postedBy?: { _id: string; fullName?: string; role?: string };
     isArchived: boolean;
     createdAt: string;
+    expiresAt?: string | Date | null;
 }
 
 export interface CreateNoticePayload {

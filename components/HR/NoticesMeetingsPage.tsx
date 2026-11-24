@@ -286,7 +286,9 @@ export default function NoticesMeetingsPage() {
             audience: notice.audience || "All Staff",
             department: notice.department || "All",
             postedByLabel: notice.postedByLabel || "",
-            expiresAt: formatDateInputValue(notice.expiresAt),
+            expiresAt: formatDateInputValue(
+                (notice as NoticeRecord & { expiresAt?: string | null }).expiresAt
+            ),
             description: notice.description || "",
         });
         setIsNoticeModalOpen(true);
@@ -589,8 +591,8 @@ export default function NoticesMeetingsPage() {
                         type="button"
                         onClick={() => setActiveSection("notices")}
                         className={`cursor-pointer pb-3 text-sm font-medium relative flex items-center gap-2 transition-colors ${activeSection === "notices"
-                                ? "text-[#1A1A1A] font-semibold"
-                                : "text-slate-500 hover:text-slate-800"
+                            ? "text-[#1A1A1A] font-semibold"
+                            : "text-slate-500 hover:text-slate-800"
                             }`}
                     >
                         <Megaphone className="w-4 h-4 text-[#8D6E63]" />
@@ -604,8 +606,8 @@ export default function NoticesMeetingsPage() {
                         type="button"
                         onClick={() => setActiveSection("meetings")}
                         className={`cursor-pointer pb-3 text-sm font-medium relative flex items-center gap-2 transition-colors ${activeSection === "meetings"
-                                ? "text-[#1A1A1A] font-semibold"
-                                : "text-slate-500 hover:text-slate-800"
+                            ? "text-[#1A1A1A] font-semibold"
+                            : "text-slate-500 hover:text-slate-800"
                             }`}
                     >
                         <Calendar className="w-4 h-4 text-[#8D6E63]" />
@@ -631,8 +633,8 @@ export default function NoticesMeetingsPage() {
                                             type="button"
                                             onClick={() => setNoticeFilter(item.id)}
                                             className={`cursor-pointer flex items-center gap-2 text-xs font-medium transition-colors ${active
-                                                    ? "text-[#1A1A1A] font-semibold"
-                                                    : "text-slate-600 hover:text-[#1A1A1A]"
+                                                ? "text-[#1A1A1A] font-semibold"
+                                                : "text-slate-600 hover:text-[#1A1A1A]"
                                                 }`}
                                         >
                                             <span
@@ -654,8 +656,8 @@ export default function NoticesMeetingsPage() {
                                     type="button"
                                     onClick={() => setNoticeFilter("archive")}
                                     className={`cursor-pointer px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 border transition-colors ${noticeFilter === "archive"
-                                            ? "bg-[#8D6E63]/15 text-[#5D4037] border-[#8D6E63]/40 font-semibold"
-                                            : "bg-slate-100/80 text-slate-600 border-slate-200 hover:bg-slate-200/70"
+                                        ? "bg-[#8D6E63]/15 text-[#5D4037] border-[#8D6E63]/40 font-semibold"
+                                        : "bg-slate-100/80 text-slate-600 border-slate-200 hover:bg-slate-200/70"
                                         }`}
                                 >
                                     <Archive className="w-3.5 h-3.5 text-amber-600" />
@@ -898,8 +900,8 @@ export default function NoticesMeetingsPage() {
 
                             <div
                                 className={`grid gap-3 ${calendarMode === "week"
-                                        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-                                        : "grid-cols-2 sm:grid-cols-4 md:grid-cols-7"
+                                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+                                    : "grid-cols-2 sm:grid-cols-4 md:grid-cols-7"
                                     }`}
                             >
                                 {calendarDays.map((dayDate) => {
@@ -915,8 +917,8 @@ export default function NoticesMeetingsPage() {
                                         <div
                                             key={dayDate.toISOString()}
                                             className={`border rounded-lg p-3 min-h-[96px] flex flex-col justify-between ${todayFlag
-                                                    ? "border-[#8D6E63]/60 bg-[#8D6E63]/[0.04]"
-                                                    : "border-slate-200/80 bg-white"
+                                                ? "border-[#8D6E63]/60 bg-[#8D6E63]/[0.04]"
+                                                : "border-slate-200/80 bg-white"
                                                 }`}
                                         >
                                             <div className="flex items-baseline justify-between gap-2">
@@ -976,8 +978,8 @@ export default function NoticesMeetingsPage() {
                                                 type="button"
                                                 onClick={() => setListRangeFilter(r.id)}
                                                 className={`cursor-pointer flex items-center gap-1.5 text-xs ${active
-                                                        ? "text-[#1A1A1A] font-semibold"
-                                                        : "text-slate-500 hover:text-slate-800"
+                                                    ? "text-[#1A1A1A] font-semibold"
+                                                    : "text-slate-500 hover:text-slate-800"
                                                     }`}
                                             >
                                                 <span
