@@ -805,7 +805,7 @@ export default function CvBankTab({
                 value={minExp}
                 onChange={(e) => setMinExp(e.target.value)}
                 placeholder="Min"
-                className="w-12 bg-white border border-[#E5DFD3] rounded px-1.5 py-0.5 text-xs"
+                className="w-12 bg-white border text-black border-[#E5DFD3] rounded px-1.5 py-0.5 text-xs"
               />
               <span className="text-[#8A8478]">–</span>
               <input
@@ -814,7 +814,7 @@ export default function CvBankTab({
                 value={maxExp}
                 onChange={(e) => setMaxExp(e.target.value)}
                 placeholder="Max"
-                className="w-12 bg-white border border-[#E5DFD3] rounded px-1.5 py-0.5 text-xs"
+                className="w-12 bg-white border text-black border-[#E5DFD3] rounded px-1.5 py-0.5 text-xs"
               />
             </div>
 
@@ -1333,14 +1333,6 @@ export default function CvBankTab({
               </div>
 
               <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  disabled={savingCv}
-                  onClick={closeCvModal}
-                  className="cursor-pointer px-4 py-2 rounded-lg border border-gray-200 font-semibold"
-                >
-                  Cancel
-                </button>
                 <button
                   type="submit"
                   disabled={savingCv}

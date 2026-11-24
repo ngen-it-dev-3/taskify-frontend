@@ -1246,16 +1246,6 @@ function DocumentPreviewModal({
 
             <button
               type="button"
-              onClick={handleSaveAsPdf}
-              disabled={isDownloading}
-              className="cursor-pointer inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-semibold transition-colors disabled:opacity-50"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Download PDF</span>
-            </button>
-
-            <button
-              type="button"
               onClick={onDownloadOriginal}
               disabled={isDownloading}
               className="cursor-pointer inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#5C4033] hover:bg-[#4A3328] text-white text-xs font-semibold transition-colors disabled:opacity-50"
