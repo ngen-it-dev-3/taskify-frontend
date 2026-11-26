@@ -58,7 +58,10 @@ import {
   Megaphone,
   Video,
   Contact,
-  MapPin
+  MapPin,
+  Package,
+  Truck,
+  FilePlus2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -109,7 +112,20 @@ export interface SectionConfig {
   priority: number;
 }
 
-export type SectionId = "main" | "crm" | "projects" | "tasks" | "team" | "hr" | "reports" | "system" | "support" | "kpi" | "tender" | "accounts";
+export type SectionId =
+  | "main"
+  | "crm"
+  | "orders"
+  | "projects"
+  | "tasks"
+  | "team"
+  | "hr"
+  | "reports"
+  | "system"
+  | "support"
+  | "kpi"
+  | "tender"
+  | "accounts";
 
 // ============================================================================
 // CONFIGURATION
@@ -132,6 +148,7 @@ export const ROLES = {
 export const SECTIONS: Record<SectionId, SectionConfig> = {
   main: { id: "main", title: "MAIN MENU", icon: LayoutDashboard, priority: 0 },
   crm: { id: "crm", title: "CRM DASHBOARD", icon: HandHelping, priority: 6 },
+  orders: { id: "orders", title: "ORDER MANAGEMENT", icon: Package, priority: 7 },
   accounts: { id: "accounts", title: "ACCOUNTS & FINANCE", icon: Wallet, priority: 8 },
   projects: { id: "projects", title: "PROJECT MANAGEMENT", icon: FolderKanban, priority: 10 },
   tasks: { id: "tasks", title: "TASK MANAGEMENT", icon: ClipboardList, priority: 20 },
@@ -179,6 +196,12 @@ export const MAIN_ITEMS = {
     "administration", "Administration", "#", Settings2,
     [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER, ROLES.EMPLOYEE, ROLES.CRM_USER],
     { section: "main", description: "Manage users, roles, tasks, and team settings" }
+  ),
+
+  orderManagement: createNavItem(
+    "order-management", "Order Management", "/orders/dashboard", Package,
+    [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.DEPT_MANAGER, ROLES.ACCOUNTANT, ROLES.TENDER_USER],
+    { section: "orders", description: "Track order fulfillment pipeline, purchase orders, and logistics" }
   ),
 
   accountsManagement: createNavItem(
@@ -235,6 +258,42 @@ export const SUB_ITEMS = {
   adminTasks: createSubNavItem("admin-tasks", "Tasks", "/tasks", ClipboardList, "Administration", [ROLES.ALL]),
   adminTeam: createSubNavItem("admin-team", "Team", "/team", Users, "Administration", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.DEPT_MANAGER, ROLES.PROJECT_MANAGER]),
   adminKpi: createSubNavItem("admin-kpi", "KPI Dashboard", "/kpi/dashboard", Trophy, "Administration", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER, ROLES.PROJECT_MANAGER, ROLES.EMPLOYEE, ROLES.CRM_USER]),
+
+  // ==========================================================================
+  // ORDER MANAGEMENT (Level 3 under Order Management)
+  // ==========================================================================
+  orderDashboard: createSubNavItem(
+    "order-management-dashboard",
+    "Order Management Dashboard",
+    "/orders/dashboard",
+    LayoutDashboard,
+    "Order Management",
+    [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.DEPT_MANAGER, ROLES.ACCOUNTANT, ROLES.TENDER_USER]
+  ),
+  purchaseOrderBuilder: createSubNavItem(
+    "purchase-order-builder",
+    "Purchase Order Builder",
+    "/orders/po-builder",
+    FilePlus2,
+    "Order Management",
+    [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.DEPT_MANAGER, ROLES.ACCOUNTANT, ROLES.TENDER_USER]
+  ),
+  purchaseOrders: createSubNavItem(
+    "purchase-orders",
+    "Purchase Orders",
+    "/orders/purchase-orders",
+    FileText,
+    "Order Management",
+    [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.DEPT_MANAGER, ROLES.ACCOUNTANT, ROLES.TENDER_USER]
+  ),
+  logisticsDetails: createSubNavItem(
+    "logistics-details",
+    "Logistics Details",
+    "/orders/logistics",
+    Truck,
+    "Order Management",
+    [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.DEPT_MANAGER, ROLES.ACCOUNTANT, ROLES.TENDER_USER]
+  ),
 
   // ==========================================================================
   // ACCOUNTS (Level 2 & 3 - Under Main "Accounts")
@@ -315,26 +374,19 @@ export const SUB_ITEMS = {
   // ==========================================================================
   // HR (Level 3)
   // ==========================================================================
-  // --- Leave Management (Level 2) ---
   leaveManagement: createSubNavItem("leave-management", "Leave Management", "#", FileCheck, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER], { badgeKey: "pendingLeaves", badgeColor: "bg-green-500" }),
-
-  // Level 3 under Leave Management
-  // ⭐ ফিক্স: leavesDashboard এর parent "Leave Management" করা হলো
   leavesDashboard: createSubNavItem("leaves-dashboard", "Dashboard", "/hr/leaves/dashboard", Calendar, "Leave Management", [ROLES.ALL]),
   myLeaves: createSubNavItem("my-leaves", "My Leaves", "/hr/leaves/my", Calendar, "Leave Management", [ROLES.ALL]),
   leaveRecord: createSubNavItem("leave-record", "Leave Record", "/hr/leaves/record", FileText, "Leave Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.DEPT_MANAGER]),
   monthWiseLeave: createSubNavItem("month-wise-leave", "Leave Calendar", "/hr/leaves/month-wise", CalendarDays, "Leave Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  // --- Attendance Management (Level 2) ---
+
   attendanceManagement: createSubNavItem("attendance-management", "Attendance Management", "#", Clock, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  // Level 3 under Attendance Management
   allEmployeeAttendance: createSubNavItem("all-employee-attendance", "All Employee Attendance", "/hr/attendance/dashboard", ListChecks, "Attendance Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   myAttendance: createSubNavItem("my-attendance", "My Attendance", "/hr/attendance/my", CalendarRange, "Attendance Management", [ROLES.ALL]),
   monthWiseAttendance: createSubNavItem("month-wise-attendance", "Month Wise Attendance", "/hr/attendance/month-wise", BarChart3, "Attendance Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   movementRecord: createSubNavItem("movement-record", "Movement Record", "/hr/attendance/movement", MapPin, "Attendance Management", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
 
-  // --- Employee & Documents (Level 2) ---
   employeeAndDocuments: createSubNavItem("employee-and-documents", "Employee & Documents", "#", Folder, "HR & Admin", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
-  // Level 3 under Employee & Documents
   employeeDirectory: createSubNavItem("employee-directory", "Employee Directory", "/hr/employees", Users, "Employee & Documents", [ROLES.ALL]),
   employeeFiles: createSubNavItem("employee-files", "Employee Files", "/hr/employee-file", FolderOpen, "Employee & Documents", [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]),
   hrFormsPolicies: createSubNavItem("hr-forms-policies", "HR Forms & Policies", "/hr/forms", FileSignature, "Employee & Documents", [ROLES.ALL]),
@@ -347,11 +399,9 @@ export const SUB_ITEMS = {
     [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER]
   ),
 
-  // --- Notices & Meetings (Level 2) ---
   noticesAndMeetings: createSubNavItem("notices-and-meetings", "Notices & Meetings", "#", Megaphone, "HR & Admin", [ROLES.ALL]),
-  // Level 3 under Notices & Meetings
   noticeBoard: createSubNavItem("notice-board", "Notice Board", "/hr/notices-meeting", Newspaper, "Notices & Meetings", [ROLES.ALL]),
-  
+
   // ==========================================================================
   // SYSTEM SETTINGS (Level 3 under System Settings)
   // ==========================================================================

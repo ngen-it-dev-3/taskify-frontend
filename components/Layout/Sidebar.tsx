@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import {
   getSubMenuItems,
-  hasAccess,
   type BadgeKey,
   type NavItem,
   type SubNavItem,
@@ -72,7 +71,7 @@ function SidebarItem({
   const isItemActive = (href: string) => {
     if (!href || href === "#") return false;
     if (pathname === href) return true;
-    const indexRoutes = ["/tenders", "/crm", "/projects", "/tasks", "/hr", "/accounts"];
+    const indexRoutes = ["/tenders", "/crm", "/orders", "/projects", "/tasks", "/hr", "/accounts"];
     if (indexRoutes.includes(href)) return false;
     return pathname.startsWith(`${href}/`);
   };
@@ -341,7 +340,7 @@ export default function Sidebar({ isMobileOpen, onClose, onCollapseChange }: Sid
         // Level 0 (Main): Close all other Level 0 items
         return new Set([name]);
       } else {
-        // Level 1 & 2 (Sub-items): 
+        // Level 1 & 2 (Sub-items):
         // Close ALL other Level 1 & 2 items, but keep their Level 0 parents open.
         const newSet = new Set<string>([name]);
 
@@ -360,6 +359,7 @@ export default function Sidebar({ isMobileOpen, onClose, onCollapseChange }: Sid
     "main",
     "kpi",
     "crm",
+    "orders",
     "tender",
     "projects",
     "tasks",
