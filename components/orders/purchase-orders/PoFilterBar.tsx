@@ -1,7 +1,8 @@
 // components/orders/purchase-orders/PoFilterBar.tsx
 "use client";
 
-import type { MonthFilterKey } from "./types";
+import { MonthFilterKey } from "@/types/orders/purchase-orders/types";
+
 
 interface PoFilterBarProps {
   activeMonth: MonthFilterKey;
