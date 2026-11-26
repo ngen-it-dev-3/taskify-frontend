@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { CheckCircle2 } from "lucide-react";
-import type { CompanyProfile, DraftPurchaseOrder, PoLineItem } from "./types";
+import { CompanyProfile, DraftPurchaseOrder, PoLineItem } from "@/types/orders/po-builder/types";
 
 interface CreatePurchaseOrderTabProps {
     companies: CompanyProfile[];
